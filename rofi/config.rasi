@@ -1,0 +1,104 @@
+configuration{
+    modi: "run,drun,window";
+    lines: 1;
+    font: "JetBrains Mono 16";
+    show-icons: true;
+    icon-theme: "Breeze Dark";
+    terminal: "st";
+    drun-display-format: "{icon} {name}";
+    location: 0;
+    disable-history: false;
+    hide-scrollbar: true;
+    display-drun: "   Apps ";
+}
+
+@theme "onedark"
+
+element-text, element-icon , mode-switcher {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+window {
+    height: 70%;
+        width: 58%;
+    border: 3px;
+    border-color: @blue;
+    background-color: @bg-col-light;
+}
+
+mainbox {
+    background-color: @bg-col-light;
+}
+
+inputbar {
+    children: [prompt,entry];
+    background-color: @bg-col-light;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+prompt {
+    background-color: @blue;
+    padding: 6px;
+    text-color: @bg-col;
+    border-radius: 3px;
+    margin: 20px 0px 0px 20px;
+}
+
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+}
+
+entry {
+    padding: 6px;
+    margin: 20px 20px 0px 10px;
+    text-color: @bg-col;
+    background-color: @blue;
+	border-radius: 3px;
+}
+
+listview {
+    border: 0px 0px 0px;
+    padding: 6px 0px 0px;
+    margin: 10px 0px 0px 20px;
+    columns: 3;
+    background-color: @bg-col-light;
+}
+
+element {
+    padding: 5px;
+    background-color: @bg-col-light;
+    text-color: @fg-col  ;
+}
+
+element-icon {
+        height: 92%;
+        width: 98%;
+}
+
+element selected {
+    background-color:  @blue ;
+    text-color: @bg-col  ;
+	border-radius: 5px;
+}
+
+mode-switcher {
+    spacing: 0;
+  }
+
+button {
+    padding: 10px;
+    background-color: @bg-col-light;
+    text-color: @white;
+    vertical-align: 0.5; 
+    horizontal-align: 0.5;
+}
+
+button selected {
+  background-color: @bg-col;
+  text-color: @blue;
+      vertical-align: 0.5; 
+    horizontal-align: 0.5;
+}
