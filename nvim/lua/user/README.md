@@ -3,6 +3,8 @@
 ![](https://images2.imgbox.com/34/da/SlHiuWWI_o.jpg) 
 ## 🛠️ Installation
 
+## This config from https://github.com/cyvas8x/astronvim_config.git
+
 1. You need to install [AstroNvim](https://github.com/AstroNvim/AstroNvim) first, if you haven't installed it
 
 2. Backup before Installation, if you have your own config before
