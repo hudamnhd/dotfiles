@@ -10,3 +10,7 @@ Dotfiles are configuration files that are typically hidden files in a Unix-like 
 
 The purpose of this repository is to store and version control my custom configuration files, allowing me to easily replicate my preferred settings across different Linux machines. These dotfiles include settings for applications like shells (e.g., Bash, Zsh), text editors (e.g., Vim, Emacs), version control systems (e.g., Git), and more.
 
+<p align="center">
+  <img src="./image.png" width="100%" height="auto" /><
+</p>
+
