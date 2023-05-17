@@ -18,8 +18,8 @@ static const int scalepreview            = 4;        /* Tag preview scaling */
 static int nomodbuttons                  = 1;   /* allow client mouse button bindings that have no modifier */
 #endif // NO_MOD_BUTTONS_PATCH
 #if VANITYGAPS_PATCH //============================================================================================= DWM
-static const unsigned int gappih         = 5;  /* horiz inner gap between windows */ 
-static const unsigned int gappiv         = 5;  /* vert inner gap between windows */
+static const unsigned int gappih         = 0;  /* horiz inner gap between windows */ 
+static const unsigned int gappiv         = 0;  /* vert inner gap between windows */
 static const unsigned int gappoh         = 5;  /* horiz outer gap between windows and screen edge  up down*/
 static const unsigned int gappov         = 10;  /* 30 vert outer gap between windows and screen edge left right */
 static const int smartgaps_fact          = 1;   /* gap factor when there is only one client; 0 = no gaps, 3 = 3x outer gaps */
@@ -53,7 +53,7 @@ static const int toptab                  = False;               /* False means b
 static const int bar_height              = 20;   /* 0 means derive from font, >= 1 explicit height */
 #endif // BAR_HEIGHT_PATCH
 #if BAR_PADDING_PATCH
-static const int vertpad                 = 10;  /* 10 vertical padding of bar */
+static const int vertpad                 = 10;  /* 10 vertical padding of bar  up/down*/
 static const int sidepad                 = 10;  /* horizontal padding of bar */
 #endif // BAR_PADDING_PATCH
 #if BAR_WINICON_PATCH
@@ -839,7 +839,7 @@ static const char *xkb_layouts[]  = {
 #endif // STACKER_PATCH
 
 #if BAR_HOLDBAR_PATCH
-#define HOLDKEY 0 // replace 0 with the keysym to activate holdbar
+#define HOLDKEY XK_Super_L // replace 0 with the keysym to activate holdbar
 #endif // BAR_HOLDBAR_PATCH
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
