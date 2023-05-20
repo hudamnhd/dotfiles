@@ -4440,7 +4440,7 @@ void setup(void) {
     if (barheight)
         bh = drw->fonts->h + barheight;
     else
-        bh = drw->fonts->h + 6;
+        bh = drw->fonts->h + 8;
     updategeom();
     /* init atoms */
     utf8string = XInternAtom(dpy, "UTF8_STRING", False);
