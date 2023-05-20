@@ -24,7 +24,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4"};
+static const char *tags[] = { "1", "2", "3", "4",};
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -40,7 +40,7 @@ static const Rule rules[] = {
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
 
 static const Layout layouts[] = {
@@ -76,44 +76,37 @@ static const char *rofipower[]     = { "rofi", "-show", "p", "-modi", "p:rofi-po
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-    	{ 0,                            XF86XK_AudioLowerVolume,  spawn, { .v = volumedown } },
-	{ 0,                            XF86XK_AudioRaiseVolume,  spawn, { .v = volumeup } },
-	{ 0,                            XF86XK_AudioMute,         spawn, { .v = mute } },
-
+    	{ 0,                            XF86XK_AudioLowerVolume,  	spawn, 				{ .v = volumedown } },
+	{ 0,                            XF86XK_AudioRaiseVolume,  	spawn, 				{ .v = volumeup } },
+	{ 0,                            XF86XK_AudioMute,         	spawn, 				{ .v = mute } },
 	{ MODKEYA,             		XK_q,      			killclient,     		{0} },
 	{ MODKEYA,             		XK_a, 				togglefloating,			{0} },		
-	
 	{ MODKEYA,                      XK_period,      		spawn,          		SHCMD("lxterminal") },
 	{ MODKEYA,		       	XK_slash, 			spawn,          		{.v = termcmd } },
 	{ MODKEYA,                      XK_Shift_R,      		spawn,          		SHCMD("pavucontrol") },
-	
 	{ MODKEY,                       XK_Print,  			spawn,      			SHCMD("xfce4-screenshooter") },
 	{ MODKEY,                       XK_Delete,      		spawn,          		{.v = rofipower } },
 	{ MODKEY,           		XK_End,      			quit,      			{0} },
-
 	{ MODKEY,                       XK_Left,   			focusstack,     		{.i = -1 } },
 	{ MODKEY,                       XK_Right,  			focusstack,     		{.i = +1 } },
 	{ MODKEY,                       XK_Up,     			setmfact,       		{.f = -0.05 } },
 	{ MODKEY,                       XK_Down,   			setmfact,       		{.f = +0.05 } },
-	
 	{ MODKEY,	            	XK_F1,  			tagmon,     			{.i = -1 } },
 	{ MODKEY,                       XK_Tab,				view,           		{0} },
 	{ MODKEY,                       XK_q,  				focusmon,   			{.i = -1 } },
 	{ MODKEY,           		XK_w,  				cyclelayout,    		{.i = +1 } },
 	{ MODKEY,           		XK_e,  				incnmaster,     		{.i = +1 } },
-	
 	{ MODKEY,                       XK_a,  				focusstack,     		{.i = +1 } },
-	{ MODKEY,                       XK_d,      			spawn,          		{.v = rofi } },
-	{ MODKEY,                       XK_s, 				scratchpad_show, {0} },
-	{ MODKEYA,                      XK_s, 				scratchpad_hide, {0} },	
-	{ MODKEY,           		XK_z,  				zoom,       			{0} },
+	{ MODKEY,             		XK_s,       			shiftviewclients, 		{ .i = +1 } },
+	{ MODKEY,           		XK_d,  				zoom,       			{0} },
 	{ MODKEY,             		XK_f,      			togglefullscr,  		{0} },
-
+	{ MODKEY,                       XK_z, 				scratchpad_show, {0} },
+	{ MODKEY,                      	XK_x, 				scratchpad_hide, {0} },	
 	{ MODKEY,                       XK_b,     			togglebar,      		{0} },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
+	TAGKEYS(XK_1, 0)
+	TAGKEYS(XK_2, 1)
+	TAGKEYS(XK_3, 2)
+	TAGKEYS(XK_4, 3)
 };
 
 /* button definitions */
@@ -121,18 +114,18 @@ static const Key keys[] = {
 static const Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkTagBar,            0,              Button1,        view,           		{0} },
-	{ ClkStatusText,          0,            Button1,        spawn,          		{.v = rofi } },
-	{ ClkStatusText,          0,            Button3, 	scratchpad_remove,		{0} },
-	{ ClkStatusText,          0,            Button4,        spawn, { .v = volumeup } },	
-	{ ClkStatusText,          0,            Button5,        spawn, { .v = volumedown } },	
-	{ ClkWinTitle,          0,              Button1,         spawn,          		{.v = rofi } },	
-	{ ClkWinTitle,          0,              Button3,        zoom,           {0} },
+	{ ClkStatusText,        0,            	Button1,        spawn,          		{.v = rofi } },
+	{ ClkStatusText,        0,            	Button3, 	scratchpad_remove,		{0} },
+	{ ClkStatusText,        0,            	Button4,        spawn, 				{ .v = volumeup } },	
+	{ ClkStatusText,        0,            	Button5,        spawn, 				{ .v = volumedown } },	
+	{ ClkWinTitle,          0,              Button1,        spawn,          		{.v = rofi } },	
+	{ ClkWinTitle,          0,              Button3,        zoom,           		{0} },
 	{ ClkRootWin,        	0,              Button1,        spawn,          		{.v = rofi } },	
 	{ ClkRootWin,        	0,              Button3,        spawn,          		SHCMD("thunar") },
 	{ ClkLtSymbol,        	0,              Button1,        cyclelayout,    		{.i = +1 } },
 	{ ClkLtSymbol,        	0,              Button3,        spawn,      			SHCMD("xfce4-screenshooter") },
-	{ ClkClientWin,         MODKEY,        Button1,        movemouse,      		{0} },
-	{ ClkClientWin,         MODKEY,        Button3,        resizemouse,    		{0} },
+	{ ClkClientWin,         MODKEY,        	Button1,        movemouse,      		{0} },
+	{ ClkClientWin,         MODKEY,        	Button3,        resizemouse,    		{0} },
 	
 };
 
