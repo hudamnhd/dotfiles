@@ -12,13 +12,13 @@ static const int systraypinningfailfirst = 0; /* 1: if pinning fails, display sy
 static const int showsystray = 1;			  /* 0 means no systray */
 static const int showbar = 1;				  /* 0 means no bar */
 static const int topbar = 1;				  /* 0 means bottom bar */
-static const char *fonts[] = { "JetBrainsMonoNL Nerd Font:size=9:ExtraBold" };
+static const char *fonts[] = { "JetBrains Mono:size=9:ExtraBold" };
 
 static int barheight;
 static char xresourcesfont[30];
 
 static char col_bg[] = "#121212";
-static char col_text[] = "#DFDFDF";
+static char col_text[] = "#FFFFFF";
 static char col_black[] = "#000000";
 
 static char col_bg_accent[] = "#384252";
@@ -108,15 +108,15 @@ static const char *windowcolors[2][7][3] = {
         [SchemeWinFocus] = {
             [ColFg] = col_text,
             [ColBg] = col_bg_accent,
-            [ColDetail] = col_light_blue,
+            [ColDetail] = col_bg_accent,
         },
         [SchemeWinNormal] = {
-            [ColFg] = col_text,
+            [ColFg] = "#AAAAAA",
             [ColBg] = col_bg_accent,
             [ColDetail] = col_bg_accent,
         },
         [SchemeWinMinimized] = {
-            [ ColFg ] = "#888888",
+            [ ColFg ] = col_light_yellow,
             [ ColBg ] = col_bg_accent,
             [ ColDetail ] = col_bg_accent,
         },
@@ -185,8 +185,8 @@ static const char *closebuttoncolors[2][3][3] = {
     [SchemeNoHover] = {
         [ SchemeCloseNormal ] = {
             [ColFg] = col_text,
-            [ColBg] = col_light_red,
-            [ColDetail] = col_red,
+            [ColBg] = col_light_blue,
+            [ColDetail] = col_blue,
         }, 
         [ SchemeCloseLocked ] = {
             [ ColFg ] = col_text, 
@@ -466,6 +466,7 @@ static Button buttons[] = {
 	{ ClkRootWin,		    0,                  Button3, spawn,             {.v = thunar } },
     { ClkClientWin,         MODKEY,             Button1, movemouse,         {0}},
 	{ ClkClientWin,         MODKEY,             Button3, resizemouse,       {0}},
+	{ ClkTagBar,      0,                  Button1, dragtag,           {0} },
 	{ ClkTagBar,            MODKEY,             Button1, tag,               {0} },
 	{ ClkTagBar,            MODKEYA,		    Button1, followtag,         {0} },
 	{ ClkShutDown,          0,                  Button1, spawn,             {.v = instantshutdowncmd } },
