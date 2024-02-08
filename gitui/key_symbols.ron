@@ -1,0 +1,5 @@
+(
+    enter: Some("CR"),
+    shift: Some("S-"),
+    tab: Some("TAB"),
+)
