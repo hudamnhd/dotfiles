@@ -16,7 +16,7 @@ local function normalize_path(buf_name, root)
   return Path:new(buf_name):make_relative(root)
 end
 
-map('n', '<C-H>', function()
+map('n', '<leader>h', function()
   local ui_opts = { ui_fallbkack_width = 4, ui_width_ratio = 0.35 }
 
   local curr_file =
@@ -27,7 +27,4 @@ map('n', '<C-H>', function()
   vim.cmd(cmd)
 end)
 
-map('n', '<leader>a', function()
-  harpoon:list():append()
-  print('Append in harpoon list success')
-end, { desc = 'Append in harpoon' })
+map('n', '<leader>a', function() harpoon:list():append() print('Append in harpoon list success') end, { desc = 'Append in harpoon' })

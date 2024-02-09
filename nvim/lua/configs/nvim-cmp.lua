@@ -481,8 +481,8 @@ cmp.setup({
   },
   sources = {
     { name = 'luasnip', max_item_count = 3 },
-    { name = 'nvim_lsp_signature_help' },
-    { name = 'nvim_lsp', max_item_count = 20 },
+    -- { name = 'nvim_lsp_signature_help' },
+    -- { name = 'nvim_lsp', max_item_count = 20 },
     {
       name = 'buffer',
       max_item_count = 8,

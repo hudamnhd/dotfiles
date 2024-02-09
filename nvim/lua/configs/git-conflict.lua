@@ -3,7 +3,7 @@ require('git-conflict').setup({
   default_mappings = {
     ours = 'c<',
     theirs = 'c>',
-    none = 'co',
+    none = 'c0',
     both = 'c.',
     next = ']x',
     prev = '[x',

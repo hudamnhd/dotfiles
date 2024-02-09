@@ -318,9 +318,9 @@ map.n("zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]],
 -- map.n("tpa", [[:lua require('utils').paste_text_to_register('a')<CR>]], { silent = true })
 
 -- emulate some basic commands from `vim-abolish`
-map.n("trt", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
-map.n("tru", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
-map.n("trl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
+map.n("ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
+map.n("cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
+map.n("cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
 
 -- disable default keybind
 map.n({
@@ -339,10 +339,10 @@ map.i("<C-L>", "<ESC>f=ww\"_ci'")
 
 -- tmux like directional window resizes
 -- stylua: ignore start
--- map.n("<C-Up>", "<cmd>lua require'utils'.resize(false, -5)<CR>", { silent = true, desc = "horizontal split increase" })
--- map.n("<C-Down>", "<cmd>lua require'utils'.resize(false,  4)<CR>", { silent = true, desc = "horizontal split decrease" })
--- map.n("<C-Left>", "<cmd>lua require'utils'.resize(true,  -5)<CR>", { silent = true, desc = "vertical split decrease" })
--- map.n("<C-Right>", "<cmd>lua require'utils'.resize(true,   5)<CR>", { silent = true, desc = "vertical split increase" })
+map.n("<C-Up>",    "<cmd>lua require'utils.other'.resize(false, -5)<CR>", { silent = true, desc = "horizontal split increase" })
+map.n("<C-Down>",  "<cmd>lua require'utils.other'.resize(false,  4)<CR>", { silent = true, desc = "horizontal split decrease" })
+map.n("<C-Left>",  "<cmd>lua require'utils.other'.resize(true,  -5)<CR>", { silent = true, desc = "vertical split decrease" })
+map.n("<C-Right>", "<cmd>lua require'utils.other'.resize(true,   5)<CR>", { silent = true, desc = "vertical split increase" })
 -- stylua: ignore end
 
 map.n("]d", "<cmd>lua vim.diagnostic.goto_next()<CR>")
@@ -403,7 +403,7 @@ end
 map.n("g<C-v>", "`[v`]", { desc = "visual select last yank/paste" })
 -- Only clear highlights and message area and don't redraw if search
 -- highlighting is on to avoid flickering
-map.nvi("<C-L>", function()
+map.n("<leader>n", function()
   return "<Cmd>nohlsearch|diffupdate|echo<CR>" .. (vim.v.hlsearch == 0 and "<leader>n" or "")
 end, { expr = true, desc = "Clear highlighting" })
 -- Use operator pending mode to visually select entire buffer, e.g.
