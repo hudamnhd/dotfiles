@@ -11,7 +11,7 @@ g.modern_ui = g.has_ui and vim.env.DISPLAY ~= nil
 -- stylua: ignore start
 opt.colorcolumn    = '+1'
 opt.cursorline     = true
--- opt.foldlevelstart = 99
+opt.foldlevelstart = 10
 opt.helpheight     = 10
 opt.showmode       = true
 opt.mousemoveevent = true
@@ -26,7 +26,7 @@ opt.splitright     = true
 opt.splitbelow     = true
 opt.swapfile       = false
 opt.undofile       = true
-opt.wrap           = true
+opt.wrap           = false
 opt.linebreak      = true
 opt.breakindent    = true
 opt.smoothscroll   = true

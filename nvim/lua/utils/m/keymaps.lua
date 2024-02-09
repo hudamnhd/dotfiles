@@ -239,7 +239,7 @@ map.x("<a-q>", mc_macro(mc_select), { expr = true, desc = "mc end or replay macr
 map.n("<leader>ss", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/g]] .. string.rep("<left>", 2), { desc = "search and replace word under cursor" })
 map.n("<leader>se", [[:%s/\V<C-r><C-a>/<C-r><C-a>/g]] .. string.rep("<left>", 1), { desc = "search and replace WORD under cursor" })
 
-map.x("<leader>ss", [[:<C-u>%s/\V<C-r>=luaeval("require'utils.other'.get_visual_selection(true)")<CR>/<C-r>=luaeval("require'utils'.get_visual_selection(true)")<CR>/g<Left><Left>]], {})
+map.x("<leader>ss", [[:<C-u>%s/\V<C-r>=luaeval("require'utils.other'.get_visual_selection(true)")<CR>/<C-r>=luaeval("require'utils.other'.get_visual_selection(true)")<CR>/g<Left><Left>]], {})
 map.n("<leader>sa", function() require("utils.other").globalSubstitute() end, { desc = " global substitute" })
 
 -- .nshortcut to view :messages

@@ -81,7 +81,7 @@ static uint64_t functionality = 0
 //	|Status2DNoAlpha // option to not use alpha when drawing status2d status
 	|BarBorder // draw a border around the bar
 	|BarPadding // add vertical and side padding as per vertpad and sidepad variables above
-//	|NoBorders // as per the noborder patch, show no border when only one client in tiled mode
+	|NoBorders // as per the noborder patch, show no border when only one client in tiled mode
 //	|Warp // warp cursor to currently focused window
 //	|DecorationHints // omit drawing the window border if the applications asks not to
 //	|FocusedOnTop // allows focused window to stay on top of other windows
@@ -95,7 +95,7 @@ static uint64_t functionality = 0
 	|SnapToWindows // snap to windows when moving floating clients
 //	|SortScreens // monitors are numbered from left to right
 //	|ViewOnWs // follow a window to the workspace it is being moved to
-	// |Xresources // add support for changing colours via Xresources
+	 |Xresources // add support for changing colours via Xresources
 //	|Debug // enables additional debug output
 //	|AltWorkspaceIcons // show the workspace name instead of the icons
 //	|GreedyMonitor // disables swap of workspaces between monitors
@@ -204,7 +204,7 @@ static char *colors[SchemeLast][4] = {
  * executed again when doing a restart. */
 static const char *const autostart[] = {
 	"st", NULL,
-	"/home/hudamnhd/dusk/autostart.sh", NULL,
+	"dusk/autostart.sh", NULL,
 	NULL /* terminate */
 };
 
@@ -489,14 +489,14 @@ static const char *spcmd_w[] = {"w", "st", "-n", "spterm (w)", "-g", "120x34", N
 static const char *spcmd_e[] = {"e", "st", "-n", "spterm (e)", "-g", "120x34", NULL };
 static const char *spcmd_r[] = {"r", "st", "-n", "spfm (r)", "-g", "144x41", "-e", "ranger", NULL };
 static const char *statusclickcmd[] = { NULL, "bin/statusbar/statusclick.sh", NULL };
-static const char *startmenucmd[] = { NULL, "/home/hudamnhd/.local/bin/rofi-custom", NULL };
+static const char *startmenucmd[] = { NULL, ".local/bin/rofi-custom", NULL };
 
 static const char *clipmenu[]   = { NULL, "clipmenu", NULL };
 static const char *volumedown[] = { NULL, "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%", NULL };
 static const char *volumeup[]   = { NULL, "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%", NULL };
 static const char *mute[]       = { NULL, "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
 static const char *rofipower[]  = { NULL, "rofi", "-show", "p", "-modi", "p:rofi-power-menu", "-me-select-entry", "", "-me-accept-entry", "MousePrimary",  NULL };
-static const char *screenshot[] = { NULL, "/home/hudamnhd/.local/bin/screenshot", NULL};
+static const char *screenshot[] = { NULL, ".local/bin/screenshot", NULL};
 
 static Key keys[] = {
 	/* type       modifier                      key              function                argument */

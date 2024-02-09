@@ -182,29 +182,29 @@ static char *colors[SchemeLast][4] = {
 	[SchemeFlexInaTTMI]  = { "#D9CFC5", "#492B2D", "#492B2D", "norm.TTMI" },
 	[SchemeFlexInaTTMIC] = { "#D9CFC5", "#492B2D", "#492B2D", "norm.TTMIC" },
 	[SchemeFlexInaFloat] = { "#D9CFC5", "#492B2D", "#643b3e", "norm.float" },
-	[SchemeFlexSelTTB]   = { "#D9CFC5", "#82363A", "#82363A", "sel.TTB" },
-	[SchemeFlexSelLTR]   = { "#D9CFC5", "#82363A", "#82363A", "sel.LTR" },
-	[SchemeFlexSelMONO]  = { "#D9CFC5", "#82363A", "#82363A", "sel.MONO" },
-	[SchemeFlexSelGRID]  = { "#D9CFC5", "#82363A", "#82363A", "sel.GRID" },
-	[SchemeFlexSelGRIDC] = { "#D9CFC5", "#82363A", "#82363A", "sel.GRIDC" },
-	[SchemeFlexSelGRD1]  = { "#D9CFC5", "#82363A", "#82363A", "sel.GRD1" },
-	[SchemeFlexSelGRD2]  = { "#D9CFC5", "#82363A", "#82363A", "sel.GRD2" },
-	[SchemeFlexSelGRDM]  = { "#D9CFC5", "#82363A", "#82363A", "sel.GRDM" },
-	[SchemeFlexSelHGRD]  = { "#D9CFC5", "#82363A", "#82363A", "sel.HGRD" },
-	[SchemeFlexSelDWDL]  = { "#D9CFC5", "#82363A", "#82363A", "sel.DWDL" },
-	[SchemeFlexSelDWDLC] = { "#D9CFC5", "#82363A", "#82363A", "sel.DWDLC" },
-	[SchemeFlexSelSPRL]  = { "#D9CFC5", "#82363A", "#82363A", "sel.SPRL" },
-	[SchemeFlexSelSPRLC] = { "#D9CFC5", "#82363A", "#82363A", "sel.SPRLC" },
-	[SchemeFlexSelTTMI]  = { "#D9CFC5", "#82363A", "#82363A", "sel.TTMI" },
-	[SchemeFlexSelTTMIC] = { "#D9CFC5", "#82363A", "#82363A", "sel.TTMIC" },
-	[SchemeFlexSelFloat] = { "#D9CFC5", "#82363A", "#82363A", "sel.float" },
+	[SchemeFlexSelTTB]   = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.TTB" },
+	[SchemeFlexSelLTR]   = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.LTR" },
+	[SchemeFlexSelMONO]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.MONO" },
+	[SchemeFlexSelGRID]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.GRID" },
+	[SchemeFlexSelGRIDC] = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.GRIDC" },
+	[SchemeFlexSelGRD1]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.GRD1" },
+	[SchemeFlexSelGRD2]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.GRD2" },
+	[SchemeFlexSelGRDM]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.GRDM" },
+	[SchemeFlexSelHGRD]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.HGRD" },
+	[SchemeFlexSelDWDL]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.DWDL" },
+	[SchemeFlexSelDWDLC] = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.DWDLC" },
+	[SchemeFlexSelSPRL]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.SPRL" },
+	[SchemeFlexSelSPRLC] = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.SPRLC" },
+	[SchemeFlexSelTTMI]  = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.TTMI" },
+	[SchemeFlexSelTTMIC] = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.TTMIC" },
+	[SchemeFlexSelFloat] = { "#D9CFC5", "#82363A", "#D9CFC5", "sel.float" },
 };
 
 /* List of programs to start automatically during startup only. Note that these will not be
  * executed again when doing a restart. */
 static const char *const autostart[] = {
 	"st", NULL,
-	"/home/hudamnhd/dusk/autostart.sh", NULL,
+	"dusk/autostart.sh", NULL,
 	NULL /* terminate */
 };
 
@@ -489,14 +489,14 @@ static const char *spcmd_w[] = {"w", "st", "-n", "spterm (w)", "-g", "120x34", N
 static const char *spcmd_e[] = {"e", "st", "-n", "spterm (e)", "-g", "120x34", NULL };
 static const char *spcmd_r[] = {"r", "st", "-n", "spfm (r)", "-g", "144x41", "-e", "ranger", NULL };
 static const char *statusclickcmd[] = { NULL, "bin/statusbar/statusclick.sh", NULL };
-static const char *startmenucmd[] = { NULL, "/home/hudamnhd/.local/bin/rofi-custom", NULL };
+static const char *startmenucmd[] = { NULL, ".local/bin/rofi-custom", NULL };
 
 static const char *clipmenu[]   = { NULL, "clipmenu", NULL };
 static const char *volumedown[] = { NULL, "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%", NULL };
 static const char *volumeup[]   = { NULL, "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%", NULL };
 static const char *mute[]       = { NULL, "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
 static const char *rofipower[]  = { NULL, "rofi", "-show", "p", "-modi", "p:rofi-power-menu", "-me-select-entry", "", "-me-accept-entry", "MousePrimary",  NULL };
-static const char *screenshot[] = { NULL, "/home/hudamnhd/.local/bin/screenshot", NULL};
+static const char *screenshot[] = { NULL, ".local/bin/screenshot", NULL};
 
 static Key keys[] = {
 	/* type       modifier                      key              function                argument */
@@ -580,46 +580,6 @@ static Key keys[] = {
 	WSKEYS(MODKEY,                              XK_8, "8")
 	WSKEYS(MODKEY,                              XK_9, "9")
 
-	//	STACKKEYS(AltGr|Ctrl,                                        stackfocus)                           // focus on the nth client in the stack, see the STACKKEYS macro for keybindings
-	//	STACKKEYS(AltGr|Ctrl|Shift,                                  stackpush)                            // move the currently focused client to the nth place in the stack
-	//	STACKKEYS(AltGr|Shift,                                       stackswap)                            // swap the currently focused client with the nth client in the stack
-
-	// { KeyPress,   MODKEY,                       XK_comma,        viewwsdir,              {.i = -2 } }, // view the next workspace left of current workspace that has clients (on the current monitor)
-	// { KeyPress,   MODKEY,                       XK_period,       viewwsdir,              {.i = +2 } }, // view the next workspace right of current workspace that has clients (on the current monitor)
-	// { KeyPress,   MODKEY|Ctrl,       XK_m,            mirrorlayout,           {0} }, // flip the master and stack areas
-	// { KeyPress,   MODKEY|Shift,      XK_Tab,          viewwsdir,              {.i = -2 } }, // view the next workspace left of current workspace that has clients (on the current monitor)
-	// { KeyPress,   MODKEY|Shift,      XK_Down,         setcfact,               {.f = -0.05} }, // decrease the size of the master area compared to the stack area(s)
-	// { KeyPress,   MODKEY|Shift,      XK_Up,           setcfact,               {.f = +0.05} }, // increase the size of the master area compared to the stack area(s)
-	// { KeyPress,   MODKEY|Shift,      XK_o,            setcfact,               {0} },
-	// { KeyPress,   MODKEY|Shift,                 XK_comma,        focusmon,               {.i = -1 } }, // focus on the previous monitor, if any
-	// { KeyPress,   MODKEY|Shift,                 XK_period,       focusmon,               {.i = +1 } }, // focus on the next monitor, if any
-	// { KeyPress,   MODKEY,                       XK_backslash,    togglepinnedws,         {0} }, // toggle pinning of currently selected workspace on the current monitor
-	// { KeyPress,   MODKEY|Ctrl,                  XK_Left,         placedir,               {.i = 0 } }, // swap places with the client window on the immediate left of the current client
-	// { KeyPress,   MODKEY|Ctrl,                  XK_Right,        placedir,               {.i = 1 } }, // swap places with the client window on the immediate right of the current client
-	// { KeyPress,   MODKEY|Ctrl,                  XK_Up,           placedir,               {.i = 2 } }, // swap places with the client window on the immediate up of the current client
-	// { KeyPress,   MODKEY|Ctrl,                  XK_Down,         placedir,               {.i = 3 } }, // swap places with the client window on the immediate down of the current client
-	// { KeyPress,   MODKEY,                       XK_j,            focusstack,             {.i = +1 } }, // focus on the next client in the stack
-	// { KeyPress,   MODKEY,                       XK_k,            focusstack,             {.i = -1 } }, // focus on the previous client in the stack
-	// { KeyPress,   MODKEY|Alt|Shift,             XK_j,            focusstack,             {.i = +2 } }, // allows focusing on hidden clients
-	// { KeyPress,   MODKEY|Alt|Shift,             XK_k,            focusstack,             {.i = -2 } }, // allows focusing on hidden clients
-	// { KeyPress,   MODKEY,                       XK_Left,         focusdir,               {.i = 0 } }, // focus on the client left of the currently focused client
-	// { KeyPress,   MODKEY,                       XK_Right,        focusdir,               {.i = 1 } }, // focus on the client right of the currently focused client
-	// { KeyPress,   MODKEY,                       XK_Up,           focusdir,               {.i = 2 } }, // focus on the client above the currently focused client
-	// { KeyPress,   MODKEY,                       XK_Down,         focusdir,               {.i = 3 } }, // focus on the client below the currently focused client
-	// { KeyPress,   MODKEY,                       XK_v,            group,                  {0} }, // groups floating clients together
-	// { KeyPress,   MODKEY|Shift,                 XK_v,            ungroup,                {0} }, // ungroups floating clients
-
-	// { KeyPress,   MODKEY|Ctrl,                  XK_a,            markall,                {1} }, // marks all floating clients on the selected workspace
-	// { KeyPress,   MODKEY|Ctrl,                  XK_j,            pushdown,               {0} }, // move the selected client down the stack
-	// { KeyPress,   MODKEY|Ctrl,                  XK_k,            pushup,                 {0} }, // move the selected client up the stack
-	// { KeyPress,   MODKEY|Shift,                 XK_f,            togglefakefullscreen,   {0} }, // toggles "fake" fullscreen for the selected window
-	// { KeyPress,   Ctrl|Alt,                     XK_Tab,          togglenomodbuttons,     {0} }, // disables / enables keybindings that are not accompanied by any modifier buttons for a client
-	// { KeyPress,   MODKEY|Shift,                 XK_equal,        changeopacity,          {.f = +0.05 } }, // increase the client opacity (for compositors that support _NET_WM_OPACITY)
-	// { KeyPress,   MODKEY|Shift,                 XK_minus,        changeopacity,          {.f = -0.05 } }, // decrease the client opacity (for compositors that support _NET_WM_OPACITY)
-	// { KeyPress,   MODKEY|Alt,                   XK_comma,        clienttomon,            {.i = -1 } }, // sends the current client to an adjacent monitor
-	// { KeyPress,   MODKEY|Alt,                   XK_period,       clienttomon,            {.i = +1 } }, // sends the current client to an adjacent monitor
-	// { KeyPress,   MODKEY|Alt|Shift,             XK_comma,        clientstomon,           {.i = +1 } }, // sends all clients to an adjacent monitor
-	// { KeyPress,   MODKEY|Alt|Shift,             XK_period,       clientstomon,           {.i = -1 } }, // sends all clients to an adjacent monitor
 
 };
 
@@ -767,3 +727,45 @@ static IPCCommand ipccommands[] = {
 	IPCCOMMAND( xrdb, ARG_TYPE_NONE ), // reload xrdb / Xresources
 	IPCCOMMAND( zoom, ARG_TYPE_NONE ),
 };
+
+
+	//	STACKKEYS(AltGr|Ctrl,                                        stackfocus)                           // focus on the nth client in the stack, see the STACKKEYS macro for keybindings
+	//	STACKKEYS(AltGr|Ctrl|Shift,                                  stackpush)                            // move the currently focused client to the nth place in the stack
+	//	STACKKEYS(AltGr|Shift,                                       stackswap)                            // swap the currently focused client with the nth client in the stack
+
+	// { KeyPress,   MODKEY,                       XK_comma,        viewwsdir,              {.i = -2 } }, // view the next workspace left of current workspace that has clients (on the current monitor)
+	// { KeyPress,   MODKEY,                       XK_period,       viewwsdir,              {.i = +2 } }, // view the next workspace right of current workspace that has clients (on the current monitor)
+	// { KeyPress,   MODKEY|Ctrl,       XK_m,            mirrorlayout,           {0} }, // flip the master and stack areas
+	// { KeyPress,   MODKEY|Shift,      XK_Tab,          viewwsdir,              {.i = -2 } }, // view the next workspace left of current workspace that has clients (on the current monitor)
+	// { KeyPress,   MODKEY|Shift,      XK_Down,         setcfact,               {.f = -0.05} }, // decrease the size of the master area compared to the stack area(s)
+	// { KeyPress,   MODKEY|Shift,      XK_Up,           setcfact,               {.f = +0.05} }, // increase the size of the master area compared to the stack area(s)
+	// { KeyPress,   MODKEY|Shift,      XK_o,            setcfact,               {0} },
+	// { KeyPress,   MODKEY|Shift,                 XK_comma,        focusmon,               {.i = -1 } }, // focus on the previous monitor, if any
+	// { KeyPress,   MODKEY|Shift,                 XK_period,       focusmon,               {.i = +1 } }, // focus on the next monitor, if any
+	// { KeyPress,   MODKEY,                       XK_backslash,    togglepinnedws,         {0} }, // toggle pinning of currently selected workspace on the current monitor
+	// { KeyPress,   MODKEY|Ctrl,                  XK_Left,         placedir,               {.i = 0 } }, // swap places with the client window on the immediate left of the current client
+	// { KeyPress,   MODKEY|Ctrl,                  XK_Right,        placedir,               {.i = 1 } }, // swap places with the client window on the immediate right of the current client
+	// { KeyPress,   MODKEY|Ctrl,                  XK_Up,           placedir,               {.i = 2 } }, // swap places with the client window on the immediate up of the current client
+	// { KeyPress,   MODKEY|Ctrl,                  XK_Down,         placedir,               {.i = 3 } }, // swap places with the client window on the immediate down of the current client
+	// { KeyPress,   MODKEY,                       XK_j,            focusstack,             {.i = +1 } }, // focus on the next client in the stack
+	// { KeyPress,   MODKEY,                       XK_k,            focusstack,             {.i = -1 } }, // focus on the previous client in the stack
+	// { KeyPress,   MODKEY|Alt|Shift,             XK_j,            focusstack,             {.i = +2 } }, // allows focusing on hidden clients
+	// { KeyPress,   MODKEY|Alt|Shift,             XK_k,            focusstack,             {.i = -2 } }, // allows focusing on hidden clients
+	// { KeyPress,   MODKEY,                       XK_Left,         focusdir,               {.i = 0 } }, // focus on the client left of the currently focused client
+	// { KeyPress,   MODKEY,                       XK_Right,        focusdir,               {.i = 1 } }, // focus on the client right of the currently focused client
+	// { KeyPress,   MODKEY,                       XK_Up,           focusdir,               {.i = 2 } }, // focus on the client above the currently focused client
+	// { KeyPress,   MODKEY,                       XK_Down,         focusdir,               {.i = 3 } }, // focus on the client below the currently focused client
+	// { KeyPress,   MODKEY,                       XK_v,            group,                  {0} }, // groups floating clients together
+	// { KeyPress,   MODKEY|Shift,                 XK_v,            ungroup,                {0} }, // ungroups floating clients
+
+	// { KeyPress,   MODKEY|Ctrl,                  XK_a,            markall,                {1} }, // marks all floating clients on the selected workspace
+	// { KeyPress,   MODKEY|Ctrl,                  XK_j,            pushdown,               {0} }, // move the selected client down the stack
+	// { KeyPress,   MODKEY|Ctrl,                  XK_k,            pushup,                 {0} }, // move the selected client up the stack
+	// { KeyPress,   MODKEY|Shift,                 XK_f,            togglefakefullscreen,   {0} }, // toggles "fake" fullscreen for the selected window
+	// { KeyPress,   Ctrl|Alt,                     XK_Tab,          togglenomodbuttons,     {0} }, // disables / enables keybindings that are not accompanied by any modifier buttons for a client
+	// { KeyPress,   MODKEY|Shift,                 XK_equal,        changeopacity,          {.f = +0.05 } }, // increase the client opacity (for compositors that support _NET_WM_OPACITY)
+	// { KeyPress,   MODKEY|Shift,                 XK_minus,        changeopacity,          {.f = -0.05 } }, // decrease the client opacity (for compositors that support _NET_WM_OPACITY)
+	// { KeyPress,   MODKEY|Alt,                   XK_comma,        clienttomon,            {.i = -1 } }, // sends the current client to an adjacent monitor
+	// { KeyPress,   MODKEY|Alt,                   XK_period,       clienttomon,            {.i = +1 } }, // sends the current client to an adjacent monitor
+	// { KeyPress,   MODKEY|Alt|Shift,             XK_comma,        clientstomon,           {.i = +1 } }, // sends all clients to an adjacent monitor
+	// { KeyPress,   MODKEY|Alt|Shift,             XK_period,       clientstomon,           {.i = -1 } }, // sends all clients to an adjacent monitor
