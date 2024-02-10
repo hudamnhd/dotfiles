@@ -11,13 +11,12 @@ map.x({ ["<"] = "<gv", [">"] = ">gv" })
 map.n({
   ["<leader>q"] = [[:Bq<CR>]],
   ["zq"] = [[:wq!<CR>]],
-  ["zQ"] = [[:q!<CR>]],
 })
 
 do
   local buf = lazy.require("utils.m.buf")
   map.n({
-    ["b"] = -buf.go(lazy.vim.v.count1),
+    ["b"] = -buf.gobuf(lazy.vim.v.count), -- if no count auto move buff alternate
     ["w"] = -buf.next(lazy.vim.v.count1),
     ["q"] = -buf.prev(lazy.vim.v.count1),
     ["W"] = -buf.move_right(lazy.vim.v.count1),
@@ -26,7 +25,6 @@ do
 end
 
 map.n("s<C-G>", "2<C-G>")
-map.n("<BS>", "<C-6>")
 
 -- FILES ---------------------------------------------------------------------------------
 map.n({
@@ -63,7 +61,6 @@ map.x({
 -- stylua: ignore end
 -- Insert stuff
 map.i({
-  ['<C-R><C-D>']   = [[<C-R>=m#bufdir()<CR>]],
   ["<C-R><C-T>"] = [[<C-R>=strftime('%Y-%m-%d %H:%M:%S')<CR>]],
   ["<C-R><C-K>"] = [[<C-K>]],
   ["<C-R><C-Y>"] = [[<C-R>"]],
@@ -108,18 +105,28 @@ map.c({
 
 -- other
 map.n({
-  ["i"] = [[a]],
-  ["s;"] = [[:]],
-  ["d;"] = [[q:]],
-  ["<Tab>"] = [[g;]],
+  ["i"]     = [[a]],
+  ["s;"]    = [[:]],
+  ["d;"]    = [[q:]],
+  ["<Tab>"] = [[g;zvzz]],
 })
 
+map.n("i", function()
+  if #vim.fn.getline "." == 0 then
+    return [["_cc]]
+  else
+    return "i"
+  end
+end, { expr = true })
+
 map.n({
-  ["<C-W>"] = [[<C-W>w]],
+  ["e"] = [[E]],
+  ["E"] = [[B]],
   ["<leader>w"] = [[<C-W>]],
+  ["<C-W>"] = [[<C-W>w]],
 })
 
-map.n({
+map.vn({
   ["H"] = [[^]],
   ["L"] = [[$]],
 })
@@ -132,54 +139,32 @@ map.x({
 map.n({
   ["<C-D>"] = [[<C-D>zz]],
   ["<C-U>"] = [[<C-U>zz]],
-  ["<C-J>"] = [[<C-D>zz]],
-  ["<C-K>"] = [[<C-U>zz]],
+  ["{"] = [[{zz]],
+  ["}"] = [[}zz]],
 })
 
 map.n({
-  ["s'"]  = [[vi']],
-  ["si'"] = [[yi']],
-  ["ri'"] = [[vi'\"_dP]],
-})
-
-map.n({
-  ['s"']  = [[vi"]],
-  ['si"'] = [[yi"]],
-  ["ri"]  = [[vi""_dP]],
-})
-
-map.n({
-  ["st"] = [[vit]],
   ["yt"] = [[yit]],
-})
-
-map.n({
   ["rt"] = [[vit"_dP]],
   ["rat"] = [[vat"_dP]],
 })
 
 map.n({
-  ["sw"] = [[viw]],
-  ["sW"] = [[viw]],
   ["yw"] = [[yiw]],
   ["rw"] = [[viw"_dP]],
 })
 
-map.n({
-  ["s("] =  "vi(",
-  ["si("] = "vi(y",
-  ["ri("] = 'vi("_dP',
+map.v({
+  ["w"] = [[iw]],
+  ["W"] = [[iW]],
+  ["t"] = [[it]],
+  ["T"] = [[at]],
+  ["'"] = [[i']],
+  ['"'] = [[i"]],
 })
-
-map.n({
-  ["s{"] =  "vi{",
-  ["si{"] = "vi{y",
-  ["ri{"] = 'vi{"_dP',
-})
-
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~ multiple cursors (sort of) ~
+-- ~ multiple cusors (sort of) ~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- see: http://www.kevinli.co/posts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript
 
@@ -236,11 +221,11 @@ map.x("<a-q>", mc_macro(mc_select), { expr = true, desc = "mc end or replay macr
 
 -- stylua: ignore start
 
-map.n("<leader>ss", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/g]] .. string.rep("<left>", 2), { desc = "search and replace word under cursor" })
-map.n("<leader>se", [[:%s/\V<C-r><C-a>/<C-r><C-a>/g]] .. string.rep("<left>", 1), { desc = "search and replace WORD under cursor" })
 
-map.x("<leader>ss", [[:<C-u>%s/\V<C-r>=luaeval("require'utils.other'.get_visual_selection(true)")<CR>/<C-r>=luaeval("require'utils.other'.get_visual_selection(true)")<CR>/g<Left><Left>]], {})
-map.n("<leader>sa", function() require("utils.other").globalSubstitute() end, { desc = " global substitute" })
+-- map.n("cs", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/g]] .. string.rep("<left>", 2), { desc = "search and replace word under cursor" })
+-- map.x("cs", [[:<C-u>%s/\V<C-r>=luaeval("require'utils.other'.get_visual_selection(true)")<CR>/<C-r>=luaeval("require'utils.other'.get_visual_selection(true)")<CR>/g<Left><Left>]], {})
+-- map.n("cS", [[:%s/\V<C-r><C-a>/<C-r><C-a>/g]] .. string.rep("<left>", 1), { desc = "search and replace WORD under cursor" })
+
 
 -- .nshortcut to view :messages
 map.nx("<leader>m", "<cmd>messages<CR>", { desc = "open :messages" })
@@ -248,10 +233,17 @@ map.nx("<leader>M", [[<cmd>mes clear|echo "cleared :messages"<CR>]], { desc = "c
 -- .nstylua: ignore end
 
 -- .n<ctrl-s> to Save
-map.nvi("<C-S>", "<esc>:update<cr>", { silent = true, desc = "Save" })
+map.ni("<C-S>", "<esc>:update<cr>", { silent = true, desc = "Save" })
 
--- .nw!! to save with sudo
--- .nmap("c", "w!!", "<esc>:lua require'utils'.sudo_write()<CR>", { silent = true })
+-- SearchReplace with plugin
+map.n("z<C-H>", "<CMD>SearchReplaceSingleBufferCWORD<CR>")
+map.n("<C-H>", "<CMD>SearchReplaceSingleBufferCWord<CR>")
+map.v("<C-H>", "<CMD>SearchReplaceSingleBufferVisualSelection<CR>")
+map.v("<C-B>", "<CMD>SearchReplaceWithinVisualSelectionCWord<CR>")
+map.v("<C-R>", "<CMD>SearchReplaceWithinVisualSelection<CR>")
+
+-- w!! to save with sudo
+-- nmap("c", "w!!", "<esc>:lua require'utils'.sudo_write()<CR>", { silent = true })
 
 -- .nQuickfix list mappings
 map.n("sq", "<cmd>lua require'utils.other'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
@@ -315,7 +307,7 @@ map.n("zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]],
 -- stylua: ignore end
 
 -- Custom
--- map.n("tpa", [[:lua require('utils').paste_text_to_register('a')<CR>]], { silent = true })
+map.n("tpa", [[:lua require('utils').paste_text_to_register('a')<CR>]], { silent = true })
 
 -- emulate some basic commands from `vim-abolish`
 map.n("ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
@@ -375,16 +367,16 @@ for _, c in ipairs({
 end
 -- move along visual lines, not numbered ones
 -- without interferring with {count}<down|up>
-for _, c in ipairs({
-  { "k", "<up>", "Visual line up" },
-  { "j", "<down>", "Visual line down" },
-}) do
-  map.nv(
-    c[1],
-    ([[v:count == 0 ? 'g%s' : '%s']]):format(c[2], c[2]),
-    { expr = true, silent = true, desc = c[3] }
-  )
-end
+-- for _, c in ipairs({
+--   { "k", "<up>", "Visual line up" },
+--   { "j", "<down>", "Visual line down" },
+-- }) do
+--   map.nv(
+--     c[1],
+--     ([[v:count == 0 ? 'g%s' : '%s']]):format(c[2], c[2]),
+--     { expr = true, silent = true, desc = c[3] }
+--   )
+-- end
 
 for k, v in pairs({ ["<down>"] = "<C-n>", ["<up>"] = "<C-p>" }) do
   map.c(k, function()

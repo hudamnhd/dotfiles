@@ -1,13 +1,5 @@
 return {
   {
-    'kevinhwang91/nvim-bqf',
-    ft = 'qf',
-    dependencies = {
-      { 'junegunn/fzf', build = ':call fzf#install()' },
-    },
-  },
-
-  {
     'kevinhwang91/nvim-fundo',
     dependencies = 'kevinhwang91/promise-async',
     build = function()
@@ -53,6 +45,14 @@ return {
   },
 
   {
+    'nvim-focus/focus.nvim',
+    version = '*',
+    config = function()
+      require('focus').setup()
+    end,
+  },
+
+  {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
     event = 'VeryLazy',
@@ -62,13 +62,17 @@ return {
   },
 
   {
+    'ThePrimeagen/vim-be-good',
+    event = 'VeryLazy',
+    config = function() end,
+  },
+
+  {
     'AndrewRadev/simple_bookmarks.vim',
     event = { 'VimEnter' },
     config = function()
       vim.keymap.set('n', '<leader>ba', ':BookmarkAdd<space>')
-      vim.keymap.set('n', '<leader>bg', ':BookmarkGo<space>')
-      vim.keymap.set('n', '<leader>bx', ':BookmarkDel<space>')
-      vim.keymap.set('n', '<leader>bl', ':BookmarkQf<CR>')
+      vim.keymap.set('n', '<leader>bb', ':BookmarkQf<CR>')
     end,
   },
 
@@ -78,7 +82,7 @@ return {
     config = function()
       require('bufdel').setup({ next = 'alternate', quit = false })
       vim.keymap.set('n', '<leader>bd', '<CMD>BufDelOthers<CR>')
-      vim.keymap.set('n', '<leader>bq', '<CMD>BufDelAll<CR>')
+      vim.keymap.set('n', '<leader>bD', '<CMD>BufDelAll<CR>')
     end,
   },
 }

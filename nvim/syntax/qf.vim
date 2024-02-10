@@ -16,24 +16,24 @@ hi def link qfFileName Directory
 hi def link qfLineNr   LineNr
 
 " Extended syntax to include additional keywords.
-syn match qfError   "\<\(E\|ERROR\|error\)\>"              contained
-syn match qfInfo    "\<\(I\|INFO\|info\)\>"                contained
-syn match qfNote    "\<\(N\|H\|NOTE\|HINT\|note\|hint\)\>" contained
-syn match qfWarning "\<\(W\|WARN\|warning\)\>"             contained
+" syn match qfError   "\<\(E\|ERROR\|error\)\>"              contained
+" syn match qfInfo    "\<\(I\|INFO\|info\)\>"                contained
+" syn match qfNote    "\<\(N\|H\|NOTE\|HINT\|note\|hint\)\>" contained
+" syn match qfWarning "\<\(W\|WARN\|warning\)\>"             contained
+"
+" hi def link qfError   DiagnosticSignError
+" hi def link qfInfo    DiagnosticSignInfo
+" hi def link qfNote    DiagnosticSignHint
+" hi def link qfWarning DiagnosticSignWarn
 
-hi def link qfError   DiagnosticSignError
-hi def link qfInfo    DiagnosticSignInfo
-hi def link qfNote    DiagnosticSignHint
-hi def link qfWarning DiagnosticSignWarn
+" syn match qfMsgError   "\(\<\(E\|ERROR\|error\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
+" syn match qfMsgInfo    "\(\<\(I\|INFO\|info\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
+" syn match qfMsgNote    "\(\<\(N\|H\|NOTE\|HINT\|note\|hint\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
+" syn match qfMsgWarning "\(\<\(W\|WARN\|warning\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
 
-syn match qfMsgError   "\(\<\(E\|ERROR\|error\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
-syn match qfMsgInfo    "\(\<\(I\|INFO\|info\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
-syn match qfMsgNote    "\(\<\(N\|H\|NOTE\|HINT\|note\|hint\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
-syn match qfMsgWarning "\(\<\(W\|WARN\|warning\)\>\s*[|│ ]\s*\)\@<=[^|│ ]\{-}$"
-
-hi def link qfMsgError   NonText
-hi def link qfMsgInfo    NonText
-hi def link qfMsgNote    NonText
-hi def link qfMsgWarning NonText
+" hi def link qfMsgError   NonText
+" hi def link qfMsgInfo    NonText
+" hi def link qfMsgNote    NonText
+" hi def link qfMsgWarning NonText
 
 let b:current_syntax = "qf"

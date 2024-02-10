@@ -1,5 +1,5 @@
 # xrandr --output DisplayPort-0  --brightness 0.5 &
-xrandr --output HDMI-A-0  --brightness 0.5 &
+xrandr --output HDMI-A-0  --brightness 0.45 &
 setxkbmap -layout "us"&
 xset r rate 250 60 &
 nitrogen --restore &

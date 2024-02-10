@@ -51,12 +51,10 @@ return {
   {
     'thinca/vim-partedit',
     keys = {
-      { '<c-e>', mode = { 'n', 'x' } },
-      { '<a-e>', mode = { 'n', 'x' } },
+      { '<C-S>', mode = { 'v' } },
     },
     config = function()
-      vim.keymap.set({ 'n', 'x' }, '<c-e>', ':Partedit<CR>')
-      vim.keymap.set({ 'n', 'x' }, '<a-e>', ':ParteditEnd<CR>')
+      vim.keymap.set( 'v', '<C-S>', ':Partedit<CR>', { silent = true, desc = 'Edit' })
     end,
   },
 
@@ -128,6 +126,36 @@ return {
     event = { 'VeryLazy' },
     config = function()
       require('configs.hop')
+    end,
+  },
+  {
+    'rainbowhxch/accelerated-jk.nvim',
+    event = { 'VeryLazy' },
+    config = function()
+      require('accelerated-jk').setup({
+        mode = 'time_driven',
+        enable_deceleration = false,
+        acceleration_motions = { 'l', 'h' },
+        acceleration_limit = 150,
+        acceleration_table = { 7, 12, 17, 21, 24, 26, 28, 30 },
+        -- when 'enable_deceleration = true', 'deceleration_table = { {200, 3}, {300, 7}, {450, 11}, {600, 15}, {750, 21}, {900, 9999} }'
+        deceleration_table = { { 150, 9999 } },
+      })
+      vim.api.nvim_set_keymap('n', 'j', '<Plug>(accelerated_jk_gj)', {})
+      vim.api.nvim_set_keymap('n', 'k', '<Plug>(accelerated_jk_gk)', {})
+    end,
+  },
+
+  {
+    'roobert/search-replace.nvim',
+    config = function()
+      require('search-replace').setup({
+        -- optionally override defaults
+        default_replace_single_buffer_options = 'gcI',
+        default_replace_multi_buffer_options = 'egcI',
+      })
+
+      vim.o.inccommand = 'split'
     end,
   },
 }

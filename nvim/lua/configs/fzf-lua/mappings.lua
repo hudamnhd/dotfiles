@@ -46,9 +46,7 @@ map_fzf("n", "sH", "oldfiles", { desc = "file history (all)", cwd = "~", cwd_hea
 
 map_fzf("n", "sh", "buffers", { desc = "Fzf buffers" })
 
-map_fzf("n", "sfp", "workdirs", { desc = "cwd workdirs" })
-
-map_fzf("n", "sfy", "registers", { desc = "registers" })
+map_fzf("n", "<F12>", "workdirs", { desc = "cwd workdirs" })
 
 map_fzf("v", "sk", "grep_visual", { desc = "grep visual selection" })
 map_fzf("n", "sk", "grep_cword", { desc = "grep <word> (project)" })
@@ -58,15 +56,19 @@ map_fzf("n", "sl", "grep_curbuf", function() return { desc = "grep <word> (buffe
 map_fzf("n", "sL", "grep_curbuf", function() return { desc = "grep <WORD> (buffer)", prompt = "Buffer❯ ", search = vim.fn.expand("<cWORD>"), } end)
 map_fzf("x", "sl", "grep_curbuf", function() return { desc = "grep <WORD> (buffer)", prompt = "Buffer❯ ", search = require'utils.other'.get_visual_selection(true), } end)
 
-map_fzf("n", "<leader>sl", "blines", function() return { desc = "blines <word>", fzf_opts = { ["--query"] = vim.fn.expand("<cword>") }, } end)
-map_fzf("n", "<leader>sk", "lines", function() return { desc = "lines <word>", fzf_opts = { ["--query"] = vim.fn.expand("<cword>") }, } end)
-
 map_fzf("n", "sR", "grep", { desc = "grep string resume", resume = true })
 map_fzf("n", "sr",  "grep", { desc = "grep string (prompt)" })
+
+map_fzf("n", "<leader>sl", "blines", function() return { desc = "blines <word>", fzf_opts = { ["--query"] = vim.fn.expand("<cword>") }, } end)
+map_fzf("n", "<leader>sk", "lines", function() return { desc = "lines <word>", fzf_opts = { ["--query"] = vim.fn.expand("<cword>") }, } end)
 
 map_fzf("n", "<leader>sR", "live_grep", { desc = "live grep resume", resume = true })
 map_fzf("n", "<leader>sr", "live_grep", { desc = "live grep (project)" })
 
+map_fzf("n", "<leader>sq", "quickfix", { desc = "quickfix list" })
+map_fzf("n", "<leader>sQ", "loclist", { desc = "location list" })
+
+map_fzf("n", "<leader>sy", "registers", { desc = "registers" })
 
 map_fzf("n", "z=", "spell_suggest", {
   desc = "spell suggestions",
@@ -80,8 +82,7 @@ map_fzf("n", "z=", "spell_suggest", {
   }
 })
 
--- map_fzf("n", "sfq", "quickfix", { desc = "quickfix list" })
--- map_fzf("n", "sfl", "loclist", { desc = "location list" })
+
 -- map_fzf("n", "sfT", "tags", { desc = "tags (project)" })
 -- map_fzf("n", "sft", "btags", { desc = "tags (buffer)" })
 -- map_fzf("n", "sfP", "profiles", { desc = "fzf-lua profiles" })

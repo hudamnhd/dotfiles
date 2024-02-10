@@ -364,7 +364,7 @@ augroup('SpecialBufHl', {
     desc = 'Set special buffer normal hl.',
     callback = function()
       local hl = require('utils.hl')
-      local blended = hl.blend('Normal', 'CursorLine')
+      local blended = hl.blend('Normal', 'Normal')
       hl.set_default(0, 'NormalSpecial', blended)
     end,
   },
@@ -535,11 +535,10 @@ augroup('Help', {
 })
 
 augroup('ChangeFileType', {
-  { 'BufRead','BufWritePre' },
+  { 'BufRead', 'BufWritePre' },
   {
     pattern = '*.blade.php',
     desc = 'Set balde to php syntax',
-    command = "setlocal ft=php",
+    command = 'setlocal ft=php',
   },
 })
-

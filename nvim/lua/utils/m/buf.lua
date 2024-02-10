@@ -52,7 +52,6 @@ local function validate_bufnr(bufnr)
   end
 end
 
-
 do
   local function add(bufnr)
     bufnr = validate_bufnr(bufnr)
@@ -61,7 +60,7 @@ do
         return
       end
     end
-    list[#list+1] = bufnr
+    list[#list + 1] = bufnr
     doautocmd('BuflistUpdate', { added = { bufnr } })
   end
 
@@ -111,15 +110,28 @@ do
   })
 end
 
-
 ---Go to buffer at index
 ---@param idx number
 function buf.go(idx)
   assert(type(idx) == 'number', 'expected number')
 
-  idx = ((idx - 1) % #list) + 1
-  if list[idx] then
-    api.nvim_set_current_buf(list[idx])
+    idx = ((idx - 1) % #list) + 1
+    if list[idx] then
+      api.nvim_set_current_buf(list[idx])
+    end
+  end
+
+---Go to buffer at index
+---@param idx number
+function buf.gobuf(idx)
+  assert(type(idx) == 'number', 'expected number')
+  if idx == 0 then
+    vim.api.nvim_input('<C-6>')
+  else
+    idx = ((idx - 1) % #list) + 1
+    if list[idx] then
+      api.nvim_set_current_buf(list[idx])
+    end
   end
 end
 
@@ -166,7 +178,9 @@ end
 do
   local function move(n)
     local idx = buf.index()
-    if not idx then return end
+    if not idx then
+      return
+    end
     local nidx = ((idx + n - 1) % #list) + 1
     if idx ~= nidx then
       table.insert(list, nidx, table.remove(list, idx))
@@ -202,8 +216,8 @@ function buf.update()
     if idx then
       prev[bufnr] = nil
     else
-      list[#list+1] = bufnr
-      added[#added+1] = bufnr
+      list[#list + 1] = bufnr
+      added[#added + 1] = bufnr
     end
   end
 
@@ -211,8 +225,8 @@ function buf.update()
   local del = {}
   local removed = {}
   for bufnr, idx in pairs(prev) do
-    del[#del+1] = idx
-    removed[#removed+1] = bufnr
+    del[#del + 1] = idx
+    removed[#removed + 1] = bufnr
   end
   table.sort(del)
   for i = #del, 1, -1 do

@@ -127,12 +127,12 @@ end
 
 vim.env.FZF_DEFAULT_OPTS = table.concat({
   "--bind=ctrl-u:page-up,ctrl-d:page-down",
-  -- '--pointer=" "',
-  -- '--marker=" "',
   "--layout=reverse",
   "--border",
-  "--sort 10000",
-  "--no-separator --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#E78A4E,fg:#D4BE98,header:#928374,info:#89B482,pointer:#7DAEA3,marker:#D8A657,fg+:#D4BE98,prompt:#E78A4E,hl+:#E78A4E",
+  -- '--pointer=" "',
+  -- '--marker=" "',
+  -- "--sort 10000",
+  -- "--no-separator --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#E78A4E,fg:#D4BE98,header:#928374,info:#89B482,pointer:#7DAEA3,marker:#D8A657,fg+:#D4BE98,prompt:#E78A4E,hl+:#E78A4E",
 }, " ")
 local default_opts = {
   file_icon_padding = " ",
@@ -143,10 +143,8 @@ local default_opts = {
     ["--info"] = "inline-right",
     ["--marker"] = "+",
     ["--pointer"] = "→",
-    ["--border"] = "none",
     ["--padding"] = "0,1",
     ["--margin"] = "0",
-    -- ["--preview-window"] = "right:50%",
   },
   -- fzf_colors = function()
   --   return {
