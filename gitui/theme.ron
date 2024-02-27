@@ -22,4 +22,6 @@
    disabled_fg: Some(LightBlue),
    diff_file_removed: Some(Rgb(235, 160, 172)),
    diff_line_delete: Some(Rgb(243, 139, 168)),
+   push_gauge_bg: Some(Rgb(137, 180, 250)),
+   push_gauge_fg: Some(Rgb(30, 30, 46)),
 )
