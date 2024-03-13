@@ -1,26 +1,19 @@
--- If is quickfix list, always open it at the bottom of screen
-if vim.fn.win_gettype() == 'quickfix' then
-  vim.cmd.wincmd('J')
-  vim.cmd('highlight link qfLineNr WarningMsg')
-  vim.cmd('highlight! link QuickFixLine CursorLine')
-end
+-- Always open QF window at the bottom
+-- vim.cmd[[wincmd J]]
 
-vim.bo.buflisted = false
-vim.opt_local.list = false
-vim.opt_local.spell = false
-vim.opt_local.rnu = false
-vim.opt_local.signcolumn = 'no'
-vim.opt_local.statuscolumn = ''
+-- Quit vim if the last window is qf
+vim.cmd [[autocmd! BufEnter <buffer> if winnr('$') < 2| q | endif]]
 
--- stylua: ignore start
+vim.wo.scrolloff      = 0
+vim.wo.wrap           = false
+vim.wo.number         = true
+vim.wo.relativenumber = false
+vim.wo.linebreak      = true
+vim.wo.list           = false
+vim.wo.cursorline     = true
+vim.wo.spell          = false
+vim.bo.buflisted      = false
+
 vim.keymap.set('n', 'q',     '<cmd>Bq<cr>',      { buffer = true })
-vim.keymap.set('n', '=',     '<CR>zz<C-w>p', { buffer = true })
-vim.keymap.set('n', '<C-j>', 'j<CR>zz<C-w>p', { buffer = true })
-vim.keymap.set('n', '<C-k>', 'k<CR>zz<C-w>p', { buffer = true })
--- stylua: ignore end
-
--- Provides `:Cfilter` and `:Lfilter` commands
-vim.cmd.packadd({
-  args = { 'cfilter' },
-  mods = { emsg_silent = true },
-})
+vim.keymap.set("n", "[-", "<Esc>:colder<CR>", { buffer = true })
+vim.keymap.set("n", "]+", "<Esc>:cnewer<CR>", { buffer = true })

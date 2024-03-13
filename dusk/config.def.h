@@ -64,7 +64,7 @@ static int swap_occupied_workspace_label_format_strings = 0; /* 0 gives "icon: l
 /* See util.h for options */
 static uint64_t functionality = 0
 //	|AutoReduceNmaster // automatically reduce the number of master clients if one is closed
-//	|BanishMouseCursor // like xbanish, hides mouse cursor when using the keyboard
+	// |BanishMouseCursor // like xbanish, hides mouse cursor when using the keyboard
 //	|BanishMouseCursorToCorner // makes BanishMouseCursor move the cursor to the top right corner of the screen
 //	|SmartGaps // enables no or increased gaps if there is only one visible window
 //	|SmartGapsMonocle // enforces no gaps in monocle layout
@@ -99,14 +99,14 @@ static uint64_t functionality = 0
 //	|Debug // enables additional debug output
 //	|AltWorkspaceIcons // show the workspace name instead of the icons
 //	|GreedyMonitor // disables swap of workspaces between monitors
-	|SmartLayoutConvertion // automatically adjust layout based on monitor orientation when moving a workspace from one monitor to another
+	// |SmartLayoutConvertion // automatically adjust layout based on monitor orientation when moving a workspace from one monitor to another
 //	|AutoHideScratchpads // automatically hide open scratchpads when moving to another workspace
 //	|RioDrawIncludeBorders // indicates whether the area drawn using slop includes the window borders
 //	|RioDrawSpawnAsync // spawn the application alongside rather than after drawing area using slop
 //	|RestrictFocusstackToMonitor // restrict focusstack to only operate within the monitor, otherwise focus can drift between monitors
-//	|WinTitleIcons // adds application icons to window titles in the bar
-//	|WorkspaceLabels // adds the class of the master client next to the workspace icon
-//	|WorkspacePreview // adds preview images when hovering workspace icons in the bar
+	// |WinTitleIcons // adds application icons to window titles in the bar
+	|WorkspaceLabels // adds the class of the master client next to the workspace icon
+	// |WorkspacePreview // adds preview images when hovering workspace icons in the bar
 ;
 
 static int flexwintitle_masterweight     = 15; // master weight compared to hidden and floating window titles
@@ -250,12 +250,12 @@ static const Rule clientrules[] = {
 	{ .instance = "spterm (e)", .scratchkey = 'e', .flags = Floating },
 	{ .instance = "spfm (r)", .scratchkey = 'r', .flags = Floating },
 	{ .class = "Gimp", .workspace = "5", .flags = Floating|SwitchWorkspace },
-	{ .class = "firefox", .workspace = "8", .flags = AttachMaster|SwitchWorkspace },
+	{ .class = "firefox", .workspace = "2", .flags = AttachMaster|SwitchWorkspace },
 	{ .class = "Steam", .flags = Floating|Centered },
 	{ .class = "steam_app_", .flags = SteamGame|Floating|Centered },
 	{ .class = "Google-chrome", .role = "GtkFileChooserDialog", .floatpos = "50% 50%", .flags = AlwaysOnTop|Floating },
 	{ .role = "pop-up", .flags = AlwaysOnTop|Floating|Centered },
-	{ .role = "browser", .workspace = "8", .flags = AttachBelow|OnlyModButtons|SwitchWorkspace },
+	{ .role = "browser", .workspace = "2", .flags = AttachBelow|OnlyModButtons|SwitchWorkspace },
 	{ .class = "Gnome-terminal", .role = "gnome-terminal-preferences", .flags = Centered },
 	{ .class = "Diffuse", .workspace = "4", .flags = NoSwallow|SwitchWorkspace|RevertWorkspace },
 	{ .class = "File-roller", .workspace = "9", .flags = Centered|Floating|SwitchWorkspace|RevertWorkspace },
@@ -504,8 +504,8 @@ static Key keys[] = {
 	{ KeyPress,   MODKEY,                             XK_Print,        spawn,                  {.v = screenshot } }, // spawn dmenu for launching other programs
 	{ KeyPress,   MODKEY,                             XK_equal,        spawn,                  {.v = volumeup } }, // spawn dmenu for launching other programs
 	{ KeyPress,   MODKEY,                             XK_minus,        spawn,                  {.v = volumedown } }, // spawn dmenu for launching other programs
-	{ KeyPress,   MODKEY,                             XK_Tab,          viewwsdir,              {.i = +2 } }, // view the next workspace right of current workspace that has clients (on the current monitor)
-	{ KeyPress,   MODKEY,                             XK_q,            viewwsdir,              {.i = +2 } }, // view the next workspace right of current workspace that has clients (on the current monitor)
+	//{ KeyPress,   MODKEY,                             XK_Tab,          viewwsdir,              {.i = -2 } }, // view the prev workspace right of current workspace that has clients (on the current monitor)
+	//{ KeyPress,   MODKEY,                             XK_q,            viewwsdir,              {.i = +2 } }, // view the next workspace right of current workspace that has clients (on the current monitor)
 
 	{ KeyPress,   MODKEY,                             XK_w,            setlayout,              {3} }, // toggles between current and previous layout
 	{ KeyPress,   MODKEY,                             XK_e,            setlayout,              {0} }, // toggles between current and previous layout
@@ -525,7 +525,7 @@ static Key keys[] = {
 	{ KeyPress,   MODKEY,                             XK_End,          quit,                   {0} }, // exit dusk
 
 	{ KeyPress,   MODKEY,                             XK_c,            spawn,                  {.v = startmenucmd } }, // spawn a terminal
-	{ KeyPress,   MODKEY,                             XK_v,            spawn,                  {.v = clipmenu } }, // spawn dmenu for launching other programs
+	{ KeyPress,   MODKEY,                             XK_y,            spawn,                  {.v = clipmenu } }, // spawn dmenu for launching other programs
 	{ KeyPress,   MODKEY,                             XK_b,            togglebar,              {0} }, // toggles the display of the bar(s) on the current monitor
 
 	{ KeyPress,   MODKEY,                             XK_p,            spawn,                  {.v = dmenucmd } }, // spawn dmenu for launching other programs
@@ -566,9 +566,9 @@ static Key keys[] = {
 	{ KeyPress,   MODKEY|Ctrl,                        XK_i,            incnstack,              {.i = +1 } }, // increase the number of clients in the primary (first) stack area
 	{ KeyPress,   MODKEY|Ctrl,                        XK_u,            incnstack,              {.i = -1 } }, // increase the number of clients in the primary (first) stack area
 
-	SCRATCHKEYS(MODKEY,                         XK_y, spcmd_w)
-	SCRATCHKEYS(MODKEY,                         XK_h, spcmd_e)
-	SCRATCHKEYS(MODKEY,                         XK_n, spcmd_r)
+	SCRATCHKEYS(MODKEY,                         XK_F1, spcmd_w)
+	SCRATCHKEYS(MODKEY,                         XK_F2, spcmd_e)
+	SCRATCHKEYS(MODKEY,                         XK_F3, spcmd_r)
 
 	WSKEYS(MODKEY,                              XK_1, "1")
 	WSKEYS(MODKEY,                              XK_2, "2")

@@ -25,26 +25,31 @@ local function echo(chunks)
 end
 
 function M.bookmarks()
-local bookmarks = {
-  {'m', 'marks',                 [[FzfLua marks                 ]]},
-  {'g', 'git_files',             [[FzfLua git_files             ]]},
-  {'f', 'builtin',               [[FzfLua builtin               ]]},
-  {'b', 'lgrep_curbuf',          [[FzfLua lgrep_curbuf          ]]},
-  {'j', 'jumps',                 [[FzfLua jumps                 ]]},
-  {'n', '~/vimwiki'},
-  {'x', 'command_history',       [[FzfLua command_history       ]]},
-  {'e', 'diagnostics_document',  [[FzfLua diagnostics_document  ]]},
-  {'d', 'diagnostics_workspace', [[FzfLua diagnostics_workspace ]]},
-  {'l', 'lazy',                  [[Lazy                         ]]},
-  {'o', 'colorschemes',          [[FzfLua colorschemes          ]]},
-  {'c', 'change dir',            [[Directories                  ]]},
-  {'O', 'highlights',            [[FzfLua highlights            ]]},
-  {'/', 'search_history',        [[FzfLua search_history        ]]},
-  {'?', 'keymaps',               [[FzfLua keymaps               ]]},
-  {':', 'commands',              [[FzfLua commands              ]]},
-  {'t', 'help_tags',             [[FzfLua help_tags             ]]},
-  {'M', 'man_pages',             [[FzfLua man_pages             ]]},
-}
+  local bookmarks = {
+    {'-', 'change dir',            [[Directories                  ]]} ,
+    {'q', 'quickfix',              [[FzfLua quickfix              ]]} ,
+    {'w', 'loclist',               [[FzfLua loclist               ]]} ,
+    {'e', 'Workdirs',              [[Workdirs                     ]]} ,
+    {'s', 'search_history',        [[FzfLua search_history        ]]} ,
+    {'b', 'BookmarkQf',            [[BookmarkQf                   ]]} ,
+    {'j', 'jumps',                 [[FzfLua jumps                 ]]} ,
+    {'k', 'lines',                 [[lua require('fzf-lua').lines({ fzf_opts = { ["--query"] = vim.fn.expand("<cword>") } }) ]]},
+    {'l', 'blines',                [[lua require('fzf-lua').blines({ fzf_opts = { ["--query"] = vim.fn.expand("<cword>") } }) ]]},
+    {'m', 'marks',                 [[FzfLua marks                 ]]} ,
+    {'n', '~/vimwiki'},
+    {'D', 'diagnostics_document',  [[FzfLua diagnostics_document  ]]} ,
+    {'d', 'diagnostics_workspace', [[FzfLua diagnostics_workspace ]]} ,
+    {'f', 'builtin',               [[FzfLua builtin               ]]} ,
+    {'c', 'commands',              [[FzfLua commands              ]]} ,
+    {';', 'command_history',       [[FzfLua command_history       ]]} ,
+    {'o', 'colorschemes',          [[FzfLua colorschemes          ]]} ,
+    {'O', 'highlights',            [[FzfLua highlights            ]]} ,
+    {'?', 'keymaps',               [[FzfLua keymaps               ]]} ,
+    {'t', 'help_tags',             [[FzfLua help_tags             ]]} ,
+    {'T', 'filetypes',             [[FzfLua filetypes             ]]} ,
+    {'M', 'man_pages',             [[FzfLua man_pages             ]]} ,
+    {'p', 'lazy',                  [[Lazy                         ]]} ,
+  }
   if type(bookmarks) ~= 'table' then
     echo {{'Invalid g:bookmarks', 'ErrorMsg'}}
     return
@@ -95,25 +100,23 @@ end
 
 
 local options = {
-  {'-', 'set_cwd',         [[lua require"utils".set_cwd()]]},
+  {'-', 'set_cwd',         [[lua require"utils.other".set_cwd()]]},
   {'y', 'copy_file',       [[!cp '%:p' '%:p:h/%:t:r-copy.%:e']]},
-  {'B', 'diffthis',        [[windo diffthis]]},
   {'b', 'diffoff',         [[windo diffoff]]},
-  {'S', 'LiveServerStart', [[LiveServerStart]]},
+  {'B', 'diffthis',        [[windo diffthis]]},
   {'s', 'LiveServerStop',  [[LiveServerStop]]},
+  {'S', 'LiveServerStart', [[LiveServerStart]]},
   {'w', 'wrap',            [[setl wrap! | setl wrap?]]},
-  {'C', 'ignorecase',      [[set ignorecase! | set ignorecase?]]},
   {'l', 'list',            [[setl list! | setl list?]]},
-  {'n', 'line numbers',    [[call luaeval('require"m.ui.menus".toggle_line_numbers()')]]},
+  {'n', 'line numbers',    [[call luaeval('require"utils.m.ui.menus".toggle_line_numbers()')]]},
   {'i', 'indent',          [[lua require'configs.mini'.btoggle()]]},
   {'c', 'colorizer',       [[ColorizerToggle]]},
-  {'d', 'diagnostics',     function()
-    vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
-  end},
+  {'C', 'ignorecase',      [[set ignorecase! | set ignorecase?]]},
   {'W', 'wrapscan',        [[set wrapscan! | set wrapscan?]]},
   {'z', 'spell',           [[setl spell! | setl spell?]]},
-  {'f', 'folds',           [[setl foldenable! | setl foldenable?]]},
-  {'m', 'mouse',           [[let &mouse = (&mouse ==# '' ? 'nvi' : '') | set mouse?]]},
+  {'d', 'diagnostics',     function() vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text }) end},
+  -- {'f', 'folds',           [[setl foldenable! | setl foldenable?]]},
+  -- {'m', 'mouse',           [[let &mouse = (&mouse ==# '' ? 'nvi' : '') | set mouse?]]},
 }
 
 function M.options()
@@ -152,22 +155,23 @@ end
 
 
 local gitsigns = {
-  {'g', 'git_full',                  [[0G]]},
-  {'v', 'Git diffsplit',             [[Gvdiffsplit!]]},
-  {'1', 'git_status',                [[FzfLua git_status]]},
-  {'2', 'git_commits',               [[FzfLua git_commits]]},
-  {'3', 'git_bcommits',              [[FzfLua git_bcommits]]},
-  {'4', 'git_branches',              [[FzfLua git_branches]]},
-  {'d', 'diffthis',                  [[lua require("gitsigns").diffthis()]]},
-  {'e', 'diffthis prev commit',      [[lua require("gitsigns").diffthis("~1")]]},
+  {'j', 'diffget //2',               [[diffget //2]]},
+  {'k', 'diffget //3',               [[diffget //3]]},
+  {'d', 'git_diffsplit',             [[Gvdiffsplit!]]},
+  {'1', 'git_commits',               [[FzfLua git_commits]]},
+  {'2', 'git_bcommits',              [[FzfLua git_bcommits]]},
+  {'3', 'git_branches',              [[FzfLua git_branches]]},
+  {'4', 'git_status',                [[FzfLua git_status]]},
   {'p', 'preview_hunk',              [[lua require("gitsigns").preview_hunk()]]},
   {'l', 'preview_hunk_inline',       [[lua require("gitsigns").preview_hunk_inline()]]},
-  {'X', 'reset_buffer',              [[lua require("gitsigns").reset_buffer()]]},
-  {'t', 'toggle_current_line_blame', [[lua require("gitsigns").toggle_current_line_blame()]]},
   {'b', 'blame_line',                [[lua require("gitsigns").blame_line({full=true})]]},
+  {'n', 'git_blame',                 [[Git blame]]},
   {'x', 'toggle_deleted',            [[lua require("gitsigns").toggle_deleted()]]},
+  {'X', 'reset_buffer',              [[lua require("gitsigns").reset_buffer()]]},
+  {'e', 'diffthis prev commit',      [[lua require("gitsigns").diffthis("~1")]]},
   {'a', 'stage_buffer',              [[lua require("gitsigns").stage_buffer()]]},
   {'u', 'undo_stage_hunk',           [[lua require("gitsigns").undo_stage_hunk()]]},
+  {'t', 'toggle_current_line_blame', [[lua require("gitsigns").toggle_current_line_blame()]]},
 }
 
 function M.gitsigns()
@@ -203,6 +207,5 @@ function M.gitsigns()
     end
   end
 end
-
 
 return M

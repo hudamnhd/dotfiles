@@ -94,13 +94,13 @@ static const Key keys[] = {
     { MODKEY,                       XK_d,                       spawn,          		{.v = termcmd } },
 	{ MODKEY,                       XK_f,                       togglefullscr,  		{0} },
 
-    { MODKEY,                       XK_z,                       spawn,          		{.v = rofi } },
+    { MODKEY,                       XK_c,                       spawn,          		{.v = rofi } },
     { MODKEY,                       XK_x,                       killclient,     		{0} },
-    { MODKEY,                       XK_c,                       spawn,          		{.v = clipmenu } },
+    { MODKEY,                       XK_y,                       spawn,          		{.v = clipmenu } },
     { MODKEY,                       XK_v,                       spawn,          		{.v = dmenucmd } },
 	{ MODKEY,                       XK_b,                       togglebar,      		{0} },
 
-    { MODKEY,                       XK_n,                       zoom,       			{0} },
+    { MODKEY,                       XK_m,                       zoom,       			{0} },
     { MODKEY,                       XK_Left,                    focusstack,     		{.i = -1 } },
     { MODKEY,                       XK_Right,                   focusstack,     		{.i = +1 } },
     { MODKEY,                       XK_Up,                      setmfact,       		{.f = -0.05 } },

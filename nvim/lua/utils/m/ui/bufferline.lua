@@ -7,9 +7,9 @@ local bufferline = {}
 ---Pending redraw
 local pending = false
 
-local NO_BUFS = H("EL") .. " no buffers" .. H("BG") .. "▕"
+local NO_BUFS     = H("EL") .. " no buffers" .. H("BG") .. "▕"
 local NO_BUFS_LEN = 12
-local NO_NAME = "[No Name]"
+local NO_NAME     = "[No Name]"
 
 local get_name = api.nvim_buf_get_name
 local get_opt = api.nvim_buf_get_option
@@ -25,9 +25,7 @@ local function get()
     bufs[i] = {
       bufnr = bufnr,
       path = name,
-      -- name = name:match("[^/]*$"),
-      name = i .. " " .. name:match("[^/]*$"),
-      -- name = (i - 1 == 0) and "" .. name:match("[^/]*$") or (i - 1) .. " " .. name:match("[^/]*$"),
+      name = name:match("[^/]*$"),
       -- TODO: is modified the same as getbufinfo().changed?
       changed = get_opt(bufnr, "modified"),
       buftype = get_opt(bufnr, "buftype"),
@@ -52,10 +50,10 @@ local function render_bufs(width)
     bufs = get()
   end
 
-  for _, buf in ipairs(bufs) do
-    local name = buf.name
+  for i, buf in ipairs(bufs) do
+    local name = i .. " " ..buf.name
 
-    if name == "" then
+    if buf.name == "" then
       name = NO_NAME
     end
 
@@ -182,7 +180,7 @@ function bufferline.redraw()
   local tab = render_tabs()
   if tab then
     width = width - #tab
-    tab = H("B") .. tab
+    tab = H("L") .. tab
   end
 
   local bufs, len = render_bufs(width)
@@ -193,7 +191,7 @@ function bufferline.redraw()
     spacer = H("BG") .. string.rep("▁", width)
   end
 
-  api.nvim_set_var("bufferline", (bufs or "") .. (spacer or "") .. (tab or ""))
+  api.nvim_set_var("bufferline", (tab or "") .. (bufs or "") .. (spacer or ""))
   vim.cmd("redrawtabline")
 end
 

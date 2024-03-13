@@ -5,6 +5,20 @@ end
 
 local M = {}
 
+M.SWITCH_TELE = M.IS_WINDOWS
+
+M._if_win = function(a, b)
+  if M.IS_WINDOWS then
+    return a
+  else
+    return b
+  end
+end
+
+M._if_win_fs_norm = function(a, b)
+  return M._if_win(vim.fs.normalize(a), b or a)
+end
+
 local fast_event_aware_notify = function(msg, level, opts)
   if vim.in_fast_event() then
     vim.schedule(function()
@@ -258,11 +272,6 @@ M.paste_text_to_register = function(register)
 ]]
   vim.fn.setreg(register, text_to_paste)
   print("Text pasted to register '" .. register .. "' successfully!")
-end
-
-local function notify(title, msg, level)
-	if not level then level = "info" end
-	vim.notify(msg, vim.log.levels[level:upper()], { title = title })
 end
 
 return M

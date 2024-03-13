@@ -1,26 +1,30 @@
 {
-    "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
-    "workspace": {
-        "library": [
-            "$VIMRUNTIME",
-            "$XDG_DATA_HOME/nvim",
-            "$HOME/.local/share/nvim",
-            "${3rd}/luv/library"
-        ],
-        "checkThirdParty": "Disable"
-    },
-    "runtime": {
-        "version": "LuaJIT",
-        "path": [
-            "./?.lua",
-             "/usr/share/luajit-2.1.0-beta3/?.lua",
-             "/usr/local/share/lua/5.1/?.lua",
-             "/usr/local/share/lua/5.1/?/init.lua",
-             "/usr/share/lua/5.1/?.lua",
-             "/usr/share/lua/5.1/?/init.lua"
-        ]
-    },
-    "diagnostics.globals": [
-        "vim"
-    ]
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "diagnostics": {
+    "enable": true,
+    "globals": [
+      "vim",
+      "describe",
+      "pending",
+      "it",
+      "before_each",
+      "after_each"
+    ],
+    "neededFileStatus": {
+      "codestyle-check": "Any"
+    }
+  },
+  "workspace": {
+    "library": ["lua", "$VIMRUNTIME/lua", "${3rd}/luv/library"],
+    "checkThirdParty": false,
+    "maxPreload": 2000,
+    "preloadFileSize": 1000
+  },
+  "type": {
+    "weakNilCheck": true,
+    "weakUnionCheck": true,
+    "castNumberToInteger": true
+  },
+  "telemetry.enable": false
 }

@@ -78,7 +78,7 @@ local MODE_HL = {
   ['Insert']    = 'I',
   ['Replace']   = 'R',
   ['V-Replace'] = 'R',
-  ['Command']   = 'N',
+  ['Command']   = 'E',
   ['Ex']        = 'N',
   ['More']      = 'N',
   ['Confirm']   = 'N',
@@ -382,7 +382,7 @@ end
 
 function M.setup()
   vim.g.qf_disable_statusline = 1
-  vim.o.statusline = [[%!v:lua.require('m.ui.statusline').render()]]
+  vim.o.statusline = [[%!v:lua.require('utils.m.ui.statusline').render()]]
 
   local augroup = api.nvim_create_augroup('m_statusline', {})
 

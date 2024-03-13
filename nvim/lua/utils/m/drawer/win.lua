@@ -7,7 +7,7 @@ local POSITIONS = {
   l = 'L', L = 'L',
 }
 
-local height = 12
+local height = 20
 local position = 'J'
 
 local function findwin()

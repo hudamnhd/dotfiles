@@ -1,4 +1,4 @@
-local D = {}
+local D = {} 
 
 local utils = require("drex.utils")
 local elements = require("drex.elements")
@@ -49,7 +49,7 @@ function D.open()
 		close_drawer()
 	end
 
-	-- local buflist = vim.api.nvim_list_bufs()
+	local buflist = vim.api.nvim_list_bufs()
 end
 
 function D.create()

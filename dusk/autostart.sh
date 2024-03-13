@@ -5,18 +5,18 @@ xset r rate 250 60 &
 nitrogen --restore &
 nm-applet &
 clipmenud &
-setxkbmap -option "ctrl:nocaps" &
 /usr/libexec/xfce-polkit &
-#picom -bc &
 xrdb merge /home/hudamnhd/st/xresources &
+# setxkbmap -option "ctrl:nocaps" &
+# xmodmap -e 'keycode 66 = Shift_L' &
+#picom -bc &
 
 #xsetroot -solid darkgrey                    
 # set root window background
-# xmodmap -e 'keycode 66 = Shift_L' &
 # setxkbmap -option "caps:escape_shifted_capslock" &
 # make CapsLock behave like Ctrl:
 # setxkbmap -option ctrl:super &
-#xfce4-clipman &
+
 while sleep 1
 do
 RAM=`free -m | grep "Mem" | awk '{ print $3 }'`
