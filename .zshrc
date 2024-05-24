@@ -91,7 +91,7 @@ source $ZSH/oh-my-zsh.sh
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
 # else
-#   export EDITOR='mvim'
+#   export EDITOR='nvim'
 # fi
 export PATH="/usr/local/bin:$PATH"
 
@@ -114,10 +114,8 @@ alias tl='tmux list-sessions'
 alias ts='tmux new-session -A -D -s'
 alias duh='du -d 1 -h'
 alias gsed='sed'
-alias nvimlua='NVIM_APPNAME=nvim-lua nvim'
+# Set up fzf key bindings and fuzzy completion
 
-
-source ~/.local/bin/fzf-git.sh
 export FZF_DEFAULT_COMMAND="fd --type file --color=always"
 export EDITOR='nvim'
 export TERMINAL='st'
@@ -125,6 +123,8 @@ export FZF_DEFAULT_OPTS='--no-height --layout=reverse --border  --color=bg+:#1D2
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
+source ~/.fzf/shell/key-bindings.zsh
+source ~/.fzf/shell/completion.zsh
 source ~/fzf-tab-completion/zsh/fzf-zsh-completion.sh
 bindkey '^I' fzf_completion
 
@@ -145,6 +145,4 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

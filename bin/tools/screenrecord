@@ -1,0 +1,24 @@
+#!/bin/bash
+
+start_record() {
+    filename=~/Videos/screenrecord_$(date '+%Y%m%d%H%M%S').mp4
+    ffmpeg -f x11grab -s $(xdpyinfo | grep dimensions | awk '{print $2}') -r 25 -i :0.0 -preset ultrafast $filename &
+    pid=$!
+    echo $pid > ~/.screenrecord_pid
+    notify-send "Screen Recording Started" "Recording to $filename"
+}
+
+stop_record() {
+    pid=$(cat ~/.screenrecord_pid)
+    kill $pid
+    notify-send "Screen Recording Stopped"
+    rm ~/.screenrecord_pid
+}
+
+selected_option=$(echo -e "Start Recording\nStop Recording" | rofi -dmenu -p "Screen Record")
+
+if [ "$selected_option" == "Start Recording" ]; then
+    start_record
+elif [ "$selected_option" == "Stop Recording" ]; then
+    stop_record
+fi

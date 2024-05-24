@@ -1,12 +1,17 @@
 xrandr --output HDMI-A-0  --brightness 0.45 &
+
+ # xrandr --output DisplayPort-0 --auto --right-of HDMI-A-0 ; xrandr --output HDMI-A-0  --brightness 0.45  --output DisplayPort-0 --brightness 0.5 &
 setxkbmap -layout "us"&
 xset r rate 250 60 &
-nitrogen --restore &
+# nitrogen --restore &
 nm-applet &
-clipmenud &
+#clipmenud &
 #setxkbmap -option "ctrl:nocaps" &
-/usr/libexec/xfce-polkit &
+#/usr/libexec/xfce-polkit &
 #picom -bc &
+#!/bin/sh
+feh --no-fehbg --bg-scale '/home/hudamnhd/.local/share/azote/sample/pxfuel1.jpg' 
+dex-autostart --autostart --environment dwm &
 xrdb merge /home/hudamnhd/st/xresources &
 while sleep 1
 do
