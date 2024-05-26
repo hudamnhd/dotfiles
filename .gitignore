@@ -1,6 +1,1 @@
-nvim/vscode-snippets
-nvim/init.lua
-bin/antibody
-qutebrowser/bookmarks/urls
-qutebrowser/qsettings/QtProject.conf
-qutebrowser/quickmarks
+clipmenu

@@ -1,2 +1,0 @@
-#!/bin/sh
-echo $(setxkbmap -query | awk '/layout:/ { print $2 }')

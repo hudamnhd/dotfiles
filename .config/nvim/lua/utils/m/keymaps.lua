@@ -32,12 +32,11 @@ map.v({
   ["gch"] = [[:s@^\(.*\)$@<!--\1--><CR>:let @/ = ""<CR>]],
   ["guh"] = [[:s@^<!--\(\(.*[^<!--]\)\)\?-->$@\1<CR>:let @/ = ""<CR>]],
 })
-
 -- stylua: ignore end
+
 -- Insert stuff
-map.i({
-  ["<C-X><C-T>"] = [[<C-R>=strftime('%Y-%m-%d %H:%M:%S')<CR>]],
-}, silent)
+-- map.i({ ["<C-X><C-T>"] = [[<C-R>=strftime('%Y-%m-%d %H:%M:%S')<CR>]], }, silent)
+map.n({ ["tm"] = [[:execute "normal! i" . strftime('%Y-%m-%d %H:%M:%S')<CR> ]], }, silent)
 
 -- Toggle smartcase
 map.c("<C-X><C-I>", function()
@@ -60,9 +59,9 @@ map.n({
   ["d;"]        = [[q:]],
   ["<Tab>"]     = [[g;zvzz]],
   ["<S-Tab>"]   = [[g,zvzz]],
-  ["<leader>k"] = [[:help <C-r>=expand("<cword>")<CR>]],
-  ["<leader>w"] = [[<C-W>]],
   ["<a-w>"]     = [[<C-W>w]],
+  ["<leader>w"] = [[<C-W>]],
+  ["<leader>k"] = [[:help <C-r>=expand("<cword>")<CR>]],
 })
 
 map.vn({
@@ -73,9 +72,6 @@ map.vn({
 map.n({
   ["rt"]        = [[vit"_dP]],
   ["rat"]       = [[vat"_dP]],
-})
-
-map.n({
   ["rw"]        = [[viw"_dP]],
 })
 
@@ -103,7 +99,7 @@ map.nvi("<C-S>", "<esc>:update<cr>", { silent = true, desc = "Save" })
 map.n("<C-F>", "<CMD>SearchReplaceSingleBufferCWord<CR>")
 map.v("<C-F>", "<CMD>SearchReplaceSingleBufferVisualSelection<CR>")
 map.n("<C-B>", [[:'<,'>s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]])
-map.v("<C-B>",     "<CMD>SearchReplaceWithinVisualSelection<CR>")
+map.v("<C-B>", "<CMD>SearchReplaceWithinVisualSelection<CR>")
 
 map.v("H",         [[:s/^//gI<Left><Left><Left>]]) -- add begin line only
 map.v("L",         [[:s/$//gI<Left><Left><Left>]]) -- add end only
@@ -315,7 +311,7 @@ map.c({
 local api = vim.api
 
 local function modify_line_end_delimiter(character)
-  local delimiters = { ',', ';' }
+  local delimiters = { ',', ';', '.' }
   return function()
     local line = api.nvim_get_current_line()
     local last_char = line:sub(-1)
@@ -331,6 +327,7 @@ end
 
 map.n('z,', modify_line_end_delimiter(','), { desc = "add ',' to end of line" })
 map.n('z;', modify_line_end_delimiter(';'), { desc = "add ';' to end of line" })
+map.n('z.', modify_line_end_delimiter('.'), { desc = "add ';' to end of line" })
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~ multiple cusors (sort of) ~
@@ -365,6 +362,7 @@ map.n("<a-s>", "*Nqz", { desc = "mc start macro (foward)" })
 map.x("<a-s>", mc_select .. "``qz", { desc = "mc start macro (foward)" })
 map.n("<a-a>", mc_macro(), { expr = true, desc = "mc end or replay macro" })
 map.x("<a-a>", mc_macro(mc_select), { expr = true, desc = "mc end or replay macro" })
+
 -- map.n("<leader>c", "*``cgn", { desc = "mc change word (forward)" })
 -- map.x("<leader>c", mc_select .. "``cgn", { desc = "mc change selection (forward)" })
 

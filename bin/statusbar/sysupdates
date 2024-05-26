@@ -1,9 +1,0 @@
-#!/bin/sh
-if [ ! $(command -v paru) ]; then
-	exit
-fi
-
-UPDATES=$(paru -Qu | wc -l)
-if [ "$UPDATES" != "0" ]; then
-	echo "^c#888888^ ${UPDATES}^d^"
-fi
