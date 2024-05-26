@@ -33,9 +33,9 @@ return {
             end
 
             -- disable highlighting for big markdown files (bad performance)
-            -- if lang == "markdown" and vim.api.nvim_buf_line_count(buf) > 3000 then
-            --   return true
-            -- end
+            if lang == "markdown" and vim.api.nvim_buf_line_count(buf) > 3000 then
+              return true
+            end
 
             -- disable highlighting for large buffers
             if vim.api.nvim_buf_line_count(buf) > 3000 then

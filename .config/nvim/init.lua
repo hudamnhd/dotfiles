@@ -5,7 +5,8 @@ require("lazyplug")
 
 -- Set colorscheme
 -- pcall(vim.cmd, [[colorscheme default]])
-pcall(vim.cmd, [[colorscheme kanagawa]])
+-- pcall(vim.cmd, [[colorscheme kanagawa]])
+pcall(vim.cmd, [[colorscheme catppuccin]])
 
 -- Load utility modules
 require("utils.mru")

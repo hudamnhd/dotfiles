@@ -38,7 +38,7 @@ map("i",  "<C-x><C-f>", function() require("fzf-lua").complete_path({ file_icons
 map("i",  "<C-x><C-l>", function() require("fzf-lua").complete_line() end, { silent = true, desc = "Fuzzy complete line" })
 
 map("n",  "so", "<CMD>MRU<CR>", { desc = "file history (MRU)" })
-mfzf("n", "ao", "oldfiles", function() return { desc = "file history (cwd)", cwd = vim.loop.cwd(), cwd_header = true, cwd_only = true } end)
+mfzf("n", "s0", "oldfiles", function() return { desc = "file history (cwd)", cwd = vim.loop.cwd(), cwd_header = true, cwd_only = true } end)
 
 mfzf("n", "sp", "files", { desc = "find files"})
 

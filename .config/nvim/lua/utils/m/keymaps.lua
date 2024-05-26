@@ -48,7 +48,7 @@ end, { expr = true })
 
 -- disable default keybind
 map.nv({
-  ["a"]       = "<Nop>",
+  -- ["a"]       = "<Nop>",
   ["t"]       = "<Nop>",
   ["s"]       = "<Nop>",
   ["r"]       = "<Nop>",

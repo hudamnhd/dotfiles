@@ -114,17 +114,6 @@ return {
       vim.keymap.set("n", "<A-r>", "<CMD>Qfreplace<CR>")
     end,
   },
-  -- {
-  --   "kshenoy/vim-signature",
-  --   event = { "VimEnter" },
-  --   config = function()
-  --     vim.cmd([[ highlight! link SignatureMarkText WarningMsg ]])
-  --   end,
-  -- },
-  -- {
-  --   "thinca/vim-quickmemo",
-  --   event = { "VimEnter" },
-  -- },
   {
     "LeafCage/yankround.vim",
     event = { "BufReadPost" },
@@ -142,4 +131,15 @@ return {
   {
     "nvim-lua/plenary.nvim",
   },
+  -- {
+  --   "kshenoy/vim-signature",
+  --   event = { "VimEnter" },
+  --   config = function()
+  --     vim.cmd([[ highlight! link SignatureMarkText WarningMsg ]])
+  --   end,
+  -- },
+  -- {
+  --   "thinca/vim-quickmemo",
+  --   event = { "VimEnter" },
+  -- },
 }

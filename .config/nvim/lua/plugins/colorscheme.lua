@@ -1,5 +1,11 @@
 return {
   {
+    "catppuccin/nvim",
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    name = "catppuccin",
+    priority = 1000,
+  },
+  {
     "rebelot/kanagawa.nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000,
