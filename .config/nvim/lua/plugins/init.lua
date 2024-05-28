@@ -1,7 +1,7 @@
 return {
   {
     'MagicDuck/grug-far.nvim',
-    event = { "BufReadPost" },
+    keys = { "gr" },
     config = function()
       require('grug-far').setup()
       vim.keymap.set("n", "gr", "<CMD>lua require('grug-far').grug_far({ prefills = { search = vim.fn.expand('<cword>') } })<CR>")
@@ -23,7 +23,7 @@ return {
   { "wellle/targets.vim", event = "VeryLazy" },
   {
     "haya14busa/vim-edgemotion",
-    event = "VeryLazy", -- tester
+    event = { "BufReadPost" },
     config = function()
       vim.cmd([[
        map <C-J> <Plug>(edgemotion-j)
@@ -46,7 +46,7 @@ return {
   },
   {
     "thinca/vim-partedit",
-    event = { "BufReadPost" },
+    keys = { "<c-e>" },
     config = function()
       vim.keymap.set({ "x" }, "<c-e>", ":Partedit -opener new -filetype vim -prefix '>'<CR>")
     end,
@@ -131,13 +131,13 @@ return {
   {
     "nvim-lua/plenary.nvim",
   },
-  -- {
-  --   "kshenoy/vim-signature",
-  --   event = { "VimEnter" },
-  --   config = function()
-  --     vim.cmd([[ highlight! link SignatureMarkText WarningMsg ]])
-  --   end,
-  -- },
+  {
+    "kshenoy/vim-signature",
+    event = { "VimEnter" },
+    config = function()
+      vim.cmd([[ highlight! link SignatureMarkText WarningMsg ]])
+    end,
+  },
   -- {
   --   "thinca/vim-quickmemo",
   --   event = { "VimEnter" },

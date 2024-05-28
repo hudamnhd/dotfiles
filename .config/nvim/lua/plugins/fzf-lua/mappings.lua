@@ -52,9 +52,6 @@ mfzf("n", "sk", "grep_cword", { desc = "grep <word> (project)" })
 mfzf("n", "sl", "grep_curbuf", function() return { desc = "grep <word> (buffer)", prompt = "Buffer❯ ", search = vim.fn.expand("<cword>") } end)
 mfzf("v", "sl", "grep_curbuf", function() return { desc = "grep <WORD> (buffer)", prompt = "Buffer❯ ", search = require("utils.other").get_visual_selection(true) } end)
 
--- mfzf("n", "sL", "lines", function() return { desc = "Fzf blines", query = vim.fn.expand("<cword>") } end)
--- mfzf("n", "sL", "grep_curbuf", function() return { desc = "grep <WORD> (buffer)", prompt = "Buffer❯ ", search = vim.fn.expand("<cWORD>") } end)  -- not used
-
 mfzf("n", "zf", "files", function() return { desc = "grep <word> (buffer)", prompt = "Files❯ ", query = vim.fn.expand("<cword>") } end)
 mfzf("v", "zf", "files", function() return { desc = "grep files", prompt = "Files❯ ", query = require("utils.other").get_visual_selection(true) } end)
 

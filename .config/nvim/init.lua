@@ -2,6 +2,7 @@
 require("options")
 require("autocmd")
 require("lazyplug")
+require("user.clever-f")
 
 -- Set colorscheme
 -- pcall(vim.cmd, [[colorscheme default]])

@@ -71,7 +71,7 @@ return {
     -- Code Runner - execute commands in a floating terminal
     local runners = { lua = "lua", javascript = "node" }
 
-    vim.keymap.set("n", "<leader>e", function()
+    vim.keymap.set("n", "se", function()
       local buf = vim.api.nvim_buf_get_name(0)
       local ftype = vim.filetype.match({ filename = buf })
       local exec = runners[ftype]

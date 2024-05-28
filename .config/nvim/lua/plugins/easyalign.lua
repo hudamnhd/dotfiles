@@ -25,8 +25,6 @@ return {
       }
 
     -- stylua: ignore start
-       -- vim.keymap.set({ "n", "x" }, "gl", "<Plug>(EasyAlign)",     { noremap = false })
-       -- vim.keymap.set({ "n", "x" }, "gL", "<Plug>(LiveEasyAlign)", { noremap = false })
        vim.keymap.set({ "n", "x" }, "=",  "<Plug>(EasyAlign)",     { noremap = false })
        vim.keymap.set({ "n", "x" }, "<leader>=",  "<Plug>(LiveEasyAlign)", { noremap = false })
       -- stylua: ignore end
