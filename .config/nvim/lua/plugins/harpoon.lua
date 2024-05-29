@@ -37,7 +37,7 @@ return {
     local silent = { silent = true }
 
       for i = 1, 9 do
-        map("n", i .. "h", function() harpoon:list():select(i) end, silent)
+        map("n", "`" .. i, function() harpoon:list():select(i) end, silent)
       end
   end,
 }

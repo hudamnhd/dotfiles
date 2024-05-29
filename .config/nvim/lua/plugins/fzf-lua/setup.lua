@@ -197,7 +197,7 @@ local default_opts = {
           -- -- {'╮', 'IncSearch'}, '│', '╯', '─', '╰', '│' },
           preview        = {
             default      = "bat",
-            layout       = "flex",
+            -- layout       = "flex",
             -- horizontal = "down:50%",
             flip_columns = 130,
             scrollbar    = "float",
@@ -288,11 +288,28 @@ local default_opts = {
           fzf_opts = { ["--tiebreak"] = "end" },
           actions = { ["ctrl-g"] = { fzf_lua.actions.toggle_ignore } },
           git_icons = false, -- remove git icons for better performance
+          winopts = {
+          height = 0.55,
+          width = 0.5,
+            preview = {
+              hidden = "hidden", -- hide the previewer by default
+            },
+          },
+        },
+        oldfiles = {
+          git_icons = false, -- remove git icons for better performance
+          winopts = {
+          height = 0.55,
+          width = 0.5,
+            preview = {
+              hidden = "hidden", -- hide the previewer by default
+            },
+          },
         },
         buffers = {
           winopts = {
           height = 0.55,
-          width = 0.55,
+          width = 0.5,
             preview = {
               hidden = "hidden", -- hide the previewer by default
             },

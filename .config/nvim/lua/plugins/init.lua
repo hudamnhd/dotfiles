@@ -1,13 +1,31 @@
 return {
-  {
-    'MagicDuck/grug-far.nvim',
-    keys = { "gr" },
-    config = function()
-      require('grug-far').setup()
-      vim.keymap.set("n", "gr", "<CMD>lua require('grug-far').grug_far({ prefills = { search = vim.fn.expand('<cword>') } })<CR>")
-      vim.keymap.set("v", "gr", function() require('grug-far').grug_far({ prefills = { search = require("utils.other").get_visual_selection(true) } }) end, { silent = true, desc = "grug-far" })
-    end
-  },
+  -- {
+  --   "MagicDuck/grug-far.nvim",
+  --   keys = { "gr" },
+  --   config = function()
+  --     require("grug-far").setup()
+  --     vim.keymap.set(
+  --       "n",
+  --       "gr",
+  --       "<CMD>lua require('grug-far').grug_far({ prefills = { search = vim.fn.expand('<cword>') } })<CR>"
+  --     )
+  --     vim.keymap.set("v", "gr", function()
+  --       require("grug-far").grug_far({
+  --         prefills = { search = require("utils.other").get_visual_selection(true) },
+  --       })
+  --     end, { silent = true, desc = "grug-far" })
+  --   end,
+  -- },
+-- install with yarn or npm
+{
+  "iamcco/markdown-preview.nvim",
+  cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+  build = "cd app && yarn install",
+  init = function()
+    vim.g.mkdp_filetypes = { "markdown" }
+  end,
+  ft = { "markdown" },
+},
   {
     "cohama/agit.vim",
     keys = { "<a-g>", "<a-f>" },

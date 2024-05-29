@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-terminal" version="1.0">
+  <property name="font-use-system" type="bool" value="false"/>
+  <property name="font-name" type="string" value="IosevkaTree Nerd Font Semi-Bold 12"/>
+  <property name="cell-width-scale" type="double" value="1"/>
+  <property name="cell-height-scale" type="double" value="1"/>
+</channel>

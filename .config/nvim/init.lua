@@ -2,11 +2,8 @@
 require("options")
 require("autocmd")
 require("lazyplug")
-require("user.clever-f")
 
 -- Set colorscheme
--- pcall(vim.cmd, [[colorscheme default]])
--- pcall(vim.cmd, [[colorscheme kanagawa]])
 pcall(vim.cmd, [[colorscheme catppuccin]])
 
 -- Load utility modules
@@ -17,7 +14,7 @@ require("utils.m.keymaps")
 -- require('utils.m.ui.statusline').setup()
 
 -- Adjust highlighting for kanagawa colorscheme
-if vim.g.colors_name == "onedark" then
+if vim.g.colors_name == "catppuccin" then
   vim.cmd("hi! link whitespace nontext")
 end
 

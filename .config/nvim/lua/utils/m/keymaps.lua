@@ -51,7 +51,6 @@ map.nv({
 })
 
 map.n({
-  ["e"]         = [[E]],
   ["d;"]        = [[q:]],
   ["<Tab>"]     = [[g;zvzz]],
   ["<S-Tab>"]   = [[g,zvzz]],
@@ -60,9 +59,9 @@ map.n({
   ["<leader>k"] = [[:help <C-r>=expand("<cword>")<CR>]],
   ["Y"]         = [[y$]],
   ["si"]        = [[2<C-G>]],
-  ["<a-a>"]     = [[<cmd>keepjumps norm! ggVG<CR>]],
-  ["<leader>t"] = [[:vsp term://$SHELL<CR>]],
   ["i"]         = [[a]],
+  ["<F4>"]      = [[:vsp term://$SHELL<CR>]],
+  -- ["<a-a>"]     = [[<cmd>keepjumps norm! ggVG<CR>]],
 })
 
 map.vn({
@@ -102,31 +101,31 @@ map.v("<C-F>", "<CMD>SearchReplaceSingleBufferVisualSelection<CR>")
 map.n("<C-B>", [[:'<,'>s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]])
 map.v("<C-B>", "<CMD>SearchReplaceWithinVisualSelection<CR>")
 
-map.v("H",         [[:s/^//gI<Left><Left><Left>]]) -- add begin line only
-map.v("L",         [[:s/$//gI<Left><Left><Left>]]) -- add end only
-map.v("K",         [[:s/\(.*\)/X \1 X/gI<Left><Left><Left>]]) -- add word begin and end line
-map.v("<c-space>", [[:s/\s\+/ /g<Left><Left>]]) -- delete space
-map.v("c'",        [[:s/"\([^"]*\)"/""/g<Left><Left>]]) -- change word in quotes
-map.v("c9",        [[:s/"\([^"]*\)"/(\1)/g <Left><Left>]]) -- add word after ()
+map.v("H",              [[:s/^//gI<Left><Left><Left>]])            -- add begin line only
+map.v("L",              [[:s/$//gI<Left><Left><Left>]])            -- add end only
+map.v("K",              [[:s/\(.*\)/X \1 X/gI<Left><Left><Left>]]) -- add word begin and end line
+map.v("<space><space>", [[:s/\s\+/ /g<Left><Left>]])               -- delete space
+map.v("c'",             [[:s/"\([^"]*\)"/""/g<Left><Left><Left>]]) -- change word in quotes
+map.v("c9",             [[:s/"\([^"]*\)"/(\1)/g<Left><Left>]])     -- add word after ()
 
 -- w!! to save with sudo
 -- nmap("c", "w!!", "<esc>:lua require'utils'.sudo_write()<CR>", { silent = true })
 
 -- .nQuickfix list mappings
-map.n("<leader>q", "<cmd>lua require'utils.other'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
-map.n("L", ":cnext<CR>", { silent = true, desc = "Next quickfix" })
-map.n("H", ":cprevious<CR>", { silent = true, desc = "Previous quickfix" })
+map.n("<a-q>", "<cmd>lua require'utils.other'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
+map.n("L",     ":cnext<CR>", { silent = true, desc = "Next quickfix" })
+map.n("H",     ":cprevious<CR>", { silent = true, desc = "Previous quickfix" })
 
 -- .nLocation list mappings
-map.n("<leader>Q", "<cmd>lua require'utils'.other.toggle_qf('l')<CR>", { desc = "toggle location list" })
+map.n("<a-a>", "<cmd>lua require'utils.other'.toggle_qf('l')<CR>", { desc = "toggle location list" })
 map.n("<A-[>", ":lprevious<CR>", { silent = true, desc = "Previous location" })
 map.n("<A-]>", ":lnext<CR>", { silent = true, desc = "Next location" })
 
 map.n("<leader>Y", [["+Y]])
 map.nv("<leader>y", [["+y]])
 
-map.nx("<leader>r", [["*p]], { desc = "paste AFTER from clipboard" })
-map.nx("<leader>r", [["*P]], { desc = "paste BEFORE from clipboard" })
+map.nx("<leader>v", [["*p]], { desc = "paste AFTER from clipboard" })
+map.nx("<leader>v", [["*P]], { desc = "paste BEFORE from clipboard" })
 map.nx("<leader>p", [["+p]], { desc = "paste AFTER from clipboard" })
 map.nx("<leader>P", [["+P]], { desc = "paste BEFORE from clipboard" })
 
@@ -174,7 +173,7 @@ map.n("cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
 
 map.i("<C-Z>", "<ESC>")
 
-map.n("<leader>m", "<CMD>SignatureListBufferMarks<CR>")
+map.n("sm", "<CMD>SignatureListBufferMarks<CR>")
 
 -- custom for lang laravel
 -- map.n("cp", 'vit"apfT')
@@ -223,9 +222,6 @@ end
 map.n("<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
 -- stylua: ignore end
 
--- Use <C-\><C-r> to insert contents of a register in terminal mode
-vim.keymap.set("t", [[<C-\><C-r>]], [['<C-\><C-n>"' . nr2char(getchar()) . 'pi']], { expr = true })
-
 -- Insert stuff
 map.c({
   ["<C-X><C-V>"] = [[<C-R>"]],
@@ -260,7 +256,9 @@ map.n('z.', modify_line_end_delimiter('.'), { desc = "add ';' to end of line" })
 vim.cmd("command! -nargs=+ -complete=file Grep  grep! <args> | redraw! | copen")
 vim.cmd("command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw! | lopen")
 
-map.n("C", [[*N"_cgn]], { desc = "mc change word (forward)", noremap = true })
+map.n("gl", [[:Grep <C-r>=expand("<cword>")<CR> %]], { desc = "search only current file", noremap = true })
+map.n("gL", [[:LGrep <C-r>=expand("<cword>")<CR> %]], { desc = "search only current file", noremap = true })
+map.n("C",  [[*N"_cgn]], { desc = "mc change word (forward)", noremap = true })
 
 -- vim regex
 -- (.*) -- find all word

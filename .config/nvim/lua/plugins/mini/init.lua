@@ -73,8 +73,6 @@ function M.config()
     }
   )
 
-  vim.keymap.set("n", "<a-m>", "gm_", { remap = true })
-  vim.keymap.set("v", "<a-m>", "gm", { remap = true })
 end
 
 return M

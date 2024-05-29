@@ -4,10 +4,30 @@ return {
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     name = "catppuccin",
     priority = 1000,
+    config = function()
+      vim.g.catppuccin_flavour = "mocha"
+      require("catppuccin").setup({
+        compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
+        color_overrides = {
+          mocha = {
+            base = "#131313",
+          },
+        },
+        term_colors = true,
+        integrations = {
+          treesitter = true,
+        },
+        custom_highlights = {
+          NvimTreeNormal = { bg = "NONE" },
+          CmpBorder = { fg = "#3e4145" },
+        },
+      })
+    end,
   },
   {
     "rebelot/kanagawa.nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    enabled = false,
     priority = 1000,
     config = function()
       require("kanagawa").setup({

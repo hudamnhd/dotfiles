@@ -5,9 +5,13 @@ local sep = is_windows and "\\" or "/"
 return {
   {
     "stevearc/three.nvim",
+    -- commit = "713e20011f670e1209d51bdce46c740a774fa42c",
     event = "VeryLazy",
-    commit = "713e20011f670e1209d51bdce46c740a774fa42c",
     opts = {
+      bufferline = {
+        events = { "BufReadPost", "BufWinLeave" },
+        -- should_display = function(tabpage, bufnr, ts) return vim.bo[bufnr].modified end,
+      },
       projects = {
         allowlist = {
           vim.fn.stdpath("data") .. "/lazy",
@@ -35,15 +39,16 @@ return {
       vim.keymap.set("n", "<S-q>", three.move_left,           { desc = "Move buffer left" })
       vim.keymap.set("n", "<c-y>", three.wrap(three.next_tab, { wrap = true }, { desc = "[G]oto next [T]ab" }))
       vim.keymap.set("n", "<c-t>", three.wrap(three.prev_tab, { wrap = true }, { desc = "[G]oto prev [T]ab" }))
-      vim.keymap.set("n", "b",     "<C-6>",                   { desc = "[G]oto prev [T]ab" })
+      -- vim.keymap.set("n", "<a-q>",     "<C-6>",                   { desc = "[G]oto prev [T]ab" })
 
       for i = 1, 20 do
-        vim.keymap.set("n", i .. "b", three.wrap(three.jump_to, i))
+        -- vim.keymap.set("n", i .. "b", three.wrap(three.jump_to, i))
+        vim.keymap.set("n", "<leader>" .. i, three.wrap(three.jump_to, i))
       end
 
       vim.keymap.set("n", "<leader>`",  three.wrap(three.next,    { delta = 100 }))
-      vim.keymap.set("n", "<leader>bh", three.hide_buffer,        { desc = "[B]uffer [H]ide" })
-      vim.keymap.set("n", "<leader>bm", function()
+      vim.keymap.set("n", "sB", three.hide_buffer,        { desc = "[B]uffer [H]ide" })
+      vim.keymap.set("n", "<leader>m", function()
         vim.ui.input({ prompt = "Move buffer to:" }, function(idx)
           idx = idx and tonumber(idx)
           if idx then
@@ -55,13 +60,15 @@ return {
       vim.keymap.set("n", "<leader>wc", "<cmd>tabclose<CR>",                 { desc = "Close tab" })
       vim.keymap.set("n", "<leader>wb", three.clone_tab,                     { desc = "Clone tab" })
       vim.keymap.set("n", "<leader>wn", "<cmd>tabnew | set nobuflisted<CR>", { desc = "New tab" })
-      vim.keymap.set("n", "<leader>w`", three.toggle_scope_by_dir,           { desc = "Toggle tab scoping by directory" })
       vim.keymap.set("n", "<leader>ww",  '<C-W>|')
       vim.keymap.set("n", "<leader>we",  '<C-W>=')
       -- stylua: ignore end
+      vim.keymap.set("n", "<leader>c", three.smart_close, { desc = "[C]lose window or buffer" })
+      -- vim.keymap.set("n", "<leader>q", three.close_buffer, { desc = "[B]uffer [C]lose" })
 
-       vim.keymap.set("n", "<c-p>", three.open_project, { desc = "[F]ind [P]roject" })
-      vim.api.nvim_create_user_command("ProjectDelete", function() three.remove_project()
+      vim.keymap.set("n", "<c-p>", three.open_project, { desc = "[F]ind [P]roject" })
+      vim.api.nvim_create_user_command("ProjectDelete", function()
+        three.remove_project()
       end, {})
     end,
   },
@@ -69,10 +76,11 @@ return {
     "numToStr/Buffers.nvim",
     event = "BufRead",
     config = function()
-      vim.keymap.set("n", "<a-c>", "<C-W>c")
-      vim.keymap.set("n", "<leader><a-c>", '<CMD>lua require("Buffers").only()<CR>') -- BufCloseAllButCurrent
-      vim.keymap.set("n", "<a-q>", '<CMD>lua require("Buffers").delete()<CR>')
-      vim.keymap.set("n", "<leader><a-q>", '<CMD>lua require("Buffers").clear()<CR>') -- BufCloseAll
+      -- vim.keymap.set("n", "<a-c>", "<C-W>c")
+
+      vim.keymap.set("n", "<leader>C", '<CMD>lua require("Buffers").only()<CR>') -- BufCloseAllButCurrent
+      vim.keymap.set("n", "<leader>q", '<CMD>lua require("Buffers").delete()<CR>')
+      vim.keymap.set("n", "<leader>Q", '<CMD>lua require("Buffers").clear()<CR>') -- BufCloseAll
     end,
   },
 }
