@@ -35,16 +35,6 @@ augroup("Oil", function(g)
   })
 end)
 
-augroup("grug-far", function(g)
-  aucmd("FileType", {
-    group = g,
-    pattern = "grug-far",
-    callback = function(e)
-      vim.keymap.set("n", "q", ":bd<cr>", { buffer = e.buf, silent = true })
-    end,
-  })
-end)
-
 augroup("SmartTextYankPost", function(g)
   aucmd("TextYankPost", {
     group = g,
@@ -56,15 +46,15 @@ augroup("SmartTextYankPost", function(g)
 end)
 
 -- disable mini.indentscope for certain filetype|buftype
--- augroup("MiniIndentscopeDisable", function(g)
---   aucmd("BufEnter", {
---     group = g,
---     pattern = "*",
---     command = "if index(['fzf', 'help'], &ft) >= 0 "
---       .. "|| index(['nofile', 'terminal'], &bt) >= 0 "
---       .. "| let b:miniindentscope_disable=v:true | endif",
---   })
--- end)
+ augroup("MiniIndentscopeDisable", function(g)
+   aucmd("BufEnter", {
+     group = g,
+     pattern = "*",
+     command = "if index(['fzf', 'help'], &ft) >= 0 "
+       .. "|| index(['nofile', 'terminal'], &bt) >= 0 "
+       .. "| let b:miniindentscope_disable=v:true | endif",
+   })
+ end)
 
 augroup("NewlineNoAutoComments", function(g)
   aucmd("BufEnter", {

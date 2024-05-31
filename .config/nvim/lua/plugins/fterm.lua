@@ -47,12 +47,12 @@ return {
 
       local commands = {
         "yarn dev",
-        "yarn build",
         "yarn start",
-        "yarn lint",
-        "git pull",
-        "git push",
         "php artisan serve",
+        -- tambahkan perintah lain di sini
+      }
+      local commandsEx = {
+        "yarn build",
         -- tambahkan perintah lain di sini
       }
 
@@ -67,8 +67,15 @@ return {
 
       local function executeFTerm(isScratch)
         local prompt = "Pilih nomor dari daftar:\n"
-        for i, cmd in ipairs(commands) do
-          prompt = prompt .. string.format("%d. %s\n", i, cmd)
+
+        if isScratch then
+          for i, cmd in ipairs(commandsEx) do
+            prompt = prompt .. string.format("%d. %s\n", i, cmd)
+          end
+        else
+          for i, cmd in ipairs(commands) do
+            prompt = prompt .. string.format("%d. %s\n", i, cmd)
+          end
         end
 
         local input = vim.fn.input(prompt .. "Cmd: ")
@@ -95,7 +102,7 @@ return {
 
       local yarndev = fterm:new({
         ft = "fterm_yarn", -- You can also override the default filetype, if you want
-        cmd = "yarn dev",
+        -- cmd = "yarn dev",
         dimensions = {
           height = 0.95,
           width = 0.95,
@@ -111,7 +118,7 @@ return {
 
       local phpserve = fterm:new({
         ft = "fterm_artisanserve", -- You can also override the default filetype, if you want
-        cmd = "php artisan serve",
+        -- cmd = "php artisan serve",
         dimensions = {
           height = 0.95,
           width = 0.95,

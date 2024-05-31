@@ -21,6 +21,7 @@ end
 -- Define custom key mappings for visual and operator-pending modes
 vim.cmd([[
   autocmd BufRead,BufWritePre *.blade.php setlocal ft=php
+  autocmd BufRead,BufWritePre * setlocal syntax=c
   xmap <C-Z> %
   omap <C-Z> %
   nmap <C-Z> %

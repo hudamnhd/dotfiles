@@ -64,7 +64,7 @@ return {
   },
   {
     "thinca/vim-partedit",
-    keys = { "<c-e>" },
+    event = { "BufReadPost" },
     config = function()
       vim.keymap.set({ "x" }, "<c-e>", ":Partedit -opener new -filetype vim -prefix '>'<CR>")
     end,

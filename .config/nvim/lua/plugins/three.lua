@@ -41,7 +41,7 @@ return {
       vim.keymap.set("n", "<c-t>", three.wrap(three.prev_tab, { wrap = true }, { desc = "[G]oto prev [T]ab" }))
       -- vim.keymap.set("n", "<a-q>",     "<C-6>",                   { desc = "[G]oto prev [T]ab" })
 
-      for i = 1, 20 do
+      for i = 1, 9 do
         -- vim.keymap.set("n", i .. "b", three.wrap(three.jump_to, i))
         vim.keymap.set("n", "<leader>" .. i, three.wrap(three.jump_to, i))
       end

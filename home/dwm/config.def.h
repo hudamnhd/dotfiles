@@ -62,26 +62,28 @@ static const Layout layouts[] = {
       	{ MODKEYB|ControlMask, 		KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define SHCMD(cmd) { .v = (const char*[]){ "/bin/zsh", "-c", cmd, NULL } }
 
 
 /* commands */
-static char dmenumon[2]           = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]     = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]      = { "st", NULL };
-static const char *clipmenu[]     = { "clipmenu", NULL };
-static const char *rofi[]         = { "/home/hudamnhd/.local/bin/rofi-custom", NULL };
-static const char *volumedown[]   = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%", NULL };
-static const char *volumeup[]     = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%", NULL };
-static const char *mute[]         = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
-static const char *rofipower[]    = { "rofi", "-show", "p", "-modi", "p:rofi-power-menu", "-me-select-entry", "", "-me-accept-entry", "MousePrimary",  NULL };
-static const char *screenshot[]   = {"/home/hudamnhd/.local/bin/screenshot", NULL};
-static const char *screenrecord[] = {"/home/hudamnhd/.local/bin/screenrecord", NULL};
+static char dmenumon[2]             = "0"; /* component of dmenucmd, manipulated in spawn() */
+static const char *dmenucmd[]       = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *termcmd[]        = { "alacritty", NULL };
+static const char *clipmenu[]       = { "clipmenu", NULL };
+static const char *rofi[]           = { "/home/hudamnhd/.local/bin/rofi-custom", NULL };
+static const char *volumedown[]     = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%", NULL };
+static const char *volumeup[]       = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%", NULL };
+static const char *mute[]           = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
+static const char *rofipower[]      = { "rofi", "-show", "p", "-modi", "p:rofi-power-menu", "-me-select-entry", "", "-me-accept-entry", "MousePrimary",  NULL };
+static const char *screenshot[]     = {"/home/hudamnhd/.local/bin/screenshot", NULL};
+static const char *screenshotfull[] = {"/home/hudamnhd/.local/bin/screenshot-full", NULL};
+static const char *screenrecord[]   = {"/home/hudamnhd/.local/bin/screenrecord", NULL};
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_Delete,                  spawn,          		{.v = rofipower } },
 	{ MODKEY,                       XK_Print,                   spawn,          		{.v = screenshot } },
+	{ 0,                            XK_Print,                   spawn,          		{.v = screenshotfull } },
 	{ MODKEY,                       XK_F12,                     spawn,          		{.v = screenrecord } },
     { MODKEY,                       XK_grave,                   scratchpad_hide,        {0} },
     { MODKEY,                       XK_space,                   togglefloating,			{0} },		

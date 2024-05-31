@@ -1,0 +1,415 @@
+_______________________________________________________________________________________________________________________
+| Mode | Key                                      | Action
+-----------------------------------------------------------------------------------------------------------------------
+| n    | zf                                       | (buffer)
+| v    | zf                                       | grep files
+-----------------------------------------------------------------------------------------------------------------------
+| n    | zj                                       | :<C-U>call append(line("."),   repeat([""], v:count1))<CR> newline below (no insert-mode)
+| n    | zk                                       | :<C-U>call append(line(".")-1, repeat([""], v:count1))<CR> newline above (no insert-mode)
+-----------------------------------------------------------------------------------------------------------------------
+| n    | zl                                       | :put! =printf('console.log(''%s:'',  %s);', expand('<cword>'), expand('<cword>'))<CR><Cmd>move +1<CR>
+| n    | z=                                       | spell suggestions
+-----------------------------------------------------------------------------------------------------------------------
+| n    | z,                                       | add ',' to end of line
+| n    | z;                                       | add ';' to end of line
+| n    | z.                                       | add ';' to end of line
+-----------------------------------------------------------------------------------------------------------------------
+| n    | zm                                       | <Cmd>20messages<CR> open :messages
+| x    | zm                                       | <Cmd>20messages<CR> open :messages
+| n    | zM                                       | <Cmd>mes clear|echo "cleared :messages"<CR> clear :messages
+| x    | zM                                       | <Cmd>mes clear|echo "cleared :messages"<CR> clear :messages
+-----------------------------------------------------------------------------------------------------------------------
+| n    | zq                                       | :wq!<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | sa                                       | :lua require'utils.m.ui.menus'.gitsigns()<CR>
+| n    | sd                                       | :lua require'utils.m.ui.menus'.options()<CR>
+| n    | sq                                       | :lua require'utils.m.ui.menus'.bookmarks()<CR>
+| n    | s0                                       | file history (cwd)
+| n    | sb                                       | Fzf buffers
+| n    | sf                                       | grep string (prompt)
+| n    | sk                                       | (project)
+| v    | sk                                       | grep visual selection
+| n    | sl                                       | (buffer)
+| v    | sl                                       | (buffer)
+| n    | so                                       | <Cmd>MRU<CR> file history (MRU)
+| n    | sp                                       | find files
+-----------------------------------------------------------------------------------------------------------------------
+| s    | s                                        | <Nop>
+| n    | s                                        | <Nop>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | sB                                       | [B]uffer [H]ide
+| n    | se                                       |
+| n    | sh                                       |
+| n    | si                                       | 2<C-G>
+| n    | sn                                       | <Cmd>Drex %:h<CR> open the parent directory
+| n    | sr                                       | grep string resume
+| n    | sm                                       | <Cmd>SignatureListBufferMarks<CR>
+| n    | sy                                       | <Cmd>Unite yankround<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | sss                                      | ss_ Exchange line
+| n    | ss                                       | v:lua.MiniOperators.exchange() Exchange operator
+| x    | s                                        | :<C-U>lua MiniSurround.add('visual')<CR>
+| x    | ss                                       | <Cmd>lua MiniOperators.exchange('visual')<CR> Exchange selection
+-----------------------------------------------------------------------------------------------------------------------
+| n    | st                                       | translate word
+| x    | st                                       | translate selection
+-----------------------------------------------------------------------------------------------------------------------
+| n    | dp                                       | find git_files
+| n    | d;                                       | q:
+| n    | dm                                       | :<C-U>call signature#utils#Remove(v:count)<CR>
+| n    | dd                                       | delete blank lines to black hole register
+| n    | dW                                       | "_ciW
+| n    | dw                                       | "_ciw
+| n    | dt                                       | "_cit
+| n    | dB                                       | "_ciB
+| n    | db                                       | "_cib
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <C-B>                                    | :'<,'>s/<C-R><C-W>/<C-R><C-W>/gI<Left><Left><Left>
+| v    | <C-B>                                    | <Cmd>SearchReplaceWithinVisualSelection<CR>
+| n    | <C-F>                                    | <Cmd>SearchReplaceSingleBufferCWord<CR>
+| v    | <C-F>                                    | <Cmd>SearchReplaceSingleBufferVisualSelection<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <C-N>                                    | <Cmd>lua require("user.drex").find_element("%")<CR> File explorer
+| n    | <C-G>                                    |
+| n    | <C-H>                                    | ^
+| v    | <C-H>                                    | ^
+| n    | <C-L>                                    | g_
+| v    | <C-L>                                    | g_
+| v    | <C-N>                                    | :Align<Space>
+| n    | <C-N>                                    | <Cmd>lua require("user.drex").find_element("%")<CR> File explorer
+| n    | <C-P>                                    | [F]ind [P]roject
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <C-S>                                    | <Esc>:update<CR> Save
+| v    | <C-S>                                    | <Esc>:update<CR> Save
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <C-T>                                    |
+| n    | <C-Y>                                    |
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <C-Z>                                    | %
+| o    | <C-Z>                                    | %
+| x    | <C-Z>                                    | %
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <C-W>d                                   | Show diagnostics under the cursor
+| n    | <C-W><C-D>                               | <C-W>d Show diagnostics under the cursor
+-----------------------------------------------------------------------------------------------------------------------
+|      | <C-J>                                    | <Plug>(edgemotion-j)
+|      | <C-K>                                    | <Plug>(edgemotion-k)
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <C-Up>                                   | <Cmd>lua require'utils.other'.resize(false, -5)<CR> horizontal split increase
+| n    | <C-Right>                                | <Cmd>lua require'utils.other'.resize(true,   5)<CR> vertical split increase
+| n    | <C-Left>                                 | <Cmd>lua require'utils.other'.resize(true,  -5)<CR> vertical split decrease
+| n    | <C-Down>                                 | <Cmd>lua require'utils.other'.resize(false,  5)<CR> horizontal split decrease
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <M-f>                                    |
+| n    | <M-g>                                    |
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <M-r>                                    |
+| n    | <M-w>                                    | <C-W>w
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <M-a>                                    | <Cmd>lua require'utils.other'.toggle_qf('l')<CR> toggle location list
+| n    | <M-q>                                    | <Cmd>lua require'utils.other'.toggle_qf('q')<CR> toggle quickfix list
+| n    | <M-]>                                    | :lnext<CR> Next location
+| n    | <M-[>                                    | :lprevious<CR> Previous location
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Space>`                                 |
+| n    | <Space>1 - 20                            |
+| n    | <Space>a                                 | Append in harpoon
+| n    | <Space>c                                 | [C]lose window or buffer
+| n    | <Space>h                                 |
+| n    | <Space>k                                 | :help <C-R>=expand("<cword>")<CR>
+| n    | <Space>l                                 |
+| n    | <Space>m                                 | [B]uffer [M]ove
+| n    | <Space>n                                 | Clear highlighting
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Space>=                                 | <Plug>(LiveEasyAlign)
+| x    | <Space>=                                 | <Plug>(LiveEasyAlign)
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Space>p                                 | "+p paste AFTER from clipboard
+| x    | <Space>p                                 | "+p paste AFTER from clipboard
+| n    | <Space>P                                 | "+P paste BEFORE from clipboard
+| x    | <Space>P                                 | "+P paste BEFORE from clipboard
+| n    | <Space>v                                 | "*P paste BEFORE from clipboard
+| x    | <Space>v                                 | "*P paste BEFORE from clipboard
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Space>Q                                 | <Cmd>lua require("Buffers").clear()<CR>
+| n    | <Space>q                                 | <Cmd>lua require("Buffers").delete()<CR>
+| n    | <Space>C                                 | <Cmd>lua require("Buffers").only()<CR>
+-----------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Space>wb                                | Clone tab
+| n    | <Space>wc                                | <Cmd>tabclose<CR> Close tab
+| n    | <Space>wn                                | <Cmd>tabnew | set nobuflisted<CR> New tab
+| n    | <Space>w                                 | <C-W>
+| n    | <Space>we                                | <C-W>=
+| n    | <Space>ww                                | <C-W>|
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Space>y                                 | "+y
+| v    | <Space>y                                 | "+y
+| n    | <Space>Y                                 | "+Y
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Space>e                                 |
+| n    | <Space>r                                 |
+| n    | <F1>                                     |
+| n    | <F2>                                     |
+| n    | <F3>                                     |
+| n    | <F4>                                     | :vsp term://$SHELL<CR>
+| n    | <F5>                                     | remove trailing whitespaces
+-----------------------------------------------------------------------------------------------------------------------
+| v    | gcb                                      | :s@^\(.*\)$@{{--\1--}}<CR>:let @/ = ""<CR>
+| v    | gch                                      | :s@^\(.*\)$@<!--\1--><CR>:let @/ = ""<CR>
+| v    | gcj                                      | :s@^\(.*\)$@{/*\1*/}<CR>:let @/ = ""<CR>
+| v    | gub                                      | :s@^{{--\(\(.*[^{\{--]\)\)\?--}}$@\1<CR>:let @/ = ""<CR>
+| v    | guh                                      | :s@^<!--\(\(.*[^<!--]\)\)\?-->$@\1<CR>:let @/ = ""<CR>
+| v    | guj                                      | :s@^{/\*\(\(.*[^{/\*]\)\)\?\*/}$@\1<CR>:let @/ = ""<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| v    | c9                                       | :s/"\([^"]*\)"/(\1)/g<Left><Left>
+| v    | c'                                       | :s/"\([^"]*\)"/""/g<Left><Left><Left>
+| v    | H                                        | :s/^//gI<Left><Left><Left>
+| v    | L                                        | :s/$//gI<Left><Left><Left>
+| v    | <Space><Space>                           | :s/\s\+/ /g<Left><Left>
+| v    | K                                        | :s/\(.*\)/X \1 X/gI<Left><Left><Left>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | gl                                       | :Grep <C-R>=expand("<cword>")<CR> % search only current file
+| n    | gL                                       | :LGrep <C-R>=expand("<cword>")<CR> % search only current file
+-----------------------------------------------------------------------------------------------------------------------
+| n    | c                                        | "_c
+| x    | c                                        | "_c
+| n    | C                                        | *N"_cgn mc change word (forward)
+-----------------------------------------------------------------------------------------------------------------------
+| n    | cl                                       | mzguiw`z 󰬴 UPPERCASE to lowercase
+| n    | ct                                       | mzguiwgUl`z 󰬴 Titlecase
+| n    | cu                                       | mzgUiw`z 󰬴 lowercase to UPPERCASE
+-----------------------------------------------------------------------------------------------------------------------
+| n    | ]d                                       | <Cmd>lua vim.diagnostic.goto_next()<CR>
+| n    | [d                                       | <Cmd>lua vim.diagnostic.goto_prev()<CR>
+|      | \<Tab>                                   | <Cmd>lua require'plugins.mini.indentscope'.btoggle()<CR>
+| n    | g<C-V>                                   | `[v`] visual select last yank/paste
+| n    | g==                                      | g=_ Evaluate line
+| n    | gmm                                      | gm_ Multiply line
+| x    | <                                        | <gv
+| x    | >                                        | >gv
+| n    | gzz                                      | ^gzg_ Sort line
+| n    | D                                        | "_D
+| n    | S                                        | "_S
+| n    | H                                        | :cprevious<CR> Previous quickfix
+| n    | L                                        | :cnext<CR> Next quickfix
+| n    | h                                        | <Cmd>lua require'accelerated-jk'.move_to('h')<CR>
+| n    | J                                        | 'mz' . v:count1 . 'J`z'
+| n    | i                                        | a
+| n    | j                                        | <Plug>(accelerated_jk_gj)
+| n    | k                                        | <Plug>(accelerated_jk_gk)
+| n    | l                                        | <Cmd>lua require'accelerated-jk'.move_to('l')<CR>
+|      | f                                        | hint_char1
+|      | F                                        | hint_words
+| n    | N                                        | Nzzzv Back search '/' or '?'
+| n    | n                                        | nzzzv Fwd  search '/' or '?'
+| n    | =                                        | <Plug>(EasyAlign)
+| x    | =                                        | <Plug>(EasyAlign)
+| x    | p                                        | 'pgv"' . v:register . 'y'
+| o    | q                                        | iq
+| x    | q                                        | iq
+| n    | q                                        | Previous buffer
+| n    | Q                                        | Move buffer left
+| x    | Q                                        | mode() == 'V' ? ':normal! @<C-R>=reg_recorded()<CR><CR>' : 'Q' :help v_Q-default
+| n    | w                                        | Next buffer
+| n    | W                                        | Move buffer right
+| n    | x                                        | "_x
+| x    | x                                        | "_x
+| n    | <S-Tab>                                  | g,zvzz
+| n    | <Tab>                                    | g;zvzz
+| n    | tm                                       | :execute "normal! i" . strftime('%Y-%m-%d %H:%M:%S')<CR><Space>
+| n    | Y                                        | y$
+| n    | yss                                      | ys_
+-----------------------------------------------------------------------------------------------------------------------
+| n    | rr                                       | r_ Replace line
+| n    | rat                                      | vat"_dP
+| s    | r                                        | <Nop>
+| n    | rt                                       | vit"_dP
+| n    | rw                                       | viw"_dP
+-----------------------------------------------------------------------------------------------------------------------
+| v    | <Plug>(EasyAlign)                        | :<C-U>call <SNR>57_easy_align_op(visualmode(), 1)<CR>
+| n    | <Plug>(EasyAlignOperator)                | :set opfunc=<SNR>57_easy_align_op<CR>g@
+| n    | <Plug>(EasyAlignRepeat)                  | :call <SNR>57_easy_align_repeat()<CR>
+| v    | <Plug>(EasyAlignRepeat)                  | :<C-U>call <SNR>57_repeat_in_visual()<CR>
+| n    | <Plug>(EasyAlign)                        | :set opfunc=<SNR>57_easy_align_op<CR>g@
+| v    | <Plug>(LiveEasyAlign)                    | :<C-U>call <SNR>57_live_easy_align_op(visualmode(), 1)<CR>
+| n    | <Plug>(LiveEasyAlign)                    | :set opfunc=<SNR>57_live_easy_align_op<CR>g@
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Plug>PlenaryTestFile                    | :lua require('plenary.test_harness').test_file(vim.fn.expand("%:p"))<CR>
+| o    | @(targets)                               | :<C-U>call targets#do()<CR>
+| x    | @(targets)                               | :<C-U>call targets#do()<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | t                                        | <Nop>
+| s    | t                                        | <Nop>
+-----------------------------------------------------------------------------------------------------------------------
+| o    | b                                        | ib operator pending
+| x    | b                                        | ib operator pending
+| o    | B                                        | iB operator pending
+| x    | B                                        | iB operator pending
+| o    | (                                        | i( operator pending
+| x    | (                                        | i( operator pending
+| o    | {                                        | i{ operator pending
+| x    | {                                        | i{ operator pending
+| o    | T                                        | at operator pending
+| x    | T                                        | at operator pending
+| o    | t                                        | it operator pending
+| x    | t                                        | it operator pending
+| o    | w                                        | iw operator pending
+| x    | w                                        | iw operator pending
+| o    | W                                        | iW operator pending
+| x    | W                                        | iW operator pending
+-----------------------------------------------------------------------------------------------------------------------
+| n    | `1                                       | harpoon
+| n    | `9                                       | harpoon
+-----------------------------------------------------------------------------------------------------------------------
+| o    | a                                        | targets#e('o', 'a', 'a')
+| x    | a                                        | targets#e('o', 'a', 'a')
+| o    | A                                        | targets#e('o', 'A', 'A')
+| x    | A                                        | targets#e('o', 'A', 'A')
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Tab>                                    | @<Cmd>DrexToggle<CR>
+| n    | ~                                        | @<Cmd>Drex ~<CR>
+| n    | h                                        | @<Cmd>lua require("drex.elements").collapse_directory()<CR>
+| n    | d                                        | @<Cmd>lua require("user.drex").flexible_action(require("drex.actions.files").delete, require("drex.actions.files").delete)<CR>
+| n    | l                                        | @<Cmd>lua require("drex.elements").expand_element()<CR>j
+| n    | S                                        | @<Cmd>lua require("drex.actions.stats").stats()<CR>
+| n    | Y                                        | @<Cmd>lua require("drex.actions.text").copy_absolute_path()<CR>
+| n    | y                                        | @<Cmd>lua require("drex.actions.text").copy_name()<CR>
+| n    | a                                        | @<Cmd>lua require("user.drex").create()<CR>
+| n    | <CR>                                     | @<Cmd>lua require("user.drex").open()<CR>
+| n    | p                                        | @<Cmd>lua require("user.drex").copy_and_paste(false)<CR>
+| n    | P                                        | @<Cmd>lua require("user.drex").copy_and_paste(true)<CR>
+| n    | r                                        | @<Cmd>lua require("user.drex").flexible_action(require("drex.actions.files").rename, require("drex.actions.files").multi_rename)<CR>
+| n    | -                                        | @<Cmd>lua require("drex.elements").open_parent_directory()<CR>
+| n    | R                                        | @<Cmd>lua require("drex").reload_directory()<CR>
+| n    | <C-C>                                    | @<Cmd>lua require("drex.clipboard").clear_clipboard()<CR>
+| n    | <C-V>                                    | @<Cmd>lua require("drex.elements").open_file("vs")<CR>
+| n    | <C-X>                                    | @<Cmd>lua require("drex.elements").open_file("sp")<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| o    | ai                                       | <Cmd>lua MiniIndentscope.textobject(true)<CR> Object scope with border
+| x    | ai                                       | <Cmd>lua MiniIndentscope.textobject(true)<CR> Object scope with border
+| o    | gj                                       | <Cmd>lua MiniIndentscope.operator('bottom')<CR> Go to indent scope bottom
+| x    | gj                                       | <Cmd>lua MiniIndentscope.operator('bottom')<CR> Go to indent scope bottom
+| n    | gj                                       | <Cmd>lua MiniIndentscope.operator('bottom', true)<CR> Go to indent scope bottom
+| o    | gk                                       | <Cmd>lua MiniIndentscope.operator('top')<CR> Go to indent scope top
+| x    | gk                                       | <Cmd>lua MiniIndentscope.operator('top')<CR> Go to indent scope top
+| n    | gk                                       | <Cmd>lua MiniIndentscope.operator('top', true)<CR> Go to indent scope top
+-----------------------------------------------------------------------------------------------------------------------
+| x    | g=                                       | <Cmd>lua MiniOperators.evaluate('visual')<CR> Evaluate selection
+| x    | gm                                       | <Cmd>lua MiniOperators.multiply('visual')<CR> Multiply selection
+| n    | gm                                       | v:lua.MiniOperators.multiply() Multiply operator
+| n    | g=                                       | v:lua.MiniOperators.evaluate() Evaluate operator
+| x    | gz                                       | <Cmd>lua MiniOperators.sort('visual')<CR> Sort selection
+| n    | gz                                       | v:lua.MiniOperators.sort() Sort operator
+| n    | r                                        | v:lua.MiniOperators.replace() Replace operator
+| x    | r                                        | <Cmd>lua MiniOperators.replace('visual')<CR> Replace selection
+-----------------------------------------------------------------------------------------------------------------------
+| o    | ii                                       | <Cmd>lua MiniIndentscope.textobject(false)<CR> Object scope
+| x    | ii                                       | <Cmd>lua MiniIndentscope.textobject(false)<CR> Object scope
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Plug>luasnip-delete-check               | LuaSnip: Removes current snippet from jumplist
+| s    | <Plug>luasnip-expand-or-jump             | LuaSnip: Expand or jump in the current snippet
+| s    | <Plug>luasnip-expand-snippet             | LuaSnip: Expand the current snippet
+| s    | <Plug>luasnip-jump-next                  | LuaSnip: Jump to the next node
+| s    | <Plug>luasnip-jump-prev                  | LuaSnip: Jump to the previous node
+| s    | <Plug>luasnip-next-choice                | LuaSnip: Change to the next choice from the choiceNode
+| s    | <Plug>luasnip-prev-choice                | LuaSnip: Change to the previous choice from the choiceNode
+-----------------------------------------------------------------------------------------------------------------------
+| n    | gbc                                      | Comment toggle current block
+| n    | gb                                       | <Plug>(comment_toggle_blockwise) Comment toggle blockwise
+| x    | gb                                       | <Plug>(comment_toggle_blockwise_visual) Comment toggle blockwise (visual)
+| n    | gcA                                      | Comment insert end of line
+| n    | gcc                                      | Comment toggle current line
+| o    | gc                                       | Comment textobject
+| n    | gco                                      | Comment insert below
+| n    | gcO                                      | Comment insert above
+| n    | gc                                       | <Plug>(comment_toggle_linewise) Comment toggle linewise
+| x    | gc                                       | <Plug>(comment_toggle_linewise_visual) Comment toggle linewise (visual)
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Plug>(comment_toggle_blockwise_count)   | Comment toggle blockwise with count
+| n    | <Plug>(comment_toggle_blockwise_current) | Comment toggle current block
+| n    | <Plug>(comment_toggle_blockwise)         | Comment toggle blockwise
+| x    | <Plug>(comment_toggle_blockwise_visual)  | <Esc><Cmd>lua require("Comment.api").locked("toggle.blockwise")(vim.fn.visualmode())<CR> Comment toggle blockwise (visual)
+| n    | <Plug>(comment_toggle_linewise_count)    | Comment toggle linewise with count
+| n    | <Plug>(comment_toggle_linewise_current)  | Comment toggle current line
+| n    | <Plug>(comment_toggle_linewise)          | Comment toggle linewise
+| x    | <Plug>(comment_toggle_linewise_visual)   | <Esc><Cmd>lua require("Comment.api").locked("toggle.linewise")(vim.fn.visualmode())<CR> Comment toggle linewise (visual)
+| o    | i                                        | targets#e('o', 'i', 'i')
+| x    | i                                        | targets#e('o', 'i', 'i')
+| o    | I                                        | targets#e('o', 'I', 'I')
+| x    | I                                        | targets#e('o', 'I', 'I')
+| n    | gx                                       | Opens filepath or URI under cursor with the system handler (file explorer, web browser, …)
+| x    | gx                                       | Opens filepath or URI under cursor with the system handler (file explorer, web browser, …)
+-----------------------------------------------------------------------------------------------------------------------
+| n    | m<Space>                                 | :<C-U>call signature#mark#Purge("all")<CR>
+| n    | m<BS>                                    | :<C-U>call signature#marker#Purge()<CR>
+| n    | m?                                       | :<C-U>call signature#marker#List(v:count, 0)<CR>
+| n    | m/                                       | :<C-U>call signature#mark#List(0, 0)<CR>
+| n    | m-                                       | :<C-U>call signature#mark#Purge("line")<CR>
+| n    | m.                                       | :<C-U>call signature#mark#ToggleAtLine()<CR>
+| n    | m,                                       | :<C-U>call signature#mark#Toggle("next")<CR>
+| n    | m                                        | :<C-U>call signature#utils#Input()<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | <Plug>(yankround-gp)                     | :<C-U>exe yankround#init('gp')|call yankround#activate()<CR>
+| n    | <Plug>(yankround-gP)                     | :<C-U>exe yankround#init('gP')|call yankround#activate()<CR>
+| x    | <Plug>(yankround-gp)                     | :<C-U>exe yankround#init('gp', 'v')|call yankround#activate()<CR>
+| x    | <Plug>(yankround-gP)                     | <Plug>(yankround-gp)
+| n    | <Plug>(yankround-next)                   | :<C-U>call yankround#next()<CR>
+| n    | <Plug>(yankround-p)                      | :<C-U>exe yankround#init('p')|call yankround#activate()<CR>
+| n    | <Plug>(yankround-P)                      | :<C-U>exe yankround#init('P')|call yankround#activate()<CR>
+| x    | <Plug>(yankround-p)                      | :<C-U>exe yankround#init('p', 'v')|call yankround#activate()<CR>
+| x    | <Plug>(yankround-P)                      | <Plug>(yankround-p)
+| n    | <Plug>(yankround-prev)                   | :<C-U>call yankround#prev()<CR>
+| n    | <Plug>(accelerated_jk_gj)                | <Cmd>lua require'accelerated-jk'.move_to('gj')<CR>
+| n    | <Plug>(accelerated_jk_gk)                | <Cmd>lua require'accelerated-jk'.move_to('gk')<CR>
+| n    | <Plug>(accelerated_jk_j)                 | <Cmd>lua require'accelerated-jk'.move_to('j')<CR>
+| n    | <Plug>(accelerated_jk_k)                 | <Cmd>lua require'accelerated-jk'.move_to('k')<CR>
+-----------------------------------------------------------------------------------------------------------------------
+| n    | ]=                                       | :<C-U>call signature#marker#Goto("next", "any",  v:count)<CR>
+| n    | ]-                                       | :<C-U>call signature#marker#Goto("next", "same", v:count)<CR>
+| n    | [=                                       | :<C-U>call signature#marker#Goto("prev", "any",  v:count)<CR>
+| n    | [-                                       | :<C-U>call signature#marker#Goto("prev", "same", v:count)<CR>
+| n    | ']                                       | :<C-U>call signature#mark#Goto("next", "line", "alpha")<CR>
+| n    | ]'                                       | :<C-U>call signature#mark#Goto("next", "line", "pos")<CR>
+| n    | `]                                       | :<C-U>call signature#mark#Goto("next", "spot", "alpha")<CR>
+| n    | ]`                                       | :<C-U>call signature#mark#Goto("next", "spot", "pos")<CR>
+| n    | '[                                       | :<C-U>call signature#mark#Goto("prev", "line", "alpha")<CR>
+| n    | ['                                       | :<C-U>call signature#mark#Goto("prev", "line", "pos")<CR>
+| n    | `[                                       | :<C-U>call signature#mark#Goto("prev", "spot", "alpha")<CR>
+| n    | [`                                       | :<C-U>call signature#mark#Goto("prev", "spot", "pos")<CR>
+| n    | &                                        | :&&<CR>
+| o    | [                                        | i[
+| x    | [                                        | i[
+-----------------------------------------------------------------------------------------------------------------------
+| n    | "                                        | registers
+| x    |                                          | :help v_star-default
+| n    | #                                        |
+| n    |                                          |
+| n    | -                                        |
+| x    | #                                        | :help v_#-default
+| x    | @                                        | mode() == 'V' ? ':normal! @'.getcharstr().'<CR>' : '@'
+| n    | /                                        | ms/
+| x    | /                                        | ms/
+| n    | ?                                        | ms?
+| x    | ?                                        | ms?
+-----------------------------------------------------------------------------------------------------------------------
+| n    | dsn                                      | Delete next surrounding
+| n    | ds                                       | Delete surrounding
+| n    | dsl                                      | Delete previous surrounding
+| n    | gsl                                      | Highlight previous surrounding
+| n    | gs                                       | Highlight surrounding
+| n    | gsn                                      | Highlight next surrounding
+| n    | ys                                       | Add surrounding
+| n    | csl                                      | Replace previous surrounding
+| n    | cs                                       | Replace surrounding
+| n    | csn                                      | Replace next surrounding
+-----------------------------------------------------------------------------------------------------------------------
+| x    | <M-j>                                    | <Cmd>lua MiniMove.move_selection('down')<CR> Move down
+| n    | <M-j>                                    | <Cmd>lua MiniMove.move_line('down')<CR> Move line down
+| n    | <M-h>                                    | <Cmd>lua MiniMove.move_line('left')<CR> Move line left
+| x    | <M-h>                                    | <Cmd>lua MiniMove.move_selection('left')<CR> Move left
+| n    | <M-k>                                    | <Cmd>lua MiniMove.move_line('up')<CR> Move line up
+| x    | <M-k>                                    | <Cmd>lua MiniMove.move_selection('up')<CR> Move up
+| n    | <M-l>                                    | <Cmd>lua MiniMove.move_line('right')<CR> Move line right
+| x    | <M-l>                                    | <Cmd>lua MiniMove.move_selection('right')<CR> Move right
+| x    | <M-l>                                    | <Cmd>lua MiniMove.move_selection('right')<CR> Move right

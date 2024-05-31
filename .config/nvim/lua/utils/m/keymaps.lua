@@ -17,7 +17,6 @@ map.n({
   ["sd"]    = [[:lua require'utils.m.ui.menus'.options()<CR>]],
 })
 
-
 -- COMMENT ---------------------------------------------------------------------------
 -- stylua: ignore start
 map.v({
@@ -31,8 +30,7 @@ map.v({
 -- stylua: ignore end
 
 -- Insert stuff
--- map.i({ ["<C-X><C-T>"] = [[<C-R>=strftime('%Y-%m-%d %H:%M:%S')<CR>]], }, silent)
-map.n({ ["tm"] = [[:execute "normal! i" . strftime('%Y-%m-%d %H:%M:%S')<CR> ]], }, silent)
+map.i({ ["<C-X><C-X>"] = [[<C-R>=strftime('%Y-%m-%d %H:%M:%S')<CR>]], }, silent)
 
 -- Toggle smartcase
 map.c("<C-X><C-I>", function()
@@ -43,11 +41,16 @@ end, { expr = true })
 
 -- disable default keybind
 map.nv({
--- ["a"]       = "<Nop>",
+  ["a"]       = "<Nop>",
   ["t"]       = "<Nop>",
   ["s"]       = "<Nop>",
   ["r"]       = "<Nop>",
   ["<space>"] = "<Nop>",
+})
+
+map.t({
+  ["<esc>"] = [[<C-\><C-n>]],
+  ["<a-w>"] = [[<C-\><C-n><C-w>w]],
 })
 
 map.n({
@@ -105,8 +108,6 @@ map.v("H",              [[:s/^//gI<Left><Left><Left>]])            -- add begin 
 map.v("L",              [[:s/$//gI<Left><Left><Left>]])            -- add end only
 map.v("K",              [[:s/\(.*\)/X \1 X/gI<Left><Left><Left>]]) -- add word begin and end line
 map.v("<space><space>", [[:s/\s\+/ /g<Left><Left>]])               -- delete space
-map.v("c'",             [[:s/"\([^"]*\)"/""/g<Left><Left><Left>]]) -- change word in quotes
-map.v("c9",             [[:s/"\([^"]*\)"/(\1)/g<Left><Left>]])     -- add word after ()
 
 -- w!! to save with sudo
 -- nmap("c", "w!!", "<esc>:lua require'utils'.sudo_write()<CR>", { silent = true })
@@ -124,8 +125,8 @@ map.n("<A-]>", ":lnext<CR>", { silent = true, desc = "Next location" })
 map.n("<leader>Y", [["+Y]])
 map.nv("<leader>y", [["+y]])
 
-map.nx("<leader>v", [["*p]], { desc = "paste AFTER from clipboard" })
-map.nx("<leader>v", [["*P]], { desc = "paste BEFORE from clipboard" })
+-- map.nx("<leader>v", [["*p]], { desc = "paste AFTER from clipboard" })
+-- map.nx("<leader>v", [["*P]], { desc = "paste BEFORE from clipboard" })
 map.nx("<leader>p", [["+p]], { desc = "paste AFTER from clipboard" })
 map.nx("<leader>P", [["+P]], { desc = "paste BEFORE from clipboard" })
 
@@ -170,8 +171,6 @@ map.n("zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]], { si
 map.n("ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
 map.n("cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
 map.n("cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
-
-map.i("<C-Z>", "<ESC>")
 
 map.n("sm", "<CMD>SignatureListBufferMarks<CR>")
 
@@ -289,24 +288,24 @@ for _, c in ipairs({ ",", ".", "!", "?", ";" }) do
 end
 -- any jump over 5 modifies the jumplist
 -- so we can use <C-o> <C-i> to jump back and forth
--- for _, c in ipairs({
---   { "k", "Line up" },
---   { "j", "Line down" },
--- }) do
---   map.n( c[1], ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]), { expr = true, silent = true, desc = c[2] })
--- end
+for _, c in ipairs({
+  { "k", "Line up" },
+  { "j", "Line down" },
+}) do
+  map.n( c[1], ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]), { expr = true, silent = true, desc = c[2] })
+end
 -- move along visual lines, not numbered ones
 -- without interferring with {count}<down|up>
--- for _, c in ipairs({
---   { "k", "<up>", "Visual line up" },
---   { "j", "<down>", "Visual line down" },
--- }) do
---   map.nv(
---     c[1],
---     ([[v:count == 0 ? 'g%s' : '%s']]):format(c[2], c[2]),
---     { expr = true, silent = true, desc = c[3] }
---   )
--- end
+for _, c in ipairs({
+  { "k", "<up>", "Visual line up" },
+  { "j", "<down>", "Visual line down" },
+}) do
+  map.nv(
+    c[1],
+    ([[v:count == 0 ? 'g%s' : '%s']]):format(c[2], c[2]),
+    { expr = true, silent = true, desc = c[3] }
+  )
+end
 
 for k, v in pairs({ ["<down>"] = "<C-n>", ["<up>"] = "<C-p>" }) do
   map.c(k, function()

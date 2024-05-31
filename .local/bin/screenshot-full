@@ -1,0 +1,4 @@
+#!/bin/bash
+ maim | xclip -selection clipboard -t image/png && xclip -selection clipboard -o > ~/Pictures/screenshot/screenshot_$(date '+%Y%m%d%H%M%S').png
+ notify-send "Screenshot Taken" "Fullscreen screenshot saved."
+

@@ -1,7 +1,7 @@
 xrandr --output HDMI-A-0  --brightness 0.45 &
 
  # xrandr --output DisplayPort-0 --auto --right-of HDMI-A-0 ; xrandr --output HDMI-A-0  --brightness 0.45  --output DisplayPort-0 --brightness 0.5 &
-setxkbmap -layout "us"&
+# setxkbmap -layout "us"&
 xset r rate 250 60 &
 # nitrogen --restore &
 nm-applet &
@@ -10,9 +10,9 @@ clipmenud &
 #/usr/libexec/xfce-polkit &
 #picom -bc &
 #!/bin/sh
-feh --no-fehbg --bg-scale '~/.local/share/azote/sample/pxfuel1.jpg' 
+# feh --no-fehbg --bg-scale '~/.local/share/azote/sample/pxfuel1.jpg' 
 dex-autostart --autostart --environment dwm &
-xrdb merge ~/.st/xresources &
+# xrdb merge ~/.st/xresources &
 while sleep 1
 do
 RAM=`free -m | grep "Mem" | awk '{ print $3 }'`
