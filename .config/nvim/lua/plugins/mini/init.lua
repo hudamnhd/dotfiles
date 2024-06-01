@@ -65,8 +65,8 @@ local M = {
   {
     "echasnovski/mini.move",
     version = "*",
-    enabled = false,
-    -- event = { "VeryLazy" },
+    -- enabled = false,
+    event = { "VeryLazy" },
     config = function()
       require("mini.move").setup({
         -- Module mappings. Use `''` (empty string) to disable one.

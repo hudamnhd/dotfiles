@@ -7,10 +7,10 @@ configuration{
     kb-mode-previous: "Shift+Left,Control+Shift+Tab,Control+h";
     kb-remove-char-back: "BackSpace";
     modi: "run,drun,window";
-    lines: 2;
-    font: "IosevkaTree Nerd Font 16";
-    show-icons: true;
-    icon-theme: "Paper Mono";
+    lines: 1;
+    font: "IosevkaTree Nerd Font 14";
+    show-icons: false;
+    icon-theme: "Breeze Dark";
     terminal: "alacritty";
     drun-display-format: "{icon} {name}";
     location: 0;
@@ -27,8 +27,8 @@ element-text, element-icon , mode-switcher {
 }
 
 window {
-    height: 800px;
-    width: 80%;
+    height: 50%;
+    width: 30%;
     border: 3px;
     border-color: @border-col;
     background-color: @bg-col;
@@ -69,7 +69,7 @@ listview {
     border: 0px 0px 0px;
     padding: 6px 0px 0px;
     margin: 10px 0px 0px 20px;
-    columns: 3;
+    columns: 1;
     background-color: @bg-col;
 }
 

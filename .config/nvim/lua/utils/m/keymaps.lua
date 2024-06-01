@@ -259,8 +259,8 @@ map.n("gl", [[:Grep <C-r>=expand("<cword>")<CR> %]], { desc = "search only curre
 map.n("gL", [[:LGrep <C-r>=expand("<cword>")<CR> %]], { desc = "search only current file", noremap = true })
 map.n("C",  [[*N"_cgn]], { desc = "mc change word (forward)", noremap = true })
 
-map.x("<A-k>", ":move '<-2<CR>gv=gv", silent)
-map.x("<A-j>", ":move '>+1<CR>gv=gv", silent)
+-- map.x("<A-k>", ":move '<-2<CR>gv=gv", silent)
+-- map.x("<A-j>", ":move '>+1<CR>gv=gv", silent)
 
 -- vim regex
 -- (.*) -- find all word
