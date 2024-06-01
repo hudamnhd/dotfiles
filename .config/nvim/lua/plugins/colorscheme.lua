@@ -2,6 +2,7 @@ return {
   {
     "catppuccin/nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    enabled = false,
     name = "catppuccin",
     priority = 1000,
     config = function()

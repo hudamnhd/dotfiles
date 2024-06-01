@@ -4,7 +4,8 @@ require("autocmd")
 require("lazyplug")
 
 -- Set colorscheme
-pcall(vim.cmd, [[colorscheme catppuccin]])
+pcall(vim.cmd, [[colorscheme default]])
+-- pcall(vim.cmd, [[colorscheme catppuccin]])
 
 -- Load utility modules
 require("utils.mru")
@@ -14,14 +15,14 @@ require("utils.m.keymaps")
 -- require('utils.m.ui.statusline').setup()
 
 -- Adjust highlighting for kanagawa colorscheme
-if vim.g.colors_name == "catppuccin" then
+if vim.g.colors_name == "default" then
   vim.cmd("hi! link whitespace nontext")
 end
 
 -- Define custom key mappings for visual and operator-pending modes
 vim.cmd([[
-  autocmd BufRead,BufWritePre *.blade.php setlocal ft=php
-  autocmd BufRead,BufWritePre * setlocal syntax=c
+  autocmd BufRead,BufWritePre *.blade.php setlocal ft=blade
+  " autocmd BufRead,BufWritePre * setlocal syntax=c
   xmap <C-Z> %
   omap <C-Z> %
   nmap <C-Z> %

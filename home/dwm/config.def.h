@@ -71,6 +71,7 @@ static const char *dmenucmd[]       = { "dmenu_run", "-m", dmenumon, "-fn", dmen
 static const char *termcmd[]        = { "alacritty", NULL };
 static const char *clipmenu[]       = { "clipmenu", NULL };
 static const char *rofi[]           = { "/home/hudamnhd/.local/bin/rofi-custom", NULL };
+static const char *tabbed[]     = { "tabbed", "alacritty", "--embed", NULL };
 static const char *volumedown[]     = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%", NULL };
 static const char *volumeup[]       = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%", NULL };
 static const char *mute[]           = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
@@ -85,17 +86,16 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_Print,                   spawn,          		{.v = screenshot } },
 	{ 0,                            XK_Print,                   spawn,          		{.v = screenshotfull } },
 	{ MODKEY,                       XK_F12,                     spawn,          		{.v = screenrecord } },
-    { MODKEY,                       XK_grave,                   scratchpad_hide,        {0} },
+	{ MODKEY,                       XK_t,                     spawn,          		{.v = tabbed } },
     { MODKEY,                       XK_space,                   togglefloating,			{0} },		
 	{ MODKEY,                       XK_End,                     quit,      			    {0} },
 	{ MODKEY,                       XK_Tab,                     view,           		{0} },
 
-    { MODKEY,                       XK_q,                       shiftviewclients, 		{.i = +1 } },
+    // { MODKEY,                       XK_q,                       shiftviewclients, 		{.i = +1 } },
 	{ MODKEY,                       XK_w,                       cyclelayout,    		{.i = +1 } },
 	{ MODKEY,                       XK_e,                       incnmaster,     		{.i = +1 } },
 
 	{ MODKEY,                       XK_a,                       focusstack,     		{.i = +1 } },
-    { MODKEY,                       XK_s,                       scratchpad_show,        {0} },	
     { MODKEY,                       XK_d,                       spawn,          		{.v = termcmd } },
 	{ MODKEY,                       XK_f,                       togglefullscr,  		{0} },
 
@@ -125,7 +125,6 @@ static const Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkTagBar,            0,              Button1,        view,           		{0} },
 	{ ClkStatusText,        0,            	Button1,        spawn,          		{.v = rofi } },
-	{ ClkStatusText,        0,            	Button3, 	    scratchpad_remove,		{0} },
 	{ ClkStatusText,        0,            	Button4,        spawn,                  { .v = volumeup } },
 	{ ClkStatusText,        0,            	Button5,        spawn,                  { .v = volumedown } },
 	{ ClkWinTitle,          0,              Button1,        spawn,          		{.v = rofi } },	

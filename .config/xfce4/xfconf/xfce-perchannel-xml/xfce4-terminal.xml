@@ -5,4 +5,20 @@
   <property name="font-name" type="string" value="IosevkaTree Nerd Font Semi-Bold 12"/>
   <property name="cell-width-scale" type="double" value="1"/>
   <property name="cell-height-scale" type="double" value="1"/>
+  <property name="color-foreground" type="string" value="#000000"/>
+  <property name="color-background" type="string" value="#ffffff"/>
+  <property name="color-background-vary" type="bool" value="false"/>
+  <property name="color-cursor-foreground" type="string" value=""/>
+  <property name="color-cursor" type="string" value=""/>
+  <property name="color-cursor-use-default" type="bool" value="true"/>
+  <property name="color-selection" type="string" value=""/>
+  <property name="color-selection-background" type="string" value=""/>
+  <property name="color-selection-use-default" type="bool" value="true"/>
+  <property name="color-bold" type="string" value=""/>
+  <property name="color-bold-use-default" type="bool" value="true"/>
+  <property name="color-palette" type="string" value="#000000;#cd0000;#00cd00;#cdcd00;#0000cd;#cd00cd;#00cdcd;#e5e5e5;#7f7f7f;#ff0000;#00ff00;#ffff00;#5c5cff;#ff00ff;#00ffff;#ffffff"/>
+  <property name="color-bold-is-bright" type="bool" value="true"/>
+  <property name="color-use-theme" type="bool" value="false"/>
+  <property name="tab-activity-color" type="string" value="#aa0000"/>
+  <property name="font-allow-bold" type="bool" value="true"/>
 </channel>

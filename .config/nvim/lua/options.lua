@@ -3,13 +3,14 @@ local o         = vim.opt
 -- o.mouse      = ""     -- disable the mouse
 o.termguicolors = true   -- enable 24bit colors
 
-o.timeoutlen    = 750    -- for `which-key`
-o.updatetime    = 250    -- decrease update time
-o.fileformat    = "unix" -- <nl> for EOL
-o.switchbuf     = "useopen"
-o.fileencoding  = "utf-8"
-o.matchpairs    = { "(:)", "{:}", "[:]", "<:>" }
-o.lazyredraw = true
+o.synmaxcol    = 1500    -- for `syntax`
+o.timeoutlen   = 750    -- for `which-key`
+o.updatetime   = 250    -- decrease update time
+o.fileformat   = "unix" -- <nl> for EOL
+o.switchbuf    = "useopen"
+o.fileencoding = "utf-8"
+o.matchpairs   = { "(:)", "{:}", "[:]", "<:>" }
+o.lazyredraw   = true
 -- recursive :find in current dir
 vim.cmd [[set path=.,,,$PWD/**]]
 
@@ -25,8 +26,8 @@ o.scrolloff           = 3                           -- min number of lines to ke
 o.sidescrolloff       = 5                           -- min number of cols to keep between cursor and screen edge
 o.textwidth           = 99                          -- max inserted text width for paste operations
 o.number              = true                        -- show absolute line no. at the cursor pos
-o.relativenumber      = true                        -- otherwise, show relative numbers in the ruler
-o.cursorline          = true                        -- Show a line where the current cursor is
+o.relativenumber      = false                        -- otherwise, show relative numbers in the ruler
+o.cursorline          = false                        -- Show a line where the current cursor is
 -- o.cursorlineopt       = "number"
 o.signcolumn          = "yes"                       -- Show sign column as first column
 -- vim.g._colorcolumn = 0                         -- global var, mark column 100

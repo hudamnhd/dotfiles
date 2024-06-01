@@ -1,34 +1,19 @@
-# Zathura configuration file
-# See man `man zathurarc'
+# zathura configuration file.
+# ~/.config/zathura/zathurarc
+# thx ayb & Steve S. :)
 
-# Options
-set recolor "true"
-set render-loading "true"
-set recolor-reverse-video "true"
-set recolor-keephue "true"
+# Set dark mode colors
+set default-bg "#2e3440"
+set default-fg "#d8dee9"
+
+# Comment|uncomment the following lines to enable normal|dark mode
+# or press Ctrl+r when viewing a document
+set recolor true
+set recolor-lightcolor "#2e3440"
+set recolor-darkcolor "#d8dee9"
+
+# Kepp colors - thx @Croutons
+set recolor-reverse-video true
+
+# Enable copy to clipboard
 set selection-clipboard clipboard
-
-# Open document in fit-width mode by default
-set adjust-open "best-fit"
-
-# One page per row by default
-set pages-per-row 1
-
-# Stop at page boundries
-set scroll-page-aware "true"
-set scroll-full-overlap 0.01
-set scroll-step 100
-
-# Zoom settings
-set zoom-min 10
-set guioptions ""
-
-set font "JetBrainsMono Nerd Font 13"
-set render-loading "false"
-set scroll-step 50
-
-# Theme
-include themes/gruvchad
-
-map d scroll half-down
-map u scroll half-up

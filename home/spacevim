@@ -44,7 +44,7 @@ colorscheme codedark
   " Uncomment the following line If you have installed the powerline fonts.
   " let g:airline_powerline_fonts = 1
     let $FZF_DEFAULT_COMMAND = 'fd --type f  --follow -E .git --ignore-file ~/.gitignore'
-    let $FZF_DEFAULT_OPTS = "--layout=reverse --ansi  --border --bind 'ctrl-f:reload(fd --type f --strip-cwd-prefix --hidden --follow --exclude .git),ctrl-g:reload(fd --type f  --follow -E .git --ignore-file ~/.gitignore)'"
+    let $FZF_DEFAULT_OPTS = "--layout=reverse --ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}' --border --bind 'ctrl-f:reload(fd --type f --strip-cwd-prefix --hidden --follow --exclude .git),ctrl-g:reload(fd --type f  --follow -E .git --ignore-file ~/.gitignore)'"
             
 
     " Match the theme on the FZF window

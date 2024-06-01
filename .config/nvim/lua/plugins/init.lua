@@ -16,22 +16,34 @@ return {
   --     end, { silent = true, desc = "grug-far" })
   --   end,
   -- },
--- install with yarn or npm
-{
-  "iamcco/markdown-preview.nvim",
-  cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-  build = "cd app && yarn install",
-  init = function()
-    vim.g.mkdp_filetypes = { "markdown" }
-  end,
-  ft = { "markdown" },
-},
+  -- install with yarn or npm
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && yarn install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+    end,
+    ft = { "markdown" },
+  },
   {
     "cohama/agit.vim",
     keys = { "<a-g>", "<a-f>" },
     config = function()
       vim.keymap.set("n", "<a-g>", "<CMD>Agit<CR>")
       vim.keymap.set("n", "<a-f>", "<CMD>AgitFile<CR>")
+    end,
+  },
+  {
+    "nvimdev/indentmini.nvim",
+    event = { "BufReadPost" },
+    config = function()
+      require("indentmini").setup() -- use default config
+      -- Colors are applied automatically based on user-defined highlight groups.
+      -- There is no default value.
+      vim.cmd.highlight("IndentLine guifg=#45475a")
+      -- Current indent line highlight
+      vim.cmd.highlight("IndentLineCurrent guifg=#9CABCA")
     end,
   },
   {

@@ -7,11 +7,21 @@ return {
       require("nvim-treesitter.configs").setup({
         ensure_installed = {
           "c",
+          "cpp",
+          "html",
+          "json",
+          "prisma",
+          "solidity",
+          "tsx",
+          "typescript",
+          "php",
+          "php_only",
+          "javascript",
         },
         ignore_install = { "comment" },
 
         highlight = {
-          enable = false,
+          enable = true,
           disable = function(lang, buf)
             -- disable highlighting for certain file types
             -- help     : https://github.com/nvim-treesitter/nvim-treesitter/pull/3555
@@ -51,6 +61,8 @@ return {
        }
 
        -- vim.treesitter.language.register("javascript", all_lang)
+        vim.treesitter.language.register("php_only", "php")
+        vim.treesitter.language.register("javascript", "blade")
     end,
   },
 }
