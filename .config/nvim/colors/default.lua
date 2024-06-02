@@ -10,17 +10,6 @@ vim.g.colors_name = 'default'
 
 if vim.go.background == 'dark' then
 
-  vim.api.nvim_set_hl(0, "Function",                  { bold = false })
-  vim.api.nvim_set_hl(0, "TabLineSel",                { fg = "#011627", bg = "#7c8f8f" })
-  vim.api.nvim_set_hl(0, "TabLineIndexSel",           { fg = "#011627", bg = "#7c8f8f" })
-  vim.api.nvim_set_hl(0, "TabLineDividerSel",         { fg = "#ff9e3b", bg = "#7c8f8f" })
-  vim.api.nvim_set_hl(0, "TabLineModifiedSel",        { fg = "#011627", bg = "#ff9e3b" })
-  vim.api.nvim_set_hl(0, "TabLineIndexModifiedSel",   { fg = "#011627", bg = "#ff9e3b" })
-  vim.api.nvim_set_hl(0, "TabLineDividerModifiedSel", { fg = "#ff9e3b", bg = "none" })
-  vim.api.nvim_set_hl(0, "TabLine",                   { fg = "#eeeeee", bg = "#3E4452" })
-  vim.api.nvim_set_hl(0, "TabLineDivider",            { fg = "#eeeeee", bg = "#3E4452" })
-  vim.api.nvim_set_hl(0, "TabLineDividerVisible",     { fg = "#eeeeee", bg = "#3E4452" })
-  vim.api.nvim_set_hl(0, "TabLineIndexVisible",       { fg = "#eeeeee", bg = "#3E4452" })
   vim.api.nvim_set_hl(0, 'LineNr',                    { fg = 'NvimLightGrey4', ctermfg = 8 })
   -- vim.api.nvim_set_hl(0, 'Comment',                   { fg = 'NvimDarkGrey5', ctermfg = 8 })
   vim.api.nvim_set_hl(0, 'NonText',                   { fg = 'NvimDarkGrey4', ctermfg = 8 })

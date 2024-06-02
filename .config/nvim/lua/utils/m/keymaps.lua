@@ -1,5 +1,4 @@
-local m = require("utils.m")
-local map  = m.map
+local map  = require('utils.m.util.map')
 local silent = { silent = true }
 
 
@@ -8,14 +7,6 @@ map.nx({ ["/"] = "ms/", ["?"] = "ms?"  }) -- Save initial search position
 map.x({ ["<"] = "<gv", [">"] = ">gv"  })
 
 -- BUFFERS -------------------------------------------------------------------------------
-map.n({ ["zq"] = [[:wq!<CR>]], }, silent)
-
--- FILES ---------------------------------------------------------------------------------
-map.n({
-  ["sq"]    = [[:lua require'utils.m.ui.menus'.bookmarks()<CR>]],
-  ["sa"]    = [[:lua require'utils.m.ui.menus'.gitsigns()<CR>]],
-  ["sd"]    = [[:lua require'utils.m.ui.menus'.options()<CR>]],
-})
 
 -- COMMENT ---------------------------------------------------------------------------
 -- stylua: ignore start
@@ -28,9 +19,6 @@ map.v({
   ["guh"] = [[:s@^<!--\(\(.*[^<!--]\)\)\?-->$@\1<CR>:let @/ = ""<CR>]],
 })
 -- stylua: ignore end
-
--- Insert stuff
-map.i({ ["<C-X><C-X>"] = [[<C-R>=strftime('%Y-%m-%d %H:%M:%S')<CR>]], }, silent)
 
 -- Toggle smartcase
 map.c("<C-X><C-I>", function()
@@ -61,7 +49,6 @@ map.n({
   ["<leader>w"] = [[<C-W>]],
   ["<leader>k"] = [[:help <C-r>=expand("<cword>")<CR>]],
   ["Y"]         = [[y$]],
-  ["si"]        = [[2<C-G>]],
   ["i"]         = [[a]],
   ["<F4>"]      = [[:vsp term://$SHELL<CR>]],
   -- ["<a-a>"]     = [[<cmd>keepjumps norm! ggVG<CR>]],
@@ -90,12 +77,6 @@ map.xo({
   ["T"]         = [[at]],
 },{ desc = "operator pending" })
 
--- .nshortcut to view :messages
-map.nx("zm", "<cmd>20messages<CR>", { desc = "open :messages" })
-map.nx("zM", [[<cmd>mes clear|echo "cleared :messages"<CR>]], { desc = "clear :messages" })
--- .nstylua: ignore end
-
--- .n<ctrl-s> to Save
 map.nvi("<C-S>", "<esc>:update<cr>", { silent = true, desc = "Save" })
 
 -- SearchReplace with plugin
@@ -125,8 +106,6 @@ map.n("<A-]>", ":lnext<CR>", { silent = true, desc = "Next location" })
 map.n("<leader>Y", [["+Y]])
 map.nv("<leader>y", [["+y]])
 
--- map.nx("<leader>v", [["*p]], { desc = "paste AFTER from clipboard" })
--- map.nx("<leader>v", [["*P]], { desc = "paste BEFORE from clipboard" })
 map.nx("<leader>p", [["+p]], { desc = "paste AFTER from clipboard" })
 map.nx("<leader>P", [["+P]], { desc = "paste BEFORE from clipboard" })
 
@@ -162,17 +141,12 @@ end, { expr = true, desc = "delete blank lines to black hole register" })
 map.n("n", "nzzzv", { desc = "Fwd  search '/' or '?'" })
 map.n("N", "Nzzzv", { desc = "Back search '/' or '?'" })
 
--- stylua: ignore start
-map.n("zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { silent = true, desc = "newline below (no insert-mode)" })
-map.n("zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]], { silent = true, desc = "newline above (no insert-mode)" })
--- stylua: ignore end
-
 -- emulate some basic commands from `vim-abolish`
 map.n("ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
 map.n("cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
 map.n("cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
 
-map.n("sm", "<CMD>SignatureListBufferMarks<CR>")
+map.n("mm", "<CMD>SignatureListBufferMarks<CR>")
 
 -- custom for lang laravel
 -- map.n("cp", 'vit"apfT')
@@ -221,7 +195,6 @@ end
 map.n("<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
 -- stylua: ignore end
 
--- Insert stuff
 map.c({
   ["<C-X><C-V>"] = [[<C-R>"]],
   ["<C-V>"]      = [[<C-R>+]],
@@ -248,6 +221,16 @@ map.n('z,', modify_line_end_delimiter(','), { desc = "add ',' to end of line" })
 map.n('z;', modify_line_end_delimiter(';'), { desc = "add ';' to end of line" })
 map.n('z.', modify_line_end_delimiter('.'), { desc = "add ';' to end of line" })
 
+-- stylua: ignore start
+map.n("zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { silent = true, desc = "newline below (no insert-mode)" })
+map.n("zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]], { silent = true, desc = "newline above (no insert-mode)" })
+
+map.nx("zm", "<cmd>20messages<CR>", { desc = "open :messages" })
+map.nx("zM", [[<cmd>mes clear|echo "cleared :messages"<CR>]], { desc = "clear :messages" })
+
+map.n({["zq"] = [[:wq!<CR>]], }, silent)
+-- stylua: ignore end
+
 -- Use ':Grep' or ':LGrep' to grep into quickfix|loclist
 -- without output or jumping to first match
 -- Use ':Grep <pattern> %' to search only current file
@@ -257,6 +240,7 @@ vim.cmd("command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw
 
 map.n("gl", [[:Grep <C-r>=expand("<cword>")<CR> %]], { desc = "search only current file", noremap = true })
 map.n("gL", [[:LGrep <C-r>=expand("<cword>")<CR> %]], { desc = "search only current file", noremap = true })
+
 map.n("C",  [[*N"_cgn]], { desc = "mc change word (forward)", noremap = true })
 
 -- map.x("<A-k>", ":move '<-2<CR>gv=gv", silent)

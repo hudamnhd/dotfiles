@@ -109,13 +109,14 @@ export PATH="/usr/local/bin:$PATH"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 alias ta='tmux attach -t'
+alias fd='fdfind'
 alias tl='tmux list-sessions'
 alias ts='tmux new-session -A -D -s'
 alias duh='du -d 1 -h'
 alias gsed='sed'
 # Set up fzf key bindings and fuzzy completion
 
-export FZF_DEFAULT_COMMAND="fd --type file --color=always"
+export FZF_DEFAULT_COMMAND="fdfind --type file --color=always"
 export EDITOR='nvim'
 export TERMINAL='st'
 export FZF_DEFAULT_OPTS='--no-height --layout=reverse --border  --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#A9B665,fg:#D4BE98,header:#928374,info:#89B482,pointer:#7DAEA3,marker:#D8A657,fg+:#D4BE98,prompt:#E78A4E,hl+:#89B482' 

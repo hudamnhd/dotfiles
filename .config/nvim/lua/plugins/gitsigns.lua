@@ -21,24 +21,28 @@ M.config = function()
     preview_config = { border = "rounded" },
     on_attach = function(bufnr)
       local gs = package.loaded.gitsigns
-
       local function map(mode, l, r, opts)
         opts = opts or {}
         opts.buffer = bufnr
         vim.keymap.set(mode, l, r, opts)
       end
+      local opts = { buffer = buf, expr = true, replace_keycodes = false }
 
-      map("n", "]c", function() if vim.wo.diff then return "]c" end vim.schedule(function() gs.next_hunk() end) return "<Ignore>" end, { expr = true, desc = "Next hunk" })
-      map("n", "[c", function() if vim.wo.diff then return "[c" end vim.schedule(function() gs.prev_hunk() end) return "<Ignore>" end, { expr = true, desc = "Previous hunk" })
+      -- Navigation
+      map("n", "]c", "&diff ? ']c' : '<CMD>Gitsigns next_hunk<CR>'", opts)
+      map("n", "[c", "&diff ? '[c' : '<CMD>Gitsigns prev_hunk<CR>'", opts)
 
-      map( { "n", "v" }, "gsx",[[<cmd>lua require("gitsigns").reset_hunk()<CR>]],{ desc = "reset hunk" })
-      map( { "n", "v" }, "gsa",[[<cmd>lua require("gitsigns").stage_hunk()<CR>]],{ desc = "stage hunk" })
+      -- Actions
+      map({ "n", "v" }, "gr", gs.reset_hunk, { buffer = buf })
+      map({ "n", "v" }, "ga", gs.stage_hunk)
 
-      -- Text object
-      map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+      map("n", "gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
+      map("n", "sh", gs.preview_hunk, { buffer = buf })
+
+      -- text object
+      map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { buffer = buf })
     end,
   })
 end
 
 return M
-

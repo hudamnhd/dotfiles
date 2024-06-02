@@ -32,7 +32,7 @@ return {
       vim.list_extend(opts.projects.allowlist, vim.tbl_keys(opts.projects.extra_allowlist))
       local three = require("three")
       three.setup(opts)
--- stylua: ignore start
+      -- stylua: ignore start
       vim.keymap.set("n", "w",     three.next,                { desc = "Next buffer" })
       vim.keymap.set("n", "q",     three.prev,                { desc = "Previous buffer" })
       vim.keymap.set("n", "<S-w>", three.move_right,          { desc = "Move buffer right" })

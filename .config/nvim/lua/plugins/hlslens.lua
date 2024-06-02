@@ -45,18 +45,6 @@ return {
         hlslens.start()
       end,
     })
-    keymap.set("n", "<leader>h", "", {
-      callback = function()
-        vim.fn.execute("normal! *N")
-        hlslens.start()
-      end,
-    })
-    keymap.set("n", "<leader>h", "", {
-      callback = function()
-        vim.fn.execute("normal! *N")
-        hlslens.start()
-      end,
-    })
     keymap.set("n", "#", "", {
       callback = function()
         vim.fn.execute("normal! #N")

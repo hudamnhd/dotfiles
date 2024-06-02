@@ -4,8 +4,8 @@ local o         = vim.opt
 o.termguicolors = true   -- enable 24bit colors
 
 o.synmaxcol    = 1500    -- for `syntax`
-o.timeoutlen   = 750    -- for `which-key`
-o.updatetime   = 250    -- decrease update time
+o.timeoutlen   = 500    -- for `which-key`
+o.updatetime   = 100    -- decrease update time
 o.fileformat   = "unix" -- <nl> for EOL
 o.switchbuf    = "useopen"
 o.fileencoding = "utf-8"
@@ -34,7 +34,7 @@ o.signcolumn          = "yes"                       -- Show sign column as first
 -- vim.g._colorcolumn = 100                         -- global var, mark column 100
 -- o.colorcolumn      = tostring(vim.g._colorcolumn)
 
-o.wrap         = true
+o.wrap         = false
 o.linebreak    = true
 o.breakindent  = true
 -- o.smoothscroll = true

@@ -12,9 +12,6 @@ local mfzf = function(mode, key, f, options, buffer)
   local rhs = function()
     local fzf_lua = require("fzf-lua")
     local custom = require("plugins.fzf-lua.cmds")
-    -- use deepcopy so options ref isn't saved in the mapping
-    -- as this can create weird issues, for example, `lgrep_curbuf`
-    -- saving the filename in between executions
     if custom[f] then
       custom[f](options and vim.deepcopy(options) or {})
     else
@@ -41,13 +38,17 @@ map("n",  "so", "<CMD>MRU<CR>", { desc = "file history (MRU)" })
 mfzf("n", "s0", "oldfiles", function() return { desc = "file history (cwd)", cwd = vim.loop.cwd(), cwd_header = true, cwd_only = true } end)
 
 mfzf("n", "sp", "files", { desc = "find files"})
-
 mfzf("n", "dp", "git_files", { desc = "find git_files"})
-
 mfzf("n", "sb", "buffers", { desc = "Fzf buffers" })
 
 mfzf("v", "sk", "grep_visual", { desc = "grep visual selection" })
 mfzf("n", "sk", "grep_cword", { desc = "grep <word> (project)" })
+
+-- git
+mfzf("n", "sgs", "git_status", { desc = "git status" })
+mfzf("n", "sgB", "git_branches", { desc = "git branches" })
+mfzf("n", "sgc", "git_commits", { desc = "git commits (project)" })
+mfzf({ "n", "v" }, "sgb", "git_bcommits", { desc = "git commits (buffer)" })
 
 mfzf("n", "sl", "grep_curbuf", function() return { desc = "grep <word> (buffer)", prompt = "Buffer❯ ", search = vim.fn.expand("<cword>") } end)
 mfzf("v", "sl", "grep_curbuf", function() return { desc = "grep <WORD> (buffer)", prompt = "Buffer❯ ", search = require("utils.other").get_visual_selection(true) } end)
@@ -73,6 +74,3 @@ mfzf("n", "z=", "spell_suggest", {
   },
 })
 
--- mfzf("n", "sH", "oldfiles", { desc = "file history (all)", cwd = "~", cwd_header = false }) --replace with mru
--- mfzf("n", "sfp", "files", { desc = "plugin files", prompt = "Plugins❯ ", cwd = vim.fn.stdpath("data") .. "/lazy", })
--- mfzf("n", [[<leader>;]], "tmux_buffers", { desc = "tmux paste buffers" })

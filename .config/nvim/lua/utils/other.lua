@@ -251,12 +251,4 @@ M.sudo_write = function(tmpfile, filepath)
   vim.fn.delete(tmpfile)
 end
 
-
-M.paste_text_to_register = function(register)
-  -- local text_to_paste = vim.fn.input("Paste text: ")
-  local text_to_paste = [[ {{ Lang::t(['id' => 'Tanggal', 'en' => 'Date']) }} ]]
-  vim.fn.setreg(register, text_to_paste)
-  print("Text pasted to register '" .. register .. "' successfully!")
-end
-
 return M
