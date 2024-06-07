@@ -1,6 +1,6 @@
 return {
   "smoka7/hop.nvim",
-  event = { "BufReadPost" },
+  keys = { "f", "F" },
   config = function()
     require("hop").setup()
     local map = vim.keymap.set

@@ -45,17 +45,6 @@ augroup("SmartTextYankPost", function(g)
   })
 end)
 
--- disable mini.indentscope for certain filetype|buftype
- augroup("MiniIndentscopeDisable", function(g)
-   aucmd("BufEnter", {
-     group = g,
-     pattern = "*",
-     command = "if index(['fzf', 'help'], &ft) >= 0 "
-       .. "|| index(['nofile', 'terminal'], &bt) >= 0 "
-       .. "| let b:miniindentscope_disable=v:true | endif",
-   })
- end)
-
 augroup("NewlineNoAutoComments", function(g)
   aucmd("BufEnter", {
     group = g,
@@ -410,3 +399,9 @@ vim.keymap.set("x", "st", function()
   end
   enter_translate_cmd(table.concat(text, " "):gsub("%s%s+", " "))
 end, { desc = "translate selection" })
+
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES

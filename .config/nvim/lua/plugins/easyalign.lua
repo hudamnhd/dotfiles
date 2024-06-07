@@ -1,17 +1,17 @@
 return {
-   {
-     "RRethy/nvim-align",
-     event = { "BufReadPost" },
-     config = function()
-       -- :'<,'>Align regex_pattern.*
-       -- :'<,'>Align =
-       -- :Align x\s*=
-       vim.keymap.set("v", "<C-N>", ":Align<space>")
-     end,
-   },
+  {
+    "RRethy/nvim-align",
+    keys = { { "<C-N>", mode = { "x" } } },
+    config = function()
+      -- :'<,'>Align regex_pattern.*
+      -- :'<,'>Align =
+      -- :Align x\s*=
+      vim.keymap.set("x", "<C-N>", ":Align<space>")
+    end,
+  },
   {
     "junegunn/vim-easy-align",
-    event = { "BufReadPost" },
+    keys = { { "=", mode = { "n", "x" } }, { "<leader>=", mode = { "n", "x" } } },
     config = function()
       vim.g.easy_align_delimiters = {
         ["\\"] = {

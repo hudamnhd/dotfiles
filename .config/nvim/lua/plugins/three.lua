@@ -14,7 +14,7 @@ return {
       },
       projects = {
         allowlist = {
-          vim.fn.stdpath("data") .. "/lazy",
+          -- vim.fn.stdpath("data") .. "/lazy",
           vim.fs.normalize("~/dotfiles"),
         },
         extra_allowlist = {},
@@ -66,7 +66,7 @@ return {
       vim.keymap.set("n", "<leader>c", three.smart_close, { desc = "[C]lose window or buffer" })
       -- vim.keymap.set("n", "<leader>q", three.close_buffer, { desc = "[B]uffer [C]lose" })
 
-      vim.keymap.set("n", "<c-p>", three.open_project, { desc = "[F]ind [P]roject" })
+      vim.keymap.set("n", "sw", three.open_project, { desc = "[F]ind [P]roject" })
       vim.api.nvim_create_user_command("ProjectDelete", function()
         three.remove_project()
       end, {})
@@ -77,7 +77,6 @@ return {
     event = "BufRead",
     config = function()
       -- vim.keymap.set("n", "<a-c>", "<C-W>c")
-
       vim.keymap.set("n", "<leader>C", '<CMD>lua require("Buffers").only()<CR>') -- BufCloseAllButCurrent
       vim.keymap.set("n", "<leader>q", '<CMD>lua require("Buffers").delete()<CR>')
       vim.keymap.set("n", "<leader>Q", '<CMD>lua require("Buffers").clear()<CR>') -- BufCloseAll

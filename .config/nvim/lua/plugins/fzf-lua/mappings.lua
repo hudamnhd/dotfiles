@@ -31,6 +31,20 @@ end
 local map = vim.keymap.set
 
 -- stylua: ignore start
+mfzf("n", "<leader>.", "builtin", { desc = "builtin commands" })
+mfzf("n", "<leader><F1>", "man_pages", { desc = "man pages" })
+
+mfzf("n", "sqm", "marks", { desc = "marks" })
+mfzf("n", "sqc", "commands", { desc = "commands" })
+mfzf("n", "sqq", "command_history", { desc = "command history" })
+mfzf("n", "sqs", "search_history", { desc = "search history" })
+mfzf("n", "sqe", "diagnostics_document", { desc = "document diagnostics [LSP]" })
+mfzf("n", "sqd", "diagnostics_workspace", { desc = "workspace diagnostics [LSP]" })
+mfzf("n", "sqn", "files", {
+  desc = "Note files",
+  prompt = "Notes❯ ",
+  cwd = "~/vimwiki"
+})
 map("i",  "<C-x><C-f>", function() require("fzf-lua").complete_path({ file_icons = false }) end, { silent = true, desc = "Fuzzy complete path" })
 map("i",  "<C-x><C-l>", function() require("fzf-lua").complete_line() end, { silent = true, desc = "Fuzzy complete line" })
 

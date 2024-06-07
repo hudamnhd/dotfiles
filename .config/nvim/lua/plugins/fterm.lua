@@ -1,7 +1,7 @@
 return {
   {
     "numToStr/FTerm.nvim",
-    keys = { "<leader>r", "<leader>e", "se", "<c-g>", "<F1>", "<F2>", "<F3>" },
+    keys = { "<leader>re", "<leader>rr", "se", "<c-g>", "<F1>", "<F2>", "<F3>" },
     config = function()
       require("FTerm").setup({
         border = "rounded",
@@ -89,12 +89,12 @@ return {
         end
       end
 
-      vim.keymap.set("n", "<leader>r", function()
+      vim.keymap.set("n", "<leader>re", function()
         pcall(function()
           executeFTerm(false)
         end)
       end, { noremap = true, silent = true })
-      vim.keymap.set("n", "<leader>e", function()
+      vim.keymap.set("n", "<leader>rr", function()
         pcall(function()
           executeFTerm(true)
         end)

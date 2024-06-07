@@ -1,4 +1,17 @@
 return {
+  -- generate theme bat
+  -- {
+  --     "linrongbin16/fzfx.nvim",
+  --     event = { "BufReadPost" },
+  --     dependencies = { "nvim-tree/nvim-web-devicons", 'junegunn/fzf' },
+  --
+  --     -- specify version to avoid break changes
+  --     version = 'v5.*',
+  --
+  --     config = function()
+  --       require("fzfx").setup()
+  --     end,
+  --   },
   -- install with yarn or npm
   {
     "iamcco/markdown-preview.nvim",
@@ -59,9 +72,9 @@ return {
   },
   {
     "thinca/vim-partedit",
-    event = { "BufReadPost" },
+    keys = { { "<C-e>", mode = { "x" } } },
     config = function()
-      vim.keymap.set({ "x" }, "<c-e>", ":Partedit -opener new -filetype vim -prefix '>'<CR>")
+      vim.keymap.set({ "x" }, "<c-e>", ":Partedit -opener vnew -filetype vim -prefix '>'<CR>")
     end,
   },
   {
@@ -132,13 +145,15 @@ return {
     event = { "BufReadPost" },
     dependencies = {
       {
-        "Shougo/unite.vim",
+        "ctrlpvim/ctrlp.vim",
         event = { "BufReadPost" },
-        config = function() end,
+        config = function()
+          vim.g.ctrlp_user_command = "fdfind %s -type f"
+        end,
       },
     },
     config = function()
-      vim.keymap.set("n", "sy", "<CMD>Unite yankround<CR>")
+      vim.keymap.set("n", "sy", "<CMD>CtrlPYankRound<CR>")
     end,
   },
   {
@@ -150,5 +165,9 @@ return {
     config = function()
       vim.cmd([[ highlight! link SignatureMarkText WarningMsg ]])
     end,
+  },
+  {
+    "thinca/vim-quickmemo",
+    event = { "VimEnter" },
   },
 }

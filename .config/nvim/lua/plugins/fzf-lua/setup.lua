@@ -47,7 +47,7 @@ local default_opts = {
         ['hl']      = { 'fg', 'WarningMsg' },
         ['hl+']     = { 'fg', 'WarningMsg' },
         ['gutter']  = { 'bg', 'Normal' },
-        ['info']    = { 'fg', 'Comment' },
+        ['info']    = { 'fg', 'WarningMsg' },
         ['border']  = { 'fg', 'LineNr' },
         ['prompt']  = { 'fg', 'Function' },
         ['pointer'] = { 'fg', 'Exception' },
@@ -57,8 +57,9 @@ local default_opts = {
           }
         end,
         winopts = {
-          height = 0.9,
-          width = 0.8,
+          split = "botright new", -- open in a full-height split on the far right
+          -- height = 0.9,
+          -- width = 0.8,
           preview        = {
             default      = "bat",
             -- layout       = "flex",

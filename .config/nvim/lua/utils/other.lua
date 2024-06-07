@@ -5,7 +5,6 @@ end
 
 local M = {}
 
-
 local fast_event_aware_notify = function(msg, level, opts)
   if vim.in_fast_event() then
     vim.schedule(function()

@@ -2,13 +2,13 @@
 require("options")
 require("autocmd")
 require("lazyplug")
-
--- Set colorscheme
-pcall(vim.cmd, [[colorscheme default]])
+require("keymaps")
 
 -- Load utility modules
 require("utils.mru")
-require("utils.m.keymaps")
+
+-- Set colorscheme
+pcall(vim.cmd, [[colorscheme macro]])
 
 -- Define custom key mappings for visual and operator-pending modes
 vim.cmd([[
@@ -22,7 +22,7 @@ vim.cmd([[
   nnoremap <silent>zl :put! =printf('console.log(''%s:'',  %s);', expand('<cword>'), expand('<cword>'))<CR><cmd>move +1<cr>
 ]])
 
-if vim.g.colors_name == "default" then
+if vim.g.colors_name == "macro" then
   vim.cmd("hi! link whitespace nontext")
   vim.api.nvim_set_hl(0, "TabLineSel", { fg = "#011627", bg = "#9CABCA" })
   vim.api.nvim_set_hl(0, "TabLineIndexSel", { fg = "#011627", bg = "#9CABCA" })

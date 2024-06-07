@@ -1,12 +1,9 @@
-local map  = require('utils.m.util.map')
+local map  = require('utils.map')
 local silent = { silent = true }
-
 
 -- OVERRIDE DEFAULTS ---------------------------------------------------------------------
 map.nx({ ["/"] = "ms/", ["?"] = "ms?"  }) -- Save initial search position
 map.x({ ["<"] = "<gv", [">"] = ">gv"  })
-
--- BUFFERS -------------------------------------------------------------------------------
 
 -- COMMENT ---------------------------------------------------------------------------
 -- stylua: ignore start
@@ -47,6 +44,7 @@ map.n({
   ["<S-Tab>"]   = [[g,zvzz]],
   ["<a-w>"]     = [[<C-W>w]],
   ["<leader>w"] = [[<C-W>]],
+  ["<c-w>n"]    = [[:vnew<CR>]],
   ["<leader>k"] = [[:help <C-r>=expand("<cword>")<CR>]],
   ["Y"]         = [[y$]],
   ["i"]         = [[a]],
@@ -146,7 +144,7 @@ map.n("ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
 map.n("cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
 map.n("cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
 
-map.n("mm", "<CMD>SignatureListBufferMarks<CR>")
+map.n("<a-m>", "<CMD>SignatureListBufferMarks<CR>")
 
 -- custom for lang laravel
 -- map.n("cp", 'vit"apfT')
@@ -203,7 +201,7 @@ map.c({
 local api = vim.api
 
 local function modify_line_end_delimiter(character)
-  local delimiters = { ',', ';', '.' }
+  local delimiters = { ',', ';', '.', ')', '}' }
   return function()
     local line = api.nvim_get_current_line()
     local last_char = line:sub(-1)
@@ -219,7 +217,9 @@ end
 
 map.n('z,', modify_line_end_delimiter(','), { desc = "add ',' to end of line" })
 map.n('z;', modify_line_end_delimiter(';'), { desc = "add ';' to end of line" })
-map.n('z.', modify_line_end_delimiter('.'), { desc = "add ';' to end of line" })
+map.n('z.', modify_line_end_delimiter('.'), { desc = "add '.' to end of line" })
+map.n('z9', modify_line_end_delimiter(')'), { desc = "add ')' to end of line" })
+map.n('z}', modify_line_end_delimiter('}'), { desc = "add '}' to end of line" })
 
 -- stylua: ignore start
 map.n("zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { silent = true, desc = "newline below (no insert-mode)" })
@@ -300,3 +300,9 @@ for k, v in pairs({ ["<down>"] = "<C-n>", ["<up>"] = "<C-p>" }) do
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), "n", false)
   end, { silent = false })
 end
+
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
+-- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
