@@ -1,7 +1,7 @@
 return {
   "kevinhwang91/nvim-hlslens",
   branch = "main",
-  keys = { "*", "#", "n", "N", "<leader>h" },
+  keys = { "sh", "*", "#", "n", "N", "<leader>h" },
   config = function()
     local api = vim.api
     local keymap = vim.keymap
@@ -37,6 +37,13 @@ return {
     keymap.set("n", "N", "", {
       callback = function()
         activate_hlslens("N")
+      end,
+    })
+
+    keymap.set("n", "sh", "", {
+      callback = function()
+        vim.fn.execute("normal! *N")
+        hlslens.start()
       end,
     })
     keymap.set("n", "*", "", {

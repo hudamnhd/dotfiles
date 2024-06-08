@@ -4,7 +4,7 @@ xset r rate 200 80 &
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 unclutter-xfixes --timeout 1 --jitter 1 --ignore-buttons 4,5,6,7 --hide-on-touch --start-hidden &
 xrdb ~/.Xresources &
-feh --bg-fill -z /usr/share/backgrounds &
+~/.fehbg &
 setxkbmap -option "caps:escape_shifted_capslock" &
 
 while sleep 1

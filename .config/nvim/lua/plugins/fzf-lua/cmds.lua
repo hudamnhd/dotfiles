@@ -1,5 +1,6 @@
 local M = {}
 
+local path = require("fzf-lua.path")
 local fzf_lua = require("fzf-lua")
 local api, fn, uv = vim.api, vim.fn, vim.loop
 
@@ -31,5 +32,27 @@ function _G.mru()
 end
 
 vim.cmd([[command! -nargs=* MRU lua _G.mru()]])
+
+_G.fzf_dirs = function(opts)
+  local fzf_lua = require'fzf-lua'
+  opts = opts or {}
+  opts.prompt = "Directories> "
+  opts.winopts = { height = 0.4, width = 0.5 }
+  opts.fn_transform = function(x)
+    return fzf_lua.utils.ansi_codes.magenta(x)
+  end
+  opts.actions = {
+    ['default'] = function(selected)
+      vim.cmd("cd " .. selected[1])
+    end
+  }
+  fzf_lua.fzf_exec("fdfind --type d", opts)
+end
+
+-- map our provider to a user command ':Directories'
+vim.cmd([[command! -nargs=* Directories lua _G.fzf_dirs()]])
+
+-- or to a keybind, both below are (sort of) equal
+vim.keymap.set('n', '<a-c>', _G.fzf_dirs)
 
 return M

@@ -7,6 +7,7 @@ return {
     { "<C-N>", '<cmd>lua require("user.drex").find_element("%")<cr>', desc = "File explorer" },
     { "sn", "<cmd>Drex %:h<cr>", desc = "open the parent directory" },
   },
+  enabled = false,
   config = function()
     -- autocmd
     --- remove drex from buffers list

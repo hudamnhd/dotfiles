@@ -22,6 +22,7 @@ end
 
 lazy.setup("plugins", {
   defaults = { lazy = true },
+  install = { colorscheme = { "duskfox", "habamax" } },
   checker = { enabled = false }, -- don't auto-check for plugin updates
   change_detection = { enabled = false }, -- don't auto-check for config updates
   ui = {

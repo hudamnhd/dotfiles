@@ -1,4 +1,5 @@
 local map  = require('utils.map')
+
 local silent = { silent = true }
 
 -- OVERRIDE DEFAULTS ---------------------------------------------------------------------
@@ -39,6 +40,7 @@ map.t({
 })
 
 map.n({
+  ["df"]        = [[:!cp '%:p' '%:p:h/%:t:r.%:e.copy'<CR>]],
   ["d;"]        = [[q:]],
   ["<Tab>"]     = [[g;zvzz]],
   ["<S-Tab>"]   = [[g,zvzz]],
@@ -86,7 +88,7 @@ map.v("<C-B>", "<CMD>SearchReplaceWithinVisualSelection<CR>")
 map.v("H",              [[:s/^//gI<Left><Left><Left>]])            -- add begin line only
 map.v("L",              [[:s/$//gI<Left><Left><Left>]])            -- add end only
 map.v("K",              [[:s/\(.*\)/X \1 X/gI<Left><Left><Left>]]) -- add word begin and end line
-map.v("<space><space>", [[:s/\s\+/ /g<Left><Left>]])               -- delete space
+map.v("<space><space>", [[:s/\s\+//g<Left><Left>]])               -- delete space
 
 -- w!! to save with sudo
 -- nmap("c", "w!!", "<esc>:lua require'utils'.sudo_write()<CR>", { silent = true })
@@ -112,7 +114,7 @@ map.x("p", [['pgv"' . v:register . 'y']], { noremap = true, expr = true })
 
 -- without copying to clipboard
 map.n({
-  ["S"]  = [["_S]],
+  -- ["S"]  = [["_S]],
   ["D"]  = [["_D]],
 })
 
@@ -146,12 +148,6 @@ map.n("cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
 
 map.n("<a-m>", "<CMD>SignatureListBufferMarks<CR>")
 
--- custom for lang laravel
--- map.n("cp", 'vit"apfT')
--- map.n("co", 'vi""apFDviwpFTciw')
--- map.i("<C-P>", "<ESC>f=ww\"_ci'")
-
--- tmux like directional window resizes
 -- stylua: ignore start
 map.n("<C-Up>",    "<cmd>lua require'utils.other'.resize(false, -5)<CR>", { silent = true, desc = "horizontal split increase" })
 map.n("<C-Down>",  "<cmd>lua require'utils.other'.resize(false,  5)<CR>", { silent = true, desc = "horizontal split decrease" })
@@ -201,7 +197,7 @@ map.c({
 local api = vim.api
 
 local function modify_line_end_delimiter(character)
-  local delimiters = { ',', ';', '.', ')', '}' }
+  local delimiters = { ',', ';', '.' }
   return function()
     local line = api.nvim_get_current_line()
     local last_char = line:sub(-1)
@@ -218,8 +214,6 @@ end
 map.n('z,', modify_line_end_delimiter(','), { desc = "add ',' to end of line" })
 map.n('z;', modify_line_end_delimiter(';'), { desc = "add ';' to end of line" })
 map.n('z.', modify_line_end_delimiter('.'), { desc = "add '.' to end of line" })
-map.n('z9', modify_line_end_delimiter(')'), { desc = "add ')' to end of line" })
-map.n('z}', modify_line_end_delimiter('}'), { desc = "add '}' to end of line" })
 
 -- stylua: ignore start
 map.n("zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { silent = true, desc = "newline below (no insert-mode)" })
@@ -238,13 +232,7 @@ map.n({["zq"] = [[:wq!<CR>]], }, silent)
 vim.cmd("command! -nargs=+ -complete=file Grep  grep! <args> | redraw! | copen")
 vim.cmd("command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw! | lopen")
 
-map.n("gl", [[:Grep <C-r>=expand("<cword>")<CR> %]], { desc = "search only current file", noremap = true })
-map.n("gL", [[:LGrep <C-r>=expand("<cword>")<CR> %]], { desc = "search only current file", noremap = true })
-
 map.n("C",  [[*N"_cgn]], { desc = "mc change word (forward)", noremap = true })
-
--- map.x("<A-k>", ":move '<-2<CR>gv=gv", silent)
--- map.x("<A-j>", ":move '>+1<CR>gv=gv", silent)
 
 -- vim regex
 -- (.*) -- find all word
@@ -300,9 +288,3 @@ for k, v in pairs({ ["<down>"] = "<C-n>", ["<up>"] = "<C-p>" }) do
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), "n", false)
   end, { silent = false })
 end
-
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES

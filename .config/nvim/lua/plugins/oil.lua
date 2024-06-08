@@ -1,7 +1,7 @@
 return {
   "stevearc/oil.nvim",
   opts = {},
-  keys = { "-" },
+  keys = { "-", "_" },
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
     require("oil").setup({
@@ -62,6 +62,8 @@ return {
       -- Set to `false` to remove a keymap
       -- See :help oil-actions for a list of all available actions
       keymaps = {
+        ["q"] = "actions.close",
+        ["g?"] = "actions.show_help",
         ["g?"] = "actions.show_help",
         ["<CR>"] = "actions.select",
         ["<C-h>"] = "actions.parent",
@@ -85,7 +87,7 @@ return {
       use_default_keymaps = false,
       view_options = {
         -- Show files and directories that start with "."
-        show_hidden = false,
+        show_hidden = true,
         -- This function defines what is considered a "hidden" file
         is_hidden_file = function(name, bufnr)
           return vim.startswith(name, ".")
@@ -123,8 +125,8 @@ return {
       float = {
         -- Padding around the floating window
         padding = 2,
-        max_width = 0,
-        max_height = 0,
+        max_width = 100,
+        max_height = 30,
         border = "rounded",
         win_options = {
           winblend = 0,
@@ -183,6 +185,7 @@ return {
         border = "rounded",
       },
     })
-    vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+    vim.keymap.set("n", "_", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+    vim.keymap.set("n", "-", "<CMD>Oil --float <CR>", { desc = "Open parent directory" })
   end,
 }

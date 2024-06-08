@@ -37,7 +37,7 @@ M.config = function()
       map({ "n", "v" }, "ga", gs.stage_hunk)
 
       map("n", "gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
-      map("n", "sh", gs.preview_hunk, { buffer = buf })
+      map("n", "gh", gs.preview_hunk, { buffer = buf })
 
       -- text object
       map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { buffer = buf })

@@ -53,6 +53,7 @@ return {
       }
       local commandsEx = {
         "yarn build",
+        "sudo make install",
         -- tambahkan perintah lain di sini
       }
 
@@ -100,36 +101,36 @@ return {
         end)
       end, { noremap = true, silent = true })
 
-      local yarndev = fterm:new({
-        ft = "fterm_yarn", -- You can also override the default filetype, if you want
+      local term2 = fterm:new({
+        ft = "fterm_yarn", 
         -- cmd = "yarn dev",
         dimensions = {
           height = 0.95,
           width = 0.95,
         },
       })
-      -- Use this to toggle yarndev in a floating terminal
+      -- Use this to toggle term2 in a floating terminal
       vim.keymap.set("n", "<F2>", function()
-        yarndev:toggle()
+        term2:toggle()
       end)
       vim.keymap.set("t", "<F2>", function()
-        yarndev:toggle()
+        term2:toggle()
       end)
 
-      local phpserve = fterm:new({
-        ft = "fterm_artisanserve", -- You can also override the default filetype, if you want
+      local term3 = fterm:new({
+        ft = "fterm_artisanserve", 
         -- cmd = "php artisan serve",
         dimensions = {
           height = 0.95,
           width = 0.95,
         },
       })
-      -- Use this to toggle phpserve in a floating terminal
+      -- Use this to toggle term3 in a floating terminal
       vim.keymap.set("n", "<F3>", function()
-        phpserve:toggle()
+        term3:toggle()
       end)
       vim.keymap.set("t", "<F3>", function()
-        phpserve:toggle()
+        term3:toggle()
       end)
     end,
   },

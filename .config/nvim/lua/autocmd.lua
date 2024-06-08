@@ -25,16 +25,6 @@ augroup("CmdWin", function(g)
   })
 end)
 
-augroup("Oil", function(g)
-  aucmd("FileType", {
-    group = g,
-    pattern = "oil",
-    callback = function(e)
-      vim.keymap.set("n", "q", ":bd<cr>", { buffer = e.buf, silent = true })
-    end,
-  })
-end)
-
 augroup("SmartTextYankPost", function(g)
   aucmd("TextYankPost", {
     group = g,
@@ -68,36 +58,6 @@ augroup("ResizeWindows", function(g)
     command = "tabdo wincmd =",
   })
 end)
-
--- augroup("ToggleColorcolumn", function(g)
---   aucmd({ "VimResized", "WinEnter", "BufWinEnter" }, {
---     group = g,
---     pattern = "*",
---     command = [[lua require"utils".toggle_colorcolumn()]],
---   })
--- end)
-
--- augroup("ToggleSearchHL", function(g)
---   aucmd("InsertEnter", {
---     group = g,
---     pattern = "*",
---     command = ":nohl | redraw",
---   })
--- end)
-
--- augroup("ActiveWinCursorLine", function(g)
---   -- Highlight current line only on focused window
---   aucmd({ "WinEnter", "BufEnter", "InsertLeave" }, {
---     group = g,
---     pattern = "*",
---     command = "if ! &cursorline && ! &pvw | setlocal cursorline | endif",
---   })
---   aucmd({ "WinLeave", "BufLeave", "InsertEnter" }, {
---     group = g,
---     pattern = "*",
---     command = "if &cursorline && ! &pvw | setlocal nocursorline | endif",
---   })
--- end)
 
 -- Display help|man in vertical splits and map 'q' to quit
 augroup("Help", function(g)
@@ -198,15 +158,6 @@ augroup("DoNotAutoScroll", function(g)
   })
 end)
 
--- auto-delete fugitive buffers
--- augroup("Fugitive", function(g)
---   aucmd("BufReadPost", {
---     group = g,
---     pattern = "fugitive:*",
---     command = "set bufhidden=delete",
---   })
--- end)
-
 augroup("GQFormatter", function(g)
   aucmd({ "FileType", "LspAttach" }, {
      group = g,
@@ -255,25 +206,6 @@ augroup("GQFormatter", function(g)
    })
  end)
 
---   augroup("ChangeFt", function(g)
---     aucmd("BufEnter", {
---       group = g,
---       pattern = "*",
--- callback = function(args)
---     -- Function to check if syntax is in the list of exceptions
---     local function is_exception_syntax(buf)
---       local ok, syntax = pcall(vim.api.nvim_buf_get_option, buf, "syntax")
---       return ok and (syntax == "drex" or syntax == "fugitive")
---     end
---
---     -- Check if the current buffer's syntax is not in the exceptions
---     if not is_exception_syntax(args.buf) then
---       vim.api.nvim_buf_set_option(args.buf, "syntax", "off")
---       vim.api.nvim_buf_set_option(args.buf, "syntax", "c")
---     end
---   end
---     })
---   end)
 
 -- https://github.com/soimort/translate-shell/wiki/Languages
 local languages = { "af", "am", "ar", "az", "ba", "be", "bg", "bn", "bs", "ca", "co", "cs", "cy", "da", "de", "el", "en", "eo", "es", "et", "eu", "fa", "fi", "fj", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "he", "hi", "hr", "ht", "hu", "hy", "id", "ig", "is", "it", "ja", "jv", "ka", "kk", "km", "kn", "ko", "ku", "ky", "la", "lb", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "ny", "or", "pa", "pl", "ps", "pt", "ro", "ru", "rw", "sd", "si", "sk", "sl", "sm", "sn", "so", "sq", "st", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "to", "tr", "tt", "ty", "ug", "uk", "ur", "uz", "vi", "xh", "yi", "yo", "zu" }

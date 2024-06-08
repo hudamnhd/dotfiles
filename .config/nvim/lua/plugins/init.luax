@@ -1,60 +1,101 @@
 return {
-  {
-    "gbprod/yanky.nvim",
-    dependencies = { "kkharji/sqlite.lua" },
-    keys = { "sy", "y" },
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-    config = function()
-      local utils = require("yanky.utils")
-      local mapping = require("yanky.telescope.mapping")
-
-      require("yanky").setup({
-        preserve_cursor_position = {
-          enabled = true,
-        },
-        picker = {
-          telescope = {
-            mappings = {
-              default = mapping.put("p"),
-              i = {
-                ["<c-l>"] = mapping.put("p"),
-                ["<c-p>"] = mapping.put("P"),
-                ["<c-x>"] = mapping.delete(),
-                ["<c-r>"] = mapping.set_register(utils.get_default_register()),
-              },
-              n = {
-                p = mapping.put("p"),
-                P = mapping.put("P"),
-                d = mapping.delete(),
-                r = mapping.set_register(utils.get_default_register()),
-              },
-            },
-          },
-        },
-      })
-      vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
-      vim.keymap.set(
-        "n",
-        "sy",
-        '<CMD>:lua require("telescope").extensions.yank_history.yank_history()<CR>'
-      )
-    end,
-  },
   -- generate theme bat
   {
     "linrongbin16/fzfx.nvim",
-    event = { "BufReadPost" },
+    cmd = { "FzfxFiles" },
+    opts = {
+      override_fzf_opts = {
+        { "--preview-window", "top,75%" },
+      },
+      buffers = {
+        fzf_opts = {
+          { "--prompt", "Buffers > " },
+          { "--delimiter", ":" },
+          { "--preview-window", "top,75%,+{2}-/2" },
+        },
+      },
+      files = {
+        fzf_opts = {
+          { "--prompt", "Files > " },
+          { "--delimiter", ":" },
+          { "--preview-window", "top,50%,+{2}-/2" },
+        },
+      },
+    },
     dependencies = { "nvim-tree/nvim-web-devicons", "junegunn/fzf" },
-
     -- specify version to avoid break changes
     version = "v5.*",
 
     config = function()
-      require("fzfx").setup()
+      -- lua scripts
+      vim.g.fzfx_disable_buffer_previewer = 1 -- or true
+      require("fzfx").setup({
+        users = {
+          ls = {
+            --- @type CommandConfig
+            command = {
+              name = "FzfxLs",
+              desc = "File Explorer (ls -1)",
+            },
+            variants = {
+              {
+                name = "args",
+                feed = "args",
+                default_provider = "filter_hiddens",
+              },
+              {
+                name = "hidden_args",
+                feed = "args",
+                default_provider = "include_hiddens",
+              },
+            },
+            --- @type table<string, ProviderConfig>
+            providers = {
+              filter_hiddens = {
+                key = "ctrl-h",
+                provider = { "ls", "--color=always", "-1" },
+              },
+              include_hiddens = {
+                key = "ctrl-u",
+                provider = { "ls", "--color=always", "-1a" },
+              },
+            },
+            --- @type table<string, PreviewerConfig>
+            previewers = {
+              filter_hiddens = {
+                previewer = function(line)
+                  -- each line is either a folder or a file
+                  return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
+                    or { "cat", line }
+                end,
+                previewer_type = "command_list",
+              },
+              include_hiddens = {
+                previewer = function(line)
+                  return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
+                    or { "cat", line }
+                end,
+                previewer_type = "command_list",
+              },
+            },
+            actions = {
+              ["esc"] = function(lines)
+                print(lines)
+                -- do nothing
+              end,
+              ["enter"] = function(lines)
+                for _, line in ipairs(lines) do
+                  vim.cmd(string.format([[edit %s]], line))
+                end
+              end,
+            },
+            fzf_opts = {
+              "--multi",
+              { "--prompt", "Ls > " },
+            },
+          },
+        },
+      })
     end,
   },
   -- install with yarn or npm
@@ -183,6 +224,32 @@ return {
     keys = { "<A-r>" },
     config = function()
       vim.keymap.set("n", "<A-r>", "<CMD>Qfreplace<CR>")
+    end,
+  },
+  {
+    "LeafCage/yankround.vim",
+    event = { "VimEnter" },
+    dependencies = {
+      {
+        "ctrlpvim/ctrlp.vim",
+        event = { "VimEnter" },
+        config = function()
+          vim.cmd([[
+            set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
+            let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+            let g:ctrlp_custom_ignore = {
+              \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+              \ 'file': '\v\.(exe|so|dll)$',
+              \ 'link': 'some_bad_symbolic_links',
+              \ }
+            let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+          ]])
+          vim.g.ctrlp_user_command = "fdfind --type f"
+        end,
+      },
+    },
+    config = function()
+      vim.keymap.set("n", "sy", "<CMD>CtrlPYankRound<CR>")
     end,
   },
   {

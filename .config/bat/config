@@ -25,7 +25,8 @@
 #--map-syntax ".ignore:Git Ignore"
 #--theme="FzfxNvimKanagawa"
 # --theme="Catppuccin-mocha"
---theme="FzfxNvimMacro"
+# --theme="FzfxNvimMacro"
+ --theme="FzfxNvimDuskfox"
 
 # Show line numbers, Git modifications and file header (but no grid)
 --style="numbers,changes,header"

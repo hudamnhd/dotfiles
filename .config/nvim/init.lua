@@ -1,3 +1,5 @@
+vim.g.ctrlp_map = '<a-p>'
+
 -- Load configuration files
 require("options")
 require("autocmd")
@@ -8,7 +10,8 @@ require("keymaps")
 require("utils.mru")
 
 -- Set colorscheme
-pcall(vim.cmd, [[colorscheme macro]])
+pcall(vim.cmd, [[colorscheme duskfox]])
+-- pcall(vim.cmd, [[colorscheme default]])
 
 -- Define custom key mappings for visual and operator-pending modes
 vim.cmd([[
@@ -22,7 +25,7 @@ vim.cmd([[
   nnoremap <silent>zl :put! =printf('console.log(''%s:'',  %s);', expand('<cword>'), expand('<cword>'))<CR><cmd>move +1<cr>
 ]])
 
-if vim.g.colors_name == "macro" then
+if vim.g.colors_name == "duskfox" then
   vim.cmd("hi! link whitespace nontext")
   vim.api.nvim_set_hl(0, "TabLineSel", { fg = "#011627", bg = "#9CABCA" })
   vim.api.nvim_set_hl(0, "TabLineIndexSel", { fg = "#011627", bg = "#9CABCA" })
