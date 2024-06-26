@@ -20,6 +20,8 @@
     move_up: Some(( code: Char('k'), modifiers: "")),
     move_down: Some(( code: Char('j'), modifiers: "")),
     
+    quit: Some(( code: Char('c'), modifiers: "CONTROL")),
+    exit_popup: Some(( code: Char('q'), modifiers: "")),
     popup_up: Some(( code: Char('p'), modifiers: "CONTROL")),
     popup_down: Some(( code: Char('n'), modifiers: "CONTROL")),
     page_up: Some(( code: Char('b'), modifiers: "CONTROL")),
@@ -44,5 +46,5 @@
     abort_merge: Some(( code: Char('M'), modifiers: "SHIFT")),
 
     stage_unstage_item: Some(( code: Char('a'), modifiers: "",)),
-    status_stage_all: Some(( code: Char('A'), modifiers: "",)),
+    status_stage_all: Some(( code: Char('A'), modifiers: "SHIFT",)),
 )

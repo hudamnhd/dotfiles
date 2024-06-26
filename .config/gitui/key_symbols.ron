@@ -1,5 +1,8 @@
 (
     enter: Some("CR"),
     shift: Some("S-"),
+    control: Some("C-"),
+    alt: Some("A-"),
     tab: Some("TAB"),
+    esc: Some("ESC"),
 )

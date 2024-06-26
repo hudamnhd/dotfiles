@@ -4,28 +4,15 @@ local function augroup(name, fnc)
   fnc(vim.api.nvim_create_augroup(name, { clear = true }))
 end
 
-augroup("FzfLuaCtrlC", function(g)
-  aucmd("FileType", {
+augroup("RestoreCursor", function(g)
+  aucmd("BufReadPost", {
     group = g,
-    pattern = "fzf",
-    callback = function(e)
-      vim.keymap.set("t", "<C-c>", "<C-c>", { buffer = e.buf, silent = true })
-      vim.keymap.set("t", "<C-z>", "<C-c>", { buffer = e.buf, silent = true })
-    end,
+    pattern = "*",
+    command = [[silent! normal! g`"zv']],
   })
 end)
 
-augroup("CmdWin", function(g)
-  aucmd("FileType", {
-    group = g,
-    pattern = "vim",
-    callback = function(e)
-      vim.keymap.set("n", "q", "<C-w>c", { buffer = e.buf, silent = true })
-    end,
-  })
-end)
-
-augroup("SmartTextYankPost", function(g)
+augroup("highlightYank", function(g)
   aucmd("TextYankPost", {
     group = g,
     pattern = "*",
@@ -40,22 +27,6 @@ augroup("NewlineNoAutoComments", function(g)
     group = g,
     pattern = "*",
     command = "setlocal formatoptions-=o",
-  })
-end)
-
-augroup("TermOptions", function(g)
-  aucmd("TermOpen", {
-    group = g,
-    pattern = "*",
-    command = "setlocal listchars= nonumber norelativenumber",
-  })
-end)
-
-augroup("ResizeWindows", function(g)
-  aucmd("VimResized", {
-    group = g,
-    pattern = "*",
-    command = "tabdo wincmd =",
   })
 end)
 
@@ -160,55 +131,65 @@ end)
 
 augroup("GQFormatter", function(g)
   aucmd({ "FileType", "LspAttach" }, {
-     group = g,
-     pattern = "*",
-     callback = function(e)
-       -- priortize LSP formatting as `gq`
-       if e.file:match("^fugitive:") then
-         return
-       end
-       local lsp_has_formatting = false
-       local lsp_clients = vim.lsp.get_active_clients()
-       local lsp_keymap_set = function(m, c)
-         vim.keymap.set(m, "gq", function()
-           vim.lsp.buf.format({ async = true, bufnr = e.buf })
-         end, {
-           silent = true,
-           buffer = e.buf,
-           desc = string.format("format document [LSP:%s]", c.name),
-         })
-       end
-       vim.tbl_map(function(c)
-         if c.supports_method("textDocument/rangeFormatting", { bufnr = e.buf }) then
-           lsp_keymap_set("x", c)
-           lsp_has_formatting = true
-         end
-         if c.supports_method("textDocument/formatting", { bufnr = e.buf }) then
-           lsp_keymap_set("n", c)
-           lsp_has_formatting = true
-         end
-       end, lsp_clients)
-       -- check conform.nvim for formatters:
-       --   (1) if we have no LSP formatter map as `gq`
-       --   (2) if LSP formatter exists, map as `gQ`
-       local ok, conform = pcall(require, "conform")
-       local formatters = ok and conform.list_formatters(e.buf) or {}
-       if #formatters > 0 then
-         vim.keymap.set("n", lsp_has_formatting and "gQ" or "gq", function()
-           require("conform").format({ async = true, buffer = e.buf, lsp_fallback = false })
-         end, {
-           silent = true,
-           buffer = e.buf,
-           desc = string.format("format document [%s]", formatters[1].name),
-         })
-       end
-     end,
-   })
- end)
-
+    group = g,
+    pattern = "*",
+    callback = function(e)
+      -- priortize LSP formatting as `gq`
+      if e.file:match("^fugitive:") then
+        return
+      end
+      local lsp_has_formatting = false
+      local lsp_clients = vim.lsp.get_active_clients()
+      local lsp_keymap_set = function(m, c)
+        vim.keymap.set(m, "gq", function()
+          vim.lsp.buf.format({ async = true, bufnr = e.buf })
+        end, {
+          silent = true,
+          buffer = e.buf,
+          desc = string.format("format document [LSP:%s]", c.name),
+        })
+      end
+      vim.tbl_map(function(c)
+        if c.supports_method("textDocument/rangeFormatting", { bufnr = e.buf }) then
+          lsp_keymap_set("x", c)
+          lsp_has_formatting = true
+        end
+        if c.supports_method("textDocument/formatting", { bufnr = e.buf }) then
+          lsp_keymap_set("n", c)
+          lsp_has_formatting = true
+        end
+      end, lsp_clients)
+      -- check conform.nvim for formatters:
+      --   (1) if we have no LSP formatter map as `gq`
+      --   (2) if LSP formatter exists, map as `gQ`
+      local ok, conform = pcall(require, "conform")
+      local formatters = ok and conform.list_formatters(e.buf) or {}
+      if #formatters > 0 then
+        vim.keymap.set("n", lsp_has_formatting and "gQ" or "gq", function()
+          require("conform").format({ async = true, buffer = e.buf, lsp_fallback = false })
+        end, {
+          silent = true,
+          buffer = e.buf,
+          desc = string.format("format document [%s]", formatters[1].name),
+        })
+      end
+    end,
+  })
+end)
 
 -- https://github.com/soimort/translate-shell/wiki/Languages
-local languages = { "af", "am", "ar", "az", "ba", "be", "bg", "bn", "bs", "ca", "co", "cs", "cy", "da", "de", "el", "en", "eo", "es", "et", "eu", "fa", "fi", "fj", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "he", "hi", "hr", "ht", "hu", "hy", "id", "ig", "is", "it", "ja", "jv", "ka", "kk", "km", "kn", "ko", "ku", "ky", "la", "lb", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "ny", "or", "pa", "pl", "ps", "pt", "ro", "ru", "rw", "sd", "si", "sk", "sl", "sm", "sn", "so", "sq", "st", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "to", "tr", "tt", "ty", "ug", "uk", "ur", "uz", "vi", "xh", "yi", "yo", "zu" }
+
+-- stylua: ignore start
+local languages = {
+  "af", "am", "ar", "az", "ba", "be", "bg", "bn", "bs", "ca", "co", "cs", "cy", "da", "de", "el",
+  "en", "eo", "es", "et", "eu", "fa", "fi", "fj", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "he",
+  "hi", "hr", "ht", "hu", "hy", "id", "ig", "is", "it", "ja", "jv", "ka", "kk", "km", "kn", "ko",
+  "ku", "ky", "la", "lb", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my",
+  "ne", "nl", "no", "ny", "or", "pa", "pl", "ps", "pt", "ro", "ru", "rw", "sd", "si", "sk", "sl",
+  "sm", "sn", "so", "sq", "st", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "to", "tr",
+  "tt", "ty", "ug", "uk", "ur", "uz", "vi", "xh", "yi", "yo", "zu",
+}
+-- stylua: ignore end
 
 vim.api.nvim_create_user_command("Translate", function(opts)
   if #opts.fargs < 3 then
@@ -224,13 +205,9 @@ vim.api.nvim_create_user_command("Translate", function(opts)
   end
 
   if vim.fn.executable("trans") == 0 then
-    vim.api.nvim_echo(
-      {
-        { "'trans' was not found in path, install it in order to use this command!", "warningmsg" },
-      },
-      false,
-      {}
-    )
+    vim.api.nvim_echo({
+      { "'trans' was not found in path, install it in order to use this command!", "warningmsg" },
+    }, false, {})
     return
   end
 
@@ -331,9 +308,3 @@ vim.keymap.set("x", "st", function()
   end
   enter_translate_cmd(table.concat(text, " "):gsub("%s%s+", " "))
 end, { desc = "translate selection" })
-
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES
--- XDISABLED_UPDATE_X, ALL KINDS OF ODDITIES

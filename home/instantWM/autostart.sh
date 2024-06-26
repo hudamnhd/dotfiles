@@ -1,6 +1,6 @@
-xrandr --output HDMI-A-0  --brightness 0.45 &
+xrandr --output HDMI-A-0  --brightness 0.4 &
+xset r rate 210 40
 # xset r rate 250 60 &
-xset r rate 200 80 &
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 unclutter-xfixes --timeout 1 --jitter 1 --ignore-buttons 4,5,6,7 --hide-on-touch --start-hidden &
 xrdb ~/.Xresources &

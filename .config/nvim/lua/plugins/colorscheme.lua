@@ -1,51 +1,46 @@
 return {
-  {
-    "EdenEast/nightfox.nvim",
-    priority = 1000,
-    lazy = false,
-    opts = {
-      groups = {
-        all = {
-          -- Make and/or/not stand out more
-          ["@keyword.operator"] = { link = "@keyword" },
-          -- Make markdown links stand out
-          ["@text.reference"] = { link = "@keyword" },
-          ["@text.emphasis"] = { style = "italic" },
-          ["@text.strong"] = { style = "bold" },
-          ["@text.literal"] = { style = "" }, -- Don't italicize
-          ["@codeblock"] = { bg = "palette.bg0" },
-          ["@neorg.markup.strikethrough"] = { fg = "palette.comment", style = "strikethrough" },
-        },
-      },
-    },
-    config = true,
-  },
   -- {
-  --   "catppuccin/nvim",
-  --   lazy = false, -- make sure we load this during startup if it is your main colorscheme
-  --   enabled = false,
-  --   name = "catppuccin",
+  --   "EdenEast/nightfox.nvim",
   --   priority = 1000,
-  --   config = function()
-  --     vim.g.catppuccin_flavour = "mocha"
-  --     require("catppuccin").setup({
-  --       compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
-  --       color_overrides = {
-  --         mocha = {
-  --           base = "#131313",
-  --         },
+  --   lazy = false,
+  --   opts = {
+  --     groups = {
+  --       all = {
+  --         -- Make and/or/not stand out more
+  --         ["@keyword.operator"] = { link = "@keyword" },
+  --         -- Make markdown links stand out
+  --         ["@text.reference"] = { link = "@keyword" },
+  --         ["@text.emphasis"] = { style = "italic" },
+  --         ["@text.strong"] = { style = "bold" },
+  --         ["@text.literal"] = { style = "" }, -- Don't italicize
+  --         ["@codeblock"] = { bg = "palette.bg0" },
+  --         ["@neorg.markup.strikethrough"] = { fg = "palette.comment", style = "strikethrough" },
   --       },
-  --       term_colors = true,
-  --       integrations = {
-  --         treesitter = true,
-  --       },
-  --       custom_highlights = {
-  --         NvimTreeNormal = { bg = "NONE" },
-  --         CmpBorder = { fg = "#3e4145" },
-  --       },
-  --     })
-  --   end,
+  --     },
+  --   },
+  --   config = true,
   -- },
+  {
+    "catppuccin/nvim",
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    name = "catppuccin",
+    priority = 1000,
+    config = function()
+      vim.g.catppuccin_flavour = "mocha"
+      require("catppuccin").setup({
+        compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
+        color_overrides = {
+          mocha = {
+            base = "#131313",
+          },
+        },
+        term_colors = true,
+        integrations = {
+          treesitter = true,
+        },
+      })
+    end,
+  },
   -- {
   --   "rebelot/kanagawa.nvim",
   --   lazy = false, -- make sure we load this during startup if it is your main colorscheme

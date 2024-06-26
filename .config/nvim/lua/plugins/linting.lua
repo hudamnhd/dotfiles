@@ -1,6 +1,7 @@
 return {
   "mfussenegger/nvim-lint",
-  event = { "BufEnter", "BufWritePost", "InsertLeave" },
+  -- event = { "BufEnter", "BufWritePost", "InsertLeave" },
+  -- ft = {"typescriptreact" , "typescript"},
   config = function()
     local lint = require("lint")
 
@@ -20,5 +21,9 @@ return {
         lint.try_lint()
       end,
     })
+
+    -- vim.keymap.set("n", "<leader>l", function()
+    --   lint.try_lint()
+    -- end, { desc = "Trigger linting for current file" })
   end,
 }

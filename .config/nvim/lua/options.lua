@@ -1,15 +1,15 @@
-local o         = vim.opt
+local o          = vim.opt
 
 -- o.mouse      = ""     -- disable the mouse
-o.termguicolors = true   -- enable 24bit colors
-o.synmaxcol    = 1500    -- for `syntax`
-o.timeoutlen   = 500    -- for `which-key`
-o.updatetime   = 100    -- decrease update time
-o.fileformat   = "unix" -- <nl> for EOL
-o.switchbuf    = "useopen"
-o.fileencoding = "utf-8"
-o.matchpairs   = { "(:)", "{:}", "[:]", "<:>" }
-o.lazyredraw   = true
+o.termguicolors  = true   -- enable 24bit colors
+o.synmaxcol      = 200    -- for `syntax`
+o.timeoutlen     = 750    -- for `which-key`
+o.updatetime     = 100    -- decrease update time
+o.fileformat     = "unix" -- <nl> for EOL
+o.switchbuf      = "useopen"
+o.fileencoding   = "utf-8"
+-- o.matchpairs     = { "(:)", "{:}", "[:]", "<:>" }
+-- o.lazyredraw   = true
 -- recursive :find in current dir
 vim.cmd [[set path=.,,,$PWD/**]]
 
@@ -18,27 +18,29 @@ vim.cmd [[set path=.,,,$PWD/**]]
 -- unnamed     = use the * register (cmd-s paste in our term)
 -- unnamedplus = use the + register (cmd-v paste in our term)
 -- o.clipboard         = 'unnamedplus'
-o.showmode            = false
-o.cmdheight           = 1                           -- cmdline height
-o.cmdwinheight        = math.floor(vim.o.lines / 2) -- 'q:' window height
-o.scrolloff           = 3                           -- min number of lines to keep between cursor and screen edge
-o.sidescrolloff       = 5                           -- min number of cols to keep between cursor and screen edge
-o.textwidth           = 99                          -- max inserted text width for paste operations
-o.number              = true                        -- show absolute line no. at the cursor pos
-o.relativenumber      = true                        -- otherwise, show relative numbers in the ruler
-o.cursorline          = false                        -- Show a line where the current cursor is
--- o.cursorlineopt       = "number"
-o.signcolumn          = "yes"                       -- Show sign column as first column
--- vim.g._colorcolumn = 0                         -- global var, mark column 100
--- vim.g._colorcolumn = 100                         -- global var, mark column 100
+o.showmode       = false
+o.cmdheight      = 1                            -- cmdline height
+o.cmdwinheight   = math.floor(vim.o.lines / 2)  -- 'q:' window height
+o.scrolloff      = 3                            -- min number of lines to keep between cursor and screen edge
+o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
+o.textwidth      = 99                           -- max inserted text width for paste operations
+o.number         = false                        -- show absolute line no. at the cursor pos
+o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
+o.cursorline     = false                        -- Show a line where the current cursor is
+o.signcolumn     = "yes:1"  -- Show sign column as first column
+
+-- o.cursorlineopt    = "number"
+-- vim.g._colorcolumn = 0        -- global var, mark column 100
+-- vim.g._colorcolumn = 100      -- global var, mark column 100
 -- o.colorcolumn      = tostring(vim.g._colorcolumn)
 
-o.wrap         = false
-o.linebreak    = true
-o.breakindent  = true
-o.smoothscroll = true
-o.ts           = 4
-o.autoindent   = true
+-- o.hlsearch     = false
+o.wrap           = false
+o.linebreak      = true
+o.breakindent    = true
+o.smoothscroll   = false
+o.ts             = 4
+o.autoindent     = true
 -- o.guicursor        =
 -- "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor"
 -- Characters to display on ':set list',explore glyphs using:
@@ -58,11 +60,12 @@ o.listchars        = {
 o.showbreak        = "↪ "
 
 -- show menu even for one item do not auto select/insert
-o.completeopt      = { "noinsert", "menuone", "noselect" }
+o.completeopt      = { 'noinsert', 'menuone', 'noselect'}
 o.wildmode         = "longest:full,full"
 o.wildoptions      = "pum" -- Show completion items using the pop-up-menu (pum)
 o.pumblend         = 0    -- completion menu transparency
-
+o.pumwidth         = 15 -- min width
+o.pumheight        = 12 -- max height
 o.joinspaces       = true  -- insert spaces after '.?!' when joining lines
 o.smartindent      = true  -- add <tab> depending on syntax (C/C++)
 -- o.startofline      = false -- keep cursor column on navigation
@@ -98,8 +101,9 @@ o.formatoptions    = o.formatoptions
 o.splitbelow       = true                   -- ':new' ':split' below current
 o.splitright       = true                   -- ':vnew' ':vsplit' right of current
 
+
 -- o.foldenable       = true                   -- enable folding
--- o.foldlevelstart   = 10                     -- open most folds by default
+-- o.foldlevel        = 1                     -- open most folds by default
 -- o.foldnestmax      = 10                     -- 10 nested fold max
 -- o.foldmethod       = "indent"               -- fold based on indent level
 
@@ -198,3 +202,111 @@ vim.g.maplocalleader            = " "
 -- We do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
 -- vim.api.nvim_command("set rtp-=/usr/share/vim/vimfiles")
+
+
+vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter", "BufWinEnter" }, {
+  desc = "Highlight the cursor line in the active window",
+  pattern = "*",
+  command = "setlocal cursorline",
+  group = aug,
+})
+vim.api.nvim_create_autocmd("WinLeave", {
+  desc = "Clear the cursor line highlight when leaving a window",
+  pattern = "*",
+  command = "setlocal nocursorline",
+  group = aug,
+})
+
+-- built-in ftplugins should not change my keybindings
+vim.g.no_plugin_maps = true
+vim.cmd.filetype({ args = { "plugin", "on" } })
+vim.cmd.filetype({ args = { "plugin", "indent", "on" } })
+
+vim.api.nvim_create_autocmd("BufReadPost", {
+  desc = "Return to last edit position when opening files",
+  pattern = "*",
+  command = [[if line("'\"") > 0 && line("'\"") <= line("$") && expand('%:t') != 'COMMIT_EDITMSG' | exe "normal! g`\"" | endif]],
+  group = aug,
+})
+
+-- Save jumps > 5 lines to the jumplist
+-- Jumps <= 5 respect line wraps
+vim.keymap.set("n", "j", [[(v:count > 5 ? "m'" . v:count . 'j' : 'gj')]], { expr = true })
+vim.keymap.set("n", "k", [[(v:count > 5 ? "m'" . v:count . 'k' : 'gk')]], { expr = true })
+
+local obs = false
+local function set_scrolloff(winid)
+  if obs then
+    vim.wo[winid].scrolloff = math.floor(math.max(10, vim.api.nvim_win_get_height(winid) / 10))
+  else
+    vim.wo[winid].scrolloff = 1 + math.floor(vim.api.nvim_win_get_height(winid) / 2)
+  end
+end
+vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "WinNew", "VimResized" }, {
+  desc = "Always keep the cursor vertically centered",
+  pattern = "*",
+  callback = function()
+    if not vim.b.overseer_task then
+      set_scrolloff(0)
+    end
+  end,
+  group = aug,
+})
+
+vim.api.nvim_create_user_command("ToggleObs", function()
+  obs = not obs
+  vim.o.relativenumber = not obs
+  for _, winid in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_is_valid(winid) then
+      vim.wo[winid].relativenumber = not obs
+      set_scrolloff(winid)
+    end
+  end
+end, {
+  desc = "Toggle settings that make me easier to follow while pairing",
+})
+
+-- Start with folds open
+vim.o.foldlevelstart = 99
+vim.o.foldlevel = 99
+-- Disable fold column
+vim.o.foldcolumn = "0"
+
+vim.o.foldtext = [[v:lua.utils.other.foldtext()")]]
+vim.opt.fillchars = {
+  fold = " ",
+  vert = "┃",
+  horiz = "━",
+  horizup = "┻",
+  horizdown = "┳",
+  vertleft = "┫",
+  vertright = "┣",
+  verthoriz = "╋",
+}
+
+-- Map leader-r to do a global replace of a word
+-- vim.keymap.set("n", "<leader>r", [[*N:s//<C-R>=expand("<cword>")<CR>]])
+
+-- Expand %% to current directory in command mode
+vim.cmd.cabbr({ args = { "<expr>", "%%", "&filetype == 'oil' ? bufname('%')[6:] : expand('%:p:h')" } })
+
+vim.api.nvim_create_autocmd("FocusGained", {
+  desc = "Reload files from disk when we focus vim",
+  pattern = "*",
+  command = "if getcmdwintype() == '' | checktime | endif",
+  group = aug,
+})
+vim.api.nvim_create_autocmd("BufEnter", {
+  desc = "Every time we enter an unmodified buffer, check if it changed on disk",
+  pattern = "*",
+  command = "if &buftype == '' && !&modified && expand('%') != '' | exec 'checktime ' . expand('<abuf>') | endif",
+  group = aug,
+})
+
+-- Close the scratch preview automatically
+vim.api.nvim_create_autocmd({ "CursorMovedI", "InsertLeave" }, {
+  desc = "Close the popup-menu automatically",
+  pattern = "*",
+  command = "if pumvisible() == 0 && !&pvw && getcmdwintype() == ''|pclose|endif",
+  group = aug,
+})

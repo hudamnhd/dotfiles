@@ -23,7 +23,7 @@ while type dwm >/dev/null; do dwm && continue || break; done
 # nitrogen --restore &
 # nm-applet &
 # clipmenud &
-#setxkbmap -option "ctrl:nocaps" &
+setxkbmap -option "ctrl:nocaps" &
 #/usr/libexec/xfce-polkit &
 #picom -bc &
 #!/bin/sh

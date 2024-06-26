@@ -1,13 +1,23 @@
-local map  = require('utils.map')
+local map = require("utils.map")
 
-local silent = { silent = true }
+local silent = { noremap = true, silent = true }
 
 -- OVERRIDE DEFAULTS ---------------------------------------------------------------------
-map.nx({ ["/"] = "ms/", ["?"] = "ms?"  }) -- Save initial search position
-map.x({ ["<"] = "<gv", [">"] = ">gv"  })
+map.nx({ ["/"] = "ms/", ["?"] = "ms?" }) -- Save initial search position
+map.x({ ["<"] = "<gv", [">"] = ">gv" })
+
+map.n("<leader>l",    [[<cmd>AsyncRun eslint_d --format unix "$(VIM_FILEPATH)"<CR>]], { silent = true, desc = "eslint_d" })
+-- stylua: ignore start
+map.n("gh",  [[:lua require'utils.menus'.gitsigns()<CR>]],   { desc = "Git Sign + Fzflua Git" })
+map.n("go",  [[:lua require'utils.menus'.options()<CR>]],    { desc = "Options" })
+map.nv("sq", [[:lua require'utils.menus'.bookmarks()<CR>]],  { desc = "FzfLua" })
+map.nv("se", [[:lua require'utils.menus'.genghist()<CR>]],   { desc = "Session & File Operation" })
+
+map.n("dy", [[:clear<bar>silent exec "!cp '%:p' '%:p:h/%:t:r.%:e.bak'"<bar>redraw<bar>echo "Copied " . expand('%:t') . ' to ' . expand('%:t:r') . '.' . expand('%:e'). '.bak' <cr>]])
+
+-- bak file
 
 -- COMMENT ---------------------------------------------------------------------------
--- stylua: ignore start
 map.v({
   ["gcb"] = [[:s@^\(.*\)$@{{--\1--}}<CR>:let @/ = ""<CR>]],
   ["gub"] = [[:s@^{{--\(\(.*[^{\{--]\)\)\?--}}$@\1<CR>:let @/ = ""<CR>]],
@@ -19,9 +29,9 @@ map.v({
 -- stylua: ignore end
 
 -- Toggle smartcase
-map.c("<C-X><C-I>", function()
+map.c("<c-s>", function()
   vim.o.ignorecase = not vim.o.ignorecase
-  vim.o.smartcase  = not vim.o.smartcase
+  vim.o.smartcase = not vim.o.smartcase
   return " <BS>" -- update search
 end, { expr = true })
 
@@ -35,75 +45,58 @@ map.nv({
 })
 
 map.t({
-  ["<esc>"] = [[<C-\><C-n>]],
   ["<a-w>"] = [[<C-\><C-n><C-w>w]],
 })
 
 map.n({
-  ["df"]        = [[:!cp '%:p' '%:p:h/%:t:r.%:e.copy'<CR>]],
-  ["d;"]        = [[q:]],
   ["<Tab>"]     = [[g;zvzz]],
-  ["<S-Tab>"]   = [[g,zvzz]],
-  ["<a-w>"]     = [[<C-W>w]],
-  ["<leader>w"] = [[<C-W>]],
+  ["<S-Tab>"]   = [[<C-^>]],
   ["<c-w>n"]    = [[:vnew<CR>]],
-  ["<leader>k"] = [[:help <C-r>=expand("<cword>")<CR>]],
+  ["<a-w>"]     = [[<C-W>w]],
+  ["sv"]        = [[<C-W>v]],
+  ["sc"]        = [[<C-W>c]],
+  ["<leader>w"] = [[<C-W>]],
+  ["gj"]        = [[i<c-j><esc>k$]],
+  ["d;"]        = [[q:]],
   ["Y"]         = [[y$]],
   ["i"]         = [[a]],
   ["<F4>"]      = [[:vsp term://$SHELL<CR>]],
-  -- ["<a-a>"]     = [[<cmd>keepjumps norm! ggVG<CR>]],
 })
 
 map.vn({
-  ["<C-H>"]     = [[^]],
-  ["<C-L>"]     = [[g_]],
+  ["<C-H>"] = [[^]],
+  ["<C-L>"] = [[g_]],
 })
 
 map.n({
-  ["rt"]        = [[vit"_dP]],
-  ["rat"]       = [[vat"_dP]],
-  ["rw"]        = [[viw"_dP]],
+  ["rt"] = [[vit"_dP]],
+  ["rat"] = [[vat"_dP]],
+  ["rw"] = [[viw"_dP]],
 })
 
 map.xo({
-  ["{"]         = [[i{]],
-  ["["]         = [[i[]],
-  ["("]         = [[i(]],
-  ["b"]         = [[ib]],
-  ["B"]         = [[iB]],
-  ["w"]         = [[iw]],
-  ["W"]         = [[iW]],
-  ["t"]         = [[it]],
-  ["T"]         = [[at]],
-},{ desc = "operator pending" })
+  ["{"] = [[i{]],
+  ["["] = [[i[]],
+  ["("] = [[i(]],
+  ["b"] = [[ib]],
+  ["B"] = [[iB]],
+  ["w"] = [[iw]],
+  ["W"] = [[iW]],
+  ["t"] = [[it]],
+  ["T"] = [[at]],
+}, { desc = "operator pending" })
 
 map.nvi("<C-S>", "<esc>:update<cr>", { silent = true, desc = "Save" })
 
 -- SearchReplace with plugin
-map.n("<C-F>", "<CMD>SearchReplaceSingleBufferCWord<CR>")
-map.v("<C-F>", "<CMD>SearchReplaceSingleBufferVisualSelection<CR>")
-map.n("<C-B>", [[:'<,'>s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]])
-map.v("<C-B>", "<CMD>SearchReplaceWithinVisualSelection<CR>")
-
-map.v("H",              [[:s/^//gI<Left><Left><Left>]])            -- add begin line only
-map.v("L",              [[:s/$//gI<Left><Left><Left>]])            -- add end only
-map.v("K",              [[:s/\(.*\)/X \1 X/gI<Left><Left><Left>]]) -- add word begin and end line
-map.v("<space><space>", [[:s/\s\+//g<Left><Left>]])               -- delete space
+map.n("<C-F>", [[<CMD>SearchReplaceSingleBufferCWord<CR>]])
+map.v("<C-F>", [[<CMD>SearchReplaceSingleBufferVisualSelection<CR>]])
+map.v("<C-B>", [[<CMD>SearchReplaceWithinVisualSelection<CR>]])
 
 -- w!! to save with sudo
 -- nmap("c", "w!!", "<esc>:lua require'utils'.sudo_write()<CR>", { silent = true })
 
--- .nQuickfix list mappings
-map.n("<a-q>", "<cmd>lua require'utils.other'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
-map.n("L",     ":cnext<CR>", { silent = true, desc = "Next quickfix" })
-map.n("H",     ":cprevious<CR>", { silent = true, desc = "Previous quickfix" })
-
--- .nLocation list mappings
-map.n("<a-a>", "<cmd>lua require'utils.other'.toggle_qf('l')<CR>", { desc = "toggle location list" })
-map.n("<A-[>", ":lprevious<CR>", { silent = true, desc = "Previous location" })
-map.n("<A-]>", ":lnext<CR>", { silent = true, desc = "Next location" })
-
-map.n("<leader>Y", [["+Y]])
+map.n("<leader>Y", [["+y$]])
 map.nv("<leader>y", [["+y]])
 
 map.nx("<leader>p", [["+p]], { desc = "paste AFTER from clipboard" })
@@ -114,22 +107,19 @@ map.x("p", [['pgv"' . v:register . 'y']], { noremap = true, expr = true })
 
 -- without copying to clipboard
 map.n({
-  -- ["S"]  = [["_S]],
-  ["D"]  = [["_D]],
+  ["D"] = [["_D]],
 })
 
 map.nx({
-  ["c"]  = [["_c]],
-  ["x"]  = [["_x]],
+  ["c"] = [["_c]],
+  ["x"] = [["_x]],
 })
 
---  Change
 map.n({
-  ["db"] = [["_cib]],
-  ["dB"] = [["_ciB]],
-  ["dw"] = [["_ciw]],
-  ["dW"] = [["_ciW]],
-  ["dt"] = [["_cit]],
+  ["d"] = [["_c]],
+  ["cc"] = [["_ciw]],
+  ["cc"] = [["_ciw]],
+  ["cl"] = [["_c$]],
 })
 
 map.n("dd", function()
@@ -141,13 +131,6 @@ end, { expr = true, desc = "delete blank lines to black hole register" })
 map.n("n", "nzzzv", { desc = "Fwd  search '/' or '?'" })
 map.n("N", "Nzzzv", { desc = "Back search '/' or '?'" })
 
--- emulate some basic commands from `vim-abolish`
-map.n("ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
-map.n("cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
-map.n("cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
-
-map.n("<a-m>", "<CMD>SignatureListBufferMarks<CR>")
-
 -- stylua: ignore start
 map.n("<C-Up>",    "<cmd>lua require'utils.other'.resize(false, -5)<CR>", { silent = true, desc = "horizontal split increase" })
 map.n("<C-Down>",  "<cmd>lua require'utils.other'.resize(false,  5)<CR>", { silent = true, desc = "horizontal split decrease" })
@@ -155,8 +138,8 @@ map.n("<C-Left>",  "<cmd>lua require'utils.other'.resize(true,  -5)<CR>", { sile
 map.n("<C-Right>", "<cmd>lua require'utils.other'.resize(true,   5)<CR>", { silent = true, desc = "vertical split increase" })
 -- stylua: ignore end
 
-map.n("]d", "<cmd>lua vim.diagnostic.goto_next()<CR>")
-map.n("[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
+map.n("<a-[>", "<cmd>lua vim.diagnostic.goto_next()<CR>")
+map.n("<a-]>", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
 
 -- join
 map.n("J", "'mz' . v:count1 . 'J`z'", { expr = true })
@@ -190,14 +173,26 @@ map.n("<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces
 -- stylua: ignore end
 
 map.c({
-  ["<C-X><C-V>"] = [[<C-R>"]],
-  ["<C-V>"]      = [[<C-R>+]],
-})
+  ["<C-V>"]      = [[<C-R>"]],
+  ["<C-X><C-V>"] = [[<C-R>+]],
+  ["<C-space>"]  = [[.\{-}]],                                 -- fuzzy search
+  ["<C-X><C-I>"] = [[s/^//gI<Left><Left><Left>]],             -- add begin line
+  ["<C-X><C-A>"] = [[s/$//gI<Left><Left><Left>]],             -- add end only
+  ["<C-X><C-Z>"] = [[s/\(.*\)/X \1 X/gI<Left><Left><Left>]],  -- add word begin and end
+  ["<C-X><C- >"] = [[s/\s\+//g<Left><Left>]],                 -- delete space
+  ["<C-X><C-G>"] = [[\(\)<Left><Left>]],
+  ["<C-X><C-W>"] = [[\<\><Left><Left>]],
+  ["<C-X><C-S>"] = [[%s///g<Left><Left>]],
+  ["<C-X><C-B>"] = [['<,'>s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
+}, { remap = true, desc = "paste n subtitute"   }, {  desc = "PASTE N SUBTITUTE"   })
+
+-- Lua expression
+map.c("=", [[getcmdtype() == ':' && getcmdline() == '' ? 'lua=' : '=']], { expr = true })
 
 local api = vim.api
 
 local function modify_line_end_delimiter(character)
-  local delimiters = { ',', ';', '.' }
+  local delimiters = { ",", ";", "." }
   return function()
     local line = api.nvim_get_current_line()
     local last_char = line:sub(-1)
@@ -211,18 +206,19 @@ local function modify_line_end_delimiter(character)
   end
 end
 
-map.n('z,', modify_line_end_delimiter(','), { desc = "add ',' to end of line" })
-map.n('z;', modify_line_end_delimiter(';'), { desc = "add ';' to end of line" })
-map.n('z.', modify_line_end_delimiter('.'), { desc = "add '.' to end of line" })
+map.n("z,", modify_line_end_delimiter(","), { desc = "add ',' to end of line" })
+map.n("z;", modify_line_end_delimiter(";"), { desc = "add ';' to end of line" })
+map.n("z.", modify_line_end_delimiter("."), { desc = "add '.' to end of line" })
 
 -- stylua: ignore start
 map.n("zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { silent = true, desc = "newline below (no insert-mode)" })
 map.n("zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]], { silent = true, desc = "newline above (no insert-mode)" })
 
-map.nx("zm", "<cmd>20messages<CR>", { desc = "open :messages" })
-map.nx("zM", [[<cmd>mes clear|echo "cleared :messages"<CR>]], { desc = "clear :messages" })
+map.n("<a-m>", "<cmd>20messages<CR>", { desc = "open :messages" })
+map.n("<a-M>", [[<cmd>mes clear|echo "cleared :messages"<CR>]], { desc = "clear :messages" })
 
 map.n({["zq"] = [[:wq!<CR>]], }, silent)
+map.n({["z<esc>"] = [[:q!<CR>]], }, silent)
 -- stylua: ignore end
 
 -- Use ':Grep' or ':LGrep' to grep into quickfix|loclist
@@ -232,27 +228,21 @@ map.n({["zq"] = [[:wq!<CR>]], }, silent)
 vim.cmd("command! -nargs=+ -complete=file Grep  grep! <args> | redraw! | copen")
 vim.cmd("command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw! | lopen")
 
-map.n("C",  [[*N"_cgn]], { desc = "mc change word (forward)", noremap = true })
+-- ========================================================================== --
+-- ==                            MISCELLANEOUS                             == --
+-- ========================================================================== --
 
--- vim regex
--- (.*) -- find all word
--- ^ -- start of line
--- \r -- add new line
--- $ -- end of line
--- %s -- subtitute (find and replace)
--- \v -- very magic
--- (abc|cba) -- match either abc or cba
--- :%s/\v(abc|cba)//g  -- find and remove abc and cba
--- :s/\(.*\)/abc \1 abc -- add abc first and last word, using visual mode
--- :s/<\(.*\)/{\/*\<\1 *\/} -- find < and add {*/ *\} before and after
--- :4,9s/^/#/ -- add # at first line 4-9
+-- Add word to search then replace
+map.n("C", [[<cmd>let @/='\<'.expand('<cword>').'\>'<cr>"_cgn]])
 
--- Search and Replace
--- :cdo \ cfdo for all buffer
--- %s/\\n/\r/g
--- stylua: ignore start
+-- Add selection to search then replace
+map.x("C", [[y<cmd>let @/=substitute(escape(@", '/'), '\n', '\\n', 'g')<cr>"_cgn]])
 
--- '<,'>s/\v(\w+),/\1={\1}/g clone text exp test to test={test}
+-- Begin a "searchable" macro
+map.x("<a-q>", [[y<cmd>let @/=substitute(escape(@", '/'), '\n', '\\n', 'g')<cr>gvqi]])
+
+-- Apply macro in the next instance of the search
+map.n("<F8>", "gn@i")
 
 -- Break undo chain on punctuation so we can
 -- use 'u' to undo sections of an edit
@@ -288,3 +278,93 @@ for k, v in pairs({ ["<down>"] = "<C-n>", ["<up>"] = "<C-p>" }) do
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), "n", false)
   end, { silent = false })
 end
+
+vim.keymap.set('n', 'yow', function()
+    if vim.wo.wrap then
+        vim.wo.wrap = false
+        vim.wo.linebreak = false
+    else
+        vim.wo.wrap = true
+        vim.wo.linebreak = true
+    end
+end)
+
+vim.keymap.set('n', 'yon', function()
+    vim.wo.number = not vim.wo.number
+end)
+vim.keymap.set('n', 'yor', function()
+    vim.wo.relativenumber = not vim.wo.relativenumber
+end)
+
+vim.keymap.set('n', 'yoc', function()
+    vim.wo.cursorline = not vim.wo.cursorline
+end)
+
+vim.keymap.set('n', 'yos', function()
+    if vim.wo.spell then
+        vim.wo.spell = false
+        vim.notify("'spell'", vim.lsp.log_levels.ERROR)
+    else
+        vim.wo.spell = true
+        vim.notify("'spell'", vim.lsp.log_levels.INFO)
+    end
+end)
+vim.keymap.set('n', 'yob', function()
+    if vim.wo.scrollbind then
+        vim.wo.scrollbind = false
+        vim.notify("'scrollbind'", vim.lsp.log_levels.ERROR)
+    else
+        vim.wo.scrollbind = true
+        vim.notify("'scrollbind'", vim.lsp.log_levels.INFO)
+    end
+end)
+vim.keymap.set('n', 'yoh', function()
+    if vim.o.hlsearch then
+        vim.o.hlsearch = false
+        vim.notify("'hlsearch'", vim.lsp.log_levels.ERROR)
+    else
+        vim.o.hlsearch = true
+        vim.notify("'hlsearch'", vim.lsp.log_levels.INFO)
+    end
+end)
+
+vim.keymap.set('n', 'g8', '<cmd>norm! *N<cr>')
+vim.keymap.set('c', '%%', 'getcmdtype() == ":" ? expand("%:h")."/" : "%%"', { expr = true })
+
+-- emulate some basic commands from `vim-abolish`
+local case_state = 0
+
+local function cycle_case(count)
+  vim.cmd("normal! mz")
+
+  if count then
+    case_state = (count - 1) % 3
+  end
+
+  if case_state == 0 then
+    -- Change to Titlecase
+    vim.cmd("normal! guiwgUl`z")
+  elseif case_state == 1 then
+    -- Change to UPPERCASE
+    vim.cmd("normal! gUiw`z")
+  else
+    -- Change to lowercase
+    vim.cmd("normal! guiw`z")
+  end
+
+  if not count then
+    case_state = (case_state + 1) % 3
+  end
+  vim.cmd("normal! `z")
+end
+
+-- Function wrapper to handle count and call cycle_case
+local function cycle_case_wrapper()
+  local count = vim.v.count
+  if count == 0 then
+    count = nil
+  end
+  cycle_case(count)
+end
+
+map.n('cu', cycle_case_wrapper, { noremap = true, silent = true, desc = "Cycle case transformations" })

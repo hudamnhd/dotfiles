@@ -24,9 +24,9 @@
 #--map-syntax "*.ino:C++"
 #--map-syntax ".ignore:Git Ignore"
 #--theme="FzfxNvimKanagawa"
-# --theme="Catppuccin-mocha"
+--theme="Catppuccin-mocha"
 # --theme="FzfxNvimMacro"
- --theme="FzfxNvimDuskfox"
+ # --theme="FzfxNvimDefault"
 
 # Show line numbers, Git modifications and file header (but no grid)
 --style="numbers,changes,header"

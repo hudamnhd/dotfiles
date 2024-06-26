@@ -1,60 +1,44 @@
+vim.g.asyncrun_exit = "echo 'Success'"
+vim.g.asyncrun_bell = 1
+-- vim.g.user_emmet_leader_key = "<C-Z>"
+-- vim.g.user_emmet_mode = "i"
+
 return {
   {
-    "gbprod/yanky.nvim",
-    dependencies = { "kkharji/sqlite.lua" },
-    keys = { "sy", "y" },
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
+    "kana/vim-g",
+    lazy = false,
     config = function()
-      local utils = require("yanky.utils")
-      local mapping = require("yanky.telescope.mapping")
+      vim.cmd([[
 
-      require("yanky").setup({
-        preserve_cursor_position = {
-          enabled = true,
-        },
-        picker = {
-          telescope = {
-            mappings = {
-              default = mapping.put("p"),
-              i = {
-                ["<c-l>"] = mapping.put("p"),
-                ["<c-p>"] = mapping.put("P"),
-                ["<c-x>"] = mapping.delete(),
-                ["<c-r>"] = mapping.set_register(utils.get_default_register()),
-              },
-              n = {
-                p = mapping.put("p"),
-                P = mapping.put("P"),
-                d = mapping.delete(),
-                r = mapping.set_register(utils.get_default_register()),
-              },
-            },
-          },
-        },
-      })
-      vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
-      vim.keymap.set(
-        "n",
-        "sy",
-        '<CMD>:lua require("telescope").extensions.yank_history.yank_history()<CR>'
-      )
+  " Stage the current file.
+        nnoremap <Leader>va <Cmd>call g#vc#add(expand('%'))<CR>
+
+        " Commit the current file.  No need to do git add.
+        nnoremap <Leader>vc <Cmd>call g#vc#commit('-v', expand('%'))<CR>
+
+        " Commit all modified files.  No need to do git add.
+        nnoremap <Leader>vC <Cmd>call g#vc#commit('-av')<CR>
+
+        " Revert unstaged changes in the current file.
+        nnoremap <Leader>vv <Cmd>call g#vc#restore(expand('%'))<CR>
+
+        " Show all uncomitted changes.
+        nnoremap <Leader>vD <Cmd>call g#vc#diff('HEAD', '--', '.')<CR>
+
+      ]])
+
     end,
   },
-  -- generate theme bat
   {
-    "linrongbin16/fzfx.nvim",
-    event = { "BufReadPost" },
-    dependencies = { "nvim-tree/nvim-web-devicons", "junegunn/fzf" },
-
-    -- specify version to avoid break changes
-    version = "v5.*",
-
+    "cohama/agit.vim",
+    cmd = { "Agit", "AgitFile" },
+    config = function() end,
+  },
+  {
+    "barrett-ruth/live-server.nvim",
+    cmd = { "LiveServerStart", "LiveServerStop" },
     config = function()
-      require("fzfx").setup()
+      require("live-server").setup()
     end,
   },
   -- install with yarn or npm
@@ -68,30 +52,14 @@ return {
     ft = { "markdown" },
   },
   {
-    "cohama/agit.vim",
-    keys = { "<a-g>", "<a-f>" },
-    config = function()
-      vim.keymap.set("n", "<a-g>", "<CMD>Agit<CR>")
-      vim.keymap.set("n", "<a-f>", "<CMD>AgitFile<CR>")
-    end,
-  },
-  {
     "nvimdev/indentmini.nvim",
     event = { "BufReadPost" },
     config = function()
       require("indentmini").setup() -- use default config
-      -- Colors are applied automatically based on user-defined highlight groups.
-      -- There is no default value.
       vim.cmd.highlight("IndentLine guifg=#45475a")
-      -- Current indent line highlight
       vim.cmd.highlight("IndentLineCurrent guifg=#9CABCA")
     end,
   },
-  {
-    "cohama/lexima.vim",
-    event = { "BufReadPost" },
-  },
-  { "wellle/targets.vim", event = "VeryLazy" },
   {
     "haya14busa/vim-edgemotion",
     event = { "BufReadPost" },
@@ -117,76 +85,7 @@ return {
   },
   {
     "thinca/vim-partedit",
-    keys = { { "<C-e>", mode = { "x" } } },
-    config = function()
-      vim.keymap.set({ "x" }, "<c-e>", ":Partedit -opener vnew -filetype vim -prefix '>'<CR>")
-    end,
-  },
-  {
-    "norcalli/nvim-colorizer.lua",
-    config = function()
-      require("colorizer").setup()
-    end,
-    cmd = { "ColorizerToggle" },
-  },
-  {
-    "kevinhwang91/nvim-bqf",
-    ft = "qf",
-    dependencies = {
-      { "junegunn/fzf", build = ":call fzf#install()" },
-    },
-    config = function()
-      require("bqf").setup({
-        auto_enable = true,
-        auto_resize_height = true, -- highly recommended enable
-        preview = {
-          win_height = 12,
-          win_vheight = 12,
-          delay_syntax = 80,
-          border = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
-          show_title = false,
-          should_preview_cb = function(bufnr)
-            local ret = true
-            local bufname = vim.api.nvim_buf_get_name(bufnr)
-            local fsize = vim.fn.getfsize(bufname)
-            if fsize > 100 * 1024 then
-              -- skip file size greater than 100k
-              ret = false
-            elseif bufname:match("^fugitive://") then
-              -- skip fugitive buffer
-              ret = false
-            end
-            return ret
-          end,
-        },
-        -- make `drop` and `tab drop` to become preferred
-        func_map = {
-          drop = "o",
-          openc = "O",
-          split = "<C-s>",
-          tabdrop = "<C-t>",
-          -- set to empty string to disable
-          tabc = "",
-          ptogglemode = "z,",
-        },
-        filter = {
-          fzf = {
-            action_for = { ["ctrl-s"] = "split", ["ctrl-t"] = "tab drop" },
-            extra_opts = { "--bind", "ctrl-o:toggle-all", "--prompt", "> " },
-          },
-        },
-      })
-    end,
-  },
-  {
-    "thinca/vim-qfreplace",
-    keys = { "<A-r>" },
-    config = function()
-      vim.keymap.set("n", "<A-r>", "<CMD>Qfreplace<CR>")
-    end,
-  },
-  {
-    "nvim-lua/plenary.nvim",
+    keys = { { "<C-e>", ":Partedit -opener vnew -filetype vim -prefix '>'<CR>", mode = { "x" } } },
   },
   {
     "kshenoy/vim-signature",
@@ -195,8 +94,23 @@ return {
       vim.cmd([[ highlight! link SignatureMarkText WarningMsg ]])
     end,
   },
-  {
-    "thinca/vim-quickmemo",
-    event = { "VimEnter" },
-  },
+  { "wellle/targets.vim", event = "VeryLazy" },
+  { "skywind3000/asynctasks.vim", event = "VeryLazy" },
+  { "skywind3000/asyncrun.vim", event = "VeryLazy" },
+  { "thinca/vim-quickmemo", event = "VimEnter" },
+  { "nicwest/vim-http", ft = "http" },
+  { "nvim-lua/plenary.nvim" },
+  -- { "mattn/emmet-vim", ft = { "typescriptreact", "javascriptreact", "html", "blade" } },
+  -- generate theme bat
+  -- {
+  --   "linrongbin16/fzfx.nvim",
+  --   cmd = { "FzfxFiles" },
+  --   dependencies = {
+  --     { dir = "~/.fzf", build = ":call fzf#install()" },
+  --   },
+  --   version = "v5.*",
+  --   config = function()
+  --     require("fzfx").setup()
+  --   end,
+  -- },
 }

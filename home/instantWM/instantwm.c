@@ -107,7 +107,7 @@ static Window root, wmcheckwin;
 static int focusfollowsmouse = 1;
 static int focusfollowsfloatmouse = 1;
 static int barleavestatus = 0;
-int animated = 1;
+int animated = 0;
 int specialnext = 0;
 
 Client *animclient;

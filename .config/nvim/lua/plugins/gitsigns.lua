@@ -3,45 +3,26 @@ local M = {
   event = { "BufReadPost" },
 }
 
+M.keys = {
+
+  -- 	-- stylua: ignore start
+  	{ ">", "<cmd>Gitsigns nav_hunk next<CR>",   desc = "󰊢 Next Hunk", mode = { "n" }, },
+  	{ "<", "<cmd>Gitsigns nav_hunk prev<CR>",   desc = "󰊢 Previous Hunk", mode = { "n" },},
+}
+
 M.config = function()
   require("gitsigns").setup({
+    -- signs_staged_enable = true, -- PENDING above
+
+    attach_to_untracked = true,
+    max_file_length = 3000, -- lines
+			-- stylua: ignore
+			count_chars = { "", "󰬻", "󰬼", "󰬽", "󰬾", "󰬿", "󰭀", "󰭁", "󰭂", ["+"] = "󰿮" },
     signs = {
-      add = { text = "┃" },
-      change = { text = "┃" },
-      delete = { text = "_" },
-      topdelete = { text = "‾" },
-      changedelete = { text = "~" },
-      untracked = { text = "┆" },
+      delete = { show_count = true },
+      topdelete = { show_count = true },
+      changedelete = { show_count = true },
     },
-    signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-    numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
-    linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
-    word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
-    sign_priority = 4, -- Lower priorirty means diag signs supercede
-    preview_config = { border = "rounded" },
-    on_attach = function(bufnr)
-      local gs = package.loaded.gitsigns
-      local function map(mode, l, r, opts)
-        opts = opts or {}
-        opts.buffer = bufnr
-        vim.keymap.set(mode, l, r, opts)
-      end
-      local opts = { buffer = buf, expr = true, replace_keycodes = false }
-
-      -- Navigation
-      map("n", "]c", "&diff ? ']c' : '<CMD>Gitsigns next_hunk<CR>'", opts)
-      map("n", "[c", "&diff ? '[c' : '<CMD>Gitsigns prev_hunk<CR>'", opts)
-
-      -- Actions
-      map({ "n", "v" }, "gr", gs.reset_hunk, { buffer = buf })
-      map({ "n", "v" }, "ga", gs.stage_hunk)
-
-      map("n", "gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
-      map("n", "gh", gs.preview_hunk, { buffer = buf })
-
-      -- text object
-      map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { buffer = buf })
-    end,
   })
 end
 

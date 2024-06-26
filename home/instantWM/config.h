@@ -315,14 +315,14 @@ static const Rule rules[] = {
     /* class                        instance  title  tags mask  isfloating
        monitor */
     {"Pavucontrol", NULL, NULL, 0, 0, -1},
-    {scratchpadname, NULL, NULL, 0, 4, -1},
+    // {scratchpadname, NULL, NULL, 0, 4, -1},
 };
 
 /* layout(s) */
 static const float mfact = 0.5; /* factor of master area size [0.05..0.95] */
-static const int nmaster = 1;   /* number of clients in master area */
+static const int nmaster = 0;   /* number of clients in master area */
 static const int resizehints =
-    0; /* 1 means respect size hints in tiled resizals */
+    1; /* 1 means respect size hints in tiled resizals */
 static const int decorhints = 1; /* 1 means respect decoration hints */
 
 static const Layout layouts[] = {
@@ -347,7 +347,7 @@ static const Layout layouts[] = {
 		{MODKEY, KEY, view, {.ui = 1 << TAG}},                     \
 		{MODKEY|ControlMask, KEY, toggleview, {.ui = 1 << TAG}}, \
 		{MODKEY|ShiftMask, KEY, tag, {.ui = 1 << TAG}},          \
-		{Mod1Mask, KEY, followtag, {.ui = 1 << TAG}},          \
+		{ALTKEY, KEY, followtag, {.ui = 1 << TAG}},          \
 		{MODKEY|ControlMask|ShiftMask, KEY, toggletag, {.ui = 1 << TAG}}, \
 		{MODKEY|Mod1Mask|ShiftMask, KEY, swaptags, {.ui = 1 << TAG}},
 
@@ -379,7 +379,7 @@ static const char *screenshotfull[]        = {"/home/hudamnhd/.local/bin/screens
 static const char *startmenucmd[]          = {"/home/hudamnhd/.local/bin/rofi-custom", NULL};
 static const char *tabbed[]                = {"tabbed", "alacritty", "--embed", NULL };
 static const char *termcmd[]               = {"alacritty", NULL};
-static const char *termscratchcmd[]        = {"alacritty", "-c", scratchpadname, NULL};
+static const char *termscratchcmd[]        = {"alacritty", "-e", scratchpadname, NULL};
 
 #include "push.c"
 ResourcePref resources[] = {
@@ -411,7 +411,7 @@ static Xcommand commands[] = {
     {"overlay", setoverlay, {0}, 0},
     {"warpfocus", warpfocus, {0}, 0},
     {"tag", view, {.ui = 2}, 3},
-    {"animated", toggleanimated, {.ui = 2}, 0},
+    {"animated", toggleanimated, {.ui = 0}, 0},
     {"border", setborderwidth, {.i = borderpx}, 5},
     {"focusfollowsmouse", togglefocusfollowsmouse, {.ui = 2}, 1},
     {"focusfollowsfloatmouse", togglefocusfollowsfloatmouse, {.ui = 2}, 1},
@@ -434,7 +434,7 @@ static Key dkeys[] = {
     {0, XK_equal, spawn, {.v = upvol}},
     {0, XK_minus, spawn, {.v = downvol}},
     {0, XK_space, spawn, {.v = startmenucmd}},
-    {0, XK_a, spawn, SHCMD("brave-browser")},
+    // {0, XK_a, spawn, SHCMD("brave-browser")},
     {0, XK_Left, viewtoleft, {0}},
     {0, XK_Right, viewtoright, {0}},
 };
@@ -510,11 +510,12 @@ static Key keys[] = {
     TAGKEYS(XK_2, 1)
     TAGKEYS(XK_3, 2)
     TAGKEYS(XK_4, 3)
-    TAGKEYS(XK_5, 4)
-    TAGKEYS(XK_6, 5)
-    TAGKEYS(XK_7, 6)
-    TAGKEYS(XK_8, 7)
-    TAGKEYS(XK_9, 8)};
+    // TAGKEYS(XK_5, 4)
+    // TAGKEYS(XK_6, 5)
+    // TAGKEYS(XK_7, 6)
+    // TAGKEYS(XK_8, 7)
+    // TAGKEYS(XK_9, 8)
+};
 
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
  * ClkClientWin, or ClkRootWin */

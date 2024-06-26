@@ -1,37 +1,34 @@
 return {
   "stevearc/conform.nvim",
+  event = "BufReadPost",
   config = function()
-    local conform = require("conform")
-    local util = require("conform.util")
-
-    conform.setup({
+    require("conform").setup({
       formatters_by_ft = {
-        javascript = { "prettierd" },
-        typescript = { "prettierd" },
-        javascriptreact = { "prettierd" },
-        typescriptreact = { "prettierd" },
-        svelte = { "prettierd" },
-        css = { "prettierd" },
-        html = { "prettierd" },
-        json = { "prettierd" },
-        markdown = { "prettierd" },
-        -- php = { "blade-formatter" },
-        lua = { "stylua" },
-      },
-
-      formatters = {
-        injected = { options = { ignore_errors = true } },
-        blade = {
-          meta = {
-            url = "https://github.com/shufo/blade-formatter",
-            description = "An opinionated blade template formatter for Laravel that respects readability.",
-          },
-          command = "blade-formatter",
-          args = { "--stdin" },
-          stdin = true,
-          cwd = util.root_file({ "composer.json", "composer.lock" }),
-        },
+        -- stylua: ignore start
+        javascript      = { "deno_fmt" },
+        typescript      = { "deno_fmt" },
+        javascriptreact = { "deno_fmt" },
+        typescriptreact = { "deno_fmt" },
+        svelte          = { "deno_fmt" },
+        css             = { "deno_fmt" },
+        html            = { "deno_fmt" },
+        json            = { "deno_fmt" },
+        markdown        = { "deno_fmt" },
+        lua             = { "stylua" },
+        -- stylua: ignore end
       },
     })
+
+    vim.api.nvim_create_user_command("Format", function(args)
+      local range = nil
+      if args.count ~= -1 then
+        local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+        range = {
+          start = { args.line1, 0 },
+          ["end"] = { args.line2, end_line:len() },
+        }
+      end
+      require("conform").format({ async = true, lsp_fallback = true, range = range })
+    end, { range = true })
   end,
 }

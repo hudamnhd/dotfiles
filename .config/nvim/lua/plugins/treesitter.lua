@@ -15,54 +15,25 @@ return {
           "tsx",
           "typescript",
           "php",
-          "php_only",
           "javascript",
         },
         ignore_install = { "comment" },
 
         highlight = {
-          enable = true,
+          enable = true, -- make faster
           disable = function(lang, buf)
-            -- disable highlighting for certain file types
-            -- help     : https://github.com/nvim-treesitter/nvim-treesitter/pull/3555
-            -- vimdoc   : same as the "old" help filetype
-            if vim.tbl_contains({ "help", "vimdoc" }, lang) then
-              return false
-            end
+            local max_filesize = 250 * 1024 -- 00 KB
+            local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
 
-            -- disable highlighting for big markdown files (bad performance)
-            if lang == "markdown" and vim.api.nvim_buf_line_count(buf) > 3000 then
-              return false
-            end
-
-            -- disable highlighting for large buffers
-            if vim.api.nvim_buf_line_count(buf) > 10000 then
-              return false
+            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            if ok and stats and stats.size > max_filesize then
+              return true
             end
 
             return false
           end,
         },
-
-        matchup = {
-          enable = false,
-        },
       })
-
-       local all_lang = {
-         "cpp",
-         "json",
-         "php",
-         "html",
-         "tsx",
-         "javascriptreact",
-         "typescript",
-         "typescriptreact",
-       }
-
-       -- vim.treesitter.language.register("javascript", all_lang)
-        vim.treesitter.language.register("php_only", "php")
-        vim.treesitter.language.register("javascript", "blade")
     end,
   },
 }

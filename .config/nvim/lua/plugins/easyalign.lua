@@ -6,12 +6,13 @@ return {
       -- :'<,'>Align regex_pattern.*
       -- :'<,'>Align =
       -- :Align x\s*=
+      -- (escape \ , ., *, +, ?, |, (, ), [, ], {, }, \, /).
       vim.keymap.set("x", "<C-N>", ":Align<space>")
     end,
   },
   {
     "junegunn/vim-easy-align",
-    keys = { { "=", mode = { "n", "x" } }, { "<leader>=", mode = { "n", "x" } } },
+    keys = { { "=", mode = { "n", "x" } }, { "=", mode = { "n", "x" } } },
     config = function()
       vim.g.easy_align_delimiters = {
         ["\\"] = {
