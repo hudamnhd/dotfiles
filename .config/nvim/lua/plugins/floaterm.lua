@@ -1,8 +1,9 @@
 vim.g.floaterm_giteditor = false
 vim.g.floaterm_gitcommit = false
-vim.g.floaterm_name = "TERM($1|$2)"
-vim.g.floaterm_title = "TERM($1|$2)"
-vim.g.floaterm_opener = "edit"
+vim.g.floaterm_name      = "TERM($1|$2)"
+vim.g.floaterm_title     = "TERM($1|$2)"
+vim.g.floaterm_opener    = "edit"
+
 vim.cmd("hi FloatermBorder guibg=none guifg=#99d783 ")
 
 local function get_bufnr_from_name(name)
@@ -55,7 +56,6 @@ return {
 
     -- stylua: ignore start
       create_command("Gitui",  function() toggleFloaterm("--name=gitui --width=0.9 --height=0.9 --opener=drop gitui") end,     "Gitui")
-      -- create_command("Yazi", function() toggleFloaterm("--name=yazi --width=0.9 --height=0.9 --opener=edit yazi") end,   "Yazi")
       create_command("Broot", function() toggleFloaterm("--name=broot --width=0.9 --height=0.9 --opener=edit broot") end,   "Broot")
     -- stylua: ignore end
   end,
@@ -63,7 +63,6 @@ return {
   keys = {
         -- stylua: ignore start
         { "<C-G>", function() vim.cmd("Gitui") end, mode = { "n", "t" }, desc = "Gitui" }, -- list fzf_floaterm_newentries
-        { "<space>e", function() vim.cmd("Broot") end, mode = { "n" }, desc = "Broot" }, -- list fzf_floaterm_newentries
-    -- stylua: ignore end
+      -- stylua: ignore end
   },
 }

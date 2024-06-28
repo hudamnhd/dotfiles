@@ -63,18 +63,12 @@ function M.bookmarks()
 -- stylua: ignore start
   local bookmarks = {
     {'1', 'files +100k',              [[lua require('fzf-lua').fzf_exec("fdfind --size +100k", { actions = require'fzf-lua'.defaults.actions.files })]]} ,
-
-    {'w', 'files search cword',       [[lua require('fzf-lua').files({ fzf_opts = { ["--query"] = vim.fn.expand("<cword>") } }) ]]},
-    {'W', 'files search visual',      [[lua require('fzf-lua').files({ fzf_opts = { ["--query"] = require("utils.other").get_visual_selection(true) } }) ]]},
+    {'a', 'asyncrun_open',            [[call luaeval('require"utils.menus".asynctasks()')]]},
 
     {'o', 'colorschemes',             [[FzfLua colorschemes          ]]} ,
     {'O', 'highlights',               [[FzfLua highlights            ]]} ,
 
     {'p', '%:h'},
-
-    {'a', 'asyncrun_open',            [[call luaeval('require"utils.menus".asynctasks()')]]},
-
-    {'s', 'SignatureListBufferMarks', [[SignatureListBufferMarks        ]]} ,
 
     {'d', 'diagnostics_workspace',    [[FzfLua diagnostics_workspace ]]} ,
     {'D', 'diagnostics_document',     [[FzfLua diagnostics_document  ]]} ,
@@ -93,14 +87,16 @@ function M.bookmarks()
 
     {'K', 'keymaps',                  [[FzfLua keymaps               ]]} ,
 
+    {'l', 'eslint_d',                 [[AsyncRun eslint_d --format unix "$(VIM_FILEPATH)"]]} ,
+
     {'m', 'marks',                    [[FzfLua marks                 ]]} ,
     {'M', 'man_pages',                [[FzfLua man_pages             ]]} ,
 
     {'c', 'command_history',          [[FzfLua command_history       ]]} ,
     {'C', 'commands',                 [[FzfLua commands              ]]} ,
 
-    {'z', 'lazy',                     [[Lazy                         ]]} ,
-    {'b', 'buffers',                  [[FzfLua buffers               ]]} ,
+    {'z', 'Lazy',                     [[Lazy                         ]]} ,
+    {'b', 'Broot',                    [[Broot                        ]]} ,
     {'n', '~/vimwiki'},
   }
 -- stylua: ignore end
@@ -149,28 +145,26 @@ function M.bookmarks()
   end
 end
 
-local options = {
 
+local options = {
 -- stylua: ignore start
   {'-', 'set_cwd',               [[lua require"utils.other".set_cwd()]]},
-
-  {'p', 'MarkdownPreviewToggle', [[MarkdownPreviewToggle]]},
 
   {'b', 'diffoff',               [[windo diffoff]]},
   {'B', 'diffthis',              [[windo diffthis]]},
 
-  {'s', 'LiveServerStop',        [[LiveServerStop]]},
-  {'S', 'LiveServerStart',       [[LiveServerStart]]},
+  {'l', 'LiveServerStop',        [[LiveServerStop]]},
+  {'L', 'LiveServerStart',       [[LiveServerStart]]},
 
   {'w', 'wrap',                  [[setl wrap! | setl wrap?]]},
   {'W', 'wrapscan',              [[set wrapscan! | set wrapscan?]]},
 
   {'n', 'line numbers',          [[call luaeval('require"utils.menus".toggle_line_numbers()')]]},
-  {'h', 'MiniHipatterns',        [[lua MiniHipatterns.toggle()]]},
-  {'l', 'list',                  [[setl list! | setl list?]]},
   {'d', 'diagnostics',           function() vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text }) end},
   {'c', 'ignorecase',            [[set ignorecase! | set ignorecase?]]},
-  {'z', 'spell',                 [[setl spell! | setl spell?]]},
+
+  -- {'l', 'list',                  [[setl list! | setl list?]]},
+  -- {'z', 'spell',                 [[setl spell! | setl spell?]]},
   -- {'f', 'folds',                 [[setl foldenable! | setl foldenable?]]},
   -- {'m', 'mouse',                 [[let &mouse = (&mouse ==# '' ? 'nvi' : '') | set mouse?]]},
 }
@@ -227,21 +221,30 @@ vim.api.nvim_create_user_command('DiffThisWithDiffOff', diffthis_with_diffoff, {
 
 -- stylua: ignore start
 local gitsigns = {
-  {'j', '󰊢  diffget //2',               [[diffget //2]]},
-  {'k', '󰊢  diffget //3',               [[diffget //3]]},
+  {'j', '󰊢  diffget //2',                 [[diffget //2]]},
+  {'k', '󰊢  diffget //3',                 [[diffget //3]]},
 
-  {'a', '󰊢  Agit',                      [[Agit]]},
-  {'s', '󰊢  AgitFile',                  [[AgitFile]]},
+  {'h', '󰊢  Agit',                        [[Agit]]},
+  {'f', '󰊢  AgitFile',                    [[AgitFile]]},
 
-  {'S', '󰊢  git_status',                [[FzfLua git_status]]},
-  {'d', '󰊢  DiffThisWithDiffOff',       [[DiffThisWithDiffOff]]},
-  {'c', '󰊢  git_bcommits',              [[FzfLua git_bcommits]]},
-  {'C', '󰊢  git_commits',               [[FzfLua git_commits]]},
-  {'b', '󰊢  blame_line',                [[lua require("gitsigns").blame_line({full=true})]]},
-  {'B', '󰊢  git_branches',              [[FzfLua git_branches]]},
-  {'p', '󰊢  preview_hunk',              [[lua require("gitsigns").preview_hunk()]]},
-  {'x', '󰊢  toggle_deleted',            [[lua require("gitsigns").toggle_deleted()]]},
-  {'X', '󰊢  reset_buffer',              [[lua require("gitsigns").reset_buffer()]]},
+  {'a', '󰊢  Stage current file',          [[call g#vc#add(expand('%'))]]},
+  {'c', '󰊢  Commit current file',         [[call g#vc#commit('-v', expand('%'))]]},
+  {'C', '󰊢  Commit all modified file',    [[call g#vc#commit('-av')]]},
+  {'d', '󰊢  Diff current file',           [[call g#vc#diff(expand('%'))]]},
+  {'b', '󰊢  Blame current file',          [[G blame]]},
+  {'s', '󰊢  Show all uncomitted changes', [[call g#vc#diff('HEAD', '--', '.')]]},
+  {'R', '󰊢  Revert current file',         [[call g#vc#restore(expand('%'))]]},
+
+  {'D', '󰊢  DiffThisWithDiffOff',         [[DiffThisWithDiffOff]]},
+  {'B', '󰊢  blame_line',                  [[lua require("gitsigns").blame_line({full=true})]]},
+  {'U', '󰊢  reset_buffer',                [[lua require("gitsigns").reset_buffer()]]},
+  {'p', '󰊢  preview_hunk',                [[lua require("gitsigns").preview_hunk()]]},
+  {'x', '󰊢  toggle_deleted',              [[lua require("gitsigns").toggle_deleted()]]},
+
+  {'1', '󰊢  git_bcommits',                [[FzfLua git_bcommits]]},
+  {'2', '󰊢  git_commits',                 [[FzfLua git_commits]]},
+  {'3', '󰊢  git_status',                  [[FzfLua git_status]]},
+  {'4', '󰊢  git_branches',                [[FzfLua git_branches]]},
 }
 -- stylua: ignore end
 
@@ -280,7 +283,6 @@ function M.gitsigns()
 end
 
 
-local resession = require("resession")
 
 local genghist = {
   {'1', "  Copy path",                   "CopyFilepath"},
@@ -293,13 +295,6 @@ local genghist = {
   {'y', "  Duplicate file",              "DuplicateFile"},
   {'d', "  Move file to trash",          "TrashFile"},
   {'n', "  Create new file",             "CreateNewFile"},
-  {'c', "  Selection to new file",       "MoveSelectionToNewFile"},
-  {' ',  "===============================", ""},
-  {"w", "[S]ession [S]ave",               resession.save, },
-  {"t", "[S]ession save [T]ab",           function() resession.save_tab() end, },
-  {"o", "[S]ession [O]pen",               resession.load, },
-  {"l", "[S]ession [L]oad without reset", function() resession.load(nil, { reset = false }) end, },
-  {"x", "[S]ession [D]elete",             resession.delete, },
 }
 
 function M.genghist()
@@ -312,7 +307,7 @@ function M.genghist()
       {item[2]},
     }
   end
-  echo {{'File & Sessions'}}
+  echo {{'File Operation'}}
 
   local ok, ch = pcall(vim.fn.getchar)
   vim.cmd('redraw')

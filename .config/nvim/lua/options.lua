@@ -3,7 +3,7 @@ local o          = vim.opt
 -- o.mouse      = ""     -- disable the mouse
 o.termguicolors  = true   -- enable 24bit colors
 o.synmaxcol      = 200    -- for `syntax`
-o.timeoutlen     = 750    -- for `which-key`
+o.timeoutlen     = 650 
 o.updatetime     = 100    -- decrease update time
 o.fileformat     = "unix" -- <nl> for EOL
 o.switchbuf      = "useopen"
@@ -20,11 +20,11 @@ vim.cmd [[set path=.,,,$PWD/**]]
 -- o.clipboard         = 'unnamedplus'
 o.showmode       = false
 o.cmdheight      = 1                            -- cmdline height
-o.cmdwinheight   = math.floor(vim.o.lines / 2)  -- 'q:' window height
+o.cmdwinheight   = math.floor(vim.o.lines / 3)  -- 'q:' window height
 o.scrolloff      = 3                            -- min number of lines to keep between cursor and screen edge
 o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth      = 99                           -- max inserted text width for paste operations
-o.number         = false                        -- show absolute line no. at the cursor pos
+o.number         = true                        -- show absolute line no. at the cursor pos
 o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
 o.cursorline     = false                        -- Show a line where the current cursor is
 o.signcolumn     = "yes:1"  -- Show sign column as first column
@@ -38,7 +38,7 @@ o.signcolumn     = "yes:1"  -- Show sign column as first column
 o.wrap           = false
 o.linebreak      = true
 o.breakindent    = true
-o.smoothscroll   = false
+o.smoothscroll   = true
 o.ts             = 4
 o.autoindent     = true
 -- o.guicursor        =
@@ -67,7 +67,7 @@ o.pumblend         = 0    -- completion menu transparency
 o.pumwidth         = 15 -- min width
 o.pumheight        = 12 -- max height
 o.joinspaces       = true  -- insert spaces after '.?!' when joining lines
-o.smartindent      = true  -- add <tab> depending on syntax (C/C++)
+-- o.smartindent      = true  -- add <tab> depending on syntax (C/C++)
 -- o.startofline      = false -- keep cursor column on navigation
 
 o.tabstop          = 4     -- Tab indentation levels every two columns
@@ -101,11 +101,6 @@ o.formatoptions    = o.formatoptions
 o.splitbelow       = true                   -- ':new' ':split' below current
 o.splitright       = true                   -- ':vnew' ':vsplit' right of current
 
-
--- o.foldenable       = true                   -- enable folding
--- o.foldlevel        = 1                     -- open most folds by default
--- o.foldnestmax      = 10                     -- 10 nested fold max
--- o.foldmethod       = "indent"               -- fold based on indent level
 
 o.undofile         = false                  -- no undo file
 o.hidden           = true                   -- do not unload buffer when abandoned
@@ -204,18 +199,18 @@ vim.g.maplocalleader            = " "
 -- vim.api.nvim_command("set rtp-=/usr/share/vim/vimfiles")
 
 
-vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter", "BufWinEnter" }, {
-  desc = "Highlight the cursor line in the active window",
-  pattern = "*",
-  command = "setlocal cursorline",
-  group = aug,
-})
-vim.api.nvim_create_autocmd("WinLeave", {
-  desc = "Clear the cursor line highlight when leaving a window",
-  pattern = "*",
-  command = "setlocal nocursorline",
-  group = aug,
-})
+-- vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter", "BufWinEnter" }, {
+--   desc = "Highlight the cursor line in the active window",
+--   pattern = "*",
+--   command = "setlocal cursorline",
+--   group = aug,
+-- })
+-- vim.api.nvim_create_autocmd("WinLeave", {
+--   desc = "Clear the cursor line highlight when leaving a window",
+--   pattern = "*",
+--   command = "setlocal nocursorline",
+--   group = aug,
+-- })
 
 -- built-in ftplugins should not change my keybindings
 vim.g.no_plugin_maps = true
@@ -229,11 +224,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   group = aug,
 })
 
--- Save jumps > 5 lines to the jumplist
--- Jumps <= 5 respect line wraps
-vim.keymap.set("n", "j", [[(v:count > 5 ? "m'" . v:count . 'j' : 'gj')]], { expr = true })
-vim.keymap.set("n", "k", [[(v:count > 5 ? "m'" . v:count . 'k' : 'gk')]], { expr = true })
-
 local obs = false
 local function set_scrolloff(winid)
   if obs then
@@ -242,6 +232,7 @@ local function set_scrolloff(winid)
     vim.wo[winid].scrolloff = 1 + math.floor(vim.api.nvim_win_get_height(winid) / 2)
   end
 end
+
 vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "WinNew", "VimResized" }, {
   desc = "Always keep the cursor vertically centered",
   pattern = "*",
@@ -266,11 +257,16 @@ end, {
   desc = "Toggle settings that make me easier to follow while pairing",
 })
 
+-- o.foldlevel        = 1                     -- open most folds by default
+-- o.foldnestmax      = 10                     -- 10 nested fold max
 -- Start with folds open
-vim.o.foldlevelstart = 99
-vim.o.foldlevel = 99
+o.foldenable     = true                   -- enable folding
+o.foldmethod     = "indent"               -- fold based on indent level
+o.foldlevelstart = 99
+o.foldlevel      = 99
+
 -- Disable fold column
-vim.o.foldcolumn = "0"
+o.foldcolumn     = "0"
 
 vim.o.foldtext = [[v:lua.utils.other.foldtext()")]]
 vim.opt.fillchars = {

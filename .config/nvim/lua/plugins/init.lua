@@ -1,33 +1,71 @@
-vim.g.asyncrun_exit = "echo 'Success'"
-vim.g.asyncrun_bell = 1
+vim.g.asyncrun_exit = "!pkill eslint_d"
+-- vim.g.asyncrun_exit = "echo 'Success'"
 -- vim.g.user_emmet_leader_key = "<C-Z>"
 -- vim.g.user_emmet_mode = "i"
 
 return {
   {
     "kana/vim-g",
-    lazy = false,
+    event = "VeryLazy",
     config = function()
       vim.cmd([[
-
-  " Stage the current file.
-        nnoremap <Leader>va <Cmd>call g#vc#add(expand('%'))<CR>
-
-        " Commit the current file.  No need to do git add.
-        nnoremap <Leader>vc <Cmd>call g#vc#commit('-v', expand('%'))<CR>
-
-        " Commit all modified files.  No need to do git add.
-        nnoremap <Leader>vC <Cmd>call g#vc#commit('-av')<CR>
-
-        " Revert unstaged changes in the current file.
-        nnoremap <Leader>vv <Cmd>call g#vc#restore(expand('%'))<CR>
-
-        " Show all uncomitted changes.
-        nnoremap <Leader>vD <Cmd>call g#vc#diff('HEAD', '--', '.')<CR>
-
+        let g:g_vc_split_modifier = 'vertical'
+        " open file
+        nnoremap df :G args 
       ]])
-
     end,
+  },
+  {
+    "brenton-leighton/multiple-cursors.nvim",
+    tag = "v0.9",
+    opts = {}, -- Implicitly calls setup()
+    keys = {
+      {
+        "<a-n>",
+        "<Cmd>MultipleCursorsAddDown<CR>",
+        mode = { "n", "x" },
+        desc = "Add cursor and move down",
+      },
+      {
+        "<a-p>",
+        "<Cmd>MultipleCursorsAddUp<CR>",
+        mode = { "n", "x" },
+        desc = "Add cursor and move up",
+      },
+
+      {
+        "<leader>va",
+        "<Cmd>MultipleCursorsAddMatches<CR>",
+        mode = { "n", "x" },
+        desc = "Add cursors to cword",
+      },
+      {
+        "<leader>vA",
+        "<Cmd>MultipleCursorsAddMatchesV<CR>",
+        mode = { "n", "x" },
+        desc = "Add cursors to cword in previous area",
+      },
+
+      {
+        "<leader>vd",
+        "<Cmd>MultipleCursorsAddJumpNextMatch<CR>",
+        mode = { "n", "x" },
+        desc = "Add cursor and jump to next cword",
+      },
+      {
+        "<leader>vD",
+        "<Cmd>MultipleCursorsJumpNextMatch<CR>",
+        mode = { "n", "x" },
+        desc = "Jump to next cword",
+      },
+
+      {
+        "<leader>vv",
+        "<Cmd>MultipleCursorsLock<CR>",
+        mode = { "n", "x" },
+        desc = "Lock virtual cursors",
+      },
+    },
   },
   {
     "cohama/agit.vim",
@@ -42,15 +80,6 @@ return {
     end,
   },
   -- install with yarn or npm
-  {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && yarn install",
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-    end,
-    ft = { "markdown" },
-  },
   {
     "nvimdev/indentmini.nvim",
     event = { "BufReadPost" },
@@ -80,7 +109,34 @@ return {
         -- default_replace_single_buffer_options = "gcI",
         default_replace_multi_buffer_options = "egcI",
       })
-      vim.o.inccommand = "split"
+      -- vim.o.inccommand = "split"
+      local opts = {}
+
+      local get_selected_lines_count = function()
+        local start_line = vim.fn.getpos("v")[2]
+        local end_line = vim.fn.getpos(".")[2]
+
+        return math.abs(end_line - start_line) + 1
+      end
+
+      local call_visual_command = function()
+        local current_mode = vim.fn.mode()
+        local number_of_lines_selected_in_visual_mode = get_selected_lines_count()
+
+        if
+          (current_mode == "V" or current_mode == "<C-V>")
+          and number_of_lines_selected_in_visual_mode == 1
+        then
+          vim.cmd("SearchReplaceWithinVisualSelectionCWord")
+        elseif current_mode == "V" or current_mode == "<C-V>" then
+          vim.cmd("SearchReplaceWithinVisualSelection")
+        else
+          vim.cmd("SearchReplaceSingleBufferVisualSelection")
+        end
+      end
+
+      vim.keymap.set("x", "<C-F>", call_visual_command, opts)
+      vim.keymap.set("n", "<C-F>", [[<CMD>SearchReplaceSingleBufferCWord<CR>]])
     end,
   },
   {
@@ -98,19 +154,5 @@ return {
   { "skywind3000/asynctasks.vim", event = "VeryLazy" },
   { "skywind3000/asyncrun.vim", event = "VeryLazy" },
   { "thinca/vim-quickmemo", event = "VimEnter" },
-  { "nicwest/vim-http", ft = "http" },
   { "nvim-lua/plenary.nvim" },
-  -- { "mattn/emmet-vim", ft = { "typescriptreact", "javascriptreact", "html", "blade" } },
-  -- generate theme bat
-  -- {
-  --   "linrongbin16/fzfx.nvim",
-  --   cmd = { "FzfxFiles" },
-  --   dependencies = {
-  --     { dir = "~/.fzf", build = ":call fzf#install()" },
-  --   },
-  --   version = "v5.*",
-  --   config = function()
-  --     require("fzfx").setup()
-  --   end,
-  -- },
 }

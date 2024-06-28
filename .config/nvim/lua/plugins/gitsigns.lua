@@ -4,8 +4,7 @@ local M = {
 }
 
 M.keys = {
-
-  -- 	-- stylua: ignore start
+   	-- stylua: ignore start
   	{ ">", "<cmd>Gitsigns nav_hunk next<CR>",   desc = "󰊢 Next Hunk", mode = { "n" }, },
   	{ "<", "<cmd>Gitsigns nav_hunk prev<CR>",   desc = "󰊢 Previous Hunk", mode = { "n" },},
 }

@@ -29,15 +29,13 @@ return {
       vim.g.catppuccin_flavour = "mocha"
       require("catppuccin").setup({
         compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
+        no_italic = true, 
         color_overrides = {
           mocha = {
             base = "#131313",
           },
         },
         term_colors = true,
-        integrations = {
-          treesitter = true,
-        },
       })
     end,
   },
@@ -120,7 +118,7 @@ return {
         with_macro_status = false,
         with_search_count = false,
         with_spell_status = false,
-        with_indent_status = false,
+        with_indent_status = true,
       }
     end,
   },

@@ -1,9 +1,11 @@
-xrandr --output HDMI-A-0  --brightness 0.45 &
-xset r rate 250 60 &
+xrandr --output HDMI-A-0  --brightness 0.4 &
+xset r rate 210 40
+# xset r rate 250 60 &
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 unclutter-xfixes --timeout 1 --jitter 1 --ignore-buttons 4,5,6,7 --hide-on-touch --start-hidden &
 xrdb ~/.Xresources &
-feh --bg-fill -z /usr/share/backgrounds &
+~/.fehbg &
+setxkbmap -option "caps:escape_shifted_capslock" &
 
 while sleep 1
 do
@@ -23,7 +25,7 @@ while type dwm >/dev/null; do dwm && continue || break; done
 # nitrogen --restore &
 # nm-applet &
 # clipmenud &
-setxkbmap -option "ctrl:nocaps" &
+# setxkbmap -option "ctrl:nocaps" &
 #/usr/libexec/xfce-polkit &
 #picom -bc &
 #!/bin/sh

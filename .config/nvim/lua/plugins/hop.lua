@@ -1,7 +1,6 @@
 return {
   "smoka7/hop.nvim",
-  enabled = false,
-  -- keys = { "f", "F" },
+  keys = { "f", "F" },
   config = function()
     require("hop").setup()
     local map = vim.keymap.set

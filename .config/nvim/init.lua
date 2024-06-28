@@ -11,7 +11,6 @@ end
 -- disable treesitter
 -- vim.treesitter.stop()
 
-
 -- Load configuration files
 safeRequire("options")
 safeRequire("autocmd")

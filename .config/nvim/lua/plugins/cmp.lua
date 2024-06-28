@@ -1,7 +1,7 @@
 return {
   {
     "hrsh7th/nvim-cmp",
-    event = { "VimEnter" },
+    event = "VeryLazy",
     dependencies = {
       "hrsh7th/cmp-path", -- source for file system paths
       "hrsh7th/cmp-buffer", -- source for text in buffer
@@ -14,7 +14,6 @@ return {
     config = function()
       local cmp = require("cmp")
       local luasnip = require("luasnip")
-      local MAX_INDEX_FILE_SIZE = 4000
       luasnip.setup()
       require("luasnip.loaders.from_vscode").lazy_load({
         paths = vim.fn.stdpath("config") .. "/snippets",
@@ -36,7 +35,7 @@ return {
         },
         view = {
           docs = {
-            auto_open = false,
+            auto_open = true,
           },
         },
         window = {
@@ -124,23 +123,19 @@ return {
         }, -- sources for autocompletion
 
         sources = cmp.config.sources({
-          { name = "luasnip", keyword_length = 3, max_item_count = 3 },
+          { name = "luasnip", keyword_length = 3, max_item_count = 5 },
           {
             name = "buffer",
-            keyword_length = 2,
+            keyword_length = 4,
             options = {
+              keyword_pattern = [[\k\+]],
               get_bufnrs = function()
-                local bufs = {}
-                for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-                  -- Don't index giant files
-                  if
-                    vim.api.nvim_buf_is_loaded(bufnr)
-                    and vim.api.nvim_buf_line_count(bufnr) < MAX_INDEX_FILE_SIZE
-                  then
-                    table.insert(bufs, bufnr)
-                  end
+                local buf = vim.api.nvim_get_current_buf()
+                local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
+                if byte_size > 250 * 1024 then -- 250kb
+                  return {}
                 end
-                return bufs
+                return { buf }
               end,
             },
           },
@@ -164,20 +159,16 @@ return {
         sources = {
           {
             name = "buffer",
-            keyword_length = 2,
+            keyword_length = 3,
             options = {
+              keyword_pattern = [[\k\+]],
               get_bufnrs = function()
-                local bufs = {}
-                for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-                  -- Don't index giant files
-                  if
-                    vim.api.nvim_buf_is_loaded(bufnr)
-                    and vim.api.nvim_buf_line_count(bufnr) < MAX_INDEX_FILE_SIZE
-                  then
-                    table.insert(bufs, bufnr)
-                  end
+                local buf = vim.api.nvim_get_current_buf()
+                local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
+                if byte_size > 250 * 1024 then -- 250kb
+                  return {}
                 end
-                return bufs
+                return { buf }
               end,
             },
           },
@@ -189,7 +180,7 @@ return {
         sources = cmp.config.sources({
           { name = "path" },
         }, {
-          { name = "cmdline" },
+          { name = "cmdline", keyword_length = 2 },
         }),
       })
 

@@ -1,6 +1,6 @@
 local fzf = require("fzf-lua")
 
-local mfzf = function(mode, key, f, options, buffer)
+local map_fzf = function(mode, key, f, options, buffer)
   local desc = nil
   if type(options) == "table" then
     desc = options.desc
@@ -35,21 +35,20 @@ map("i",  "<C-k>", function() require("fzf-lua").complete_path({ cmd = "fdfind -
 map("i",  "<C-l>", function() require("fzf-lua").complete_line() end, { silent = true, desc = "Fuzzy complete line" })
 
 map("n",  "so", "<CMD>MRU<CR>", { desc = "file history (MRU)" })
-mfzf("n", "s0", "oldfiles", function() return { desc = "file history (cwd)", cwd = vim.loop.cwd(), cwd_header = true, cwd_only = true } end)
+map_fzf("n", "s0", "oldfiles", function() return { desc = "file history (cwd)", cwd = vim.loop.cwd(), cwd_header = true, cwd_only = true } end)
 
-mfzf("n", "sp", "files", { desc = "find files"})
-mfzf("n", "sb", "buffers", { desc = "find files"})
-mfzf("n", "sP", "files", { cwd = "%:h" })
+map_fzf("n", "sp", "files", { desc = "find files"})
+map_fzf("n", "sb", "buffers", { desc = "find files"})
 
-mfzf("v", "sk", "grep_visual", { desc = "grep visual selection" })
-mfzf("n", "sk", "grep_cword", { desc = "grep <word> (project)" })
+map_fzf("v", "sk", "grep_visual", { desc = "grep visual selection" })
+map_fzf("n", "sk", "grep_cword", { desc = "grep <word> (project)" })
 
-mfzf("n", "s/", "grep_curbuf", { desc = "grep  (buffer)", prompt = "Buffer❯ " })
-mfzf("n", "sl", "grep_curbuf", function() return { desc = "grep <word> (buffer)", prompt = "Buffer❯ ", search = vim.fn.expand("<cword>") } end)
-mfzf("v", "sl", "grep_curbuf", function() return { desc = "grep <WORD> (buffer)", prompt = "Buffer❯ ", search = require("utils.other").get_visual_selection(true) } end)
+map_fzf("n", "s/", "grep_curbuf", { desc = "grep  (buffer)", prompt = "Buffer❯ " })
+map_fzf("n", "sl", "grep_curbuf", function() return { desc = "grep <word> (buffer)", prompt = "Buffer❯ ", search = vim.fn.expand("<cword>") } end)
+map_fzf("v", "sl", "grep_curbuf", function() return { desc = "grep <WORD> (buffer)", prompt = "Buffer❯ ", search = require("utils.other").get_visual_selection(true) } end)
 
 -- stylua: ignore end
-mfzf("n", "z=", "spell_suggest", {
+map_fzf("n", "z=", "spell_suggest", {
   desc = "spell suggestions",
   prompt = "Spell> ",
   winopts = {

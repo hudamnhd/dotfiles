@@ -1,7 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    event = { "BufReadPost" },
+    event = { "FileType" },
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
@@ -16,13 +16,14 @@ return {
           "typescript",
           "php",
           "javascript",
+          "markdown",
         },
         ignore_install = { "comment" },
 
         highlight = {
           enable = true, -- make faster
           disable = function(lang, buf)
-            local max_filesize = 250 * 1024 -- 00 KB
+            local max_filesize = 100 * 1024 -- 100 KB
             local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
 
             local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))

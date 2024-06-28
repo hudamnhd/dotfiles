@@ -1,15 +1,6 @@
 vim.g.loaded_fzf_file_explorer = 1
 return {
   {
-    "stevearc/resession.nvim",
-    lazy = true,
-    opts = {
-      extensions = {
-        oil = {},
-      },
-    },
-  },
-  {
     "stevearc/oil.nvim",
     event = "VeryLazy",
     opts = {

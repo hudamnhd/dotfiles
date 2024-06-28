@@ -32,7 +32,8 @@ return {
     keys = {
       { "<C-N>", "<cmd>QNext<CR>", desc = "[N]ext in quickfix" },
       { "<C-P>", "<cmd>QPrev<CR>", desc = "[P]rev in quickfix" },
-      { "<C-q>", "<cmd>QFToggle!<CR>", desc = "Toggle [Q]uickfix" },
+      { "<A-q>", "<cmd>QFToggle!<CR>", desc = "Toggle [Q]uickfix" },
+      { "<A-a>", "<cmd>LLToggle!<CR>", desc = "Toggle [Q]uickfix" },
     },
     config = function()
       require("qf_helper").setup({

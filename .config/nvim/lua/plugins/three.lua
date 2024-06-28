@@ -6,7 +6,7 @@ return {
   {
     "stevearc/three.nvim",
     -- commit = "713e20011f670e1209d51bdce46c740a774fa42c",
-    event = "VimEnter",
+    event = "VeryLazy",
     opts = {
       bufferline = {
         events = { "BufReadPost", "BufWinLeave" },
@@ -62,7 +62,7 @@ return {
         vim.keymap.set("n", "m" .. i, three.wrap(three.move_buffer, i))
       end
 
-      vim.keymap.set("n", "<leader>`",  three.wrap(three.next,    { delta = 100 }))
+      -- vim.keymap.set("n", "<leader>`",  three.wrap(three.next,    { delta = 100 }))
       vim.keymap.set("n", "<leader>wh", three.hide_buffer,        { desc = "[B]uffer [H]ide" })
 
       vim.keymap.set("n", "<leader>wq", "<cmd>tabclose<CR>",                 { desc = "Close tab" })
@@ -71,7 +71,7 @@ return {
       -- stylua: ignore end
 
       vim.keymap.set("n", "<leader>wc", three.close_buffer, { desc = "[B]uffer [C]lose" })
-      vim.keymap.set("n", "<leader>q", three.smart_close, { desc = "[C]lose window or buffer" })
+      vim.keymap.set("n", "<C-Q>", three.smart_close, { desc = "[C]lose window or buffer" })
       -- vim.keymap.set("n", "<leader>q", '<CMD>bdelete"<CR>') -- BufCloseAllButCurrent
       -- vim.keymap.set("n", "<leader>Q", '<CMD>%bdelete|edit #|normal `"<CR>') -- BufCloseAllButCurrent
 
