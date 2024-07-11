@@ -1,10 +1,30 @@
-local o          = vim.opt
+local o = vim.opt
 
--- o.mouse      = ""     -- disable the mouse
+-- Reduce messages by setting various 'shortmess' flags
+o.shortmess = vim.opt.shortmess
+               + {
+                 F = true, -- Don't give the file info when editing a file
+                 W = true, -- Don't give "written" or "[w]" when writing a file
+                 I = true, -- Don't give the intro message when starting Vim
+                 s = true, -- Don't give "search hit BOTTOM/TOP" messages
+                 q = true, -- Don't show "recording @a" when recording a macro
+                 A = true, -- Don't give the "ATTENTION" message when an existing swap file is found
+                 a = true, -- Use all abbreviations (l, m, r, w)
+                 o = true, -- Overwrite message for writing a file with subsequent message for reading a file
+                 O = true, -- Message for reading a file overwrites any previous message
+                 t = true, -- Truncate file message at the start if it is too long to fit
+                 T = true, -- Truncate other messages in the middle if they are too long to fit
+                 c = true, -- Don't give ins-completion-menu messages
+                 C = true, -- Don't give messages while scanning for ins-completion items
+                 S = true, -- Don't show search count message when searching
+               }
+
+-- o.inccommand     = "split" -- for live subtitute
+-- o.mouse          = ""     -- disable the mouse
 o.termguicolors  = true   -- enable 24bit colors
 o.synmaxcol      = 200    -- for `syntax`
-o.timeoutlen     = 650 
-o.updatetime     = 100    -- decrease update time
+o.timeoutlen     = 500
+o.updatetime     = 250    -- decrease update time
 o.fileformat     = "unix" -- <nl> for EOL
 o.switchbuf      = "useopen"
 o.fileencoding   = "utf-8"
@@ -24,7 +44,7 @@ o.cmdwinheight   = math.floor(vim.o.lines / 3)  -- 'q:' window height
 o.scrolloff      = 3                            -- min number of lines to keep between cursor and screen edge
 o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth      = 99                           -- max inserted text width for paste operations
-o.number         = true                        -- show absolute line no. at the cursor pos
+o.number         = false                        -- show absolute line no. at the cursor pos
 o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
 o.cursorline     = false                        -- Show a line where the current cursor is
 o.signcolumn     = "yes:1"  -- Show sign column as first column
@@ -34,7 +54,7 @@ o.signcolumn     = "yes:1"  -- Show sign column as first column
 -- vim.g._colorcolumn = 100      -- global var, mark column 100
 -- o.colorcolumn      = tostring(vim.g._colorcolumn)
 
--- o.hlsearch     = false
+o.hlsearch       = true
 o.wrap           = false
 o.linebreak      = true
 o.breakindent    = true
@@ -87,7 +107,6 @@ o.expandtab        = true  -- Convert all tabs that are typed into spaces
 -- we use autocmd to remove 'o' in '/lua/autocmd.lua'
 -- borrowed from tjdevries
 o.formatoptions    = o.formatoptions
-o.formatoptions    = o.formatoptions
     - "a"                                   -- Auto formatting is BAD.
     - "t"                                   -- Don't auto format my code. I got linters for that.
     + "c"                                   -- In general, I like it when comments respect textwidth
@@ -101,8 +120,8 @@ o.formatoptions    = o.formatoptions
 o.splitbelow       = true                   -- ':new' ':split' below current
 o.splitright       = true                   -- ':vnew' ':vsplit' right of current
 
-
-o.undofile         = false                  -- no undo file
+o.undodir          = os.getenv("HOME") .. "/.vim/undodir"
+o.undofile         = true                  -- no undo file
 o.hidden           = true                   -- do not unload buffer when abandoned
 
 o.ignorecase       = false                  -- ignore case on search
@@ -112,6 +131,9 @@ vim.o.cpoptions    = vim.o.cpoptions .. "x" -- stay on search item when <esc>
 
 o.writebackup      = false                  -- do not backup file before write
 o.swapfile         = false                  -- no swap file
+
+o.foldenable     = false                   -- disable folding
+-- o.foldmethod     = "indent"
 
 --[[
   ShDa (viminfo for vim): session data history
@@ -131,7 +153,7 @@ o.swapfile         = false                  -- no swap file
   :rshada   - read the shada file (:rviminfo for vim)
   :wshada   - write the shada file (:wrviminfo for vim)
 ]]
-
+-- vim.cmd([[set shada="NONE"]])
 o.shada          = [[!,'100,<0,s100,h]]
 o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize"
 o.diffopt        = "internal,filler,algorithm:histogram,indent-heuristic"
@@ -148,32 +170,6 @@ vim.g.loaded_python_provider = 0
 vim.g.loaded_ruby_provider   = 0
 vim.g.loaded_perl_provider   = 0
 vim.g.loaded_node_provider   = 0
-
--- Disable some in built plugins completely
-local disabled_built_ins     = {
-  "netrw",
-  "netrwPlugin",
-  "netrwSettings",
-  "netrwFileHandlers",
-  "gzip",
-  "zip",
-  "zipPlugin",
-  "tar",
-  "tarPlugin",
-  "getscript",
-  "getscriptPlugin",
-  "vimball",
-  "vimballPlugin",
-  "2html_plugin",
-  "logipat",
-  "rrhelper",
-  "spellfile_plugin",
-  'matchit',
-  'matchparen',
-}
-for _, plugin in pairs(disabled_built_ins) do
-  vim.g["loaded_" .. plugin] = 0
-end
 
 vim.g.markdown_fenced_languages = {
   "vim",
@@ -194,115 +190,3 @@ vim.g.markdown_fenced_languages = {
 -- Map leader to <space>
 vim.g.mapleader                 = " "
 vim.g.maplocalleader            = " "
--- We do this to prevent the loading of the system fzf.vim plugin. This is
--- present at least on Arch/Manjaro/Void
--- vim.api.nvim_command("set rtp-=/usr/share/vim/vimfiles")
-
-
--- vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter", "BufWinEnter" }, {
---   desc = "Highlight the cursor line in the active window",
---   pattern = "*",
---   command = "setlocal cursorline",
---   group = aug,
--- })
--- vim.api.nvim_create_autocmd("WinLeave", {
---   desc = "Clear the cursor line highlight when leaving a window",
---   pattern = "*",
---   command = "setlocal nocursorline",
---   group = aug,
--- })
-
--- built-in ftplugins should not change my keybindings
-vim.g.no_plugin_maps = true
-vim.cmd.filetype({ args = { "plugin", "on" } })
-vim.cmd.filetype({ args = { "plugin", "indent", "on" } })
-
-vim.api.nvim_create_autocmd("BufReadPost", {
-  desc = "Return to last edit position when opening files",
-  pattern = "*",
-  command = [[if line("'\"") > 0 && line("'\"") <= line("$") && expand('%:t') != 'COMMIT_EDITMSG' | exe "normal! g`\"" | endif]],
-  group = aug,
-})
-
-local obs = false
-local function set_scrolloff(winid)
-  if obs then
-    vim.wo[winid].scrolloff = math.floor(math.max(10, vim.api.nvim_win_get_height(winid) / 10))
-  else
-    vim.wo[winid].scrolloff = 1 + math.floor(vim.api.nvim_win_get_height(winid) / 2)
-  end
-end
-
-vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "WinNew", "VimResized" }, {
-  desc = "Always keep the cursor vertically centered",
-  pattern = "*",
-  callback = function()
-    if not vim.b.overseer_task then
-      set_scrolloff(0)
-    end
-  end,
-  group = aug,
-})
-
-vim.api.nvim_create_user_command("ToggleObs", function()
-  obs = not obs
-  vim.o.relativenumber = not obs
-  for _, winid in ipairs(vim.api.nvim_list_wins()) do
-    if vim.api.nvim_win_is_valid(winid) then
-      vim.wo[winid].relativenumber = not obs
-      set_scrolloff(winid)
-    end
-  end
-end, {
-  desc = "Toggle settings that make me easier to follow while pairing",
-})
-
--- o.foldlevel        = 1                     -- open most folds by default
--- o.foldnestmax      = 10                     -- 10 nested fold max
--- Start with folds open
-o.foldenable     = true                   -- enable folding
-o.foldmethod     = "indent"               -- fold based on indent level
-o.foldlevelstart = 99
-o.foldlevel      = 99
-
--- Disable fold column
-o.foldcolumn     = "0"
-
-vim.o.foldtext = [[v:lua.utils.other.foldtext()")]]
-vim.opt.fillchars = {
-  fold = " ",
-  vert = "┃",
-  horiz = "━",
-  horizup = "┻",
-  horizdown = "┳",
-  vertleft = "┫",
-  vertright = "┣",
-  verthoriz = "╋",
-}
-
--- Map leader-r to do a global replace of a word
--- vim.keymap.set("n", "<leader>r", [[*N:s//<C-R>=expand("<cword>")<CR>]])
-
--- Expand %% to current directory in command mode
-vim.cmd.cabbr({ args = { "<expr>", "%%", "&filetype == 'oil' ? bufname('%')[6:] : expand('%:p:h')" } })
-
-vim.api.nvim_create_autocmd("FocusGained", {
-  desc = "Reload files from disk when we focus vim",
-  pattern = "*",
-  command = "if getcmdwintype() == '' | checktime | endif",
-  group = aug,
-})
-vim.api.nvim_create_autocmd("BufEnter", {
-  desc = "Every time we enter an unmodified buffer, check if it changed on disk",
-  pattern = "*",
-  command = "if &buftype == '' && !&modified && expand('%') != '' | exec 'checktime ' . expand('<abuf>') | endif",
-  group = aug,
-})
-
--- Close the scratch preview automatically
-vim.api.nvim_create_autocmd({ "CursorMovedI", "InsertLeave" }, {
-  desc = "Close the popup-menu automatically",
-  pattern = "*",
-  command = "if pumvisible() == 0 && !&pvw && getcmdwintype() == ''|pclose|endif",
-  group = aug,
-})

@@ -9,6 +9,7 @@ vim.cmd.hi('clear')
 vim.g.colors_name = 'default'
 
 if vim.go.background == 'dark' then
+  vim.api.nvim_set_hl(0, 'Comment', { fg = 'NvimDarkGrey4', ctermfg = 8 })
   vim.api.nvim_set_hl(0, 'LineNr', { fg = 'NvimDarkGrey4', ctermfg = 8 })
   vim.api.nvim_set_hl(0, 'NonText', { fg = 'NvimDarkGrey4', ctermfg = 8 })
   vim.api.nvim_set_hl(0, 'SpellBad', { underdashed = true, cterm = {} })

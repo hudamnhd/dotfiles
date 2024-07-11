@@ -8,10 +8,10 @@ static const unsigned int systrayonleft  = 0;    /* 0: systray in the right corn
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 static const int showsystray             = 1;        /* 0 means no systray */
-static const unsigned int gappih         = 20;       /* horiz inner gap between windows */
+static const unsigned int gappih         = 10;       /* horiz inner gap between windows */
 static const unsigned int gappiv         = 10;       /* vert inner gap between windows */
 static const unsigned int gappoh         = 10;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov         = 30;       /* vert outer gap between windows and screen edge */
+static const unsigned int gappov         = 10;       /* vert outer gap between windows and screen edge */
 static       int smartgaps               = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar                 = 1;        /* 0 means no bar */
 static const int topbar                  = 1;        /* 0 means bottom bar */
@@ -70,7 +70,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod4Mask	
+#define MODKEY Mod4Mask
 #define ALTKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
@@ -84,9 +84,8 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]       = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]        = { "alacritty", NULL };
+static const char *termcmd[]        = { "st", NULL };
 static const char *rofi[]           = { "/home/hudamnhd/.local/bin/rofi-custom", NULL };
-static const char *tabbed[]         = { "tabbed", "alacritty", "--embed", NULL };
 static const char *volumedown[]     = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%", NULL };
 static const char *volumeup[]       = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%", NULL };
 static const char *mute[]           = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
@@ -107,7 +106,7 @@ static const Key keys[] = {
 	{ MODKEY,                  XK_Print,        spawn,          {.v = screenshot } },
 	{ 0,                       XK_Print,        spawn,          {.v = screenshotfull } },
 	{ MODKEY,                  XK_F12,          spawn,          {.v = screenrecord } },
-	{ MODKEY,                  XK_F1,           spawn,          {.v = mocp } },
+	{ MODKEY,                  XK_m,            spawn,          {.v = mocp } },
 	{ MODKEY,                  XK_n,            spawn,          {.v = combinemenu } },
     { MODKEY,                  XK_space,        togglefloating, {0} },
 	{ MODKEY,                  XK_End,          quit,           {0} },
@@ -116,14 +115,19 @@ static const Key keys[] = {
 	{ MODKEY,                  XK_bracketleft,  incnmaster,     {.i = +1 } },
 	{ MODKEY,                  XK_bracketright, incnmaster,     {.i = -1 } },
 
+	{ MODKEY,                  XK_F1,           tagmon,         {.i = +1 } },
+
+	{ MODKEY,                  XK_q,            focusmon,       {.i = +1 } },
+	{ MODKEY,                  XK_w,            setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                  XK_e,            setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                  XK_r,            setlayout,      {.v = &layouts[0]} },
+
 	{ MODKEY,                  XK_a,            focusstack,     {.i = +1 } },
     { MODKEY,                  XK_s,            spawn,          {.v = rofi } },
-    { MODKEY,                  XK_d,            spawn,          {.v = termcmd } },
-	{ MODKEY|ShiftMask,        XK_d,            spawn,          {.v = tabbed } },
+	{ MODKEY,                  XK_d,            spawn,          SHCMD("tabbed -r 2 st -w ''") },
+    { MODKEY,                  XK_f,            spawn,          {.v = termcmd } },
+    { MODKEY,                  XK_g,            togglegaps,     {0} },
 
-	{ MODKEY,                  XK_f,            setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                  XK_t,            setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                  XK_m,            setlayout,      {.v = &layouts[2]} },
 
     { MODKEY,                  XK_z,            zoom,           {0} },
     { MODKEY,                  XK_x,            killclient,     {0} },
@@ -199,8 +203,8 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
       */
 	TAGKEYS(                        XK_1,                      0)
@@ -229,7 +233,7 @@ static const Button buttons[] = {
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-	{ ClkRootWin,        	0,              Button1,        spawn,          {.v = rofi } },	
+	{ ClkRootWin,        	0,              Button1,        spawn,          {.v = rofi } },
 	{ ClkRootWin,        	0,              Button3,        spawn,          SHCMD("pcmanfm") },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
 	{ ClkLtSymbol,        	0,              Button1,        cyclelayout,    {.i = +1 } },

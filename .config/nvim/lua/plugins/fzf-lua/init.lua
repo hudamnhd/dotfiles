@@ -4,10 +4,9 @@ local M = {
 }
 
 function M.config()
-   require("plugins.fzf-lua.setup")
-   require("plugins.fzf-lua.mappings")
-   require("plugins.fzf-lua.cmds")
-
+-- stylua: ignore start
+  require("plugins.fzf-lua.setup")
+  require("plugins.fzf-lua.cmds")
   -- register fzf-lua as vim.ui.select interface
   require("fzf-lua").register_ui_select(function(_, items)
     local min_h, max_h = 0.15, 0.70

@@ -10,7 +10,7 @@ configuration{
     font: "IosevkaTree Nerd Font 14";
     show-icons: false;
     icon-theme: "Breeze Dark";
-    terminal: "alacritty";
+    terminal: "st";
     drun-display-format: "{icon} {name}";
     location: 0;
     disable-history: false;

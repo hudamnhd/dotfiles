@@ -8,7 +8,7 @@
 
 # Enable this to use italic text on the terminal. This is not supported on all
 # terminal emulators (like tmux, by default):
---italic-text=always
+# --italic-text=always
 
 # Uncomment the following line to disable automatic paging:
 #--paging=never
@@ -24,8 +24,8 @@
 #--map-syntax "*.ino:C++"
 #--map-syntax ".ignore:Git Ignore"
 #--theme="FzfxNvimKanagawa"
---theme="Catppuccin-mocha"
-# --theme="FzfxNvimMacro"
+ --theme="Catppuccin-mocha"
+# --theme="FzfxNvimDuskfox"
  # --theme="FzfxNvimDefault"
 
 # Show line numbers, Git modifications and file header (but no grid)

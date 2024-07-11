@@ -78,7 +78,6 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
 git
-forgit
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -117,6 +116,11 @@ alias tl='tmux list-sessions'
 alias ts='tmux new-session -A -D -s'
 alias duh='du -d 1 -h'
 alias gsed='sed'
+alias psd="(date; ps -ef) |
+      fzf --bind='ctrl-r:reload(date; ps -ef)' \
+            --header=$'Press CTRL-R to reload\n\n' --header-lines=2 \
+                  --preview='echo {}' --preview-window=down,3,wrap \
+                        --layout=reverse --height=80% | awk '{print $2}' | xargs kill -9"
 # Set up fzf key bindings and fuzzy completion
 
 # export FZF_DEFAULT_COMMAND="fdfind --type f"
@@ -126,14 +130,17 @@ export FZF_DEFAULT_COMMAND='fdfind --type f --type d'
 export FZF_DEFAULT_OPTS="
     --layout=reverse
     --border
-    --preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
-    --bind 'ctrl-d:+reload(fdfind --type d)','ctrl-d:+change-preview(tree -C {})','ctrl-f:+change-preview(bat --style=numbers,changes --wrap never --color always {})','ctrl-f:+reload(fdfind --type f --follow -E .git --ignore-file ~/.gitignore)'
-    --bind 'ctrl-e:preview-down','ctrl-b:preview-up'
+      --bind 'ctrl-t:transform:[[ ! \$FZF_PROMPT =~ Files ]] &&
+              echo \"change-prompt(Files> )+reload(fdfind --type file)\" ||
+              echo \"change-prompt(Directories> )+reload(fdfind --type directory)\"' \
+      --preview '[[ \$FZF_PROMPT =~ Files ]] && bat --color=always {} || tree -C {}'
     --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
     --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
     --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
 "
+      # --header 'CTRL-T: Switch between Files/Directories' \
 # --color=fg:#d8dee9,bg:#343d46,spinner:#ffcb6b,header:#5fb4b4,fg+:#d8dee9,hl+:#ffcb6b,bg+:#46505b,hl:#ffcb6b,border:#939393,gutter:#343d46,marker:#ffcb6b,prompt:#7aabdc,info:#ffcb6b
+    # --preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '/:toggle-preview'"
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 
@@ -142,7 +149,6 @@ source ~/.fzf-tab-completion/shell/zsh/key-bindings.zsh
 source ~/.fzf-tab-completion/shell/zsh/fzf-zsh-completion.sh
 source ~/.fzf_browser/zsh_widgets.zsh
 bindkey '^I' fzf_completion
-
 
 function fzf-run-cmd-from-history() {
     local selected_command
@@ -169,7 +175,78 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 
-
 source /home/hudamnhd/.config/broot/launcher/bash/br
+
+# Setup cdg function
+# ------------------
+unalias cdg 2> /dev/null
+
+rdg() {
+    local dest_dir
+    dest_dir=$(cat "$HOME/.cdg_paths" | fzf --height 40% --reverse --ansi --prompt="Select bookmarked directory: ")
+
+    if [[ -n "$dest_dir" ]]; then
+        unmark "$dest_dir"
+    fi
+}
+
+zle     -N   rdg
+
+cdg() {
+   local dest_dir=$(cdscuts_glob_echo | fzf )
+   if [[ $dest_dir != '' ]]; then
+        zle push-line # Clear buffer. Auto-restored on next prompt.
+        BUFFER="builtin cd -- ${dest_dir}"
+        zle accept-line
+        unset dir # ensure this doesn't end up appearing in prompt expansion
+        zle reset-prompt
+   fi
+}
+
+zle     -N   cdg
+bindkey "^g" cdg
+# Define function to mark a directory
+mark() {
+    local bookmark_file="$HOME/.cdg_paths"
+
+    # Ensure bookmark file exists, create if it doesn't
+    [[ ! -f "$bookmark_file" ]] && touch "$bookmark_file"
+
+    local bookmarked_dir="$1"
+
+    # Check if directory is already bookmarked
+    if grep -q "^$bookmarked_dir$" "$bookmark_file"; then
+        echo "Directory is already bookmarked."
+        return
+    fi
+
+    # Add directory to the bookmark file
+    echo "$bookmarked_dir" >> "$bookmark_file"
+    echo "Directory bookmarked: $bookmarked_dir"
+}
+zle     -N   mark
+# Define function to unmark (remove) a directory from bookmarks
+unmark() {
+    local bookmark_file="$HOME/.cdg_paths"
+
+    # Ensure bookmark file exists
+    [[ -f "$bookmark_file" ]] || { echo "No bookmarks found."; return; }
+
+    local dir_to_remove="$1"
+
+    # Check if directory is bookmarked
+    if ! grep -q "^$dir_to_remove$" "$bookmark_file"; then
+        echo "Directory is not bookmarked."
+        return
+    fi
+
+    # Remove directory from the bookmark file
+    sed -i.bak "\|^$dir_to_remove$|d" "$bookmark_file"
+    echo "Directory unmarked: $dir_to_remove"
+}
+
+zle     -N   unmark
+# Autocompletion for dmark command
+# Autocompletion for dmark command using fzf
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

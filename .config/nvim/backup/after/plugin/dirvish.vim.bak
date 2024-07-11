@@ -333,6 +333,7 @@ nnoremap <silent><buffer> <Plug>(dovish_delete) :<C-U> call <SID>deleteItemUnder
 nnoremap <silent><buffer> <Plug>(dovish_yank) :<C-U> call <SID>copyFilePathUnderCursor()<CR>
 xnoremap <silent><buffer> <Plug>(dovish_yank) :<C-U> call <SID>copyVisualSelection()<CR>
 nnoremap <silent><buffer> <Plug>(dovish_copy) :<C-U> call <SID>copyYankedItemToCurrentDirectory()<CR>
+nnoremap <silent><buffer> <Plug>(dovish_move) :<C-U> call <SID>moveYankedItemToCurrentDirectory()<CR>
 
 if !exists("g:dirvish_dovish_map_keys")
   let g:dirvish_dovish_map_keys = 1
@@ -350,7 +351,7 @@ if g:dirvish_dovish_map_keys
     execute 'nmap <silent><buffer> dd <Plug>(dovish_delete)'
   endif
   if !hasmapto('<Plug>(dovish_rename)', 'n')
-    execute 'nmap <silent><buffer> r <Plug>(dovish_rename)'
+    execute 'nmap <silent><buffer> R <Plug>(dovish_rename)'
   endif
   if !hasmapto('<Plug>(dovish_yank)', 'n')
     execute 'nmap <silent><buffer> yy <Plug>(dovish_yank)'
@@ -365,3 +366,8 @@ if g:dirvish_dovish_map_keys
     execute 'nmap <silent><buffer> P <Plug>(dovish_move)'
   endif
 endif
+
+
+nmap <silent><buffer> h <Plug>(dirvish_up)
+nmap <silent><buffer> l <CR>
+

@@ -9,7 +9,7 @@ function Plugin.init()
   bind("n", "<leader>sf", "<Esc><cmd>exe 'Find' expand('<cword>')<cr>")
 
   bind("v", "<leader>sf", function()
-    vim.cmd("Find " .. require("utils.other").get_visual_selection(true))
+    vim.cmd("Find " .. require("utils.m").get_visual_selection(true))
   end, { noremap = true, silent = true })
   bind("n", "tf", "<cmd>CtrlSFToggle<cr>")
 

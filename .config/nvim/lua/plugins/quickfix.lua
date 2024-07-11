@@ -1,22 +1,8 @@
 -- vim.keymap.set("n", "gw", "<cmd>cclose | Grep <cword><CR>", { desc = "Grep for word" })
-
 return {
   {
     "stefandtw/quickfix-reflector.vim",
     ft = "qf",
-  },
-  {
-    "gabrielpoca/replacer.nvim",
-    ft = "qf",
-    opts = { rename_files = false },
-    config = function()
-      vim.api.nvim_set_keymap(
-        "n",
-        "<leader>h",
-        ':lua require("replacer").run()<cr>',
-        { silent = true }
-      )
-    end,
   },
   {
     "thinca/vim-qfreplace",
@@ -28,10 +14,7 @@ return {
   {
     "stevearc/qf_helper.nvim",
     ft = "qf",
-    -- cmd = { "QNext", "QPrev", "QFToggle", "QFOpen", "LLToggle" },
     keys = {
-      { "<C-N>", "<cmd>QNext<CR>", desc = "[N]ext in quickfix" },
-      { "<C-P>", "<cmd>QPrev<CR>", desc = "[P]rev in quickfix" },
       { "<A-q>", "<cmd>QFToggle!<CR>", desc = "Toggle [Q]uickfix" },
       { "<A-a>", "<cmd>LLToggle!<CR>", desc = "Toggle [Q]uickfix" },
     },
