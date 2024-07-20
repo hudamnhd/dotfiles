@@ -15,15 +15,6 @@ function M.complete_path()
   })
 end
 
-function M.oldfiles()
-  vim.cmd("rshada!")
-  require("fzf-lua").oldfiles({
-    cwd = vim.uv.cwd(),
-    cwd_header = true,
-    cwd_only = true,
-  })
-end
-
 function M.grep_curbuf()
   require("fzf-lua").grep_curbuf({ query = vim.fn.expand("<cword>") })
 end
@@ -36,92 +27,193 @@ function M.spell_suggest()
   require("fzf-lua").spell_suggest(opts_spell)
 end
 
-function M.get_all_words()
-  local line_count = vim.api.nvim_buf_line_count(0)
-  local lines = vim.api.nvim_buf_get_lines(0, 0, line_count, false)
-  local content = table.concat(lines, "\n")
-  local words = {}
-  local unique_words = {}
-  for word in string.gmatch(content, "[%w_-]+") do
-    if not unique_words[word] then
-      unique_words[word] = true
-      table.insert(words, word)
-    end
-  end
-
-  table.sort(words)
-  return words
-end
-
-function M.T(pattern)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(pattern, true, false, true), "n", true)
-end
-
-function M.list_all_words_with_fzf()
-  local words = M.get_all_words()
-  require("fzf-lua").fzf_exec(words, {
-    -- complete = true,
-    header = "ctrl-b for visual , cr for normal , ctrl-s for subtitute",
-    actions = {
-      ["ctrl-s"] = function(selected, o)
-        local query = selected[1] or o.last_query
-        local pattern = ":%s/<C-R><C-W>/" .. query .. "/gc<left><left><left>"
-        M.T(pattern)
-      end,
-      ["ctrl-b"] = function(selected, o)
-        local query = selected[1] or o.last_query
-        local pattern = ":'<,'>s/<C-R><C-W>/" .. query .. "/gc<left><left><left>"
-        M.T(pattern)
-      end,
-      ["default"] = function(selected, o)
-        local query = selected[1] or o.last_query
-        local pattern = "/" .. query .. "<cr>"
-        M.T(pattern)
-      end,
-    },
-    winopts = relative_cursor,
-  })
-end
-
 local api, fn, uv = vim.api, vim.fn, vim.loop
 
----Most recently used files
 function M.mru()
   local current
   if api.nvim_buf_get_option(0, "buftype") == "" then
     current = uv.fs_realpath(api.nvim_buf_get_name(0))
   end
 
-  local files = {}
-  for _, file in ipairs(require("mru").get()) do
+  local files_all = {}
+  local files_cwd = {}
+  local cwd = vim.fn.expand(vim.uv.cwd())
+  local show_all = false
+
+  local mru_files = require("mru").get()
+
+  for _, file in ipairs(mru_files) do
     if file ~= current then
-      files[#files + 1] = fn.fnamemodify(file, ":~")
+      table.insert(files_all, file)
     end
   end
 
-  if #files > 0 then
+  local function update_files_cwd()
+    files_cwd = {}
+    for _, file in ipairs(files_all) do
+      local file_absolute_path = vim.fn.fnamemodify(file, ":p")
+      if vim.fn.stridx(file_absolute_path, cwd) == 0 then
+        table.insert(files_cwd, file)
+      end
+    end
+  end
+
+  update_files_cwd()
+
+  local prompt = "MRU"
+  prompt = prompt .. " CWD"
+
+  local function show_fzf(files)
     require("fzf-lua").fzf_exec(files, {
       actions = {
         ["default"] = require("fzf-lua").actions.file_edit,
+        ["ctrl-h"] = function()
+          show_all = not show_all
+          if show_all then
+            prompt = "MRU ALL"
+            show_fzf(files_all)
+          else
+            prompt = "MRU CWD"
+            update_files_cwd()
+            show_fzf(files_cwd)
+          end
+        end,
       },
       fzf_opts = {
         ["--multi"] = "",
       },
-      prompt = "MRU> ",
+      prompt = prompt .. "> ",
       winopts = { height = 0.4, width = 0.5 },
     })
+  end
+
+  show_fzf(files_cwd)
+end
+
+vim.api.nvim_create_user_command("MRU", M.mru, {})
+
+local function delete_bookmark(file)
+  local path = vim.fn.expand(file)
+  local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
+  local lines = {}
+  local found = false
+
+  for line in io.lines(bookmark_file) do
+    local full_path = vim.fn.expand(line)
+    if full_path ~= path then
+      table.insert(lines, line)
+    else
+      found = true
+    end
+  end
+
+  if found then
+    local f = io.open(bookmark_file, "w")
+    for _, line in ipairs(lines) do
+      f:write(line .. "\n")
+    end
+    f:close()
+    vim.notify("Bookmark deleted: " .. path)
   else
-    print("No recently used files", "WarningMsg")
+    vim.notify("Bookmark not found:".. path)
   end
 end
 
-vim.api.nvim_create_user_command("MRU",  M.mru, {})
+local function show_bookmark_list()
+  local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
+  local files_all = {}
+  local files_cwd = {}
+  local cwd = vim.fn.expand(vim.uv.cwd())
+  local show_all = false
+
+  for line in io.lines(bookmark_file) do
+    local file = vim.fn.expand(line)
+    table.insert(files_all, file)
+  end
+
+  local function update_files_cwd()
+    files_cwd = {}
+    for _, file in ipairs(files_all) do
+      local file_absolute_path = vim.fn.fnamemodify(file, ":p")
+      if vim.fn.stridx(file_absolute_path, cwd) == 0 then
+        local relative_path = vim.fn.fnamemodify(file_absolute_path, ":.")
+        table.insert(files_cwd, relative_path)
+      end
+    end
+  end
+
+  update_files_cwd()
+
+  local prompt = "B"
+  prompt = prompt .. " CWD"
+
+  local function show_fzf(files)
+    require("fzf-lua").fzf_exec(files, {
+      actions = {
+        ["default"] = require("fzf-lua").actions.file_edit,
+        ["ctrl-x"] = function(selected)
+          if selected[1] then
+            delete_bookmark(selected[1])
+          end
+        end,
+        ["ctrl-h"] = function()
+          show_all = not show_all
+          if show_all then
+            prompt = "B ALL"
+            show_fzf(files_all)
+          else
+            prompt = "B CWD"
+            update_files_cwd()
+            show_fzf(files_cwd)
+          end
+        end,
+      },
+      fzf_opts = {
+        ["--multi"] = "",
+      },
+      prompt = prompt .. "> ",
+      winopts = { height = 0.4, width = 0.5 },
+    })
+  end
+
+  show_fzf(files_cwd)
+end
+
+local function save_buffer_bookmark()
+  local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
+  local buffer_path = vim.fn.expand("%:p")
+
+  local f = io.open(bookmark_file, "r")
+  if f then
+    local exists = false
+    for line in f:lines() do
+      if line == buffer_path then
+        exists = true
+        break
+      end
+    end
+    f:close()
+
+    if exists then
+      vim.notify("Bookmark already exists")
+      return
+    end
+  end
+
+  f = io.open(bookmark_file, "a")
+  f:write(buffer_path .. "\n")
+  f:close()
+
+  vim.notify("Bookmark saved: " .. buffer_path)
+end
 
 -- stylua: ignore start
-vim.keymap.set('n', ',',          M.list_all_words_with_fzf,        { desc = '󰕮  Search' })
+vim.keymap.set("n", "sB", function() vim.cmd.edit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "󰈔 show file bookmark" })
+vim.keymap.set("n", "<leader>a",  save_buffer_bookmark,             { desc = "save file bookmark" })
+vim.keymap.set("n", "<leader>h",  show_bookmark_list,               { desc = "show file bookmark" })
 vim.keymap.set("n", "z=",         M.spell_suggest,                  { desc = "spell_suggest" })
 vim.keymap.set("i", "<C-X><C-F>", M.complete_path,                  { desc = "Fuzzy complete path" })
-vim.keymap.set("n", "yu",         require("fzf-lua").registers,     { desc = "registers" })
+vim.keymap.set("n", "sr",         require("fzf-lua").registers,     { desc = "registers" })
 vim.keymap.set("i", "<C-L>",      require("fzf-lua").complete_line, { desc = "Fuzzy complete line" })
 -- stylua: ignore end
 

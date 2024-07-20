@@ -68,35 +68,6 @@ function M.duplicate_bak_file()
   ]])
 end
 
-function M.change_cword()
-  local word = vim.fn.expand("<cword>")
-  local subwords = {}
-
-  if word:find("_") then
-    for w in word:gmatch("[^_]+") do
-      table.insert(subwords, "(" .. w .. ")")
-    end
-  else
-    local temp_word = ""
-    for i = 1, #word do
-      local char = word:sub(i, i)
-      if char:match("%u") and temp_word ~= "" then
-        table.insert(subwords, "(" .. temp_word .. ")")
-        temp_word = char
-      else
-        temp_word = temp_word .. char
-      end
-    end
-    table.insert(subwords, "(" .. temp_word .. ")")
-  end
-
-  local pattern = table.concat(subwords, word:find("_") and "_" or "")
-
-  local go_left = M.T("<left>")
-  local keys = ":%s/\\v" .. pattern .. "//g" .. string.rep(go_left, 2)
-  vim.api.nvim_feedkeys(keys, "n", true)
-end
-
 ---- NOTE utils
 local fast_event_aware_notify = function(msg, level, opts)
   if vim.in_fast_event() then
@@ -329,25 +300,8 @@ function M.translate_nm()
 end
 
 function M.translate_vm()
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
-  local _, row_start, col_start, _ = unpack(vim.fn.getpos("'<"))
-  local _, row_end, col_end, _ = unpack(vim.fn.getpos("'>"))
-
-  -- prevent "Column index is too high" error for linewise visual mode
-  if col_end > 2000000000 then
-    col_end = col_end - 1
-  end
-  if col_start > 2000000000 then
-    col_start = col_start - 1
-  end
-
-  local text
-  if row_start < row_end or (row_start == row_end and col_start <= col_end) then
-    text = vim.api.nvim_buf_get_text(0, row_start - 1, col_start - 1, row_end - 1, col_end, {})
-  else
-    text = vim.api.nvim_buf_get_text(0, row_end - 1, col_end - 1, row_start - 1, col_start, {})
-  end
-  enter_translate_cmd(table.concat(text, " "):gsub("%s%s+", " "))
+  local text = M.get_visual_selection()
+  enter_translate_cmd(text)
 end
 
 return M

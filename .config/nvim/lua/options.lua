@@ -1,35 +1,16 @@
 local o = vim.opt
 
--- Reduce messages by setting various 'shortmess' flags
-o.shortmess = vim.opt.shortmess
-               + {
-                 F = true, -- Don't give the file info when editing a file
-                 W = true, -- Don't give "written" or "[w]" when writing a file
-                 I = true, -- Don't give the intro message when starting Vim
-                 s = true, -- Don't give "search hit BOTTOM/TOP" messages
-                 q = true, -- Don't show "recording @a" when recording a macro
-                 A = true, -- Don't give the "ATTENTION" message when an existing swap file is found
-                 a = true, -- Use all abbreviations (l, m, r, w)
-                 o = true, -- Overwrite message for writing a file with subsequent message for reading a file
-                 O = true, -- Message for reading a file overwrites any previous message
-                 t = true, -- Truncate file message at the start if it is too long to fit
-                 T = true, -- Truncate other messages in the middle if they are too long to fit
-                 c = true, -- Don't give ins-completion-menu messages
-                 C = true, -- Don't give messages while scanning for ins-completion items
-                 S = true, -- Don't show search count message when searching
-               }
-
--- o.inccommand     = "split" -- for live subtitute
 -- o.mouse          = ""     -- disable the mouse
+o.inccommand     = "split" -- for live subtitute
 o.termguicolors  = true   -- enable 24bit colors
-o.synmaxcol      = 200    -- for `syntax`
+o.synmaxcol      = 500    -- for `syntax`
 o.timeoutlen     = 500
 o.updatetime     = 250    -- decrease update time
 o.fileformat     = "unix" -- <nl> for EOL
 o.switchbuf      = "useopen"
 o.fileencoding   = "utf-8"
--- o.matchpairs     = { "(:)", "{:}", "[:]", "<:>" }
--- o.lazyredraw   = true
+o.matchpairs     = { "(:)", "{:}", "[:]", "<:>" }
+o.lazyredraw   = true
 -- recursive :find in current dir
 vim.cmd [[set path=.,,,$PWD/**]]
 
@@ -38,16 +19,16 @@ vim.cmd [[set path=.,,,$PWD/**]]
 -- unnamed     = use the * register (cmd-s paste in our term)
 -- unnamedplus = use the + register (cmd-v paste in our term)
 -- o.clipboard         = 'unnamedplus'
-o.showmode       = false
+o.showmode       = true
 o.cmdheight      = 1                            -- cmdline height
-o.cmdwinheight   = math.floor(vim.o.lines / 3)  -- 'q:' window height
+o.cmdwinheight   = math.floor(vim.o.lines / 5)  -- 'q:' window height
 o.scrolloff      = 3                            -- min number of lines to keep between cursor and screen edge
 o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth      = 99                           -- max inserted text width for paste operations
-o.number         = false                        -- show absolute line no. at the cursor pos
-o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
+o.number         = true                        -- show absolute line no. at the cursor pos
+o.relativenumber = true                        -- otherwise, show relative numbers in the ruler
 o.cursorline     = false                        -- Show a line where the current cursor is
-o.signcolumn     = "yes:1"  -- Show sign column as first column
+o.signcolumn     = "yes"  -- Show sign column as first column
 
 -- o.cursorlineopt    = "number"
 -- vim.g._colorcolumn = 0        -- global var, mark column 100
@@ -188,5 +169,7 @@ vim.g.markdown_fenced_languages = {
 }
 
 -- Map leader to <space>
+vim.keymap.set({ "n", "v" }, " ", "<Nop>")
+
 vim.g.mapleader                 = " "
 vim.g.maplocalleader            = " "

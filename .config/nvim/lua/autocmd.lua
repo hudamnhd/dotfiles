@@ -53,7 +53,7 @@ augroup("HelpOpenVert", {
       callback = function()
         local buftype = vim.bo.buftype
         if buftype == "help" or buftype == "nofile" then
-          vim.keymap.set("n", "q", "<cmd>bd<cr>", { buffer = true })
+          vim.keymap.set("n", "q", "<cmd>bd<cr>", { buffer = true, nowait = true })
           vim.cmd("wincmd H")
         end
       end,
@@ -73,7 +73,9 @@ augroup("GQFormatter", {
     opts = {
       pattern = "*",
       callback = function(e)
-        if e.file:match("^fugitive:") then return end
+        if e.file:match("^fugitive:") then
+          return
+        end
 
         local lsp_has_formatting = false
         local lsp_clients = lsp_get_clients({ bufnr = e.buf })
@@ -122,26 +124,26 @@ local function map_cmdline_sub()
     return
   end
   local ok, rv = pcall(vim.api.nvim_parse_cmd, cmd, {})
-  if not ok or not rv.cmd == 'substitute' then
+  if not ok or not rv.cmd == "substitute" then
     return
   end
   if cmd:match("'<,'>s[^u ]") then
-    vim.fn.setcmdline(cmd..[[\%V]])
+    vim.fn.setcmdline(cmd .. [[\%V]])
     return true
   end
 end
 do
   local skip = false
-  vim.api.nvim_create_autocmd('CmdlineEnter', {
+  vim.api.nvim_create_autocmd("CmdlineEnter", {
     callback = function()
       skip = false
-    end
+    end,
   })
-  vim.api.nvim_create_autocmd('CmdlineChanged', {
+  vim.api.nvim_create_autocmd("CmdlineChanged", {
     callback = function()
       if not skip and map_cmdline_sub() then
         skip = true
       end
-    end
+    end,
   })
 end

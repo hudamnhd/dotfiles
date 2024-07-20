@@ -35,6 +35,10 @@ lazy.setup("plugins", {
   performance = {
     rtp = {
       disabled_plugins = {
+        "netrw",
+        "netrwPlugin",
+        "netrwSettings",
+        "netrwFileHandlers",
         "spellfile_plugin",
         "matchit",
         "matchparen",
@@ -44,10 +48,6 @@ lazy.setup("plugins", {
         "getscriptPlugin",
         "gzip",
         "logipat",
-        "netrw",
-        "netrwPlugin",
-        "netrwSettings",
-        "netrwFileHandlers",
         "tar",
         "tarPlugin",
         "rrhelper",

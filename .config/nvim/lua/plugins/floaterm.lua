@@ -23,26 +23,25 @@ local function toggleFloaterm(args)
   end
 end
 
-local size = "--width=0.9 --height=0.9"
+local size = "--width=0.95 --height=0.95"
 
 return {
   -- Alternate https://github.com/tracyone/term.vim
   "voldikss/vim-floaterm",
   config = function()
     vim.keymap.set("t", "<MouseMove>", "<NOP>")
+
   end,
 
+
   keys = {
-        -- stylua: ignore start
-        { "-", function() toggleFloaterm("--name=yazi " .. size .." yazi") end, mode = { "n" }, desc = "Yazi" },
-
-        { "<C-P>", function() toggleFloaterm("--name=broot " .. size .." broot") end, mode = { "n" }, desc = "Broot" },
-
-        { "<F1>", function() toggleFloaterm("--name=bash " .. size .." bash") end,   mode = { "n", "t" }, desc = "Bash" },
-        { "<F2>", function() toggleFloaterm("--name=gitui " .. size .." gitui") end, mode = { "n", "t" }, desc = "Gitui" },
-
-        { "<a-t>", function() vim.cmd("FloatermToggle") end, mode = { "n", "t" }, desc = "FloatermToggle" },
-        { "<a-n>", function() vim.cmd("FloatermNew") end,    mode = { "n", "t" }, desc = "FloatermNew" },
+    -- stylua: ignore start
+        { "<f1>",  function() toggleFloaterm("--name=bash " .. size .." bash") end,   mode = { "n",   "t" }, desc = "Bash" },
+        { "<c-n>", function() toggleFloaterm("--name=yazi " .. size .." yazi") end,   mode = { "n" }, desc = "Yazi" },
+        { "<c-p>", function() toggleFloaterm("--name=broot " .. size .." broot") end, mode = { "n" }, desc = "Broot" },
+        { "<a-g>", function() toggleFloaterm("--name=gitui " .. size .." gitui") end, mode = { "n",   "t" }, desc = "Gitui" },
+        { "<a-t>", function() vim.cmd("FloatermNew") end, mode = { "n",   "t" }, desc = "FloatermNew" },
+        { "<c-z>", function() vim.cmd("FloatermToggle") end, mode = { "t" }, desc = "FloatermToggle" },
     -- stylua: ignore end
   },
 }

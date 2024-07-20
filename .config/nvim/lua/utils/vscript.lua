@@ -2,7 +2,6 @@ vim.g.asyncrun_exit = "echo 'Success'"
 vim.g.asyncrun_open =  20
 
 vim.cmd([[
-
 map <C-J> <Plug>(edgemotion-j)
 map <C-K> <Plug>(edgemotion-k)
 
@@ -14,16 +13,16 @@ map g# <Plug>(asterisk-gz#)
 
 highlight! link SignatureMarkText WarningMsg
 
-command! CopyFullPath let @+ = expand('%:p') | echo "Full path copied to clipboard"
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
 autocmd BufRead,BufWritePre *.blade.php setlocal filetype=php
- augroup vimrc
-   autocmd!
-   autocmd BufWinEnter,Syntax * syn sync minlines=200 maxlines=200
- augroup END
 
- cnoremap <expr> / (mode() =~# "[vV\<C-v>]" && getcmdtype() =~ '[/?]' && getcmdline() == '') ? "\<C-c>\<Esc>/\\%V" : '/'
+cnoremap <expr> / (mode() =~# "[vV\<C-v>]" && getcmdtype() =~ '[/?]' && getcmdline() == '') ? "\<C-c>\<Esc>/\\%V" : '/'
+ "augroup vimrc
+ "  autocmd!
+ "  autocmd BufWinEnter,Syntax * syn sync minlines=200 maxlines=200
+ "augroup END
+
 " /<BS>: Inverse search (line NOT containing pattern).
 "cnoremap <expr> <BS> (getcmdtype() =~ '[/?]' && getcmdline() == '') ? '\v^(()@!.)*$<Left><Left><Left><Left><Left><Left><Left>' : '<BS>'
 " Hit space to match multiline whitespace.

@@ -25,10 +25,9 @@ require("fzf-lua").setup({
   global_git_icons = false,
   global_file_icons = false,
   { "default-title" }, -- base profile
-  fzf_opts = { ["--layout"] = "reverse", ["--padding"] = "0,1", ["--info"] = "inline-right" },
   winopts = {
-    height = 0.6,
-    width = 0.6,
+    height = 0.4,
+    width = 0.5,
     preview = {
       hidden = "hidden", -- hide the previewer by default
     },
@@ -43,8 +42,8 @@ require("fzf-lua").setup({
       ["hl+"] = { "fg", "WarningMsg" },
       ["gutter"] = { "bg", "Normal" },
       ["info"] = { "fg", "WarningMsg" },
-      ["border"] = { "fg", "TelescopeBorder" },
-      ["prompt"] = { "fg", "Special" },
+      ["border"] = { "fg", "Comment" },
+      ["prompt"] = { "fg", "WarningMsg" },
       ["pointer"] = { "fg", "Exception" },
       ["marker"] = { "fg", "WarningMsg" },
       ["spinner"] = { "fg", "WarningMsg" },
@@ -53,8 +52,8 @@ require("fzf-lua").setup({
   end,
   hls = function()
     return {
-      border = hl_match({ "TelescopeBorder" }),
-      preview_border = hl_match({ "TelescopeBorder" }),
+      border = hl_match({ "Comment" }),
+      preview_border = hl_match({ "Comment" }),
     }
   end,
   keymap = {
@@ -75,7 +74,7 @@ require("fzf-lua").setup({
   -- Configuration for specific commands.
   files = {
     find_opts = [[-type f -type d -type l -not -path '*/\.git/*' -printf '%P\n']],
-    fd_opts = [[--color=never --type f --follow --exclude .git]],
+    fd_opts = [[--color=never --type f --type d --follow --exclude .git]],
     rg_opts = [[--color=never --files --hidden --follow -g '!.git'"]],
     fzf_opts = {
       ["--ansi"] = false,

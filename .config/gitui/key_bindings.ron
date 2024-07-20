@@ -1,5 +1,5 @@
 // bit for modifiers
-// bits: 0  None
+// bits: 0  None 
 // bits: 1  SHIFT
 // bits: 2  CONTROL
 //
@@ -19,9 +19,9 @@
     move_right: Some(( code: Char('l'), modifiers: "")),
     move_up: Some(( code: Char('k'), modifiers: "")),
     move_down: Some(( code: Char('j'), modifiers: "")),
-
-    //quit: Some(( code: Char('c'), modifiers: "CONTROL")),
-    //exit_popup: Some(( code: Char('q'), modifiers: "")),
+    
+    quit: Some(( code: Char('c'), modifiers: "CONTROL")),
+    exit_popup: Some(( code: Char('q'), modifiers: "")),
     popup_up: Some(( code: Char('p'), modifiers: "CONTROL")),
     popup_down: Some(( code: Char('n'), modifiers: "CONTROL")),
     page_up: Some(( code: Char('b'), modifiers: "CONTROL")),

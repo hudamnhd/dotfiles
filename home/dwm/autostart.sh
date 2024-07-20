@@ -1,11 +1,12 @@
 # xrandr --output HDMI-A-0  --brightness 0.4 &
-xrandr --output DisplayPort-0 --auto --right-of HDMI-A-0 ; xrandr --output HDMI-A-0  --brightness 0.45  --output DisplayPort-0 --brightness 0.5 &
+urxvtd -q -f -o
+xrandr --output DisplayPort-0 --auto --right-of HDMI-A-0 ; xrandr --output HDMI-A-0  --brightness 0.4  --output DisplayPort-0 --brightness 0.5 &
 xset r rate 210 40
 # xset r rate 250 60 &
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 unclutter-xfixes --timeout 1 --jitter 1 --ignore-buttons 4,5,6,7 --hide-on-touch --start-hidden &
 xrdb ~/.Xresources &
-feh --no-fehbg --bg-fill '/home/hudamnhd/Images/wallpapers/68747470733a2f2f692e696d6775722e636f6d2f4c7a4a596b70532e6a706567.jpeg' & 
+feh --no-fehbg --bg-fill '/home/hudamnhd/Images/wallpapers/default.jpeg' & 
 setxkbmap -option "caps:escape_shifted_capslock" &
 
 while sleep 1

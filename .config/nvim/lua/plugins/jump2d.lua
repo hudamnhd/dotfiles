@@ -30,8 +30,8 @@ function Plugin.keys()
   bind("f", user.jump_char(1, true), "one characters search")
   bind("F", user.jump_char(1, false), "one characters search")
 
-  bind("<space>k", user.jump_line("up"), "Jump to line above cursor")
-  bind("<space>j", user.jump_line("down"), "Jump to line below cursor")
+  -- bind("<space>k", user.jump_line("up"), "Jump to line above cursor")
+  -- bind("<space>j", user.jump_line("down"), "Jump to line below cursor")
 
   return keys
 end
@@ -46,7 +46,7 @@ function user.jump_line(dir)
   opts.labels = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL"
 
   opts.allowed_lines = {
-    blank = true,
+    blank = false,
     cursor_at = false,
     cursor_before = true,
     cursor_after = false,

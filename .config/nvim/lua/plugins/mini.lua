@@ -15,6 +15,7 @@ function M.config()
       mapping.leader_group_clues,
       miniclue.gen_clues.builtin_completion(),
       miniclue.gen_clues.marks(),
+      miniclue.gen_clues.g(),
       miniclue.gen_clues.registers(),
       miniclue.gen_clues.windows({ submode_resize = true }),
     },
@@ -23,6 +24,8 @@ function M.config()
       { mode = 'n', keys = ']' },
       { mode = 'x', keys = '[' },
       { mode = 'x', keys = ']' },
+      { mode = 'n', keys = 'g' },
+      { mode = 'x', keys = 'g' },
       { mode = 'n', keys = 's' },        -- `s` key
       { mode = 'n', keys = "'" },        -- Marks
       { mode = 'n', keys = '`' },
@@ -49,8 +52,16 @@ function M.config()
     },
   })
 
+  require("mini.completion").setup({})
+
+  vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
+  vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
+
   require("mini.diff").setup({
-    view = { signs = { add = "+", change = "~", delete = "-" } },
+    view = {
+      style = "sign",
+      signs = { add = "+", change = "~", delete = "-" },
+    },
   })
 
   require("mini.pairs").setup({
@@ -60,10 +71,7 @@ function M.config()
     },
   })
 
-  require("mini.operators").setup({
-    replace = { prefix = "r" },
-    exchange = { prefix = "ge" },
-  })
+  require("mini.operators").setup({})
 
   require("mini.align").setup({
     mappings = {
@@ -76,27 +84,41 @@ function M.config()
     buffer = { suffix = "", options = {} },
   })
 
+  local function get_buffer_index(buf_id)
+    local buffers = vim.fn.getbufinfo({ buflisted = 1 })
+    for i, buffer in ipairs(buffers) do
+      if buffer.bufnr == buf_id then
+        return i
+      end
+    end
+    return -1
+  end
+
+  -- Example usage in your format function
+  require("mini.tabline").setup({
+    format = function(buf_id, label)
+      local suffix = vim.bo[buf_id].modified and "+ " or ""
+      local buffer_index = get_buffer_index(buf_id)
+      return " " .. buffer_index .. "." .. MiniTabline.default_format(buf_id, label) .. suffix
+    end,
+  })
+
+      -- stylua: ignore start
+  vim.api.nvim_set_hl(0, "MiniTablineCurrent", { fg = "#343D46", bg = "#eeeeee", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineVisible", { fg = "#eeeeee", bg = "#343D46", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineHidden", { fg = "#eeeeee", bg = "#343D46", bold = false })
+  vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { fg = "#F9AE58", bg = "#000000", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { fg = "#000000", bg = "#F9AE58", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { fg = "#000000", bg = "#F9AE58", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineTabpagesection", { fg = "#eeeeee", bg = "#343D46", bold = true })
+  -- stylua: ignore end
+
   require("mini.notify").setup({})
   vim.notify = require("mini.notify").make_notify()
 
   require("mini.trailspace").setup({})
-  require("mini.visits").setup({})
   require("mini.move").setup({})
   require("mini.extra").setup({})
-
-  require("mini.pick").setup({
-    mappings = {
-      choose_marked = "<a-q>",
-      move_down = "<C-j>",
-      move_up = "<C-k>",
-      toggle_preview = "<C-P>",
-      mark = "<Tab>",
-      mark_all = "<a-a>",
-    },
-    options = {
-      use_cache = true,
-    },
-  })
 
   require("mini.surround").setup({
     custom_surroundings = {
@@ -155,24 +177,12 @@ function M.config()
     },
   })
 
-  -- vim.cmd([[
-  --         highlight MiniHipatternsFixme guibg=#ff5555 guifg=#ffffff
-  --         highlight MiniHipatternsHack guibg=#ffb86c guifg=#000000
-  --         highlight MiniHipatternsTodo guibg=#f1fa8c guifg=#000000
-  --         highlight MiniHipatternsNote guibg=#8be9fd guifg=#000000
-  --       ]])
-
-
-  -- require("mini.indentscope").setup({
-  --   symbol = "╎",
-  --   draw = { animation = require("mini.indentscope").gen_animation.none() },
-  -- })
-
-  -- vim.keymap.set("n", "al", "<Cmd>lua MiniVisits.add_label()<CR>")
-  -- vim.keymap.set("n", "aL", "<Cmd>lua MiniVisits.remove_label()<CR>")
-
-  -- vim.keymap.set("n", "H", "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
-  -- vim.keymap.set("n", "L", "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
+  vim.cmd([[
+          highlight MiniHipatternsFixme guibg=#ff5555 guifg=#ffffff
+          highlight MiniHipatternsHack guibg=#ffb86c guifg=#000000
+          highlight MiniHipatternsTodo guibg=#f1fa8c guifg=#000000
+          highlight MiniHipatternsNote guibg=#8be9fd guifg=#000000
+        ]])
 end
 
 return M

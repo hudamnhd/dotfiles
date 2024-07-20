@@ -9,18 +9,19 @@ local function safeRequire(module)
 end
 
 -- disable treesitter
--- vim.treesitter.stop()
+vim.treesitter.stop()
 
 -- Load configuration files
--- safeRequire("keymaps")
+safeRequire("mru")
 safeRequire("lazyplug")
 safeRequire("options")
-safeRequire("mru")
+safeRequire("keymaps")
 safeRequire("utils.vscript")
 safeRequire("autocmd")
 
-pcall(vim.cmd, [[colorscheme catppuccin-mocha]])
+pcall(vim.cmd, [[colorscheme default]])
 pcall(vim.cmd, [[hi! link LineNr Comment]])
+pcall(vim.cmd, [[hi! link DirvishSuffix Comment]])
 
 -- enable loader
 vim.loader.enable()

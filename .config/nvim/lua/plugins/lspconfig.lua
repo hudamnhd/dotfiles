@@ -1,7 +1,7 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    ft = "typescriptreact",
+    event = { "BufReadPost" },
     config = function()
       require("lspconfig").biome.setup({})
       -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
