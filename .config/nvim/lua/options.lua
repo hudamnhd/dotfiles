@@ -1,5 +1,31 @@
 local o = vim.opt
+local g = vim.g
 
+if g.neovide then
+  g.neovide_text_gamma    = 0.9
+  g.neovide_text_contrast = 0.3
+  g.neovide_scale_factor  = 1.0
+  o.linespace             = 0
+end
+
+-- Reduce messages by setting various 'shortmess' flags
+o.shortmess = vim.opt.shortmess
+               + {
+                 F = true, -- Don't give the file info when editing a file
+                 W = true, -- Don't give "written" or "[w]" when writing a file
+                 I = true, -- Don't give the intro message when starting Vim
+                 s = true, -- Don't give "search hit BOTTOM/TOP" messages
+                 q = true, -- Don't show "recording @a" when recording a macro
+                 A = true, -- Don't give the "ATTENTION" message when an existing swap file is found
+                 a = true, -- Use all abbreviations (l, m, r, w)
+                 o = true, -- Overwrite message for writing a file with subsequent message for reading a file
+                 O = true, -- Message for reading a file overwrites any previous message
+                 t = true, -- Truncate file message at the start if it is too long to fit
+                 T = true, -- Truncate other messages in the middle if they are too long to fit
+                 c = true, -- Don't give ins-completion-menu messages
+                 C = true, -- Don't give messages while scanning for ins-completion items
+                 S = true, -- Don't show search count message when searching
+               }
 -- o.mouse          = ""     -- disable the mouse
 o.inccommand     = "split" -- for live subtitute
 o.termguicolors  = true   -- enable 24bit colors
@@ -19,7 +45,7 @@ vim.cmd [[set path=.,,,$PWD/**]]
 -- unnamed     = use the * register (cmd-s paste in our term)
 -- unnamedplus = use the + register (cmd-v paste in our term)
 -- o.clipboard         = 'unnamedplus'
-o.showmode       = true
+o.showmode       = false
 o.cmdheight      = 1                            -- cmdline height
 o.cmdwinheight   = math.floor(vim.o.lines / 5)  -- 'q:' window height
 o.scrolloff      = 3                            -- min number of lines to keep between cursor and screen edge
@@ -31,9 +57,9 @@ o.cursorline     = false                        -- Show a line where the current
 o.signcolumn     = "yes"  -- Show sign column as first column
 
 -- o.cursorlineopt    = "number"
--- vim.g._colorcolumn = 0        -- global var, mark column 100
--- vim.g._colorcolumn = 100      -- global var, mark column 100
--- o.colorcolumn      = tostring(vim.g._colorcolumn)
+-- g._colorcolumn = 0        -- global var, mark column 100
+-- g._colorcolumn = 100      -- global var, mark column 100
+-- o.colorcolumn      = tostring(g._colorcolumn)
 
 o.hlsearch       = true
 o.wrap           = false
@@ -108,7 +134,7 @@ o.hidden           = true                   -- do not unload buffer when abandon
 o.ignorecase       = false                  -- ignore case on search
 o.smartcase        = true                   -- case sensitive when search includes uppercase
 o.showmatch        = true                   -- highlight matching [{()}]
-vim.o.cpoptions    = vim.o.cpoptions .. "x" -- stay on search item when <esc>
+-- o.cpoptions        = o.cpoptions .. "x" -- stay on search item when <esc>
 
 o.writebackup      = false                  -- do not backup file before write
 o.swapfile         = false                  -- no swap file
@@ -147,12 +173,12 @@ if vim.fn.executable("rg") == 1 then
 end
 
 -- Disable providers we do not care a about
-vim.g.loaded_python_provider = 0
-vim.g.loaded_ruby_provider   = 0
-vim.g.loaded_perl_provider   = 0
-vim.g.loaded_node_provider   = 0
+g.loaded_python_provider = 0
+g.loaded_ruby_provider   = 0
+g.loaded_perl_provider   = 0
+g.loaded_node_provider   = 0
 
-vim.g.markdown_fenced_languages = {
+g.markdown_fenced_languages = {
   "vim",
   "lua",
   "cpp",
@@ -171,5 +197,5 @@ vim.g.markdown_fenced_languages = {
 -- Map leader to <space>
 vim.keymap.set({ "n", "v" }, " ", "<Nop>")
 
-vim.g.mapleader                 = " "
-vim.g.maplocalleader            = " "
+g.mapleader                 = " "
+g.maplocalleader            = " "

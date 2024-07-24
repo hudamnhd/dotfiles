@@ -37,12 +37,14 @@ return {
   { "wellle/targets.vim",         event = "VeryLazy" },
   { "skywind3000/asynctasks.vim", event = "VeryLazy" },
   { "skywind3000/asyncrun.vim",   event = "VeryLazy" },
-  { "tpope/vim-eunuch",           event = "VimEnter" },
+  { "RRethy/vim-eunuch",           event = "VimEnter" },
   { "tpope/vim-rsi",              event = "VimEnter" },
+  { "tpope/vim-git",              event = "VimEnter" },
+  { "tpope/vim-repeat",           event = "VimEnter" },
   { "mbbill/undotree",            event = "BufReadPost" },
   { 'romainl/vim-cool',           event = "BufReadPost" },
   { "haya14busa/vim-edgemotion",  event = "BufReadPost" },
-  -- { "nvim-tree/nvim-web-devicons" },
+  { "nvim-tree/nvim-web-devicons" },
   -- { "nvim-lua/plenary.nvim" },
   -- stylua: ignore end
 }

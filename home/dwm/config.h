@@ -11,7 +11,7 @@ static const int showsystray             = 1;        /* 0 means no systray */
 static const int showbar                 = 1;        /* 0 means no bar */
 static const int topbar                  = 1;        /* 0 means bottom bar */
 static const char *fonts[]               = { "IosevkaTree Nerd Font:style=Medium:pixelsize=14:antialias=true:autohint=true" };
-static const char dmenufont[]            = "IosevkaTree Nerd Font:style=Medium:pixelsize=14:antialias=true:autohint=true";
+static const char dmenufont[]            = "IosevkaTree Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true";
 static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
@@ -89,15 +89,17 @@ static const Key keys[] = {
     { MODKEY,           XK_d,            spawn,             {.v = termcmd } },
     { MODKEY,           XK_c,            spawn,             {.v = rofi } },
 	{ MODKEY,           XK_p,            spawn,             {.v = dmenucmd } },
+	{ MODKEY,           XK_o,            spawn,             SHCMD("bash -i -c 'nvd'") },
 	{ MODKEY,           XK_b,            togglebar,         {0} },
-	{ MODKEY,           XK_a,            focusstack,        {.i = +1 } },
+	{ MODKEY,           XK_a,            focusstack,        {.i = -1 } },
+	{ MODKEY,           XK_s,            focusstack,        {.i = +1 } },
 	{ MODKEY,           XK_j,            focusstack,        {.i = +1 } },
 	{ MODKEY,           XK_k,            focusstack,        {.i = -1 } },
 	{ MODKEY,           XK_bracketleft,  incnmaster,        {.i = +1 } },
 	{ MODKEY,           XK_bracketright, incnmaster,        {.i = -1 } },
 	{ MODKEY,           XK_h,            setmfact,          {.f = -0.05} },
 	{ MODKEY,           XK_l,            setmfact,          {.f = +0.05} },
-	{ MODKEY,           XK_Return,       zoom,              {0} },
+	{ MODKEY,           XK_z,            zoom,              {0} },
 	{ MODKEY,           XK_Tab,          view,              {0} },
 	{ MODKEY,           XK_x,            killclient,        {0} },
     { MODKEY,           XK_w,            setlayout,         {.v = &layouts[2]} },
@@ -113,8 +115,8 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask, XK_comma,        tagmon,            {.i = -1 } },
 	{ MODKEY|ShiftMask, XK_period,       tagmon,            {.i = +1 } },
 	{ MODKEY|ShiftMask, XK_q,            quit,              {0} },
-	{ MODKEY,           XK_minus,        scratchpad_show,   {0} },
-	{ MODKEY|ShiftMask, XK_minus,        scratchpad_hide,   {0} },
+	{ MODKEY,           XK_v,            scratchpad_show,   {0} },
+	{ MODKEY,           XK_minus,        scratchpad_hide,   {0} },
 	{ MODKEY,           XK_equal,        scratchpad_remove, {0} },
     TAGKEYS( XK_1, 0)
     TAGKEYS( XK_2, 1)

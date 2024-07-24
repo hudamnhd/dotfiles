@@ -26,8 +26,8 @@ require("fzf-lua").setup({
   global_file_icons = false,
   { "default-title" }, -- base profile
   winopts = {
-    height = 0.4,
-    width = 0.5,
+    height = 0.45,
+    width = 0.55,
     preview = {
       hidden = "hidden", -- hide the previewer by default
     },
@@ -42,7 +42,7 @@ require("fzf-lua").setup({
       ["hl+"] = { "fg", "WarningMsg" },
       ["gutter"] = { "bg", "Normal" },
       ["info"] = { "fg", "WarningMsg" },
-      ["border"] = { "fg", "Comment" },
+      ["border"] = { "fg", "NonText" },
       ["prompt"] = { "fg", "WarningMsg" },
       ["pointer"] = { "fg", "Exception" },
       ["marker"] = { "fg", "WarningMsg" },
@@ -52,8 +52,8 @@ require("fzf-lua").setup({
   end,
   hls = function()
     return {
-      border = hl_match({ "Comment" }),
-      preview_border = hl_match({ "Comment" }),
+      border = hl_match({ "NonText" }),
+      preview_border = hl_match({ "NonText" }),
     }
   end,
   keymap = {
@@ -78,6 +78,49 @@ require("fzf-lua").setup({
     rg_opts = [[--color=never --files --hidden --follow -g '!.git'"]],
     fzf_opts = {
       ["--ansi"] = false,
+    },
+    actions = {
+      ["ctrl-y"] = function(selected)
+        vim.api.nvim_feedkeys("i", "n", true)
+        vim.api.nvim_put({ selected[1] }, "c", true, true)
+        local switch = vim.api.nvim_replace_termcodes("<Right>", true, false, true)
+        vim.api.nvim_feedkeys(switch, "n", false)
+      end,
+      ["alt-f"] = function(selected)
+        local cwd = vim.fn.expand(vim.uv.cwd())
+        local cmd = string.format(":F %s", cwd)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+      end,
+      ["alt-d"] = function(selected)
+        local path = vim.fn.fnamemodify(selected[1], ":p:h")
+        local cmd = string.format(":!mkdir %s", path)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+      end,
+      ["alt-c"] = function(selected)
+        local path = vim.fn.fnamemodify(selected[1], "%:p:h")
+        local cmd = string.format(":!touch %s", path)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+      end,
+      ["alt-y"] = function(selected)
+        local path = vim.fn.fnamemodify(selected[1], ":p")
+        local cmd = string.format(":!cp -r %s %s", path, path)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+      end,
+      ["alt-m"] = function(selected)
+        local path = vim.fn.fnamemodify(selected[1], ":p")
+        local cmd = string.format(":!mv %s %s", path, path)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+      end,
+      ["alt-x"] = function(selected)
+        local path = vim.fn.fnamemodify(selected[1], ":p")
+        local cmd = string.format(":!rm -r %s", path)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+      end,
+      ["ctrl-x"] = function(selected)
+        local path = vim.fn.fnamemodify(selected[1], ":p")
+        local cmd = string.format(":!trash %s", path)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+      end,
     },
   },
   git = {

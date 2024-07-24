@@ -1,6 +1,13 @@
 # xrandr --output HDMI-A-0  --brightness 0.4 &
 urxvtd -q -f -o
-xrandr --output DisplayPort-0 --auto --right-of HDMI-A-0 ; xrandr --output HDMI-A-0  --brightness 0.4  --output DisplayPort-0 --brightness 0.5 &
+
+xrandr --output DisplayPort-0 --auto --right-of HDMI-A-0 ; xrandr --output HDMI-A-0  --brightness 0.35  --output DisplayPort-0 --brightness 0.5 &
+# Disable / Enable Output
+# https://askubuntu.com/questions/1178686/disabling-external-monitor-with-xrandr-also-disables-laptop-screen
+# xrandr | grep " connected"
+# xrandr --output DP1 --off
+# xrandr --output eDP1 --auto --primary
+
 xset r rate 210 40
 # xset r rate 250 60 &
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &

@@ -15,7 +15,7 @@ function M.config()
       mapping.leader_group_clues,
       miniclue.gen_clues.builtin_completion(),
       miniclue.gen_clues.marks(),
-      miniclue.gen_clues.g(),
+      -- miniclue.gen_clues.g(),
       miniclue.gen_clues.registers(),
       miniclue.gen_clues.windows({ submode_resize = true }),
     },
@@ -24,8 +24,8 @@ function M.config()
       { mode = 'n', keys = ']' },
       { mode = 'x', keys = '[' },
       { mode = 'x', keys = ']' },
-      { mode = 'n', keys = 'g' },
-      { mode = 'x', keys = 'g' },
+      -- { mode = 'n', keys = 'g' },
+      -- { mode = 'x', keys = 'g' },
       { mode = 'n', keys = 's' },        -- `s` key
       { mode = 'n', keys = "'" },        -- Marks
       { mode = 'n', keys = '`' },
@@ -52,19 +52,20 @@ function M.config()
     },
   })
 
-  require("mini.completion").setup({})
+  -- require("mini.completion").setup({})
 
-  vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
-  vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
+  -- vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
+  -- vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
   require("mini.diff").setup({
     view = {
-      style = "sign",
+      -- style = "sign",
       signs = { add = "+", change = "~", delete = "-" },
     },
   })
 
   require("mini.pairs").setup({
+    modes = { insert = true, command = true, terminal = true },
     mappings = {
       ["<"] = { action = "open", pair = "<>", neigh_pattern = "[^\\]." },
       [">"] = { action = "close", pair = "<>", neigh_pattern = "[^\\]." },
@@ -72,13 +73,6 @@ function M.config()
   })
 
   require("mini.operators").setup({})
-
-  require("mini.align").setup({
-    mappings = {
-      start = "=",
-      start_with_preview = "+",
-    },
-  })
 
   require("mini.bracketed").setup({
     buffer = { suffix = "", options = {} },
@@ -107,17 +101,30 @@ function M.config()
   vim.api.nvim_set_hl(0, "MiniTablineCurrent", { fg = "#343D46", bg = "#eeeeee", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineVisible", { fg = "#eeeeee", bg = "#343D46", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineHidden", { fg = "#eeeeee", bg = "#343D46", bold = false })
-  vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { fg = "#F9AE58", bg = "#000000", bold = true })
-  vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { fg = "#000000", bg = "#F9AE58", bold = true })
-  vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { fg = "#000000", bg = "#F9AE58", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = "#f38ba8", fg = "#131313", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { fg = "#f38ba8", bg = "#131313", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = "#f38ba8", fg = "#131313", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineTabpagesection", { fg = "#eeeeee", bg = "#343D46", bold = true })
+
   -- stylua: ignore end
 
   require("mini.notify").setup({})
   vim.notify = require("mini.notify").make_notify()
 
   require("mini.trailspace").setup({})
-  require("mini.move").setup({})
+  require("mini.move").setup({
+    mappings = {
+      left = "<",
+      right = ">",
+      line_left = "<",
+      line_right = ">",
+    },
+
+    options = {
+      reindent_linewise = false,
+    },
+  })
+
   require("mini.extra").setup({})
 
   require("mini.surround").setup({
@@ -127,15 +134,15 @@ function M.config()
         input = { "%[%[().-()%]%]" },
         output = { left = "[[", right = "]]" },
       },
-      j = {
+      J = {
         input = { "%{%/%*().-()%*%/%}" },
         output = { left = "{/*", right = "*/}" },
       },
-      b = {
+      B = {
         input = { "%{%{%-%-().-()%-%-%}%}" },
         output = { left = "{{--", right = "--}}" },
       },
-      h = {
+      H = {
         input = { "%<%!%-%-().-()%-%-%>" },
         output = { left = "<!--", right = "-->" },
       },
@@ -163,26 +170,6 @@ function M.config()
 
   -- Make special mapping for "add surrounding for line"
   vim.keymap.set("n", "yss", "ys_", { remap = true })
-
-  local hipatterns = require("mini.hipatterns")
-  hipatterns.setup({
-    highlighters = {
-      -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
-      fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-      hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
-      todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
-      note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
-
-      hex_color = hipatterns.gen_highlighter.hex_color(),
-    },
-  })
-
-  vim.cmd([[
-          highlight MiniHipatternsFixme guibg=#ff5555 guifg=#ffffff
-          highlight MiniHipatternsHack guibg=#ffb86c guifg=#000000
-          highlight MiniHipatternsTodo guibg=#f1fa8c guifg=#000000
-          highlight MiniHipatternsNote guibg=#8be9fd guifg=#000000
-        ]])
 end
 
 return M

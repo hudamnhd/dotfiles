@@ -23,25 +23,27 @@ local function toggleFloaterm(args)
   end
 end
 
-local size = "--width=0.95 --height=0.95"
+local size = { l = "--width=0.95 --height=0.95", m = "--width=0.5 --height=0.5" }
 
 return {
   -- Alternate https://github.com/tracyone/term.vim
   "voldikss/vim-floaterm",
   config = function()
     vim.keymap.set("t", "<MouseMove>", "<NOP>")
-
   end,
-
 
   keys = {
     -- stylua: ignore start
-        { "<f1>",  function() toggleFloaterm("--name=bash " .. size .." bash") end,   mode = { "n",   "t" }, desc = "Bash" },
-        { "<c-n>", function() toggleFloaterm("--name=yazi " .. size .." yazi") end,   mode = { "n" }, desc = "Yazi" },
-        { "<c-p>", function() toggleFloaterm("--name=broot " .. size .." broot") end, mode = { "n" }, desc = "Broot" },
-        { "<a-g>", function() toggleFloaterm("--name=gitui " .. size .." gitui") end, mode = { "n",   "t" }, desc = "Gitui" },
-        { "<a-t>", function() vim.cmd("FloatermNew") end, mode = { "n",   "t" }, desc = "FloatermNew" },
+        { "<F1>",  function() toggleFloaterm("--name=bash " .. size.l .." bash") end,   mode = { "n",   "t" }, desc = "Bash" },
+        { "<F2>",  function() toggleFloaterm("--cwd=<buffer> --name=buffer " .. size.m.." bash") end,   mode = { "n" }, desc = "Buffer" },
+        { "<F2>",  function() vim.cmd("FloatermKill buffer") end,   mode = { "t" }, desc = "Buffer" },
+        { "_", function() toggleFloaterm("--name=yazi " .. size.l .." yazi") end,   mode = { "n" }, desc = "Yazi" },
+        { "<a-g>", function() toggleFloaterm("--name=gitui " .. size.l .." gitui") end, mode = { "n", "n" }, desc = "Gitui" },
+        { "<space>f", function() toggleFloaterm("--name=broot " .. size.l .." broot") end, mode = { "n" }, desc = "Broot" },
         { "<c-z>", function() vim.cmd("FloatermToggle") end, mode = { "t" }, desc = "FloatermToggle" },
+        { "<a-/>", function() vim.cmd("FloatermNew") end, mode = { "n",   "t" }, desc = "FloatermNew" },
+        { "<a-.>", function() vim.cmd("FloatermNext") end, mode = { "n",   "t" }, desc = "FloatermNext" },
+        { "<a-,>", function() vim.cmd("FloatermPrev") end, mode = { "n",   "t" }, desc = "FloatermPrev" },
     -- stylua: ignore end
   },
 }

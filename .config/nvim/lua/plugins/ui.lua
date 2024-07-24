@@ -8,6 +8,7 @@ return {
   --     vim.g.catppuccin_flavour = "mocha"
   --     require("catppuccin").setup({
   --       compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
+  --       no_bold = true,
   --       no_italic = true,
   --       color_overrides = {
   --         mocha = {
@@ -73,15 +74,15 @@ return {
         warning_symbol = "",
         information_symbol = "",
         ellipsis_symbol = "…",
-        tabline = false,
-        winbar = false,
+        tabline = true,
+        winbar = true,
         with_file_icon = true,
         with_git_branch = true,
         with_git_status = true,
         with_diagnostic_status = true,
         with_session_status = true,
         with_attached_clients = true,
-        with_macro_status = false,
+        with_macro_status = true,
         with_search_count = true,
         with_spell_status = false,
         with_indent_status = true,

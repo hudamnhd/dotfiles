@@ -54,7 +54,7 @@ return {
     \ ['left', 'right' ],
     \ ['up', 'down' ],
     \ ['enter', 'exit' ],
-    \ ['start', 'stop' ],
+    \ ['start', 'stop', 'end' ],
     \ ['show', 'hide' ],
     \ ['add', 'remove' ],
     \ ['open', 'close' ],

@@ -21,14 +21,12 @@ end
 vim.g.mapleader      = " "
 vim.g.maplocalleader = " "
 
-M.bind("n", "S", "ysiw", { remap = true })
-M.bind("n", "M", "Vgm",  { remap = true })
-
 M.bind("n", "<tab>",   [[g;]])
 M.bind("n", "<s-tab>", [[g,]])
 
 M.bind('n', '<C-c>',   [[<cmd>close<CR>]])
 M.bind("t", "<C-\\>",  [[<C-\><C-n>]])
+M.bind("t", "<a-r>",   [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
 M.bind("n", "<a-tab>", [[<c-w>w]])
 
 M.bind({ "n", "v" }, "<C-H>", [[^]])
@@ -38,7 +36,7 @@ M.bind({ "n", "v" }, "<C-Z>", [[%]], { remap = true })
 M.bind({ "n", "v" }, "c", [["_c]])
 M.bind({ "n", "v" }, "x", [["_x]])
 
-M.bind({ "n", "v" }, "<leader>d", [["_d]], { desc = "without copying to clipboard" })
+M.bind("n", "<leader>d", [[d]], { desc = "copying to clipboard" })
 
 M.bind("n", "!", [[:<up><cr>]])
 M.bind("n", "Y", [[yy]])
@@ -46,6 +44,7 @@ M.bind("n", "Y", [[yy]])
 -- NOTE without copying to clipboard
 M.bind("n", "D", [["_D]])
 M.bind("n", "C", [["_C]])
+M.bind("n", "d", [["_d]])
 
 M.bind("n", "rT", [[vat"_dP]])
 M.bind("n", "rt", [[vit"_dP]])
@@ -98,8 +97,8 @@ M.bind("n", "<C-F>", [[<CMD>SearchReplaceSingleBufferCWord<CR>]],            { d
 M.bind("x", "<C-B>", [[<CMD>SearchReplaceWithinVisualSelectionCWord<CR>]],   { desc = "replace cword" })
 M.bind("n", "<C-B>", [[:'<,'>s/<C-r><C-w>/<C-r><C-w>/gI<left><left><left>]], { desc = "replace cword", silent = false })
 
-M.bind("n", "<leader>r", ":%s///g<left><left>", { silent = false, desc = "Replace Search" })
-M.bind("x", "<leader>r", ":s///g<left><left>",  { silent = false, desc = "Replace Search" })
+M.bind("n", "<leader>r", [[<CMD>SearchReplaceSingleBufferOpen<CR>]],{ desc = "Search Replace Search" })
+M.bind("x", "<leader>r", [[<CMD>SearchReplaceWithinVisualSelection<CR>]],{ desc = "Search Replace Search" })
 
 M.bind("n", "zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]], { desc = "newline above (no insert-mode)" })
 M.bind("n", "zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { desc = "newline below (no insert-mode)" })
@@ -109,8 +108,8 @@ M.bind("n", "zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]]
 local duplicate_bak    = [[<cmd>call luaeval('require"utils.helper".duplicate_bak_file()')<cr>]]
 local toggle_diff_buff = [[<cmd>call luaeval('require"utils.helper".toggle_diff_buff()')<cr>]]
 local grep_curbuf      = [[<cmd>call luaeval('require"plugins.fzf-lua.cmds".grep_curbuf()')<cr>]]
-local translate_nm     = [[<cmd>call luaeval('require"utils.helper".translate_nm()')<cr>]]
-local translate_vm     = [[<cmd>call luaeval('require"utils.helper".translate_vm()')<cr>]]
+local translate_nm     = [[<cmd>call luaeval('require"utils.translate".translate_nm()')<cr>]]
+local translate_vm     = [[<cmd>call luaeval('require"utils.translate".translate_vm()')<cr>]]
 local set_cwd          = [[<cmd>lua require"utils.helper".set_cwd()<cr>]]
 local asynctasks       = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
 local git_diff_buff    = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
@@ -154,7 +153,6 @@ M.bind({ "n", "v" }, "<leader>P", [["+P]], { desc = "paste BEFORE from clipboard
 M.bind({ "n", "v" }, "<leader>v", [["*p]], { desc = "paste AFTER from primary" })
 M.bind({ "n", "v" }, "<leader>V", [["*P]], { desc = "paste BEFORE from primary" })
 
-M.bind("n", "<Leader>tc", "<Cmd>lua MiniHipatterns.toggle()<CR>", { desc = "Hipatterns toggle" })
 M.bind("n", "<Leader>th", "<Cmd>TSBufToggle highlight<CR>",       { desc = "Highlight toggle" })
 M.bind("n", "<Leader>t1", "<Cmd>AsyncTask regex-tutor<CR>",       { desc = "regex-tutor" })
 M.bind("n", "<Leader>t2", "<Cmd>AsyncTask vim-tutor<CR>",         { desc = "vim-tutor" })
@@ -165,7 +163,6 @@ M.bind("n", '<Leader>tn', [[:set number relativenumber<CR>]], { desc ="active nu
 
 M.bind("n", "<Leader>n",  "<Cmd>nohlsearch|diffupdate|echo<CR>",  { desc = "nohlsearch" })
 M.bind("n", "<Leader>m",  "<Cmd>messages<CR>",                    { desc = "Messages" })
-M.bind("n", "<Leader>ep", ":echo expand('%:p')<CR>",              { desc = "Show path" })
 
 local function delete_line()
   local empty_line = vim.api.nvim_get_current_line():match("^%s*$")
@@ -219,14 +216,6 @@ end
 M.bind("n", "z,", modify_line_end_delimiter(","), { desc = "add ',' to end of line" })
 M.bind("n", "z;", modify_line_end_delimiter(";"), { desc = "add ';' to end of line" })
 M.bind("n", "z.", modify_line_end_delimiter("."), { desc = "add '.' to end of line" })
-
-local function toggle_smart_case()
-  vim.o.ignorecase = not vim.o.ignorecase
-  vim.o.smartcase = not vim.o.smartcase
-  return " <BS>" -- NOTE update search
-end
-
-M.bind("c", "<c-s>", toggle_smart_case, { expr = true, desc = "Toggle smartcase" })
 
 -- NOTE Use ':Grep' or ':LGrep' to grep into quickfix|loclist
 -- NOTE without output or jumping to first match
@@ -317,6 +306,7 @@ local function mc_macro(selection)
     end
 end
 
+M.bind({ 'n', 'v' }, 'Q', '@q') -- execute macro
 
 M.bind("x", "<a-s>", [[y<cmd>let @/=substitute(escape(@", '/'), '\n', '\\n', 'g')<cr>"_cgn]], { noremap = true, desc = "Add selection to search then replace"})
 M.bind("n", "<a-s>", [[<cmd>let @/='\<'.expand('<cword>').'\>'<cr>"_cgn]], { noremap = true, desc = "Add word to search then replace"})
@@ -361,17 +351,65 @@ end
 -- stylua: ignore start
 M.bind("n", "<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
 
-M.bind({ "o", "x" }, "{", [[i{]], { remap = true })
-M.bind({ "o", "x" }, "[", [[i[]], { remap = true })
-M.bind({ "o", "x" }, "(", [[i(]], { remap = true })
 M.bind({ "o", "x" }, "q", [[iq]], { remap = true })
 M.bind({ "o", "x" }, "Q", [[aq]], { remap = true })
-M.bind({ "o", "x" }, "b", [[ib]], { remap = true })
-M.bind({ "o", "x" }, "B", [[iB]], { remap = true })
 M.bind({ "o", "x" }, "w", [[iw]], { remap = true })
 M.bind({ "o", "x" }, "W", [[iW]], { remap = true })
 M.bind({ "o", "x" }, "t", [[it]], { remap = true })
 M.bind({ "o", "x" }, "T", [[at]], { remap = true })
--- stylua: ignore end
 
+-- Quickfix|loclist toggles
+M.bind("n", "<a-w>", "<cmd>lua require'utils.helper'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
+M.bind("n", "<a-e>", "<cmd>lua require'utils.helper'.toggle_qf('l')<CR>", { desc = "toggle location list" })
+
+M.bind("n", "X", "gxiw", { remap = true })
+M.bind("n", "S", "Vgm",  { remap = true })
+M.bind("n", "s", "ysiw", { remap = true }) -- easy press
+
+local function insert_path(path)
+  vim.api.nvim_feedkeys("i", "n", true)
+  vim.api.nvim_put({ path }, "c", true, true)
+  local switch = vim.api.nvim_replace_termcodes("<Right>", true, false, true)
+  vim.api.nvim_feedkeys(switch, "n", false)
+end
+
+local function get_short_path()
+  local path = vim.fn.expand('%:.')
+  insert_path(path)
+end
+
+local function get_full_path()
+  local path = vim.fn.expand('%:p')
+  insert_path(path)
+end
+
+local function get_file_name()
+  local path = vim.fn.expand('%:p:t:r')
+  insert_path(path)
+end
+
+M.bind("n", "<leader>yr", get_short_path, { silent = false, desc = "get_short_path" })
+M.bind("n", "<leader>yf", get_full_path,  { silent = false, desc = "get_full_path"  })
+M.bind("n", "<leader>yn", get_file_name,  { silent = false, desc = "get_file_name"   })
+
+local touch     = ":!touch " .. vim.fn.expand('%:p:h') .. "/"
+local mkdir     = ":!mkdir -p " .. vim.fn.expand('%:p:h') .. "/"
+local copy = ":!cp -p " .. vim.fn.expand('%:p') .. " " .. vim.fn.expand('%:p:h') .. "/".. vim.fn.expand('%:p:t:r')
+
+M.bind("n", "<leader>cf", touch, { silent = false, desc = "touch" })
+M.bind("n", "<leader>cd", mkdir, { silent = false, desc = "mkdir" })
+M.bind("n", "<leader>cc", copy,  { silent = false, desc = "copy" })
+
+local function toggle_smart_case()
+  vim.o.ignorecase = not vim.o.ignorecase
+  vim.o.smartcase = not vim.o.smartcase
+
+  local status_message = "Ignorecase: " .. (vim.o.ignorecase and "on" or "off") .. ", Smartcase: " .. (vim.o.smartcase and "on" or "off")
+  vim.notify(status_message)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<space>", true, false, true), "c", false)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<bs>", true, false, true), "c", false)
+end
+
+M.bind("c", "<c-s>", toggle_smart_case, {  desc = "Toggle smartcase" })
+-- stylua: ignore end
 return M
