@@ -1,4 +1,5 @@
 local fzf = require("fzf-lua")
+local path = require("fzf-lua.path")
 
 local function hl_match(t)
   for _, h in ipairs(t) do
@@ -23,11 +24,13 @@ require("fzf-lua").setup({
   -- file_icon_padding = " ",
   -- dir_icon = "󰉋 ",
   global_git_icons = false,
-  global_file_icons = false,
+  -- global_file_icons = false,
   { "default-title" }, -- base profile
   winopts = {
+    --   split = "belowright new",
     height = 0.45,
     width = 0.55,
+    backdrop = false,
     preview = {
       hidden = "hidden", -- hide the previewer by default
     },
@@ -71,18 +74,24 @@ require("fzf-lua").setup({
       ["ctrl-u"] = "preview-page-up",
     },
   },
+
   -- Configuration for specific commands.
   files = {
     find_opts = [[-type f -type d -type l -not -path '*/\.git/*' -printf '%P\n']],
-    fd_opts = [[--color=never --type f --type d --follow --exclude .git]],
+    fd_opts = [[--color=never --type f --type d]],
     rg_opts = [[--color=never --files --hidden --follow -g '!.git'"]],
     fzf_opts = {
-      ["--ansi"] = false,
+      ["--ansi"] = true,
     },
     actions = {
-      ["ctrl-y"] = function(selected)
+      ["ctrl-y"] = function(selected, opts)
+        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+        if entry.path == "<none>" then
+          return
+        end
+        local path = entry.path
         vim.api.nvim_feedkeys("i", "n", true)
-        vim.api.nvim_put({ selected[1] }, "c", true, true)
+        vim.api.nvim_put({ path }, "c", true, true)
         local switch = vim.api.nvim_replace_termcodes("<Right>", true, false, true)
         vim.api.nvim_feedkeys(switch, "n", false)
       end,
@@ -91,33 +100,63 @@ require("fzf-lua").setup({
         local cmd = string.format(":F %s", cwd)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,
-      ["alt-d"] = function(selected)
-        local path = vim.fn.fnamemodify(selected[1], ":p:h")
-        local cmd = string.format(":!mkdir %s", path)
+      ["alt-d"] = function(selected, opts)
+        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+        if entry.path == "<none>" then
+          return
+        end
+        local _path = entry.path
+        local path = vim.fn.fnamemodify(_path, ":p:h")
+        local cmd = string.format(":!mkdir %s", path .. "/")
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,
-      ["alt-c"] = function(selected)
-        local path = vim.fn.fnamemodify(selected[1], "%:p:h")
-        local cmd = string.format(":!touch %s", path)
+      ["alt-c"] = function(selected, opts)
+        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+        if entry.path == "<none>" then
+          return
+        end
+        local _path = entry.path
+        local path = vim.fn.fnamemodify(_path, ":p:h")
+        local cmd = string.format(":!touch %s", path .. "/")
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,
-      ["alt-y"] = function(selected)
-        local path = vim.fn.fnamemodify(selected[1], ":p")
+      ["alt-y"] = function(selected, opts)
+        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+        if entry.path == "<none>" then
+          return
+        end
+        local _path = entry.path
+        local path = vim.fn.fnamemodify(_path, ":p")
         local cmd = string.format(":!cp -r %s %s", path, path)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,
-      ["alt-m"] = function(selected)
-        local path = vim.fn.fnamemodify(selected[1], ":p")
+      ["alt-m"] = function(selected, opts)
+        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+        if entry.path == "<none>" then
+          return
+        end
+        local _path = entry.path
+        local path = vim.fn.fnamemodify(_path, ":p")
         local cmd = string.format(":!mv %s %s", path, path)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,
-      ["alt-x"] = function(selected)
-        local path = vim.fn.fnamemodify(selected[1], ":p")
+      ["alt-X"] = function(selected, opts)
+        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+        if entry.path == "<none>" then
+          return
+        end
+        local _path = entry.path
+        local path = vim.fn.fnamemodify(_path, ":p")
         local cmd = string.format(":!rm -r %s", path)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,
-      ["ctrl-x"] = function(selected)
-        local path = vim.fn.fnamemodify(selected[1], ":p")
+      ["alt-x"] = function(selected, opts)
+        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+        if entry.path == "<none>" then
+          return
+        end
+        local _path = entry.path
+        local path = vim.fn.fnamemodify(_path, ":p")
         local cmd = string.format(":!trash %s", path)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,

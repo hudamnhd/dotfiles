@@ -1,10 +1,16 @@
 local M = {
   "echasnovski/mini.nvim",
-  version = "*",
-  event = { "VeryLazy" },
+  version = false,
+  -- lazy = false,
+  -- event = "VeryLazy",
+  event = "VimEnter",
 }
 
 function M.config()
+  require("mini.icons").setup()
+  vim.g.nvim_web_devicons = 1
+  MiniIcons.mock_nvim_web_devicons()
+
   local mapping = require("keymaps")
   local miniclue = require("mini.clue")
   local anchor = "SW" -- bottom-left
@@ -15,7 +21,7 @@ function M.config()
       mapping.leader_group_clues,
       miniclue.gen_clues.builtin_completion(),
       miniclue.gen_clues.marks(),
-      -- miniclue.gen_clues.g(),
+      miniclue.gen_clues.g(),
       miniclue.gen_clues.registers(),
       miniclue.gen_clues.windows({ submode_resize = true }),
     },
@@ -24,8 +30,8 @@ function M.config()
       { mode = 'n', keys = ']' },
       { mode = 'x', keys = '[' },
       { mode = 'x', keys = ']' },
-      -- { mode = 'n', keys = 'g' },
-      -- { mode = 'x', keys = 'g' },
+      { mode = 'n', keys = 'g' },
+      { mode = 'x', keys = 'g' },
       { mode = 'n', keys = 's' },        -- `s` key
       { mode = 'n', keys = "'" },        -- Marks
       { mode = 'n', keys = '`' },
@@ -52,10 +58,11 @@ function M.config()
     },
   })
 
-  -- require("mini.completion").setup({})
 
-  -- vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
-  -- vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
+  require("mini.completion").setup({})
+
+  vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
+  vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
   require("mini.diff").setup({
     view = {
@@ -65,7 +72,7 @@ function M.config()
   })
 
   require("mini.pairs").setup({
-    modes = { insert = true, command = true, terminal = true },
+    modes = { insert = true, command = false, terminal = false },
     mappings = {
       ["<"] = { action = "open", pair = "<>", neigh_pattern = "[^\\]." },
       [">"] = { action = "close", pair = "<>", neigh_pattern = "[^\\]." },
@@ -78,52 +85,62 @@ function M.config()
     buffer = { suffix = "", options = {} },
   })
 
-  local function get_buffer_index(buf_id)
-    local buffers = vim.fn.getbufinfo({ buflisted = 1 })
-    for i, buffer in ipairs(buffers) do
-      if buffer.bufnr == buf_id then
-        return i
-      end
-    end
-    return -1
-  end
+  -- local function get_buffer_index(buf_id)
+  --   local buffers = vim.fn.getbufinfo({ buflisted = 1 })
+  --   for i, buffer in ipairs(buffers) do
+  --     if buffer.bufnr == buf_id then
+  --       return i
+  --     end
+  --   end
+  --   return -1
+  -- end
 
   -- Example usage in your format function
-  require("mini.tabline").setup({
-    format = function(buf_id, label)
-      local suffix = vim.bo[buf_id].modified and "+ " or ""
-      local buffer_index = get_buffer_index(buf_id)
-      return " " .. buffer_index .. "." .. MiniTabline.default_format(buf_id, label) .. suffix
-    end,
-  })
+  -- require("mini.tabline").setup({
+  --   format = function(buf_id, label)
+  --     local suffix = vim.bo[buf_id].modified and "+ " or ""
+  --     local buffer_index = get_buffer_index(buf_id)
+  --     return " " .. buffer_index .. "." .. MiniTabline.default_format(buf_id, label) .. suffix
+  --   end,
+  -- })
 
       -- stylua: ignore start
   vim.api.nvim_set_hl(0, "MiniTablineCurrent", { fg = "#343D46", bg = "#eeeeee", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineVisible", { fg = "#eeeeee", bg = "#343D46", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineHidden", { fg = "#eeeeee", bg = "#343D46", bold = false })
-  vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = "#f38ba8", fg = "#131313", bold = true })
+  vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = "#eeeeee", fg = "#e8274b", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { fg = "#f38ba8", bg = "#131313", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = "#f38ba8", fg = "#131313", bold = true })
   vim.api.nvim_set_hl(0, "MiniTablineTabpagesection", { fg = "#eeeeee", bg = "#343D46", bold = true })
 
   -- stylua: ignore end
 
-  require("mini.notify").setup({})
+  require("mini.notify").setup({
+    content = {
+      -- Use notification message as is
+      format = function(notif)
+        return notif.msg
+      end,
+
+      -- Show more recent notifications first
+      sort = function(notif_arr)
+        table.sort(notif_arr, function(a, b)
+          return a.ts_update > b.ts_update
+        end)
+        return notif_arr
+      end,
+    },
+  })
   vim.notify = require("mini.notify").make_notify()
 
   require("mini.trailspace").setup({})
-  require("mini.move").setup({
-    mappings = {
-      left = "<",
-      right = ">",
-      line_left = "<",
-      line_right = ">",
-    },
 
-    options = {
-      reindent_linewise = false,
+  require("mini.splitjoin").setup({
+    mappings = {
+      toggle = "gj",
     },
   })
+  require("mini.move").setup({})
 
   require("mini.extra").setup({})
 

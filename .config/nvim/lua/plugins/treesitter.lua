@@ -1,7 +1,7 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  build = ":TSUpdate",
-  event = { "BufReadPost" },
+  -- build = ":TSUpdate",
+  -- event = { "BufReadPost" },
   config = function(plugin)
     local langs = { "javascript", "typescript", "tsx" }
     require("nvim-treesitter.configs").setup({
@@ -16,7 +16,7 @@ return {
       auto_install = true,
 
       -- List of parsers to ignore installing (or "all")
-      ignore_install = {},
+      ignore_install = { "comment" },
 
       highlight = {
         enable = true,

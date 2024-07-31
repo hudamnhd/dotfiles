@@ -186,7 +186,7 @@ local function show_bookmark_file()
     require("fzf-lua").fzf_exec(files, {
       actions = {
         ["default"] = require("fzf-lua").actions.file_edit,
-        ["ctrl-x"] = function(selected)
+        ["alt-x"] = function(selected)
           if selected[1] then
             delete_bookmark_file(selected[1])
           end
@@ -214,17 +214,23 @@ local function show_bookmark_file()
   show_fzf(files_cwd)
 end
 
--- stylua: ignore start
-vim.keymap.set("n", "sB", function() vim.cmd.edit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "󰈔 show file bookmark" })
-vim.keymap.set("n", "<leader>a",  save_bookmark_file,             { desc = "save file bookmark" })
-vim.keymap.set("n", "<leader>h",  show_bookmark_file,               { desc = "show file bookmark" })
-vim.keymap.set("n", "z=",         M.spell_suggest,                  { desc = "spell_suggest" })
-vim.keymap.set("i", "<C-X><C-F>", M.complete_path,                  { desc = "Fuzzy complete path" })
-vim.keymap.set("n", "sr",         require("fzf-lua").registers,     { desc = "registers" })
-vim.keymap.set("i", "<C-L>",      require("fzf-lua").complete_line, { desc = "Fuzzy complete line" })
+local F = require("fzf-lua")
 
-vim.keymap.set("n", "zf", function() require("fzf-lua").files({ desc = "grep <word> (buffer)", prompt = "Files❯ ", query = vim.fn.expand("<cword>") }) end)
-vim.keymap.set("v", "zf", function() require("fzf-lua").files({  desc = "grep files", prompt = "Files❯ ", query = require("utils.helper").get_visual_selection(true) }) end)
+-- stylua: ignore start
+vim.keymap.set("n", "sL", function() vim.cmd.edit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "󰈔 show file bookmark" })
+vim.keymap.set("n", "sM", function() delete_bookmark_file(vim.fn.expand("%")) end, { desc = "󰈔 show file bookmark" })
+
+vim.keymap.set("n", "<leader>h", show_bookmark_file, { desc = "show file bookmark" })
+vim.keymap.set("n", "<leader>a", save_bookmark_file, { desc = "save file bookmark" })
+
+vim.keymap.set("n", "z=", M.spell_suggest, { desc = "spell_suggest" })
+
+vim.keymap.set("i", "<C-K>", M.complete_path,                  { desc = "Fuzzy complete path" }) -- remap <C-X><C-F>
+vim.keymap.set("i", "<C-L>", F.complete_line, { desc = "Fuzzy complete line" }) -- remap <C-X><C-L>
+
+vim.keymap.set("n", "zf", function() F.files({ desc = "grep <word> (buffer)", prompt = "Files❯ ", query = vim.fn.expand("<cword>") }) end)
+vim.keymap.set("v", "zf", function() F.files({  desc = "grep files", prompt = "Files❯ ", query = require("utils.helper").get_visual_selection(true) }) end)
+
 -- stylua: ignore end
 
 _G.fzf_dirs = function(opts)
@@ -269,7 +275,7 @@ local function show_bookmark_dir()
       ["default"] = function(selected)
         vim.cmd("cd " .. selected[1])
       end,
-      ["ctrl-x"] = function(selected)
+      ["alt-x"] = function(selected)
         if selected[1] then
           delete_bookmark_dir(selected[1])
         end
@@ -312,7 +318,6 @@ for i = 1, 9 do
 end
 -- stylua: ignore end
 
--- Fungsi untuk melompat ke file sebelumnya
 function PreviousFile()
   if current_file_index > 1 then
     current_file_index = current_file_index - 1
@@ -320,7 +325,6 @@ function PreviousFile()
   vim.cmd("e " .. files[current_file_index])
 end
 
--- Fungsi untuk melompat ke file berikutnya
 function NextFile()
   if current_file_index < #files then
     current_file_index = current_file_index + 1

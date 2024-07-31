@@ -1,1 +1,1 @@
-vim.opt.winblend = 15
+-- vim.opt.winblend = 15

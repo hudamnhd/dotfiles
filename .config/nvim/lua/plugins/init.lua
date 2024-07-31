@@ -1,3 +1,6 @@
+vim.g.Eunuch_find_executable = "fd ."
+vim.g.chadtree_settings = {}
+
 return {
   {
     "nvimdev/indentmini.nvim",
@@ -28,6 +31,39 @@ return {
       })
     end,
   },
+  {
+    "justinmk/vim-sneak",
+    event = { "BufReadPost" },
+    config = function()
+      vim.cmd([[
+        map f <Plug>Sneak_f
+        map F <Plug>Sneak_F
+        map t <Plug>Sneak_t
+        map T <Plug>Sneak_T
+      ]])
+    end,
+  },
+  {
+    "chrisgrieser/nvim-rip-substitute",
+    cmd = "RipSubstitute",
+    keys = {
+      {
+        "<leader>s",
+        function()
+          require("rip-substitute").sub()
+        end,
+        mode = { "n", "x" },
+        desc = " rip substitute",
+      },
+    },
+    config = function()
+      require("rip-substitute").setup({
+        prefill = {
+          startInReplaceLineIfPrefill = true,
+        },
+      })
+    end,
+  },
 -- stylua: ignore start
   { "cohama/agit.vim",            cmd = { "Agit", "AgitFile" } },
   { "kshenoy/vim-signature",      event = "VeryLazy" },
@@ -37,14 +73,13 @@ return {
   { "wellle/targets.vim",         event = "VeryLazy" },
   { "skywind3000/asynctasks.vim", event = "VeryLazy" },
   { "skywind3000/asyncrun.vim",   event = "VeryLazy" },
-  { "RRethy/vim-eunuch",           event = "VimEnter" },
-  { "tpope/vim-rsi",              event = "VimEnter" },
-  { "tpope/vim-git",              event = "VimEnter" },
-  { "tpope/vim-repeat",           event = "VimEnter" },
+  { "RRethy/vim-eunuch",          event = "VeryLazy" },
+  { "tpope/vim-rsi",              event = "VeryLazy" },
+  { "tpope/vim-git",              event = "VeryLazy" },
+  { "tpope/vim-repeat",           event = "VeryLazy" },
   { "mbbill/undotree",            event = "BufReadPost" },
   { 'romainl/vim-cool',           event = "BufReadPost" },
   { "haya14busa/vim-edgemotion",  event = "BufReadPost" },
-  { "nvim-tree/nvim-web-devicons" },
   -- { "nvim-lua/plenary.nvim" },
   -- stylua: ignore end
 }

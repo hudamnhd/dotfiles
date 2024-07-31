@@ -14,6 +14,6 @@ vim.wo.cursorline     = true
 vim.wo.spell          = false
 vim.bo.buflisted      = false
 
-vim.keymap.set('n', 'q',     '<cmd>bw<cr>',      { buffer = true })
+vim.keymap.set('n', 'q',     '<cmd>bd<cr>',      { buffer = true })
 -- vim.keymap.set("n", "[-",    "<Esc>:colder<CR>", { buffer = true })
 -- vim.keymap.set("n", "]+",    "<Esc>:cnewer<CR>", { buffer = true })

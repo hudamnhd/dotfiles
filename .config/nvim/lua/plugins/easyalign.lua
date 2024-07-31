@@ -7,15 +7,6 @@ return {
       -- :'<,'>Align =
       -- :Align x\s*=
       -- (escape \ , ., *, +, ?, |, (, ), [, ], {, }, \, /).
---[[
-var x      = 1
-var xx     = 2
-var xxx    = 3
-var xxxx   = 4
-var xxxxx  = 5
-var xxxxxx = 6
-]]
-
       vim.keymap.set("x", "<C-N>", ":Align<space>", { desc = "Align" })
     end,
   },

@@ -1,6 +1,7 @@
 local o = vim.opt
 local g = vim.g
 
+-- stylua: ignore start
 if g.neovide then
   g.neovide_text_gamma    = 0.9
   g.neovide_text_contrast = 0.3
@@ -51,8 +52,8 @@ o.cmdwinheight   = math.floor(vim.o.lines / 5)  -- 'q:' window height
 o.scrolloff      = 3                            -- min number of lines to keep between cursor and screen edge
 o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth      = 99                           -- max inserted text width for paste operations
-o.number         = true                        -- show absolute line no. at the cursor pos
-o.relativenumber = true                        -- otherwise, show relative numbers in the ruler
+o.number         = false                        -- show absolute line no. at the cursor pos
+o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
 o.cursorline     = false                        -- Show a line where the current cursor is
 o.signcolumn     = "yes"  -- Show sign column as first column
 
@@ -127,8 +128,8 @@ o.formatoptions    = o.formatoptions
 o.splitbelow       = true                   -- ':new' ':split' below current
 o.splitright       = true                   -- ':vnew' ':vsplit' right of current
 
-o.undodir          = os.getenv("HOME") .. "/.vim/undodir"
-o.undofile         = true                  -- no undo file
+-- o.undodir          = os.getenv("HOME") .. "/.vim/undodir"
+-- o.undofile         = false                  -- no undo file
 o.hidden           = true                   -- do not unload buffer when abandoned
 
 o.ignorecase       = false                  -- ignore case on search
@@ -177,6 +178,7 @@ g.loaded_python_provider = 0
 g.loaded_ruby_provider   = 0
 g.loaded_perl_provider   = 0
 g.loaded_node_provider   = 0
+-- stylua: ignore end
 
 g.markdown_fenced_languages = {
   "vim",
@@ -194,8 +196,12 @@ g.markdown_fenced_languages = {
   "json",
 }
 
--- Map leader to <space>
-vim.keymap.set({ "n", "v" }, " ", "<Nop>")
+-- NOTE disable default keybind
+local disable_key = { "s", "<c-z>", "<space>" }
+for _, key in ipairs(disable_key) do
+    vim.keymap.set("n", key, "<Nop>")
+end
 
-g.mapleader                 = " "
-g.maplocalleader            = " "
+-- Map leader to <space>
+vim.g.mapleader      = " "
+vim.g.maplocalleader = " "

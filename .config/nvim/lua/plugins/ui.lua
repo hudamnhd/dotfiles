@@ -57,12 +57,13 @@ return {
   --         end,
   --       },
   --     })
-  --     vim.cmd([[colorscheme catppuccin]])
+  --     -- pcall(vim.cmd, [[colorscheme catppuccin]])
+  --     -- pcall(vim.cmd, [[hi! link LineNr NvimCallingParenthesis]])
   --   end,
   -- },
   {
     "bluz71/nvim-linefly",
-    lazy = false,
+    lazy = true,
     event = "VimEnter",
     config = function()
       vim.g.linefly_options = {
@@ -74,8 +75,8 @@ return {
         warning_symbol = "",
         information_symbol = "",
         ellipsis_symbol = "…",
-        tabline = true,
-        winbar = true,
+        tabline = false,
+        winbar = false,
         with_file_icon = true,
         with_git_branch = true,
         with_git_status = true,
@@ -83,7 +84,7 @@ return {
         with_session_status = true,
         with_attached_clients = true,
         with_macro_status = true,
-        with_search_count = true,
+        with_search_count = false,
         with_spell_status = false,
         with_indent_status = true,
       }
