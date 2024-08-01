@@ -8,9 +8,10 @@ local function safeRequire(module)
   end
 end
 
+vim.g.dwm_map_keys = 0
+
 -- disable treesitter
 vim.treesitter.stop()
-
 
 -- Load configuration files
 safeRequire("mru")
@@ -26,5 +27,3 @@ vim.loader.enable()
 -- Load default colorscheme
 pcall(vim.cmd, [[colorscheme default]])
 pcall(vim.cmd, [[hi! link LineNr Comment]])
-
-

@@ -58,16 +58,17 @@ function M.config()
     },
   })
 
-
   require("mini.completion").setup({})
 
   vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
   vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
   require("mini.diff").setup({
+
     view = {
-      -- style = "sign",
-      signs = { add = "+", change = "~", delete = "-" },
+      style = "sign",
+      signs = { add = " ", change = " ", delete = "" },
+      -- signs = { add = "+", change = "~", delete = "-" },
     },
   })
 
@@ -116,19 +117,21 @@ function M.config()
   -- stylua: ignore end
 
   require("mini.notify").setup({
-    content = {
-      -- Use notification message as is
-      format = function(notif)
-        return notif.msg
-      end,
+    lsp_progress = {
+      -- oh god please stop annoying me
+      enable = false,
+    },
 
-      -- Show more recent notifications first
-      sort = function(notif_arr)
-        table.sort(notif_arr, function(a, b)
-          return a.ts_update > b.ts_update
-        end)
-        return notif_arr
-      end,
+    window = {
+      -- https://github.com/echasnovski/mini.nvim/blob/a118a964c94543c06d8b1f2f7542535dd2e19d36/doc/mini-notify.txt#L186-L198
+      config = {
+        anchor = "SE",
+        col = vim.o.columns,
+        row = vim.o.lines - 2,
+        width = math.floor(vim.o.columns * 0.5),
+        border = "solid",
+      },
+      winblend = 10,
     },
   })
   vim.notify = require("mini.notify").make_notify()

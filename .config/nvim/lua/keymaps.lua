@@ -3,6 +3,9 @@ local M = {}
 
 M.leader_group_clues = {
   { mode = 'n', keys = '<Leader>t', desc = '+Toggle' },
+  { mode = 'n', keys = '<Leader>b', desc = '+Buffer' },
+  { mode = 'n', keys = '<Leader>l', desc = '+Lsp' },
+  { mode = 'n', keys = '<Leader>i', desc = '+Insert Path' },
 }
 
 function M.bind(mode, lhs, rhs, opts)
@@ -45,7 +48,6 @@ M.bind("n", "ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
 M.bind("n", "cu", "mzgUiw`z",    { desc = "󰬴 lowercase to UPPERCASE" })
 M.bind("n", "cl", "mzguiw`z",    { desc = "󰬴 UPPERCASE to lowercase" })
 
--- [[\(.*\)/X \1 X]] add begin and end
 M.bind("c", "<F1>", [[\(.*\)]], { silent = false })
 M.bind("c", "<F2>", [[\<.*\>]], { silent = false })
 
@@ -88,14 +90,6 @@ M.bind("n", "<C-Down>",  "<cmd>lua require'utils.helper'.resize(false,  5)<CR>",
 M.bind("n", "<C-Left>",  "<cmd>lua require'utils.helper'.resize(true,  -5)<CR>", { desc = "vertical split decrease" })
 M.bind("n", "<C-Right>", "<cmd>lua require'utils.helper'.resize(true,   5)<CR>", { desc = "vertical split increase" })
 
-M.bind("x", "<C-F>", [[<CMD>SearchReplaceSingleBufferVisualSelection<CR>]],  { desc = "replace visual" })
-M.bind("n", "<C-F>", [[<CMD>SearchReplaceSingleBufferCWord<CR>]],            { desc = "replace cword" })
-M.bind("x", "<C-B>", [[<CMD>SearchReplaceWithinVisualSelectionCWord<CR>]],   { desc = "replace cword" })
-M.bind("n", "<C-B>", [[:'<,'>s/<C-r><C-w>/<C-r><C-w>/gI<left><left><left>]], { desc = "replace cword", silent = false })
-
-M.bind("n", "<leader>r", [[<CMD>SearchReplaceSingleBufferOpen<CR>]],{ desc = "Search Replace Search" })
-M.bind("x", "<leader>r", [[<CMD>SearchReplaceWithinVisualSelection<CR>]],{ desc = "Search Replace Search" })
-
 M.bind("n", "zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]], { desc = "newline above (no insert-mode)" })
 M.bind("n", "zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { desc = "newline below (no insert-mode)" })
 
@@ -103,41 +97,25 @@ M.bind("n", "zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]]
 
 local duplicate_bak    = [[<cmd>call luaeval('require"utils.helper".duplicate_bak_file()')<cr>]]
 local toggle_diff_buff = [[<cmd>call luaeval('require"utils.helper".toggle_diff_buff()')<cr>]]
-local grep_curbuf      = [[<cmd>call luaeval('require"plugins.fzf-lua.cmds".grep_curbuf()')<cr>]]
 local translate_nm     = [[<cmd>call luaeval('require"utils.translate".translate_nm()')<cr>]]
 local translate_vm     = [[<cmd>call luaeval('require"utils.translate".translate_vm()')<cr>]]
 local set_cwd          = [[<cmd>lua require"utils.helper".set_cwd()<cr>]]
 local asynctasks       = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
 local git_diff_buff    = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
+local yankround        = [[<cmd>Unite -vertical yankround<cr>]]
 
 M.bind("n", "go", git_diff_buff,    { desc = "Toggle overlay" })
-M.bind("n", "st", translate_nm,     { desc = "󰈥  translate" })
-M.bind("x", "st", translate_vm,     { desc = "󰈥  translate" })
-M.bind("n", "sw", asynctasks,       { desc = "󰎟  ASYNCTASKS" })
-M.bind("n", "s=", toggle_diff_buff, { desc = "󱇠  TOGGLE_DIFF_BUFF" })
-M.bind("n", "s%", set_cwd,          { desc = "󰏅  set_cwd" })
-M.bind("n", "s.", duplicate_bak,    { desc = "󰄢  DUPLICATE_BAK_FILE" })
+M.bind("n", "st", translate_nm,     { desc = "translate" })
+M.bind("x", "st", translate_vm,     { desc = "translate" })
+M.bind("n", "sw", asynctasks,       { desc = "ASYNCTASKS" })
+M.bind("n", "s=", toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
+M.bind("n", "s%", set_cwd,          { desc = "SET CWD" })
+M.bind("n", "s.", duplicate_bak,    { desc = "DUPLICATE_BAK_FILE" })
 
-M.bind("n", "sv", "<cmd>F ~/.config/nvim<cr>",          { desc = "󱂥  VIMRC" })
-M.bind("n", "sn", "<cmd>F ~/vimwiki<cr>",               { desc = "󰙯  NOTES" })
-M.bind("n", "sa", "<cmd>Agit<cr>",                      { desc = "󰊢  AGIT" })
-M.bind("n", "sA", "<cmd>AgitFile<cr>",                  { desc = "󰊢  AGITfILE" })
-M.bind("n", "sC", "<cmd>FzfLua git_bcommits<cr>",       { desc = "󰊢  GIT_BCOMMITS" })
-M.bind("n", "sc", "<cmd>FzfLua git_commits<cr>",        { desc = "󰊢  GIT_COMMITS" })
-M.bind("n", "so", "<cmd>MRU<cr>",                       { desc = "󰕮  OLDFILES" })
-M.bind("n", "sb", "<cmd>FzfLua buffers<cr>",            { desc = "󰕮  BUFFERS" })
-M.bind("n", "sg", "<cmd>FzfLua grep<cr>",               { desc = "󰎒  GREP PROMP" })
-M.bind("n", "sG", "<cmd>FzfLua grep resume=true<cr>",   { desc = "󰎒  GREP" })
-M.bind("n", "sh", "<cmd>FzfLua search_history<cr>",     { desc = "󰍰  SEARCH_HISTORY" })
-M.bind("n", "sx", "<cmd>FzfLua command_history<cr>",    { desc = "󰎟  COMMAND_HISTORY" })
-M.bind("n", "sp", "<cmd>F<cr>",                         { desc = "󱂥  FILES" })
-M.bind("n", "sP", "<cmd>F %:h<cr>",                     { desc = "󱂥  FILES Sibling" })
-M.bind("n", "su", "<cmd>UndotreeToggle<cr>",            { desc = "󱎌  UNDOTREEtOGGLE" })
-M.bind("n", "sy", "<cmd>Unite -vertical yankround<cr>", { desc = "󱁄  YANKROUND" })
-M.bind("n", "sq", "<cmd>FzfLua builtin<cr>",            { desc = "󰍰  BUILTIN" })
-M.bind("n", "s8", grep_curbuf,                          { desc = "󰎒  grep_curbuf" })
-M.bind("n", "sk", "<cmd>FzfLua grep_cword<cr>",         { desc = "󰎒  grep_cword" })
-M.bind("x", "sk", "<cmd>FzfLua grep_visual<cr>",        { desc = "󰎒  grep_visual" })
+M.bind("n", "sy", yankround,                 { desc = "YANKROUND" })
+M.bind("n", "sa", "<cmd>Agit<cr>",           { desc = "AGIT" })
+M.bind("n", "sA", "<cmd>AgitFile<cr>",       { desc = "AGITfILE" })
+M.bind("n", "su", "<cmd>UndotreeToggle<cr>", { desc = "UNDOTREEtOGGLE" })
 
 M.bind({ "n", "v" }, "<leader>y", '"+y', { desc = "yank to clipboard" })
 
@@ -149,9 +127,9 @@ M.bind({ "n", "v" }, "<leader>P", [["+P]], { desc = "paste BEFORE from clipboard
 M.bind({ "n", "v" }, "gp", [["*p]], { desc = "paste AFTER from primary" })
 M.bind({ "n", "v" }, "gP", [["*P]], { desc = "paste BEFORE from primary" })
 
-M.bind("n", "<Leader>th", "<Cmd>TSBufToggle highlight<CR>",       { desc = "Highlight toggle" })
 M.bind("n", "<Leader>t1", "<Cmd>AsyncTask regex-tutor<CR>",       { desc = "regex-tutor" })
 M.bind("n", "<Leader>t2", "<Cmd>AsyncTask vim-tutor<CR>",         { desc = "vim-tutor" })
+-- M.bind("n", "<Leader>th", "<Cmd>TSBufToggle highlight<CR>",       { desc = "Highlight toggle" })
 
 -- toogle number
 M.bind("n", '<Leader>tN', [[:set nonumber norelativenumber<CR>]], { desc ="noactive number" } )
@@ -245,40 +223,6 @@ end
 
 M.bind('n', '<leader>z', zoom_toggle, { desc = "ZOOM_TOGGLE"} )
 
--- -- Function to get buffer index
--- local function get_buffer_index(buf_id)
---   local buffers = vim.fn.getbufinfo({ buflisted = 1 })
---   for i, buffer in ipairs(buffers) do
---     if buffer.bufnr == buf_id then
---       return i
---     end
---   end
---   return -1
--- end
---
--- -- Function to switch to a buffer based on its displayed index in MiniTabline
--- local function switch_to_buffer(index)
---     local current_index = 1
---     for _, buf_info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
---         local buf_id = buf_info.bufnr
---         local buf_index = get_buffer_index(buf_id)  -- Function to get index from MiniTabline (replace with actual function)
---         if buf_index == index then
---             vim.cmd('buffer ' .. buf_id)
---             return
---         end
---         current_index = current_index + 1
---     end
---     print("Buffer not found")
--- end
---
--- for i = 1, 9 do
---     M.bind('n', string.format('<leader>%d', i), function() switch_to_buffer(i) end, { desc = "go buff " ..i })
--- end
---
--- M.bind("n", "<C-T>",      "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
--- M.bind("n", "<C-Y>",      "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
--- M.bind("n", "<leader>0",  "<Cmd>lua MiniBracketed.buffer('last')<CR>", { desc = "go buff last" })
-
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~ multiple cursors (sort of) ~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -314,30 +258,6 @@ M.bind('x', 'zq', mc_select .. '``qz', { desc = 'mc start macro (foward)' })
 M.bind('x', 'zQ', mc_select:gsub('/', '?') .. '``qz', { desc = 'mc start macro (backward)' })
 M.bind('x', '<a-q>', mc_macro(mc_select), { expr = true, desc = 'mc end or replay macro' })
 
-M.show_documentation = function()
-  local filetype = vim.bo.filetype
-  if vim.tbl_contains({ "vim", "help" }, filetype) then
-    vim.cmd("h " .. vim.fn.expand "<cword>")
-  elseif vim.tbl_contains({ "man" }, filetype) then
-    vim.cmd("Man " .. vim.fn.expand "<cword>")
-  else
-    vim.lsp.buf.hover()
-  end
-end
-
-M.bind('n', 'K', M.show_documentation, { desc = 'show_documentation' })
-
--- M.show_cmd = function()
---   local filetype = vim.bo.filetype
---   if vim.tbl_contains({ "qf" }, filetype) then
---     return vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<cr>", true, false, true), "n", false)
---   else
---     return vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(":", true, false, true), "n", false)
---   end
--- end
---
--- M.bind({ 'n', 'v' }, '<CR>', M.show_cmd, { desc = 'show_cmd' })
-
 ---Remove all trailing whitespaces within the current buffer
 ---Retain cursor position & last search content
 local function remove_trailing_whitespaces()
@@ -372,41 +292,11 @@ M.bind("n", "X", "gxiw", { remap = true })
 M.bind("n", "M", "Vgm",  { remap = true })
 M.bind("n", "s", "ysiw", { remap = true }) -- easy press
 
-local function insert_path(path)
-  vim.api.nvim_feedkeys("i", "n", true)
-  vim.api.nvim_put({ path }, "c", true, true)
-  local switch = vim.api.nvim_replace_termcodes("<Right>", true, false, true)
-  vim.api.nvim_feedkeys(switch, "n", false)
-end
-
-local function get_short_path()
-  local path = vim.fn.expand('%:.')
-  insert_path(path)
-end
-
-local function get_full_path()
-  local path = vim.fn.expand('%:p')
-  insert_path(path)
-end
-
-local function get_file_name()
-  local path = vim.fn.expand('%:p:t:r')
-  insert_path(path)
-end
-
-M.bind("n", "<leader>yr", get_short_path, { silent = false, desc = "get_short_path" })
-M.bind("n", "<leader>yf", get_full_path,  { silent = false, desc = "get_full_path"  })
-M.bind("n", "<leader>yn", get_file_name,  { silent = false, desc = "get_file_name"   })
-
-local touch = ":!touch " .. vim.fn.expand('%:p:h') .. "/"
-local mkdir = ":!mkdir -p " .. vim.fn.expand('%:p:h') .. "/"
-local copy  = ":!cp -p " .. vim.fn.expand('%:p') .. " " .. vim.fn.expand('%:p:h') .. "/".. vim.fn.expand('%:p:t:r')
-
 M.sad_visual = function()
   local utils   = require("utils.helper")
 	local pattern = utils.get_visual_selection()
-  local term    = ":FloatermNew --name=sr --disposable --autoclose=2 --width=0.95 --height=0.95 fd . | sad "
-  local query   = "'".. pattern .."'" .. " " .. "''"
+  local term    = ":FloatermNew --name=sr --disposable --autoclose=2 --width=0.95 --height=0.95 fd . | sad  --pager 'delta -w 160' "
+  local query   = "'".. pattern .."'" .. " " .. "'".. pattern .."'" 
   local switch  = vim.api.nvim_replace_termcodes("<Left>", true, false, true)
   local cmd     = term .. query
 
@@ -416,55 +306,16 @@ end
 M.sad_cword = function()
   local utils   = require("utils.helper")
 	local pattern = vim.fn.expand "<cword>"
-  local term    = ":FloatermNew --name=sr --disposable --autoclose=2 --width=0.95 --height=0.95 fd . | sad "
-  local query   = "'".. pattern .."'" .. " " .. "''"
+  local term    = ":FloatermNew --name=sr --disposable --autoclose=2 --width=0.95 --height=0.95 fd . | sad  --pager 'delta -w 160' "
+  local query   = "'".. pattern .."'" .. " " .. "'".. pattern .."'" 
   local switch  = vim.api.nvim_replace_termcodes("<Left>", true, false, true)
   local cmd     = term .. query
 
   vim.api.nvim_feedkeys(cmd .. switch, "n", false)
 end
 
--- M.sad_visual = function()
---   local utils   = require("utils.helper")
--- 	local pattern = utils.get_visual_selection()
---   vim.cmd("FloatermKill sr")
---   local term    = "FloatermNew --name=sr  --width=0.95 --height=0.95"
---   vim.cmd(term)
---
---   local send   = ":FloatermSend --name=sr fd . | sad "
---   local query  = "'".. pattern .."'" .. " " .. "''"
---   local switch = vim.api.nvim_replace_termcodes("<Left>", true, false, true)
---   local esc    = vim.api.nvim_replace_termcodes("<C-\\><C-N>", true, false, true)
---   local cmd    = send .. query
---
---   vim.api.nvim_feedkeys(esc .. cmd .. switch, "n", false)
--- end
---
--- M.sad_cword = function()
---   local utils   = require("utils.helper")
--- 	local pattern = vim.fn.expand "<cword>"
---   vim.cmd("FloatermKill sr")
---   local term    = "FloatermNew --name=sr --width=0.95 --height=0.95"
---   vim.cmd(term)
---
---   local send   = ":FloatermSend --name=sr fd . | sad "
---   local query  = "'".. pattern .."'" .. " " .. "''"
---   local switch = vim.api.nvim_replace_termcodes("<Left>", true, false, true)
---   local esc    = vim.api.nvim_replace_termcodes("<C-\\><C-N>", true, false, true)
---   local cmd    = send .. query
---
---   vim.api.nvim_feedkeys(esc .. cmd .. switch, "n", false)
--- end
-
 M.bind('x', 'gw', M.sad_visual, { desc = 'sad_visual' })
 M.bind('n', 'gw', M.sad_cword,  { desc = 'sad_cword' })
-
-local test = ':FloatermNew --name=gitui --autoclose=0 --width=0.95 --height=0.95 fd . | sad <C-r>=luaeval(\"require\'utils.helper\'.get_visual_selection(true)\")<CR> "replacement"'
-
-M.bind("n", "<leader>cf", touch, { silent = false, desc = "touch" })
-M.bind("n", "<leader>cd", mkdir, { silent = false, desc = "mkdir" })
-M.bind("n", "<leader>cc", copy,  { silent = false, desc = "copy" })
-
 
 local function toggle_smart_case()
   vim.o.ignorecase = not vim.o.ignorecase
@@ -477,6 +328,11 @@ local function toggle_smart_case()
 end
 
 M.bind("c", "<c-s>", toggle_smart_case, {  desc = "Toggle smartcase" })
+
+local copy = require("utils.copy")
+
+M.bind({ "n", "v" }, "<leader>F", function() copy.list_paths() end, { desc = "List Path" })
+M.bind({ "n", "v" }, "<leader><space>", ":", { desc = "Command", silent = false })
 
 -- stylua: ignore end
 return M

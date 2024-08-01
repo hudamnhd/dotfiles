@@ -1,64 +1,61 @@
+local M = {}
+local actions = require("fzf-lua.actions")
 local fzf = require("fzf-lua")
+local actions = require("fzf-lua.actions")
+local core = require("fzf-lua.core")
 local path = require("fzf-lua.path")
+local config = require("fzf-lua.config")
 
-local function hl_match(t)
-  for _, h in ipairs(t) do
-    -- `vim.api.nvim_get_hl_by_name` is deprecated since v0.9.0
-    if vim.api.nvim_get_hl then
-      local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = h, link = false })
-      if ok and type(hl) == "table" and (hl.fg or hl.bg) then
-        return h
-      end
-    else
-      local ok, hl = pcall(vim.api.nvim_get_hl_by_name, h, true)
-      -- must have at least bg or fg, otherwise this returns
-      -- succesffully for cleared highlights (on colorscheme switch)
-      if ok and (hl.foreground or hl.background) then
-        return h
-      end
-    end
+function M.get_preview_command(items)
+  local opts = fzf.config.__resume_data.opts
+  local entry = path.entry_to_file(items[1], opts, opts.force_uri)
+  local fullpath = entry.path or (entry.uri and entry.uri:match("^%a+://(.*)"))
+  if not path.is_absolute(fullpath) then
+    fullpath = path.join({ opts.cwd or opts._cwd or vim.loop.cwd(), fullpath })
+  end
+
+  if vim.fn.isdirectory(fullpath) == 1 then
+    return string.format("tree -C %s | head -200", fullpath)
+  else
+    return string.format("bat --color=always --style=numbers,changes,header %s", fullpath)
   end
 end
 
 require("fzf-lua").setup({
-  -- file_icon_padding = " ",
-  -- dir_icon = "󰉋 ",
-  global_git_icons = false,
-  -- global_file_icons = false,
-  { "default-title" }, -- base profile
-  winopts = {
-    --   split = "belowright new",
-    height = 0.45,
-    width = 0.55,
-    backdrop = false,
-    preview = {
-      hidden = "hidden", -- hide the previewer by default
+  global_resume = true,
+  global_resume_query = true,
+  defaults = {
+    -- formatter = { "path.dirname_first", v = 2 },
+    git_icons = false,
+    file_icons = false,
+    color_icons = false,
+  },
+  hls = {
+    fzf = {
+      match = "WarningMsg",
+      info = "WarningMsg",
     },
   },
-  fzf_colors = function()
-    return {
-      ["fg"] = { "fg", "Normal" },
-      ["fg+"] = { "fg", "Normal" },
-      ["bg"] = { "bg", "Normal" },
-      ["bg+"] = { "bg", "Visual" },
-      ["hl"] = { "fg", "WarningMsg" },
-      ["hl+"] = { "fg", "WarningMsg" },
-      ["gutter"] = { "bg", "Normal" },
-      ["info"] = { "fg", "WarningMsg" },
-      ["border"] = { "fg", "NonText" },
-      ["prompt"] = { "fg", "WarningMsg" },
-      ["pointer"] = { "fg", "Exception" },
-      ["marker"] = { "fg", "WarningMsg" },
-      ["spinner"] = { "fg", "WarningMsg" },
-      ["header"] = { "fg", "Comment" },
-    }
-  end,
-  hls = function()
-    return {
-      border = hl_match({ "NonText" }),
-      preview_border = hl_match({ "NonText" }),
-    }
-  end,
+
+  winopts = {
+    height  = 0.85,
+    width   = 0.85,
+    row     = 0.35,
+    col     = 0.50,
+    border  = "none",
+    preview = {
+      default      = "bat",
+      border       = "noborder", -- border|noborder, applies only to
+      wrap         = "nowrap", -- wrap|nowrap
+      hidden       = "nohidden", -- hidden|nohidden
+      vertical     = "up:65%", -- up|down:size
+      horizontal   = "right:60%", -- right|left:size
+      layout       = "flex", -- horizontal|vertical|flex
+      flip_columns = 200, -- #cols to switch to horizontal on flex
+      delay        = 100, -- delay(ms) displaying the preview
+    },
+  },
+
   keymap = {
     builtin = {
       ["<F1>"] = "toggle-help",
@@ -75,13 +72,28 @@ require("fzf-lua").setup({
     },
   },
 
-  -- Configuration for specific commands.
+  fzf_opts = {
+    ["--prompt"] = "   ",
+    ["--keep-right"] = "",
+    ["--padding"] = "1,3",
+    ["--no-scrollbar"] = "",
+  },
+
+  fzf_colors = true,
+
   files = {
-    find_opts = [[-type f -type d -type l -not -path '*/\.git/*' -printf '%P\n']],
-    fd_opts = [[--color=never --type f --type d]],
-    rg_opts = [[--color=never --files --hidden --follow -g '!.git'"]],
+    prompt = "Files  ",
+    fd_opts = [[--color=never --type f]],
+    -- fd_opts = [[--color=never --type f --type d]],
     fzf_opts = {
-      ["--ansi"] = true,
+      ["--ansi"] = false,
+    },
+    previewer = false,
+    preview = {
+      type = "cmd",
+      fn = function(items)
+        return M.get_preview_command(items)
+      end,
     },
     actions = {
       ["ctrl-y"] = function(selected, opts)
@@ -162,9 +174,17 @@ require("fzf-lua").setup({
       end,
     },
   },
+  oldfiles = {
+    prompt = "History❯ ",
+    cwd_only = true,
+    stat_file = true,
+    include_current_session = true, -- include bufs from current session
+  },
   git = {
+    files = { prompt = "Git Files  " },
+    status = { prompt = "Git Status  " },
     bcommits = {
-      prompt = "logs:",
+      prompt = "Git Logs  ",
       actions = {
         ["alt-d"] = function(...)
           fzf.actions.git_buf_vsplit(...)
@@ -176,50 +196,27 @@ require("fzf-lua").setup({
     },
   },
   grep = {
-    rg_opts = table.concat({
-      -- "--hidden",
-      "--follow",
-      "--smart-case",
-      "--column",
-      "--line-number",
-      "--no-heading",
-      "--color=always",
-      "-g=!.git/",
-      "-e",
-    }, " "),
-    fzf_opts = {
-      ["--info"] = "inline-right",
+    rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512",
+  },
+  highlights = {
+    actions = {
+      ["default"] = function(entry)
+        local hl_group = entry[1]
+        vim.fn.setreg("+", hl_group)
+        vim.notify("Copied " .. hl_group .. " to the clipboard!", vim.log.levels.INFO)
+      end,
+    },
+  },
+  lsp = {
+    code_actions = {
+      previewer = false,
+      winopts = {
+        row = 0.85,
+        col = 0.5,
+        height = 0.35,
+        width = 0.5,
+        preview = { hidden = "hidden" },
+      },
     },
   },
 })
-
--- stylua: ignore start
-if vim.fn.has("nvim") == 1 then
-  vim.g.terminal_color_0 = "#2A2A37"
-  vim.g.terminal_color_1 = "#E78A4E"
-  vim.g.terminal_color_2 = "#99c794"
-  vim.g.terminal_color_3 = "#fac863"
-  vim.g.terminal_color_4 = "#6699cc"
-  vim.g.terminal_color_5 = "#c594c5"
-  vim.g.terminal_color_6 = "#5fb3b3"
-  vim.g.terminal_color_7 = "#c0caf5"
-  vim.g.terminal_color_8 = "#555555"
-  vim.g.terminal_color_9 = "#FFA066"
-  vim.g.terminal_color_10 = "#99c794"
-  vim.g.terminal_color_11 = "#fac863"
-  vim.g.terminal_color_12 = "#6699cc"
-  vim.g.terminal_color_13 = "#c594c5"
-  vim.g.terminal_color_14 = "#5fb3b3"
-  vim.g.terminal_color_15 = "#c0caf5"
-else
-  vim.g.terminal_ansi_colors = {
-    "#1a1b26", "#ec5f67", "#99c794", "#fac863",
-    "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
-    "#555555", "#ec5f67", "#99c794", "#fac863",
-    "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
-  }
-end
-
-vim.api.nvim_create_user_command("F", function(info) fzf.files({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find files.", })
-
--- stylua: ignore end

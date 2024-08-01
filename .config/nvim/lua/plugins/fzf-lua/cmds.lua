@@ -8,17 +8,6 @@ local relative_cursor = {
   width = 0.30,
 }
 
-function M.complete_path()
-  require("fzf-lua").complete_path({
-    cmd = "fdfind --type d --type f --exclude .git",
-    file_icons = false,
-  })
-end
-
-function M.grep_curbuf()
-  require("fzf-lua").grep_curbuf({ query = vim.fn.expand("<cword>") })
-end
-
 function M.spell_suggest()
   local opts_spell = {
     prompt = "Spell> ",
@@ -83,14 +72,12 @@ function M.mru()
         ["--multi"] = "",
       },
       prompt = prompt .. "> ",
-      winopts = { height = 0.4, width = 0.5 },
+      winopts = { height = 0.4, width = 0.75 },
     })
   end
 
   show_fzf(files_cwd)
 end
-
-vim.api.nvim_create_user_command("MRU", M.mru, {})
 
 local function handle_delete(path, bookmark_file)
   local lines = {}
@@ -207,31 +194,12 @@ local function show_bookmark_file()
         ["--multi"] = "",
       },
       prompt = prompt .. "> ",
-      winopts = { height = 0.4, width = 0.5 },
+      winopts = { height = 0.4, width = 0.75 },
     })
   end
 
   show_fzf(files_cwd)
 end
-
-local F = require("fzf-lua")
-
--- stylua: ignore start
-vim.keymap.set("n", "sL", function() vim.cmd.edit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "󰈔 show file bookmark" })
-vim.keymap.set("n", "sM", function() delete_bookmark_file(vim.fn.expand("%")) end, { desc = "󰈔 show file bookmark" })
-
-vim.keymap.set("n", "<leader>h", show_bookmark_file, { desc = "show file bookmark" })
-vim.keymap.set("n", "<leader>a", save_bookmark_file, { desc = "save file bookmark" })
-
-vim.keymap.set("n", "z=", M.spell_suggest, { desc = "spell_suggest" })
-
-vim.keymap.set("i", "<C-K>", M.complete_path,                  { desc = "Fuzzy complete path" }) -- remap <C-X><C-F>
-vim.keymap.set("i", "<C-L>", F.complete_line, { desc = "Fuzzy complete line" }) -- remap <C-X><C-L>
-
-vim.keymap.set("n", "zf", function() F.files({ desc = "grep <word> (buffer)", prompt = "Files❯ ", query = vim.fn.expand("<cword>") }) end)
-vim.keymap.set("v", "zf", function() F.files({  desc = "grep files", prompt = "Files❯ ", query = require("utils.helper").get_visual_selection(true) }) end)
-
--- stylua: ignore end
 
 _G.fzf_dirs = function(opts)
   local fzf_lua = require("fzf-lua")
@@ -248,9 +216,6 @@ _G.fzf_dirs = function(opts)
   fzf_lua.fzf_exec("fd --type d --hidden ", opts)
 end
 
-vim.api.nvim_create_user_command("C", function(info)
-  _G.fzf_dirs({ cwd = info.fargs[1] })
-end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
 
 local function delete_bookmark_dir(file)
   local path = vim.fn.expand(file)
@@ -285,7 +250,7 @@ local function show_bookmark_dir()
       ["--multi"] = "",
     },
     prompt = prompt .. "> ",
-    winopts = { height = 0.4, width = 0.5 },
+    winopts = { height = 0.4, width = 0.75 },
   })
 end
 
@@ -294,9 +259,6 @@ local function save_bookmark_dir()
   local path = vim.fn.expand(vim.uv.cwd())
   handle_save(path, bookmark_file)
 end
-
-vim.keymap.set("n", "<leader>H", show_bookmark_dir, { desc = "show file bookmark" })
-vim.keymap.set("n", "<leader>A", save_bookmark_dir, { desc = "save file bookmark" })
 
 local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
 local files = {}
@@ -332,7 +294,20 @@ function NextFile()
   vim.cmd("e " .. files[current_file_index])
 end
 
--- Keymap untuk fungsi Previous dan Next
+-- stylua: ignore start
+vim.api.nvim_create_user_command("C", function(info) _G.fzf_dirs({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
+
+vim.keymap.set("n", "<leader>bb", function() vim.cmd.edit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "show file bookmark" })
+vim.keymap.set("n", "<leader>bd", function() delete_bookmark_file(vim.fn.expand("%")) end, { desc = "deleted file bookmark" })
+
+vim.keymap.set("n", "<leader>h", show_bookmark_file, { desc = "show file bookmark" })
+vim.keymap.set("n", "<leader>a", save_bookmark_file, { desc = "save file bookmark" })
+
+vim.keymap.set("n", "<leader>H", show_bookmark_dir, { desc = "show file bookmark" })
+vim.keymap.set("n", "<leader>A", save_bookmark_dir, { desc = "save file bookmark" })
+
 vim.keymap.set("n", "[<tab>", PreviousFile, { desc = "prev file bookmark" })
 vim.keymap.set("n", "]<tab>", NextFile,     { desc = "next file bookmark" })
+-- stylua: ignore end
+
 return M

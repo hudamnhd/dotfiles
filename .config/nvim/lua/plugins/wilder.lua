@@ -1,12 +1,10 @@
 return {
   "gelguy/wilder.nvim",
-  -- event = "CmdlineEnter",
-  event = "VeryLazy",
+  event = "CmdlineEnter",
   build = function()
     vim.cmd("UpdateRemotePlugins")
   end,
   config = function()
-    -- require("wilder").setup({ modes = { ":", "/", "?" } })
     vim.opt.wildmenu = false -- disable wildmenu because wilder is enough
     local wilder = require("wilder")
     wilder.setup({
@@ -16,14 +14,14 @@ return {
       -- accept_key = "<tab>",
       -- reject_key = "<s-tab>",
     })
-    wilder.set_option(
-      "renderer",
-      wilder.popupmenu_renderer({
-        highlighter = wilder.basic_highlighter(),
-        left = { " ", wilder.popupmenu_devicons() },
-        right = { " ", wilder.popupmenu_scrollbar() },
-      })
-    )
+    -- wilder.set_option(
+    --   "renderer",
+    --   wilder.popupmenu_renderer({
+    --     highlighter = wilder.basic_highlighter(),
+    --     left = { " ", wilder.popupmenu_devicons() },
+    --     right = { " ", wilder.popupmenu_scrollbar() },
+    --   })
+    -- )
     -- wilder.set_option(
     --   "renderer",
     --   wilder.wildmenu_renderer({

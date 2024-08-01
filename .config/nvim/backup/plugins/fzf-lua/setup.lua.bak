@@ -1,10 +1,120 @@
-local fzf_lua = require("fzf-lua")
+local M = {}
+local actions = require("fzf-lua.actions")
 local fzf = require("fzf-lua")
 local actions = require("fzf-lua.actions")
 local core = require("fzf-lua.core")
 local path = require("fzf-lua.path")
+local config = require("fzf-lua.config")
 
--- return first matching highlight or nil
+function M.get_preview_command(items)
+  local opts = fzf.config.__resume_data.opts
+  local entry = path.entry_to_file(items[1], opts, opts.force_uri)
+  local fullpath = entry.path or (entry.uri and entry.uri:match("^%a+://(.*)"))
+  if not path.is_absolute(fullpath) then
+    fullpath = path.join({ opts.cwd or opts._cwd or vim.loop.cwd(), fullpath })
+  end
+
+  if vim.fn.isdirectory(fullpath) == 1 then
+    return string.format("tree -C %s | head -200", fullpath)
+  else
+    return string.format("bat --color=always --style=numbers,changes %s", fullpath)
+  end
+end
+
+function M.reload_files(opts)
+  require("fzf-lua").files({
+    cwd = opts.cwd,
+    previewer = false,
+    preview = {
+      type = "cmd",
+      fn = function(items)
+        return M.get_preview_command(items)
+      end,
+    },
+  })
+end
+
+function M.update_opts(opts, dir)
+  opts.fn_selected = nil
+  opts.cwd = dir or vim.fn.fnamemodify(vim.uv.cwd(), ":h")
+  opts.query = fzf.config.__resume_data.last_query
+
+  if opts.cwd_prompt then
+    opts.prompt = vim.fn.fnamemodify(opts.cwd, ":.:~")
+    local shorten_len = tonumber(opts.cwd_prompt_shorten_len)
+    if shorten_len and #opts.prompt >= shorten_len then
+      opts.prompt = path.shorten(opts.prompt, tonumber(opts.cwd_prompt_shorten_val) or 1)
+    end
+    if not path.ends_with_separator(opts.prompt) then
+      opts.prompt = opts.prompt .. path.separator()
+    end
+  end
+
+  if opts.headers then
+    opts = core.set_header(opts, opts.headers)
+  end
+
+  M.reload_files(opts)
+end
+
+function M.handle_path_action(selected, opts)
+  local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
+  local fullpath = entry.path or entry.uri and entry.uri:match("^%a+://(.*)")
+  if not path.is_absolute(fullpath) then
+    fullpath = path.join({ opts.cwd or opts._cwd or vim.loop.cwd(), fullpath })
+  end
+  if vim.fn.isdirectory(fullpath) == 1 then
+    actions.switch_cwd_next(fullpath)
+  else
+    actions.file_edit(selected, opts)
+  end
+end
+
+---Switch cwd while preserving the last query
+---@return nil
+function actions.switch_cwd()
+  fzf.config.__resume_data.opts = fzf.config.__resume_data.opts or {}
+  local opts = fzf.config.__resume_data.opts
+
+  -- Remove old fn_selected, else selected item will be opened
+  -- with previous cwd
+  opts.fn_selected = nil
+  opts.cwd = opts.cwd or vim.uv.cwd()
+  opts.query = fzf.config.__resume_data.last_query
+
+  vim.ui.input({
+    prompt = "New cwd: ",
+    default = opts.cwd,
+    completion = "dir",
+  }, function(input)
+    if not input then
+      return
+    end
+    input = vim.fs.normalize(input)
+    local stat = vim.uv.fs_stat(input)
+    if not stat or not stat.type == "directory" then
+      print("\n")
+      vim.notify("[Fzf-lua] invalid path: " .. input .. "\n", vim.log.levels.ERROR)
+      vim.cmd.redraw()
+      return
+    end
+    opts.cwd = input
+    M.reload_files(opts)
+  end)
+end
+
+function actions.switch_cwd_back()
+  local opts = fzf.config.__resume_data.opts or {}
+  fzf.config.__resume_data.opts = opts
+  M.update_opts(opts)
+end
+
+function actions.switch_cwd_next(dir)
+  local opts = fzf.config.__resume_data.opts or {}
+  fzf.config.__resume_data.opts = opts
+  M.update_opts(opts, dir)
+end
+
 local function hl_match(t)
   for _, h in ipairs(t) do
     -- `vim.api.nvim_get_hl_by_name` is deprecated since v0.9.0
@@ -24,166 +134,102 @@ local function hl_match(t)
   end
 end
 
-vim.env.FZF_DEFAULT_OPTS = table.concat({
-  -- "--bind=ctrl-u:page-up,ctrl-d:page-down",
-  '--pointer=" "',
-  '--marker="*"',
-  "--no-separator",
-  "--layout=reverse",
-  "--padding=0,1",
-  "--sort 10000",
-  -- "--reverse --no-separator --color=bg+:#1E1E2E,bg:#1E1E2E,spinner:#F5E0DC,hl:#89B4FA,fg:#CDD6F4,header:#A6ADC8,info:#CBA6F7,pointer:#F5E0DC,marker:#F5E0DC,fg+:#CDD6F4,prompt:#89B4FA,hl+:#89B4FA",
-  -- "--color=query:#D4BE98,bg+:#1F1F28,bg:#1F1F28,spinner:#D8A657,hl:#E78A4E,fg:#D4BE98,header:#928374,info:#89B482,pointer:#af5fff,marker:#87ff00,fg+:#E6C384,prompt:#E78A4E,hl+:#E78A4E",
-  -- "--color=fg:#d0d0d0,fg+:#d0d0d0,bg:#121212,bg+:#262626,hl:#5f87af,hl+:#5fd7ff,info:#afaf87,marker:#87ff00,prompt:#d7005f,spinner:#af5fff,pointer:#af5fff,header:#87afaf,border:#262626,label:#aeaeae,query:#d9d9d9",
-}, " ")
-
-local default_opts = {
+require("fzf-lua").setup({
+  -- Make stuff better combine with the editor.
   -- file_icon_padding = " ",
+  -- dir_icon = "󰉋 ",
+  global_git_icons = false,
+  { "default-title" }, -- base profile
+  fzf_opts = { ["--layout"] = "reverse", ["--padding"] = "0,1", ["--info"] = "inline-right" },
+  winopts = {
+    width = 0.9,
+    height = 0.9,
+    preview = {
+      hidden = "nohidden",
+      vertical = "up:45%",
+      horizontal = "right:70%",
+      layout = "flex",
+      flip_columns = 120,
+      delay = 60,
+    },
+  },
   fzf_colors = function()
     return {
       ["fg"] = { "fg", "Normal" },
+      ["fg+"] = { "fg", "Normal" },
       ["bg"] = { "bg", "Normal" },
       ["bg+"] = { "bg", "Visual" },
       ["hl"] = { "fg", "WarningMsg" },
       ["hl+"] = { "fg", "WarningMsg" },
       ["gutter"] = { "bg", "Normal" },
       ["info"] = { "fg", "WarningMsg" },
-      ["border"] = { "fg", "LineNr" },
-      ["prompt"] = { "fg", "Function" },
+      ["border"] = { "fg", "TelescopeBorder" },
+      ["prompt"] = { "fg", "Special" },
       ["pointer"] = { "fg", "Exception" },
       ["marker"] = { "fg", "WarningMsg" },
       ["spinner"] = { "fg", "WarningMsg" },
       ["header"] = { "fg", "Comment" },
     }
   end,
-  winopts = {
-    -- split = "botright new", -- open in a full-height split on the far right
-    -- height = 0.9,
-    -- width = 0.8,
-    preview = {
-      default = "bat",
-      -- layout       = "flex",
-      -- horizontal = "down:50%",
-      flip_columns = 130,
-      scrollbar = "float",
-      delay = 60, -- smoother preview experience
-      -- hidden = "hidden", -- hide the previewer by default
-    },
-
-    border = "rounded",
-  },
   hls = function()
     return {
-      border = hl_match({ "Comment" }),
-      preview_border = hl_match({ "Comment" }),
+      border = hl_match({ "TelescopeBorder" }),
+      preview_border = hl_match({ "TelescopeBorder" }),
     }
   end,
   keymap = {
     builtin = {
-      -- default mappings (needed since there is no table merge)
       ["<F1>"] = "toggle-help",
-      ["<F2>"] = "toggle-fullscreen",
-      ["<F3>"] = "toggle-preview-wrap",
-      ["<F4>"] = "toggle-preview",
-      ["<F5>"] = "toggle-preview-ccw",
-      ["<F6>"] = "toggle-preview-cw",
-      -- scroll preview easily
+      ["<C-a>"] = "toggle-fullscreen",
+      ["<C-o>"] = "toggle-preview",
       ["<C-d>"] = "preview-page-down",
       ["<C-u>"] = "preview-page-up",
     },
     fzf = {
-      -- default mappings (needed since there is no table merge)
-      ["ctrl-z"] = "abort",
-      ["ctrl-f"] = "half-page-down",
-      ["ctrl-b"] = "half-page-up",
-      ["ctrl-a"] = "beginning-of-line",
-      ["ctrl-e"] = "end-of-line",
       ["alt-a"] = "toggle-all",
-      ["f3"] = "toggle-preview-wrap",
-      ["f4"] = "toggle-preview",
-      -- scroll preview easily
       ["ctrl-d"] = "preview-page-down",
       ["ctrl-u"] = "preview-page-up",
     },
   },
-  previewers = {
-    bat = {
-      cmd = "bat",
-      args = "--color=always --style=numbers,changes",
-      -- uncomment to set a bat theme, `bat --list-themes`
-      -- theme = "FzfxNvimOnedark",
-    },
-    builtin = {
-      title_fnamemodify = function(s)
-        return s
-      end,
-      extensions = {
-        ["gif"] = { "chafa" },
-        ["png"] = { "chafa" },
-        ["jpg"] = { "chafa" },
-        ["jpeg"] = { "chafa" },
-        ["svg"] = { "chafa" },
-      },
-    },
-  },
-  actions = {
-    files = {
-      ["default"] = fzf_lua.actions.file_edit,
-      ["ctrl-l"] = fzf_lua.actions.arg_add,
-      ["ctrl-s"] = fzf_lua.actions.file_split,
-      ["ctrl-v"] = fzf_lua.actions.file_vsplit,
-      ["ctrl-t"] = fzf_lua.actions.file_tabedit,
-      ["ctrl-q"] = fzf_lua.actions.file_sel_to_qf,
-      ["alt-q"] = fzf_lua.actions.file_sel_to_ll,
-
-      -- open a DREX buffer for the cwd
-      ["alt-d"] = function(_, opts)
-        require("drex").open_directory_buffer(opts.cwd)
-      end,
-      -- start a live grep search from the cwd
-      ["alt-s"] = {
-        function(_, opts)
-          fzf.live_grep({ cwd = opts.cwd })
-        end,
-      },
-      -- select from buffers rooted in the cwd
-      ["alt-b"] = {
-        function(_, opts)
-          fzf.buffers({
-            cwd = opts.cwd,
-            fzf_opts = {
-              -- no header lines, make every entry selectable
-              ["--header-lines"] = false,
-            },
-          })
-        end,
-      },
-    },
-    buffers = {
-      ["default"] = fzf_lua.actions.file_edit,
-    },
-  },
+  -- Configuration for specific commands.
   files = {
-    -- formatter = "path.filename_first",
-    -- uncomment to override .gitignore
-    -- fd_opts = "--no-ignore --color=never --type f --hidden --follow --exclude .git",
-
-    fzf_opts = { ["--tiebreak"] = "end" },
-    actions = { ["ctrl-g"] = { fzf_lua.actions.toggle_ignore } },
-    git_icons = false, -- remove git icons for better performance
-    file_icons = false,
+    actions = {
+      ["alt-c"] = actions.switch_cwd,
+      ["ctrl-h"] = actions.switch_cwd_back,
+      ["ctrl-l"] = function(selected, opts)
+        M.handle_path_action(selected, opts)
+      end,
+    },
     winopts = {
-      height = 0.55,
+      height = 0.4,
       width = 0.5,
       preview = {
         hidden = "hidden", -- hide the previewer by default
       },
     },
+    previewer = false,
+    preview = {
+      type = "cmd",
+      fn = function(items)
+        return M.get_preview_command(items)
+      end,
+    },
+    find_opts = [[-type f -type d -type l -not -path '*/\.git/*' -printf '%P\n']],
+    -- fd_opts = [[--color=never --type f --type d --type l --hidden --follow --exclude .git]],
+    fd_opts = [[--color=never --type f --type d --follow --exclude .git]],
+    rg_opts = [[--color=never --files --hidden --follow -g '!.git'"]],
+    git_icons = false,
+    file_icons = false,
+    fzf_opts = {
+      ["--ansi"] = false,
+    },
   },
   oldfiles = {
-    git_icons = false, -- remove git icons for better performance
+    git_icons = false,
+    file_icons = false,
+    include_current_session = true,
     winopts = {
-      height = 0.55,
+      height = 0.4,
       width = 0.5,
       preview = {
         hidden = "hidden", -- hide the previewer by default
@@ -191,132 +237,142 @@ local default_opts = {
     },
   },
   buffers = {
+    git_icons = false,
+    file_icons = false,
+    include_current_session = true,
     winopts = {
-      height = 0.55,
+      height = 0.4,
       width = 0.5,
       preview = {
         hidden = "hidden", -- hide the previewer by default
       },
     },
   },
-  grep = {
-    git_icons = false, -- remove git icons for better performance
-    file_icons = false,
-    debug = false,
-    rg_glob = true,
-    rg_opts = "--hidden --column --line-number --no-heading"
-      .. " --color=always --smart-case -g '!.git' -e",
+  search_history = {
+    winopts = {
+      height = 0.4,
+      width = 0.5,
+    },
+  },
+  command_history = {
+    winopts = {
+      height = 0.4,
+      width = 0.5,
+    },
+  },
+  commands = {
+    winopts = {
+      height = 0.4,
+      width = 0.5,
+    },
   },
   git = {
     status = {
-      cmd = "git status -su",
-      winopts = {
-        preview = { vertical = "down:70%", horizontal = "right:70%" },
-      },
-      preview_pager = vim.fn.executable("delta") == 1 and "delta --width=$COLUMNS",
-
-      actions = {
-        ["right"] = { fn = actions.git_unstage, reload = true },
-        ["left"] = { fn = actions.git_stage, reload = true },
-        ["ctrl-x"] = { fn = actions.git_reset, reload = true },
-        -- Uncomment to test stage|unstage and backward compat
-        ["ctrl-s"] = { fn = actions.git_stage_unstage, reload = true },
-        ["ctrl-s"] = { actions.git_stage_unstage, actions.resume },
-      },
-    },
-    commits = {
-      winopts = { preview = { vertical = "down:70%", horizontal = "right:70%" } },
-      preview_pager = vim.fn.executable("delta") == 1 and "delta --width=${COLUMNS:-0}",
+      git_icons = false,
+      file_icons = false,
     },
     bcommits = {
       prompt = "logs:",
-      -- cmd = "git log --color --pretty=format:'%C(yellow)%h%Creset %Cgreen%><(12)%cr%><|(12)%Creset %s' <file>",
-      -- preview = "git show --stat --color --format='%C(cyan)%an%C(reset)%C(bold yellow)%d%C(reset): %s' {1} -- <file>",
       actions = {
-        ["ctrl-d"] = function(...)
+        ["alt-d"] = function(...)
           fzf.actions.git_buf_vsplit(...)
           vim.cmd("windo diffthis")
           local switch = vim.api.nvim_replace_termcodes("<C-w>h", true, false, true)
           vim.api.nvim_feedkeys(switch, "t", false)
         end,
       },
-      preview_opts = "nohidden",
-      winopts = {
-        preview = { vertical = "down:75%", horizontal = "right:75%" },
-      },
-    },
-    branches = {
-      winopts = {
-        preview = { vertical = "down:75%", horizontal = "right:75%" },
-      },
     },
   },
-  lsp = {
-    finder = {
-      providers = {
-        { "definitions", prefix = fzf_lua.utils.ansi_codes.green("def ") },
-        { "declarations", prefix = fzf_lua.utils.ansi_codes.magenta("decl") },
-        { "implementations", prefix = fzf_lua.utils.ansi_codes.green("impl") },
-        { "typedefs", prefix = fzf_lua.utils.ansi_codes.red("tdef") },
-        { "references", prefix = fzf_lua.utils.ansi_codes.blue("ref ") },
-        { "incoming_calls", prefix = fzf_lua.utils.ansi_codes.cyan("in  ") },
-        { "outgoing_calls", prefix = fzf_lua.utils.ansi_codes.yellow("out ") },
+  grep = {
+    winopts = {
+      height = 0.4,
+      width = 0.5,
+      preview = {
+        hidden = "hidden", -- hide the previewer by default
       },
     },
-    symbols = {
-      path_shorten = 1,
+    git_icons = false,
+    file_icons = false,
+    actions = {
+      ["alt-c"] = actions.switch_cwd,
     },
-    code_actions = {
-      previewer = vim.fn.executable("delta") == 1 and "codeaction_native" or nil,
+    rg_opts = table.concat({
+      -- "--hidden",
+      "--follow",
+      "--smart-case",
+      "--column",
+      "--line-number",
+      "--no-heading",
+      "--color=always",
+      "-g=!.git/",
+      "-e",
+    }, " "),
+    fzf_opts = {
+      ["--info"] = "inline-right",
     },
   },
-  diagnostics = { file_icons = false, path_shorten = 1 },
-}
+})
 
-return {
-  setup = function()
-    -- NOT NEEDED since fzf-lua commit 604eadf
-    -- custom devicons setup file to be loaded when `multiprocess = true`
-    -- fzf_lua.config._devicons_setup = "~/.config/nvim/lua/plugins/devicons/setup.lua"
+-- stylua: ignore start
+if vim.fn.has("nvim") == 1 then
+  vim.g.terminal_color_0 = "#2A2A37"
+  vim.g.terminal_color_1 = "#E78A4E"
+  vim.g.terminal_color_2 = "#99c794"
+  vim.g.terminal_color_3 = "#fac863"
+  vim.g.terminal_color_4 = "#6699cc"
+  vim.g.terminal_color_5 = "#c594c5"
+  vim.g.terminal_color_6 = "#5fb3b3"
+  vim.g.terminal_color_7 = "#c0caf5"
+  vim.g.terminal_color_8 = "#555555"
+  vim.g.terminal_color_9 = "#FFA066"
+  vim.g.terminal_color_10 = "#99c794"
+  vim.g.terminal_color_11 = "#fac863"
+  vim.g.terminal_color_12 = "#6699cc"
+  vim.g.terminal_color_13 = "#c594c5"
+  vim.g.terminal_color_14 = "#5fb3b3"
+  vim.g.terminal_color_15 = "#c0caf5"
+else
+  vim.g.terminal_ansi_colors = {
+    "#1a1b26", "#ec5f67", "#99c794", "#fac863",
+    "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
+    "#555555", "#ec5f67", "#99c794", "#fac863",
+    "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
+  }
+end
 
-    fzf_lua.setup(default_opts)
+vim.api.nvim_create_user_command("F", function(info) fzf.files({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find files.", })
 
-    if vim.fn.has("nvim") == 1 then
-      vim.g.terminal_color_0 = "#2A2A37"
-      vim.g.terminal_color_1 = "#E78A4E"
-      vim.g.terminal_color_2 = "#99c794"
-      vim.g.terminal_color_3 = "#fac863"
-      vim.g.terminal_color_4 = "#6699cc"
-      vim.g.terminal_color_5 = "#c594c5"
-      vim.g.terminal_color_6 = "#5fb3b3"
-      vim.g.terminal_color_7 = "#c0caf5"
-      vim.g.terminal_color_8 = "#555555"
-      vim.g.terminal_color_9 = "#FFA066"
-      vim.g.terminal_color_10 = "#99c794"
-      vim.g.terminal_color_11 = "#fac863"
-      vim.g.terminal_color_12 = "#6699cc"
-      vim.g.terminal_color_13 = "#c594c5"
-      vim.g.terminal_color_14 = "#5fb3b3"
-      vim.g.terminal_color_15 = "#c0caf5"
-    else
-      vim.g.terminal_ansi_colors = {
-        "#1a1b26",
-        "#ec5f67",
-        "#99c794",
-        "#fac863",
-        "#6699cc",
-        "#c594c5",
-        "#5fb3b3",
-        "#c0caf5",
-        "#555555",
-        "#ec5f67",
-        "#99c794",
-        "#fac863",
-        "#6699cc",
-        "#c594c5",
-        "#5fb3b3",
-        "#c0caf5",
-      }
+-- stylua: ignore end
+local api, fn, uv = vim.api, vim.fn, vim.loop
+
+---Most recently used files
+function _G.mru()
+  local current
+  if api.nvim_buf_get_option(0, "buftype") == "" then
+    current = uv.fs_realpath(api.nvim_buf_get_name(0))
+  end
+
+  local files = {}
+  for _, file in ipairs(require("mru").get()) do
+    if file ~= current then
+      files[#files + 1] = fn.fnamemodify(file, ":~")
     end
-  end,
-}
+  end
+
+  if #files > 0 then
+    fzf.fzf_exec(files, {
+      actions = {
+        ["default"] = require("fzf-lua").actions.file_edit,
+      },
+      fzf_opts = {
+        ["--multi"] = "",
+      },
+      prompt = "MRU> ",
+      winopts = { height = 0.4, width = 0.5 },
+    })
+  else
+    print("No recently used files", "WarningMsg")
+  end
+end
+
+vim.cmd([[command! -nargs=* MRU lua _G.mru()]])

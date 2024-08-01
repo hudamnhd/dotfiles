@@ -34,7 +34,7 @@ return {
         { "<a-b>", function() toggleFloaterm("--cwd=<buffer> --name=buffer " .. size.m.." bash") end, mode = { "n" }, desc = "Buffer" },
         { "<a-b>", function() vim.cmd("FloatermKill buffer") end, mode = { "t" }, desc = "Buffer" },
 
-        { "<C-N>", function() toggleFloaterm("--name=yazi " .. size.l .." yazi") end,   mode = { "n" }, desc = "Yazi" },
+        { "<c-n>", function() toggleFloaterm("--name=yazi " .. size.l .." yazi") end,   mode = { "n" }, desc = "Yazi" },
         { "<c-p>", function() toggleFloaterm("--name=broot " .. size.l .." broot") end, mode = { "n" }, desc = "Broot" },
 
         { "<a-t>", function() toggleFloaterm("--name=bash " .. size.m .." bash") end,   mode = { "n", "t" }, desc = "Bash" },
