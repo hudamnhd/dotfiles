@@ -21,7 +21,7 @@ o.fileencoding   = "utf-8"
 o.matchpairs     = { "(:)", "{:}", "[:]", "<:>" }
 o.lazyredraw   = true
 -- recursive :find in current dir
-vim.cmd [[set path=.,,,$PWD/**]]
+vim.cmd([[set path=.,,,$PWD/**]])
 
 -- DO NOT NEED ANY OF THIS, CRUTCH THAT POULLUTES REGISTERS
 -- vim clipboard copies to system clipboard

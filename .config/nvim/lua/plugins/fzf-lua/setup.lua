@@ -1,10 +1,10 @@
-local M = {}
+local M       = {}
 local actions = require("fzf-lua.actions")
-local fzf = require("fzf-lua")
+local fzf     = require("fzf-lua")
 local actions = require("fzf-lua.actions")
-local core = require("fzf-lua.core")
-local path = require("fzf-lua.path")
-local config = require("fzf-lua.config")
+local core    = require("fzf-lua.core")
+local path    = require("fzf-lua.path")
+local config  = require("fzf-lua.config")
 
 function M.get_preview_command(items)
   local opts = fzf.config.__resume_data.opts
@@ -83,8 +83,7 @@ require("fzf-lua").setup({
 
   files = {
     prompt = "Files  ",
-    fd_opts = [[--color=never --type f]],
-    -- fd_opts = [[--color=never --type f --type d]],
+    fd_opts = [[--color=never --type f --type d]],
     fzf_opts = {
       ["--ansi"] = false,
     },

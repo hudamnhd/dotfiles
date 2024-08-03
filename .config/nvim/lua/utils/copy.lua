@@ -75,8 +75,6 @@ M.list_paths = function()
       ["--header"] = arg_header("a", "d", "y", "p / <c-p>", "touch", "mkdir", "copy", "put"),
     },
     winopts = {
-      row = 0.85,
-      col = 0.5,
       height = 0.35,
       width = win_width,
       preview = { hidden = "hidden" },

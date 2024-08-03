@@ -53,7 +53,7 @@ augroup("HelpOpenVert", {
       callback = function()
         local buftype = vim.bo.buftype
         if buftype == "help" or buftype == "nofile" then
-          vim.keymap.set("n", "q", "<cmd>bd<cr>", { buffer = true, nowait = true })
+          vim.keymap.set("n", "q", vim.cmd.bd, { buffer = true, nowait = true })
           vim.cmd("wincmd H")
         end
       end,

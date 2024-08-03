@@ -46,7 +46,7 @@ return {
       --
         vim.keymap.set("n", "<C-T>",     three.prev,            { noremap = true, desc = "Previous buffer" })
         vim.keymap.set("n", "<C-Y>",     three.next,            { noremap = true, desc = "Next buffer" })
-        vim.keymap.set("n", "<leader>0", three.wrap(three.next, { delta = 100 }), { desc = "Last buffer" })
+        vim.keymap.set("n", "<leader>`", three.wrap(three.next, { delta = 100 }), { desc = "Last buffer" })
 
         vim.keymap.set("n", "gt", three.wrap(three.next_tab, { wrap = true }), { desc = "Goto next Tab" })
         vim.keymap.set("n", "gT", three.wrap(three.prev_tab, { wrap = true }), { desc = "Goto prev Tab" })
@@ -62,13 +62,13 @@ return {
       end
 
       vim.keymap.set("n", "<leader>-", three.hide_buffer, { desc = "Buffer Hide" })
-      vim.keymap.set("n", "<leader>tc", "<cmd>tabclose<CR>", { desc = "Close tab" })
+      vim.keymap.set("n", "<leader>tc", vim.cmd.tabclose, { desc = "Close tab" })
       vim.keymap.set("n", "<leader>tb", three.clone_tab,     { desc = "Clone tab" })
       vim.keymap.set("n", "<leader>tp", three.open_project, { desc = "Find Project" })
       vim.keymap.set("n", "<leader>tn", "<cmd>tabnew | set nobuflisted<CR>", { desc = "New tab" })
 
       vim.keymap.set("n", "<leader>q", three.smart_close, { desc = "delete buff current" })
-      vim.keymap.set("n", "<leader>x", "<cmd>BufDel<CR>", { desc = "delete all buff not current" })
+      vim.keymap.set("n", "<leader>x", vim.cmd.BufDel, { desc = "delete all buff not current" })
 
       vim.api.nvim_create_user_command("ProjectDelete", function() three.remove_project() end, {})
 

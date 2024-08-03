@@ -49,7 +49,7 @@ vim.api.nvim_create_user_command("Translate", function(opts)
     command = "q",
     buffer = buf,
   })
-  vim.keymap.set("n", "q", "<cmd>q<cr>", { buffer = buf })
+  vim.keymap.set("n", "q", vim.cmd.q, { buffer = buf })
 
   -- check for the longest line (as `max_width`)
   local max_width = 0

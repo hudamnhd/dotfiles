@@ -1,5 +1,3 @@
-vim.g.Eunuch_find_executable = "fd ."
-
 return {
 -- stylua: ignore start
   { "stefandtw/quickfix-reflector.vim", ft    = "qf", },
@@ -11,7 +9,7 @@ return {
   { "wellle/targets.vim",               event = "VeryLazy" },
   { "skywind3000/asynctasks.vim",       event = "VeryLazy" },
   { "skywind3000/asyncrun.vim",         event = "VeryLazy" },
-  { "RRethy/vim-eunuch",                event = "VeryLazy" },
+  { "tpope/vim-eunuch",                 event = "VeryLazy" },
   { "tpope/vim-rsi",                    event = "VeryLazy" },
   { "tpope/vim-git",                    event = "VeryLazy" },
   { "tpope/vim-repeat",                 event = "VeryLazy" },

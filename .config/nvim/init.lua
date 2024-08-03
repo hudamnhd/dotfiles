@@ -8,8 +8,6 @@ local function safeRequire(module)
   end
 end
 
-vim.g.dwm_map_keys = 0
-
 -- disable treesitter
 vim.treesitter.stop()
 

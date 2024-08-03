@@ -14,14 +14,18 @@ function M.bind(mode, lhs, rhs, opts)
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
+M.bind("n", ">", ">>" )
+M.bind("n", "<", "<<" )
+M.bind("x", ">", ">gv")
+M.bind("x", "<", "<gv")
+
 M.bind("n", "<tab>",   [[g;]])
 M.bind("n", "<s-tab>", [[g,]])
-
-M.bind('n', '<C-c>',  [[<cmd>close<CR>]])
-M.bind("t", "<C-\\>", [[<C-\><C-n>]])
-M.bind("t", "<a-r>",  [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
-M.bind("n", "<a-w>",  [[<c-w>w]])
-M.bind("t", "<a-w>",  [[<C-\><C-n><c-w>w]])
+M.bind('n', '<C-c>',   vim.cmd.close)
+M.bind("t", "<C-\\>",  [[<C-\><C-n>]])
+M.bind("t", "<a-r>",   [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
+M.bind("n", "<a-w>",   [[<c-w>w]])
+M.bind("t", "<a-w>",   [[<C-\><C-n><c-w>w]])
 
 M.bind({ "n", "v" }, "<C-H>", [[^]])
 M.bind({ "n", "v" }, "<C-L>", [[g_]])
@@ -29,8 +33,6 @@ M.bind({ "n", "v" }, "<C-Z>", [[%]], { remap = true })
 
 M.bind({ "n", "v" }, "c", [["_c]])
 M.bind({ "n", "v" }, "x", [["_x]])
-
-M.bind("n", "<leader>d", [[d]], { desc = "copying to clipboard" })
 
 M.bind("n", "!", [[:<up><cr>]])
 M.bind("n", "Y", [[yy]])
@@ -66,14 +68,13 @@ M.bind("c", "<a-space>", [[\s\+]], { silent = false })
 
 -- NOTE join
 M.bind("n", "J", "'mz' . v:count1 . 'J`z'", { expr = true })
--- M.bind("n", "<leader>g", ":", { expr = true })
 
 -- NOTE Select last pasted/yanked text
 M.bind("n", "g<C-v>", "`[v`]", { desc = "visual select last yank/paste" })
 
--- M.bind({ "n", "v", "i" }, "<C-S>", "<esc>:update<cr>", { desc = "Save" })
-M.bind("n", "<leader>w", "<cmd>update<cr>", { desc = "Save" })
-M.bind("n", "<leader>W", "<cmd>wq<cr>", { desc = "Save and quit" })
+M.bind("n", "<leader>w", vim.cmd.update, { desc = "Save" })
+M.bind("n", "<leader>W", vim.cmd.wq,     { desc = "Save and quit" })
+M.bind("n", "<leader>Q", vim.cmd.q,      { desc = "quit all" })
 
 M.bind("x", "p", [['pgv"' . v:register . 'y']], { noremap = true, expr = true, desc = "paste in visual mode without replacing register content" })
 
@@ -95,7 +96,6 @@ M.bind("n", "zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]]
 
 -- M.bind('n', 'se', [[:<C-u>call append(0, expand('<cword>'))<CR>]], { noremap = true, silent = true })
 
-local duplicate_bak    = [[<cmd>call luaeval('require"utils.helper".duplicate_bak_file()')<cr>]]
 local toggle_diff_buff = [[<cmd>call luaeval('require"utils.helper".toggle_diff_buff()')<cr>]]
 local translate_nm     = [[<cmd>call luaeval('require"utils.translate".translate_nm()')<cr>]]
 local translate_vm     = [[<cmd>call luaeval('require"utils.translate".translate_vm()')<cr>]]
@@ -104,18 +104,18 @@ local asynctasks       = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
 local git_diff_buff    = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
 local yankround        = [[<cmd>Unite -vertical yankround<cr>]]
 
-M.bind("n", "go", git_diff_buff,    { desc = "Toggle overlay" })
 M.bind("n", "st", translate_nm,     { desc = "translate" })
 M.bind("x", "st", translate_vm,     { desc = "translate" })
-M.bind("n", "sw", asynctasks,       { desc = "ASYNCTASKS" })
-M.bind("n", "s=", toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
-M.bind("n", "s%", set_cwd,          { desc = "SET CWD" })
-M.bind("n", "s.", duplicate_bak,    { desc = "DUPLICATE_BAK_FILE" })
 
-M.bind("n", "sy", yankround,                 { desc = "YANKROUND" })
-M.bind("n", "sa", "<cmd>Agit<cr>",           { desc = "AGIT" })
-M.bind("n", "sA", "<cmd>AgitFile<cr>",       { desc = "AGITfILE" })
-M.bind("n", "su", "<cmd>UndotreeToggle<cr>", { desc = "UNDOTREEtOGGLE" })
+M.bind("n", "go", git_diff_buff,    { desc = "Toggle overlay" })
+M.bind("n", "gw", asynctasks,       { desc = "ASYNCTASKS" })
+M.bind("n", "g=", toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
+M.bind("n", "g%", set_cwd,          { desc = "SET CWD" })
+M.bind("n", "gy", yankround,        { desc = "YANKROUND" })
+
+M.bind("n", "ga", vim.cmd.Agit,           { desc = "AGIT" })
+M.bind("n", "gA", vim.cmd.AgitFile,       { desc = "AGITfILE" })
+M.bind("n", "gu", vim.cmd.UndotreeToggle, { desc = "UNDOTREEtOGGLE" })
 
 M.bind({ "n", "v" }, "<leader>y", '"+y', { desc = "yank to clipboard" })
 
@@ -127,9 +127,8 @@ M.bind({ "n", "v" }, "<leader>P", [["+P]], { desc = "paste BEFORE from clipboard
 M.bind({ "n", "v" }, "gp", [["*p]], { desc = "paste AFTER from primary" })
 M.bind({ "n", "v" }, "gP", [["*P]], { desc = "paste BEFORE from primary" })
 
-M.bind("n", "<Leader>t1", "<Cmd>AsyncTask regex-tutor<CR>",       { desc = "regex-tutor" })
-M.bind("n", "<Leader>t2", "<Cmd>AsyncTask vim-tutor<CR>",         { desc = "vim-tutor" })
--- M.bind("n", "<Leader>th", "<Cmd>TSBufToggle highlight<CR>",       { desc = "Highlight toggle" })
+M.bind("n", "<Leader>t1", "<Cmd>AsyncTask regex-tutor<CR>", { desc = "regex-tutor" })
+M.bind("n", "<Leader>t2", "<Cmd>AsyncTask vim-tutor<CR>",   { desc = "vim-tutor" })
 
 -- toogle number
 M.bind("n", '<Leader>tN', [[:set nonumber norelativenumber<CR>]], { desc ="noactive number" } )
@@ -247,16 +246,16 @@ end
 
 M.bind({ 'n', 'v' }, 'Q', '@q') -- execute macro
 
-M.bind("x", "<a-s>", [[y<cmd>let @/=substitute(escape(@", '/'), '\n', '\\n', 'g')<cr>"_cgn]], { noremap = true, desc = "Add selection to search then replace"})
-M.bind("n", "<a-s>", [[<cmd>let @/='\<'.expand('<cword>').'\>'<cr>"_cgn]], { noremap = true, desc = "Add word to search then replace"})
+M.bind("x", "<c-s>", [[y<cmd>let @/=substitute(escape(@", '/'), '\n', '\\n', 'g')<cr>"_cgn]], { noremap = true, desc = "Add selection to search then replace"})
+M.bind("n", "<c-s>", [[<cmd>let @/='\<'.expand('<cword>').'\>'<cr>"_cgn]], { noremap = true, desc = "Add word to search then replace"})
 
 M.bind('n', 'zq', '*Nqz', { desc = 'mc start macro (foward)' })
 M.bind('n', 'zQ', '#Nqz', { desc = 'mc start macro (backward)' })
-M.bind('n', '<a-q>', mc_macro(), { expr = true, desc = 'mc end or replay macro' })
+M.bind('n', '<BS>', mc_macro(), { expr = true, desc = 'mc end or replay macro' })
 
 M.bind('x', 'zq', mc_select .. '``qz', { desc = 'mc start macro (foward)' })
 M.bind('x', 'zQ', mc_select:gsub('/', '?') .. '``qz', { desc = 'mc start macro (backward)' })
-M.bind('x', '<a-q>', mc_macro(mc_select), { expr = true, desc = 'mc end or replay macro' })
+M.bind('x', '<BS>', mc_macro(mc_select), { expr = true, desc = 'mc end or replay macro' })
 
 ---Remove all trailing whitespaces within the current buffer
 ---Retain cursor position & last search content
@@ -285,12 +284,12 @@ M.bind({ "o", "x" }, "t", [[it]], { remap = true })
 M.bind({ "o", "x" }, "T", [[at]], { remap = true })
 
 -- Quickfix|loclist toggles
-M.bind("n", "<F1>", "<cmd>lua require'utils.helper'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
-M.bind("n", "<F2>", "<cmd>lua require'utils.helper'.toggle_qf('l')<CR>", { desc = "toggle location list" })
+M.bind("n", "<a-q>", "<cmd>lua require'utils.helper'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
+M.bind("n", "<a-a>", "<cmd>lua require'utils.helper'.toggle_qf('l')<CR>", { desc = "toggle location list" })
 
 M.bind("n", "X", "gxiw", { remap = true })
 M.bind("n", "M", "Vgm",  { remap = true })
-M.bind("n", "s", "ysiw", { remap = true }) -- easy press
+M.bind("n", "S", "ysiw", { remap = true }) -- easy press
 
 M.sad_visual = function()
   local utils   = require("utils.helper")
@@ -314,8 +313,23 @@ M.sad_cword = function()
   vim.api.nvim_feedkeys(cmd .. switch, "n", false)
 end
 
-M.bind('x', 'gw', M.sad_visual, { desc = 'sad_visual' })
-M.bind('n', 'gw', M.sad_cword,  { desc = 'sad_cword' })
+local sr_visual_g       = vim.cmd.SearchReplaceSingleBufferVisualSelection
+local sr_word_g         = vim.cmd.SearchReplaceSingleBufferCWord
+local sr_visual_word    = vim.cmd.SearchReplaceWithinVisualSelectionCWord
+local sr_selection_word = [[:'<,'>s/<C-r><C-w>/<C-r><C-w>/gI<left><left><left>]]
+local sr_visual_word    = vim.cmd.SearchReplaceWithinVisualSelectionCWord
+local sr_visual         = vim.cmd.SearchReplaceWithinVisualSelection
+local sr_normal         = vim.cmd.SearchReplaceSingleBufferOpen
+
+-- Search and Replace
+M.bind("x", "<F1>", sr_visual_g,       { desc = "replace visual" })
+M.bind("n", "<F1>", sr_word_g,         { desc = "replace cword" })
+M.bind("x", "<F2>", sr_visual_word,    { desc = "replace cword" })
+M.bind("n", "<F2>", sr_selection_word, { desc = "replace cword", silent = false })
+M.bind("x", "<F3>", sr_visual,         { desc = "Search Replace Search" })
+M.bind("n", "<F3>", sr_normal,         { desc = "Search Replace Search" })
+M.bind('x', '<F4>', M.sad_visual,      { desc = 'sad_visual' })
+M.bind('n', '<F4>', M.sad_cword,       { desc = 'sad_cword' })
 
 local function toggle_smart_case()
   vim.o.ignorecase = not vim.o.ignorecase
@@ -331,8 +345,9 @@ M.bind("c", "<c-s>", toggle_smart_case, {  desc = "Toggle smartcase" })
 
 local copy = require("utils.copy")
 
-M.bind({ "n", "v" }, "<leader>F", function() copy.list_paths() end, { desc = "List Path" })
-M.bind({ "n", "v" }, "<leader><space>", ":", { desc = "Command", silent = false })
+M.bind({ "n", "v" }, "<leader>c", copy.list_paths, { desc = "List Path" })
+M.bind({ "n", "v" }, "0", ":", { desc = "cmd", silent = false })
+M.bind({ "n", "v" }, "<leader>0", "0", { desc = "remap 0"})
 
 -- stylua: ignore end
 return M
