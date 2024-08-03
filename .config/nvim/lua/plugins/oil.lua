@@ -50,6 +50,15 @@ return {
           vim.notify("Copied to system clipboard:\n" .. copied, vim.log.levels.INFO, {})
         end,
       },
+      ["D"] = {
+        desc = "delete filepath ",
+        callback = function()
+          require("oil.actions").copy_entry_path.callback()
+          local copied = vim.fn.getreg(vim.v.register)
+          local cmd = ":!rm -r " .. copied
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
+        end,
+      },
     },
     -- Set to false to disable all of the above keymaps
     use_default_keymaps = false,

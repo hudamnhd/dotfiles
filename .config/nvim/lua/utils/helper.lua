@@ -61,13 +61,6 @@ function M.toggle_diff_buff()
   diff_enabled = not diff_enabled
 end
 
-function M.duplicate_bak_file()
-  vim.cmd([[
-    clear | silent execute "!cp '%:p' '%:p:h/%:t:r.%:e.bak'"
-    redraw | echo "Copied " .. expand('%:t') .. ' to ' .. expand('%:t:r') .. '.' .. expand('%:e') .. '.bak'
-  ]])
-end
-
 ---- NOTE utils
 local fast_event_aware_notify = function(msg, level, opts)
   if vim.in_fast_event() then

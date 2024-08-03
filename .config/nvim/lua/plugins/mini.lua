@@ -154,15 +154,15 @@ function M.config()
         input = { "%[%[().-()%]%]" },
         output = { left = "[[", right = "]]" },
       },
-      J = {
+      j = {
         input = { "%{%/%*().-()%*%/%}" },
         output = { left = "{/*", right = "*/}" },
       },
-      B = {
+      b = {
         input = { "%{%{%-%-().-()%-%-%}%}" },
         output = { left = "{{--", right = "--}}" },
       },
-      H = {
+      h = {
         input = { "%<%!%-%-().-()%-%-%>" },
         output = { left = "<!--", right = "-->" },
       },
@@ -179,7 +179,7 @@ function M.config()
   })
 
   -- Remap adding surrounding to Visual mode selection
-  vim.keymap.set("x", "s", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+  vim.keymap.set("x", "S", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
 
   -- unmap config generated `ys` mapping, prevents visual mode yank delay
   if vim.keymap then
