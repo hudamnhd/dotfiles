@@ -1,9 +1,9 @@
 return {
   "echasnovski/mini.hipatterns",
   version = "*",
-  keys = "<F12>",
+  keys = "<leader>th",
   config = function()
-    vim.keymap.set("n", "<F12>", ":lua MiniHipatterns.toggle()<CR>", { desc = "Hipatterns toggle" })
+    vim.keymap.set("n", "<leader>th", ":lua MiniHipatterns.toggle()<CR>", { desc = "Hipatterns toggle" })
 
     local hipatterns = require("mini.hipatterns")
     hipatterns.setup({

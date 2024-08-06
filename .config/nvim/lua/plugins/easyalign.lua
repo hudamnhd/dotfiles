@@ -12,7 +12,7 @@ return {
   },
   {
     "junegunn/vim-easy-align",
-    keys = { { "=", mode = { "n", "x" } }, { "g=", mode = { "n", "x" } } },
+    keys = { { "=", mode = { "n", "x" } }, { "<C-=>", mode = { "n", "x" } } },
     config = function()
 
       vim.g.easy_align_delimiters = {
@@ -28,7 +28,7 @@ return {
 
     -- stylua: ignore start
        vim.keymap.set({ "n", "x" }, "=",  "<Plug>(EasyAlign)",     { noremap = false, desc ="EasyAlign" })
-       vim.keymap.set({ "n", "x" }, "g=", "<Plug>(LiveEasyAlign)", { noremap = false, desc ="LiveEasyAlign"  })
+       vim.keymap.set({ "n", "x" }, "<C-=>", "<Plug>(LiveEasyAlign)", { noremap = false, desc ="LiveEasyAlign"  })
       -- stylua: ignore end
     end,
   },

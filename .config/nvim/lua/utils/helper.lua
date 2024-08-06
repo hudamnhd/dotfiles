@@ -34,9 +34,9 @@ function M.asynctasks()
         print(vim.inspect(selected))
         local str = fzf_lua.utils.strsplit(selected[1], " ")
         local command = "AsyncTask " .. vim.fn.fnameescape(str[1])
-        vim.defer_fn(function()
-          vim.api.nvim_exec(command, false)
-        end, 500) -- 5000 milliseconds = 5 seconds
+        vim.api.nvim_exec(command, false)
+        -- vim.defer_fn(function()
+        -- end, 500) -- 5000 milliseconds = 5 seconds
       end,
     },
     fzf_opts = {
@@ -115,6 +115,51 @@ function M.set_cwd(pwd)
   else
     M.warn(("Unable to set pwd to %s, directory is not accessible"):format(vim.fn.shellescape(pwd)))
   end
+end
+
+function M.get_range(callback)
+  local old_func = vim.go.operatorfunc
+  -- Define a global function for the operatorfunc
+  _G.op_func_formatting = function()
+    local start = vim.api.nvim_buf_get_mark(0, '[')
+    local finish = vim.api.nvim_buf_get_mark(0, ']')
+
+    if not start or not finish then
+      print('Invalid marks')
+      return
+    end
+
+    local start_line = start[1]
+    local start_col = start[2] - 1
+    local finish_line = finish[1]
+    local finish_col = finish[2] + 1
+
+    local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, finish_line, false)
+
+    if #lines > 0 and start_line == finish_line then
+      lines[1] = string.sub(lines[1], start_col + 2, finish_col)
+    elseif #lines > 0 then
+      if start_line < finish_line then
+        if #lines > 0 then
+          lines[1] = string.sub(lines[1], start_col + 1)
+        end
+        if #lines > 1 then
+          lines[#lines] = string.sub(lines[#lines], 1, finish_col + 1)
+        end
+      end
+    end
+
+    local text = table.concat(lines, '\n')
+
+    if callback then
+      callback(text)
+    end
+
+    vim.go.operatorfunc = old_func
+    _G.op_func_formatting = nil
+  end
+  vim.go.operatorfunc = 'v:lua.op_func_formatting'
+  vim.api.nvim_feedkeys('g@', 'n', false)
 end
 
 function M.get_visual_selection(nl_literal)

@@ -1,0 +1,21 @@
+--- tabbed.c
++++ tabbed.c
+@@ -1137,11 +1184,17 @@ sigchld(int unused)
+ void
+ spawn(const Arg *arg)
+ {
+-	if (fork() == 0) {
++	char sel_cwd[PATH_MAX];
++
++	pid_t pid = fork();
++	if (pid == 0) {
+ 		if(dpy)
+ 			close(ConnectionNumber(dpy));
+ 
+ 		setsid();
++		if (sel >= 0 && clients[sel] && clients[sel]->pid > 0 && getpidcwd(getchildpid(clients[sel]->pid), sel_cwd, PATH_MAX) == 0) {
++			chdir(sel_cwd);
++		}
+ 		if (arg && arg->v) {
+ 			execvp(((char **)arg->v)[0], (char **)arg->v);
+ 			fprintf(stderr, "%s: execvp %s", argv0,

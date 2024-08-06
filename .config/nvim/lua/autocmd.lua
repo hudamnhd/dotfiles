@@ -49,7 +49,7 @@ augroup("HelpOpenVert", {
   {
     event = "FileType",
     opts = {
-      pattern = "help,map,markdown,md",
+      pattern = "help,man,markdown,md",
       callback = function()
         local buftype = vim.bo.buftype
         if buftype == "help" or buftype == "nofile" then

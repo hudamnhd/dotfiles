@@ -47,7 +47,7 @@ function M.config()
       { mode = 'x', keys = '<Leader>' },
     },
     window = {
-      delay = 0,
+      delay = 300,
       config = {
         border = 'double',
         anchor = anchor,
@@ -58,19 +58,12 @@ function M.config()
     },
   })
 
-  require("mini.completion").setup({})
+  -- require("mini.completion").setup({})
+  --
+  -- vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
+  -- vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
-  vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
-  vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
-
-  require("mini.diff").setup({
-
-    view = {
-      style = "sign",
-      signs = { add = " ", change = " ", delete = "" },
-      -- signs = { add = "+", change = "~", delete = "-" },
-    },
-  })
+  require("mini.diff").setup({})
 
   require("mini.pairs").setup({
     modes = { insert = true, command = false, terminal = false },
@@ -80,41 +73,19 @@ function M.config()
     },
   })
 
-  require("mini.operators").setup({})
+  -- stylua: ignore start
+    vim.keymap.set("n", "<C-N>",   ":lua MiniBracketed.quickfix('forward', {})<CR>",  { silent = true, desc = "qnext" })
+    vim.keymap.set("n", "<C-P>",   ":lua MiniBracketed.quickfix('backward', {})<CR>", { silent = true, desc = "qprev" })
+    vim.keymap.set("n", "<C-G><C-N>", ":lua MiniBracketed.quickfix('first', {})<CR>",    { silent = true, desc = "qfirst" })
+    vim.keymap.set("n", "<C-G><C-P>", ":lua MiniBracketed.quickfix('last', {})<CR>",     { silent = true, desc = "qlast" })
+  -- stylua: ignore end
+
+  require("mini.operators").setup({ sort = { prefix = 'gz' } })
 
   require("mini.bracketed").setup({
     buffer = { suffix = "", options = {} },
+    quickfix = { suffix = "", options = {} },
   })
-
-  -- local function get_buffer_index(buf_id)
-  --   local buffers = vim.fn.getbufinfo({ buflisted = 1 })
-  --   for i, buffer in ipairs(buffers) do
-  --     if buffer.bufnr == buf_id then
-  --       return i
-  --     end
-  --   end
-  --   return -1
-  -- end
-
-  -- Example usage in your format function
-  -- require("mini.tabline").setup({
-  --   format = function(buf_id, label)
-  --     local suffix = vim.bo[buf_id].modified and "+ " or ""
-  --     local buffer_index = get_buffer_index(buf_id)
-  --     return " " .. buffer_index .. "." .. MiniTabline.default_format(buf_id, label) .. suffix
-  --   end,
-  -- })
-
-      -- stylua: ignore start
-  vim.api.nvim_set_hl(0, "MiniTablineCurrent", { fg = "#343D46", bg = "#eeeeee", bold = true })
-  vim.api.nvim_set_hl(0, "MiniTablineVisible", { fg = "#eeeeee", bg = "#343D46", bold = true })
-  vim.api.nvim_set_hl(0, "MiniTablineHidden", { fg = "#eeeeee", bg = "#343D46", bold = false })
-  vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = "#eeeeee", fg = "#e8274b", bold = true })
-  vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { fg = "#f38ba8", bg = "#131313", bold = true })
-  vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = "#f38ba8", fg = "#131313", bold = true })
-  vim.api.nvim_set_hl(0, "MiniTablineTabpagesection", { fg = "#eeeeee", bg = "#343D46", bold = true })
-
-  -- stylua: ignore end
 
   require("mini.notify").setup({
     lsp_progress = {
@@ -149,8 +120,7 @@ function M.config()
 
   require("mini.surround").setup({
     custom_surroundings = {
-      s = {
-        -- 'ysiws'  foo -> [[foo]]
+      r = {
         input = { "%[%[().-()%]%]" },
         output = { left = "[[", right = "]]" },
       },
@@ -179,7 +149,8 @@ function M.config()
   })
 
   -- Remap adding surrounding to Visual mode selection
-  vim.keymap.set("x", "S", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+  vim.keymap.set("x", "\\s", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+  vim.keymap.set("n", "\\s", [[ysiw]], { remap = true })
 
   -- unmap config generated `ys` mapping, prevents visual mode yank delay
   if vim.keymap then

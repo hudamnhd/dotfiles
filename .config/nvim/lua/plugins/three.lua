@@ -53,26 +53,20 @@ return {
 
       for i = 1, 9 do
         -- vim.keymap.set("n", i .. "b", three.wrap(three.jump_to, i))
-        vim.keymap.set("n", "<leader>" .. i, three.wrap(three.jump_to, i), { desc = "Goto buffer " .. i })
+        vim.keymap.set("n", "<a-".. i .. ">", three.wrap(three.jump_to, i), { desc = "Goto buffer " .. i })
       end
 
       for i = 1, 9 do
-        -- vim.keymap.set("n", i .. "m", three.wrap(three.move_buffer, i))
-        vim.keymap.set("n", "m" .. i, three.wrap(three.move_buffer, i))
+        vim.keymap.set("n", "<c-m-".. i .. ">", three.wrap(three.move_buffer, i))
       end
 
-      vim.keymap.set("n", "<leader>-", three.hide_buffer, { desc = "Buffer Hide" })
-      vim.keymap.set("n", "<leader>tc", vim.cmd.tabclose, { desc = "Close tab" })
-      vim.keymap.set("n", "<leader>tb", three.clone_tab,     { desc = "Clone tab" })
-      vim.keymap.set("n", "<leader>tp", three.open_project, { desc = "Find Project" })
-      vim.keymap.set("n", "<leader>tn", "<cmd>tabnew | set nobuflisted<CR>", { desc = "New tab" })
+      vim.keymap.set("n", "<C-S-T>", vim.cmd.tabclose, { desc = "Close tab" })
+      vim.keymap.set("n", "<C-S-P>", three.open_project, { desc = "Find Project" })
+      vim.keymap.set("n", "<C-S-H>", three.hide_buffer, { desc = "Buffer Hide" })
+      vim.keymap.set("n", "<C-S-B>", three.clone_tab,     { desc = "Clone tab" })
+      vim.keymap.set("n", "<C-S-N>", "<cmd>tabnew | set nobuflisted<CR>", { desc = "New tab" })
 
-      vim.keymap.set("n", "<leader>q", three.smart_close, { desc = "delete buff current" })
-      vim.keymap.set("n", "<leader>x", vim.cmd.BufDel, { desc = "delete all buff not current" })
-
-      vim.api.nvim_create_user_command("ProjectDelete", function() three.remove_project() end, {})
-
-        vim.api.nvim_create_user_command("BufDel", function(args)
+        local function buff_del_all()
             local current_bufnr = vim.api.nvim_get_current_buf()
             local current_tabpage = vim.api.nvim_get_current_tabpage()
             local visible_buffers = {}
@@ -84,11 +78,16 @@ return {
             end
 
             for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-                if (vim.bo[bufnr].buflisted or args.bang) and visible_buffers[bufnr] then
+                if (vim.bo[bufnr].buflisted) and visible_buffers[bufnr] then
                     three.close_buffer(bufnr)
                 end
             end
-        end, { desc = "delete all buff not current", bang = true })
+        end
+
+      vim.keymap.set("n", "<leader>q", three.smart_close, { desc = "delete buff current" })
+      vim.keymap.set("n", "<leader>x", buff_del_all,      { desc = "delete all buff not current" })
+
+      vim.api.nvim_create_user_command("ProjectDelete", function() three.remove_project() end, {})
 
       vim.api.nvim_create_user_command("ProjectAdd", function()
         local cwd = vim.loop.cwd()

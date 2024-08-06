@@ -16,7 +16,7 @@ static const char *colors[][3]     = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_gray4  },
-	[SchemeHid]  = { col_cyan,  col_gray1, col_cyan  },
+	[SchemeHid]  = { col_gray3,  col_gray2, col_cyan  },
 };
 
 /* tagging */
@@ -51,7 +51,7 @@ static const Layout layouts[] = {
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-	{ ALTKEY,                       KEY,      tag,            {.ui = 1 << TAG} }, \
+	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
@@ -81,7 +81,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_F12,          spawn,          {.v = screenrecord } },
 	{ MODKEY,                       XK_y,            spawn,          SHCMD("st -e bash -i -c 'yy; exec bash'") },
 	{ MODKEY,                       XK_n,            spawn,          SHCMD("bash -i -c 'nvd'") },
-    { MODKEY|ShiftMask,             XK_d,            spawn,          SHCMD("tabbed -r 2 st -w '' -e") },
+    { MODKEY,                       XK_t,            spawn,          SHCMD("tabbed -r 2 st -w '' -e") },
     { MODKEY|ShiftMask,             XK_m,            spawn,          {.v = mocp } },
     { MODKEY,                       XK_d,            spawn,          {.v = termcmd } },
     { MODKEY,                       XK_s,            spawn,          {.v = rofi } },

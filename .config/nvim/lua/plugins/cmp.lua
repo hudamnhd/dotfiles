@@ -1,8 +1,8 @@
 return {
   {
-    "hrsh7th/nvim-cmp",
+    "yioneko/nvim-cmp",
+    branch = "perf-up",
     event = "VeryLazy",
-    enabled = false,
     dependencies = {
       {
         "hrsh7th/cmp-vsnip",
@@ -58,8 +58,8 @@ return {
               end
             end,
           },
-          ["<C-k>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
-          ["<C-j>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+          ["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
+          ["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
           ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i" }),
           ["<C-e>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
           ["<CR>"] = cmp.mapping(function(fallback)
@@ -85,6 +85,7 @@ return {
             },
           },
         }),
+        -- from https://github.com/Bekaboo/nvim/blob/master/lua/configs/nvim-cmp.lua
         formatting = {
           fields = { "kind", "abbr", "menu" },
           format = function(entry, cmp_item)

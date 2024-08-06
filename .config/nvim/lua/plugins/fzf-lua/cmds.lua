@@ -79,7 +79,7 @@ function M.mru()
   show_fzf(files_cwd)
 end
 
-local function handle_delete(path, bookmark_file)
+local function handle_delete(path, bookmark_file, resume)
   local lines = {}
   local found = false
 
@@ -101,6 +101,9 @@ local function handle_delete(path, bookmark_file)
     vim.notify("Bookmark deleted: " .. path)
   else
     vim.notify("Bookmark not found:" .. path)
+  end
+  if resume then
+    resume()
   end
 end
 
@@ -129,10 +132,10 @@ local function handle_save(path, bookmark_file)
   vim.notify("Bookmark saved: " .. path)
 end
 
-local function delete_bookmark_file(file)
+local function delete_bookmark_file(file, resume)
   local path = vim.fn.fnamemodify(file, ":p")
   local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
-  handle_delete(path, bookmark_file)
+  handle_delete(path, bookmark_file, resume)
 end
 
 local function save_bookmark_file()
@@ -173,9 +176,9 @@ local function show_bookmark_file()
     require("fzf-lua").fzf_exec(files, {
       actions = {
         ["default"] = require("fzf-lua").actions.file_edit,
-        ["alt-x"] = function(selected)
+        ["delete"] = function(selected)
           if selected[1] then
-            delete_bookmark_file(selected[1])
+            delete_bookmark_file(selected[1], show_bookmark_file)
           end
         end,
         ["ctrl-h"] = function()
@@ -216,11 +219,10 @@ _G.fzf_dirs = function(opts)
   fzf_lua.fzf_exec("fd --type d --hidden ", opts)
 end
 
-
-local function delete_bookmark_dir(file)
+local function delete_bookmark_dir(file, resume)
   local path = vim.fn.expand(file)
   local bookmark_file = os.getenv("HOME") .. "/.cdg_paths"
-  handle_delete(path, bookmark_file)
+  handle_delete(path, bookmark_file, resume)
 end
 
 local function show_bookmark_dir()
@@ -240,9 +242,9 @@ local function show_bookmark_dir()
       ["default"] = function(selected)
         vim.cmd("cd " .. selected[1])
       end,
-      ["alt-x"] = function(selected)
+      ["delete"] = function(selected)
         if selected[1] then
-          delete_bookmark_dir(selected[1])
+          delete_bookmark_dir(selected[1], show_bookmark_dir)
         end
       end,
     },
@@ -272,7 +274,6 @@ for line in io.lines(bookmark_file) do
   end
 end
 
-local current_file_index = 1
 
 -- stylua: ignore start
 for i = 1, 9 do
@@ -280,25 +281,12 @@ for i = 1, 9 do
 end
 -- stylua: ignore end
 
-function PreviousFile()
-  if current_file_index > 1 then
-    current_file_index = current_file_index - 1
-  end
-  vim.cmd("e " .. files[current_file_index])
-end
-
-function NextFile()
-  if current_file_index < #files then
-    current_file_index = current_file_index + 1
-  end
-  vim.cmd("e " .. files[current_file_index])
-end
 
 -- stylua: ignore start
 vim.api.nvim_create_user_command("C", function(info) _G.fzf_dirs({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
 
 vim.keymap.set("n", "<leader>bb", function() vim.cmd.edit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "show file bookmark" })
-vim.keymap.set("n", "<leader>bd", function() delete_bookmark_file(vim.fn.expand("%")) end, { desc = "deleted file bookmark" })
+vim.keymap.set("n", "<leader>bd", function() delete_bookmark_file(vim.fn.expand("%"), show_bookmark_file) end, { desc = "deleted file bookmark" })
 
 vim.keymap.set("n", "<leader>h", show_bookmark_file, { desc = "show file bookmark" })
 vim.keymap.set("n", "<leader>a", save_bookmark_file, { desc = "save file bookmark" })
@@ -306,8 +294,6 @@ vim.keymap.set("n", "<leader>a", save_bookmark_file, { desc = "save file bookmar
 vim.keymap.set("n", "<leader>H", show_bookmark_dir, { desc = "show file bookmark" })
 vim.keymap.set("n", "<leader>A", save_bookmark_dir, { desc = "save file bookmark" })
 
-vim.keymap.set("n", "[<tab>", PreviousFile, { desc = "prev file bookmark" })
-vim.keymap.set("n", "]<tab>", NextFile,     { desc = "next file bookmark" })
 -- stylua: ignore end
 
 return M

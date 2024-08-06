@@ -23,24 +23,32 @@ local function toggleFloaterm(args)
   end
 end
 
-local size = { l = "--width=0.95 --height=0.95", m = "--width=0.5 --height=0.3 --wintype=split" }
+local size = {
+    l = "--width=0.95 --height=0.95",
+    m = "--width=0.5 --height=0.3 --wintype=split"
+  }
 
 return {
   "voldikss/vim-floaterm",
   cmd = "FloatermNew",
   keys = {
     -- stylua: ignore start
-        { "<a-b>", function() toggleFloaterm("--name=buffer --cwd=<buffer> --disposable " .. size.m.." bash") end,     mode = { "n", "t" }, desc = "Buffer cwd" },
         { "<a-g>", function() toggleFloaterm("--name=gitui " .. size.l .. [[ export GIT_EDITOR=floaterm; gitui]]) end, mode = { "n", "t" }, desc = "Gitui" },
 
-        { "<c-p>", function() toggleFloaterm("--name=broot " .. size.l .." broot") end, mode = { "n" },      desc = "Broot" },
-        { "<a-->", function() toggleFloaterm("--name=yazi " .. size.l .." yazi") end,   mode = { "n", "t" }, desc = "Yazi" },
-        { "<a-`>", function() toggleFloaterm("--name=bash " .. size.m .." bash") end,   mode = { "n", "t" }, desc = "Bash" },
+        { "-", function() toggleFloaterm("--name=yazi " .. size.l .." yazi") end,   mode = "n", desc = "Yazi" },
+        { "<space>f", function() toggleFloaterm("--name=broot " .. size.l .." broot") end, mode = { "n" },      desc = "Broot" },
 
-        { "<a-z>", vim.cmd.FloatermHide, mode = { "t" },      desc = "FloatermToggle" },
+        { "<F1>", function() toggleFloaterm("--name=bash " .. size.m .." bash") end,   mode = { "n", "t" }, desc = "Bash" },
+
+        { "<a-x>", vim.cmd.FloatermKill, mode = "t", desc = "FloatermKill" },
+        { "<a-z>", vim.cmd.FloatermHide, mode = "t", desc = "FloatermToggle" },
+
         { "<a-n>", vim.cmd.FloatermNext, mode = { "n", "t" }, desc = "FloatermNext" },
         { "<a-p>", vim.cmd.FloatermPrev, mode = { "n", "t" }, desc = "FloatermPrev" },
-        { "<a-N>", vim.cmd.FloatermNew,  mode = { "n", "t" }, desc = "FloatermNew" },
+        { "<a-cr>", vim.cmd.FloatermNew,  mode = { "n", "t" }, desc = "FloatermNew" },
+
+    -- { "_", function() toggleFloaterm("--name=lf " .. size.l .." lf") end,   mode = "n", desc = "Lf" },
+    -- { "<F2>", function() toggleFloaterm("--name=buffer --cwd=<buffer> --disposable " .. size.m.." bash") end,     mode = { "n", "t" }, desc = "Buffer cwd" },
     -- stylua: ignore end
   },
 }

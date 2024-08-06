@@ -1,91 +1,30 @@
 vim.g.asyncrun_exit = "echo 'Success'"
-vim.g.asyncrun_open =  20
+vim.g.asyncrun_open = 20
+vim.g.SignatureMap = {
+  Leader = "m",
+  PlaceNextMark = "",
+  ToggleMarkAtLine = "",
+  PurgeMarksAtLine = "",
+  DeleteMark = "",
+  PurgeMarks = "",
+  PurgeMarkers = "",
+  GotoNextLineAlpha = "",
+  GotoPrevLineAlpha = "",
+  GotoNextSpotAlpha = "",
+  GotoPrevSpotAlpha = "",
+  GotoNextLineByPos = "",
+  GotoPrevLineByPos = "",
+  GotoNextSpotByPos = "",
+  GotoPrevSpotByPos = "",
+  GotoNextMarker = "",
+  GotoPrevMarker = "",
+  GotoNextMarkerAny = "",
+  GotoPrevMarkerAny = "",
+  ListBufferMarks = "",
+  ListBufferMarkers = "",
+}
 
 vim.cmd([[
-function! Gat(method) abort
-    let &opfunc = a:method
-    return "g@"
-endfunction
-
-nnoremap <expr><f9> Gat("v:lua.print")
-command! -nargs=+ -complete=file MyEdit
-				\ for f in expand(<q-args>, 0, 1) |
-				\ exe '<mods> split ' .. f |
-				\ endfor
-
-		    function! SpecialEdit(files, mods)
-			for f in expand(a:files, 0, 1)
-			    exe a:mods .. ' split ' .. f
-			endfor
-		    endfunction
-		    command! -nargs=+ -complete=file Sedit
-				\ call SpecialEdit(<q-args>, <q-mods>)
-
-	nnoremap <expr> <F7> CountSpaces()
-	xnoremap <expr> <F7> CountSpaces()
-	" doubling <F4> works on a line
-	nnoremap <expr> <F7><F7> CountSpaces() .. '_'
-
-	function CountSpaces(context = {}, type = '') abort
-	  if a:type == ''
-	    let context = #{
-	      \ dot_command: v:false,
-	      \ extend_block: '',
-	      \ virtualedit: [&l:virtualedit, &g:virtualedit],
-	      \ }
-	    let &operatorfunc = function('CountSpaces', [context])
-	    set virtualedit=block
-	    return 'g@'
-	  endif
-
-	  let save = #{
-	    \ clipboard: &clipboard,
-	    \ selection: &selection,
-	    \ virtualedit: [&l:virtualedit, &g:virtualedit],
-	    \ register: getreginfo('"'),
-	    \ visual_marks: [getpos("'<"), getpos("'>")],
-	    \ }
-
-	  try
-	    set clipboard= selection=inclusive virtualedit=
-	    let commands = #{
-	      \ line: "'[V']",
-	      \ char: "`[v`]",
-	      \ block: "`[\<C-V>`]",
-	      \ }[a:type]
-	    let [_, _, col, off] = getpos("']")
-	    if off != 0
-	      let vcol = getline("'[")->strpart(0, col + off)->strdisplaywidth()
-	      if vcol >= [line("'["), '$']->virtcol() - 1
-	        let a:context.extend_block = '$'
-	      else
-	        let a:context.extend_block = vcol .. '|'
-	      endif
-	    endif
-	    if a:context.extend_block != ''
-	      let commands ..= 'oO' .. a:context.extend_block
-	    endif
-	    let commands ..= 'y'
-	    execute 'silent noautocmd keepjumps normal! ' .. commands
-	    echomsg getreg('"')->count(' ')
-	  finally
-	    call setreg('"', save.register)
-	    call setpos("'<", save.visual_marks[0])
-	    call setpos("'>", save.visual_marks[1])
-	    let &clipboard = save.clipboard
-	    let &selection = save.selection
-	    let [&l:virtualedit, &g:virtualedit] = get(a:context.dot_command ? save : a:context, 'virtualedit')
-	    let a:context.dot_command = v:true
-	  endtry
-	endfunction
-nnoremap <F6> <Cmd>let &opfunc='{t ->
-				\ getline(".")
-				\ ->split("\\zs")
-				\ ->insert("\"", col("'']"))
-				\ ->insert("\"", col("''[") - 1)
-				\ ->join("")
-				\ ->setline(".")}'<CR>g@
-
 map <C-J> <Plug>(edgemotion-j)
 map <C-K> <Plug>(edgemotion-k)
 
@@ -96,6 +35,7 @@ map g* <Plug>(asterisk-gz*)
 map g# <Plug>(asterisk-gz#)
 
 highlight! link SignatureMarkText WarningMsg
+"highlight! link SignatureMarkLine WarningMsg
 
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
@@ -132,4 +72,3 @@ augroup vimrc_autocmd
   autocmd VimEnter,BufNew * autocmd InsertEnter <buffer=abuf> ++once if &filetype ==# '' | exe 'runtime! after/ftplugin/text.vim' | endif
 augroup END
 ]])
-

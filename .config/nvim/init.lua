@@ -9,7 +9,14 @@ local function safeRequire(module)
 end
 
 -- disable treesitter
-vim.treesitter.stop()
+-- vim.treesitter.stop()
+
+-- enable loader
+vim.loader.enable()
+
+-- Load default colorscheme
+pcall(vim.cmd, [[colorscheme default]])
+pcall(vim.cmd, [[hi! link LineNr Comment]])
 
 -- Load configuration files
 safeRequire("mru")
@@ -19,9 +26,6 @@ safeRequire("keymaps")
 safeRequire("lazyplug")
 safeRequire("utils.vscript")
 
--- enable loader
-vim.loader.enable()
+vim.api.nvim_set_hl(0, 'SignatureMarkLine', { bg = 'green', fg = 'white' })
+vim.api.nvim_set_hl(0, 'SignatureMarkerLineHL', { bg = 'green', fg = 'white' })
 
--- Load default colorscheme
-pcall(vim.cmd, [[colorscheme default]])
-pcall(vim.cmd, [[hi! link LineNr Comment]])
