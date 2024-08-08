@@ -1,21 +1,4 @@
 local M = {}
-
-local relative_cursor = {
-  relative = "cursor",
-  row = 1.01,
-  col = 0,
-  height = 0.30,
-  width = 0.30,
-}
-
-function M.spell_suggest()
-  local opts_spell = {
-    prompt = "Spell> ",
-    winopts = relative_cursor,
-  }
-  require("fzf-lua").spell_suggest(opts_spell)
-end
-
 local api, fn, uv = vim.api, vim.fn, vim.loop
 
 function M.mru()
@@ -120,7 +103,8 @@ local function handle_save(path, bookmark_file)
     f:close()
 
     if exists then
-      vim.notify("Bookmark already exists")
+      handle_delete(path, bookmark_file)
+      -- vim.notify("Bookmark already exists")
       return
     end
   end
@@ -242,6 +226,9 @@ local function show_bookmark_dir()
       ["default"] = function(selected)
         vim.cmd("cd " .. selected[1])
       end,
+      ["alt-f"] = function(selected)
+        vim.cmd("F " .. selected[1])
+      end,
       ["delete"] = function(selected)
         if selected[1] then
           delete_bookmark_dir(selected[1], show_bookmark_dir)
@@ -276,8 +263,8 @@ end
 
 
 -- stylua: ignore start
-for i = 1, 9 do
-    vim.keymap.set('n', string.format('<leader>b%d', i), function() vim.cmd.edit(files[i]) end, { desc = "go bookmark " ..i })
+for i = 1, 4 do
+    vim.keymap.set('n', string.format('<a-%d>', i), function() vim.cmd.edit(files[i]) end, { desc = "go bookmark " ..i })
 end
 -- stylua: ignore end
 
@@ -285,14 +272,14 @@ end
 -- stylua: ignore start
 vim.api.nvim_create_user_command("C", function(info) _G.fzf_dirs({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
 
-vim.keymap.set("n", "<leader>bb", function() vim.cmd.edit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "show file bookmark" })
-vim.keymap.set("n", "<leader>bd", function() delete_bookmark_file(vim.fn.expand("%"), show_bookmark_file) end, { desc = "deleted file bookmark" })
+vim.keymap.set("n", "mm", function() vim.cmd.vsplit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "edit file bookmark" })
+vim.keymap.set("n", "mM", function() vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths") end, { desc = "edit dir bookmark" })
 
-vim.keymap.set("n", "<leader>h", show_bookmark_file, { desc = "show file bookmark" })
-vim.keymap.set("n", "<leader>a", save_bookmark_file, { desc = "save file bookmark" })
+vim.keymap.set("n", "sm", show_bookmark_file, { desc = "show file bookmark" })
+vim.keymap.set("n", "ma", save_bookmark_file, { desc = "save file bookmark" })
 
-vim.keymap.set("n", "<leader>H", show_bookmark_dir, { desc = "show file bookmark" })
-vim.keymap.set("n", "<leader>A", save_bookmark_dir, { desc = "save file bookmark" })
+vim.keymap.set("n", "sM", show_bookmark_dir, { desc = "show dir bookmark" })
+vim.keymap.set("n", "mA", save_bookmark_dir, { desc = "save dir bookmark" })
 
 -- stylua: ignore end
 

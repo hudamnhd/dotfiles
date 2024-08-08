@@ -1,7 +1,7 @@
 vim.g.asyncrun_exit = "echo 'Success'"
 vim.g.asyncrun_open = 20
 vim.g.SignatureMap = {
-  Leader = "m",
+  Leader = "<space>m",
   PlaceNextMark = "",
   ToggleMarkAtLine = "",
   PurgeMarksAtLine = "",
@@ -35,7 +35,6 @@ map g* <Plug>(asterisk-gz*)
 map g# <Plug>(asterisk-gz#)
 
 highlight! link SignatureMarkText WarningMsg
-"highlight! link SignatureMarkLine WarningMsg
 
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 

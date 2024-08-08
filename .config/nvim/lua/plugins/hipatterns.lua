@@ -1,10 +1,10 @@
 return {
   "echasnovski/mini.hipatterns",
   version = "*",
-  keys = "<leader>th",
+  keys = {
+    { "<leader>th", ":lua MiniHipatterns.toggle()<CR>", mode = "n", desc = "Hipatterns toggle" },
+  },
   config = function()
-    vim.keymap.set("n", "<leader>th", ":lua MiniHipatterns.toggle()<CR>", { desc = "Hipatterns toggle" })
-
     local hipatterns = require("mini.hipatterns")
     hipatterns.setup({
       highlighters = {
@@ -19,7 +19,7 @@ return {
       },
     })
 
-     vim.cmd([[
+    vim.cmd([[
  highlight MiniHipatternsFixme guibg=#ff5555 guifg=#ffffff
  highlight MiniHipatternsHack guibg=#ffb86c guifg=#000000
  highlight MiniHipatternsTodo guibg=#f1fa8c guifg=#000000

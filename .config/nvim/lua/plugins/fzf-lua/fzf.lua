@@ -6,32 +6,34 @@ M.bind      = require("keymaps").bind
 M.winopts   = require("plugins.fzf-lua.layout")
 M.mru       = require("plugins.fzf-lua.cmds").mru
 M.get_range = require("utils.helper").get_range
-M.cword     = vim.fn.expand("<cword>")
-
 
 M.bind("n", "<leader>lw", function() M.F.lsp_document_diagnostics({ winopts = M.winopts.lg.vertical }) end,   { desc = "Document Diagnostics"  })
 M.bind("n", "<leader>lW", function() M.F.lsp_workspace_diagnostics({ winopts = M.winopts.lg.vertical }) end,  { desc = "Workspace Diagnostics"  })
 M.bind("n", "<leader>ls", function() M.F.lsp_document_symbols({ winopts = M.winopts.lg.vertical }) end,       { desc = "Document Symbols"  })
 M.bind("n", "<leader>lS", function() M.F.lsp_live_workspace_symbols({ winopts = M.winopts.lg.vertical }) end, { desc = "Workspace Symbols"  })
 
-M.bind("n", "si", function() M.get_range(function(result) M.F.lgrep_curbuf({ winopts = M.winopts.sm.no_preview, query = result }) end) end, { desc = "Grep Buffer"  })
-M.bind("n", "sa", function() M.get_range(function(result) M.F.grep({ winopts = M.winopts.sm.no_preview, search = result }) end) end, { desc = "Grep Project"  })
-M.bind("x", "sa", function() M.F.grep_visual({ winopts = M.winopts.sm.no_preview }) end, { desc = "Grep Project Selection"  })
+M.bind("n", "sl", function() M.get_range(function(result) M.F.lgrep_curbuf({ winopts = M.winopts.sm.no_preview, query = result }) end) end, { desc = "Grep Buffer"  })
+M.bind("n", "sk", function() M.get_range(function(result) M.F.grep({ winopts = M.winopts.sm.no_preview, search = result }) end) end, { desc = "Grep Project"  })
+M.bind("x", "sk", function() M.F.grep_visual({ winopts = M.winopts.sm.no_preview }) end, { desc = "Grep Project Selection"  })
 
-M.bind("n", "sh", function() M.F.search_history({ winopts = M.winopts.sm.no_preview }) end,  { desc = "Search History"  })
-M.bind("n", "sg", function() M.F.grep({ winopts = M.winopts.sm.no_preview }) end,            { desc = "Grep"  })
-M.bind("n", "sG", function() M.F.live_grep_resume({ winopts = M.winopts.lg.vertical }) end,  { desc = "Grep Resume"  })
-M.bind("n", "sy", function() M.F.registers({ winopts = M.winopts.lg.vertical }) end,         { desc = "Registers"  })
-M.bind("n", "sc", function() M.F.changes({ winopts = M.winopts.lg.vertical }) end,           { desc = "Buff changes"  })
-M.bind("n", "sb", function() M.F.buffers({ winopts = M.winopts.sm.no_preview }) end,         { desc = "Buffers"  })
+M.bind("n", "s/", function() M.F.grep({ winopts = M.winopts.sm.no_preview }) end,            { desc = "Grep"  })
 
 M.bind("n", "ghs", function() M.F.git_status({ winopts = M.winopts.lg.vertical }) end,   { desc = "Status"  })
 M.bind("n", "ghb", function() M.F.git_bcommits({ winopts = M.winopts.lg.vertical }) end, { desc = "Bcommits"  })
 M.bind("n", "ghc", function() M.F.git_commits({ winopts = M.winopts.lg.vertical }) end,  { desc = "Commits"  })
 
-M.bind("n", "sv", function() M.F.files({ cwd = "~/.config/nvim" }) end, { desc = "VIMRC"  })
-M.bind("n", "sn", function() M.F.files({ cwd = "~/vimwiki" }) end,      { desc = "NOTES"  })
-M.bind("n", "sk", function() M.F.files({ cwd = "%:h" }) end,            { desc = "FILES Sibling" })
+M.bind("n", "sfm", function() M.F.marks({ winopts = M.winopts.lg.vertical }) end,             { desc = "Marks"  })
+M.bind("n", "sfj", function() M.F.jumps({ winopts = M.winopts.lg.vertical }) end,             { desc = "Jumps"  })
+M.bind("n", "sfr", function() M.F.registers({ winopts = M.winopts.lg.vertical }) end,         { desc = "Registers"  })
+M.bind("n", "sfc", function() M.F.command_history({ winopts = M.winopts.sm.no_preview }) end, { desc = "Command History"  })
+M.bind("n", "sfh", function() M.F.changes({ winopts = M.winopts.lg.vertical }) end,           { desc = "changes"  })
+M.bind("n", "sfs", function() M.F.search_history({ winopts = M.winopts.sm.no_preview }) end,  { desc = "Search History"  })
+M.bind("n", "sfb", function() M.F.buffers({ winopts = M.winopts.sm.no_preview }) end,         { desc = "Buffers"  })
+M.bind("n", "sfg", function() M.F.live_grep_resume({ winopts = M.winopts.lg.vertical }) end,  { desc = "Grep Resume"  })
+M.bind("n", "sfv", function() M.F.files({ cwd = "~/.config/nvim" }) end, { desc = "VIMRC"  })
+M.bind("n", "sfn", function() M.F.files({ cwd = "~/vimwiki" }) end,      { desc = "NOTES"  })
+M.bind("n", "sfp", function() M.F.files({ cwd = "%:h" }) end,            { desc = "FILES Sibling" })
+M.bind("n", "sff", function() M.F.files({ query = vim.fn.expand("<cword>") }) end, { desc = "Grep files under cursor"  })
 
 M.bind("n", "sp", M.F.files,   { desc = "FILES"  })
 M.bind("n", "s0", M.F.resume,  { desc = "RESUME" } )
@@ -42,7 +44,6 @@ M.bind("i", "<c-k>", M.F.complete_path, { desc = "Fuzzy complete path" }) -- rem
 M.bind("i", "<c-l>", M.F.complete_line, { desc = "Fuzzy complete line" }) -- remap <C-X><C-L>
 
 M.bind("n", "z=", function() M.F.spell_suggest({ winopts = M.winopts.sm.relative_cursor, }) end, { desc = "spell_suggest" })
-M.bind("n", "zf", function() M.F.files({ desc = "grep <word> (buffer)", prompt = "Files❯ ", query = M.cword }) end, { desc = "Grep files under cursor"  })
 
 vim.api.nvim_create_user_command("F", function(info) M.F.files({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find files.", })
 

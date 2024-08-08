@@ -10,22 +10,21 @@ return {
     opts = {
       bufferline = {
         events = { "BufReadPost", "BufWinLeave" },
-        -- should_display = function(tabpage, bufnr, ts) return vim.bo[bufnr].modified end,
+        should_display = function(tabpage, bufnr, ts) return vim.bo[bufnr].modified end,
+        recency_slots = 9,
         enabled = true,
         icon = {
-          -- Tab left/right dividers
-          -- Set to this value for more a more compact look
           dividers = { "▍", "" },
           scroll = { "«", "»" },
           pin_divider = "",
-          -- Pinned buffer icon
           pin = "󰐃",
         },
       },
       projects = {
         allowlist = {
-          -- vim.fn.stdpath("data") .. "/lazy",
-          -- vim.fs.normalize("~/vimwiki"),
+          vim.fn.stdpath("data") .. "/lazy",
+          vim.fs.normalize("~/vimwiki"),
+          vim.fs.normalize("~"),
         },
         extra_allowlist = {},
         filter_dir = function(dir)
@@ -39,30 +38,35 @@ return {
       },
     },
     config = function(_, opts)
-      -- vim.list_extend(opts.projects.allowlist, vim.tbl_keys(opts.projects.extra_allowlist))
+      vim.list_extend(opts.projects.allowlist, vim.tbl_keys(opts.projects.extra_allowlist))
       local three = require("three")
       three.setup(opts)
       -- stylua: ignore start
-      --
-        vim.keymap.set("n", "<C-T>",     three.prev,            { noremap = true, desc = "Previous buffer" })
-        vim.keymap.set("n", "<C-Y>",     three.next,            { noremap = true, desc = "Next buffer" })
-        vim.keymap.set("n", "<leader>`", three.wrap(three.next, { delta = 100 }), { desc = "Last buffer" })
+        vim.keymap.set("n", "<C-T>", three.prev, { noremap = true, desc = "Previous buffer" })
+        vim.keymap.set("n", "<C-Y>", three.next, { noremap = true, desc = "Next buffer" })
+
+        vim.keymap.set("n", "<C-S-T>", three.wrap(three.prev, { delta = 100 }), { desc = "First buffer" })
+        vim.keymap.set("n", "<C-S-Y>", three.wrap(three.next, { delta = 100 }), { desc = "Last buffer" })
 
         vim.keymap.set("n", "gt", three.wrap(three.next_tab, { wrap = true }), { desc = "Goto next Tab" })
         vim.keymap.set("n", "gT", three.wrap(three.prev_tab, { wrap = true }), { desc = "Goto prev Tab" })
 
-      for i = 1, 9 do
-        -- vim.keymap.set("n", i .. "b", three.wrap(three.jump_to, i))
-        vim.keymap.set("n", "<a-".. i .. ">", three.wrap(three.jump_to, i), { desc = "Goto buffer " .. i })
+      local keys = '1234567890'
+      for i = 1, #keys do
+        local key = keys:sub(i,i)
+        local key_combination = string.format('<leader>%s', key)
+        vim.keymap.set('n', key_combination, three.wrap(three.jump_to, i), { desc = "Goto buffer " .. i })
       end
 
-      for i = 1, 9 do
-        vim.keymap.set("n", "<c-m-".. i .. ">", three.wrap(three.move_buffer, i))
+      local keys = '1234567890'
+      for i = 1, #keys do
+        local key = keys:sub(i,i)
+        local key_combination = string.format('<leader>bm%s', key)
+        vim.keymap.set('n', key_combination, three.wrap(three.move_buffer, i), { desc = "move buffer " .. i })
       end
 
       vim.keymap.set("n", "<C-S-T>", vim.cmd.tabclose, { desc = "Close tab" })
       vim.keymap.set("n", "<C-S-P>", three.open_project, { desc = "Find Project" })
-      vim.keymap.set("n", "<C-S-H>", three.hide_buffer, { desc = "Buffer Hide" })
       vim.keymap.set("n", "<C-S-B>", three.clone_tab,     { desc = "Clone tab" })
       vim.keymap.set("n", "<C-S-N>", "<cmd>tabnew | set nobuflisted<CR>", { desc = "New tab" })
 

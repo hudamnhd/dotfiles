@@ -149,8 +149,8 @@ function M.config()
   })
 
   -- Remap adding surrounding to Visual mode selection
-  vim.keymap.set("x", "\\s", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
-  vim.keymap.set("n", "\\s", [[ysiw]], { remap = true })
+  vim.keymap.set("x", "s", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true, desc = "MiniSurround add visual"  })
+  vim.keymap.set("n", "sw", [[ysiw]], { remap = true, desc = "MiniSurround add word" })
 
   -- unmap config generated `ys` mapping, prevents visual mode yank delay
   if vim.keymap then

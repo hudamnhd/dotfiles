@@ -26,6 +26,4 @@ safeRequire("keymaps")
 safeRequire("lazyplug")
 safeRequire("utils.vscript")
 
-vim.api.nvim_set_hl(0, 'SignatureMarkLine', { bg = 'green', fg = 'white' })
-vim.api.nvim_set_hl(0, 'SignatureMarkerLineHL', { bg = 'green', fg = 'white' })
-
+vim.api.nvim_set_hl(0, "SignatureMarkLine", { underdashed = true })

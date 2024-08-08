@@ -21,8 +21,9 @@ M.bind("x", "<", "<gv")
 M.bind("n", "<tab>",   [[g;]])
 M.bind("n", "<s-tab>", [[g,]])
 M.bind("t", "<C-\\>",  [[<C-\><C-n>]])
-M.bind("n", "<c-tab>", [[<c-w>w]])
-M.bind("t", "<c-tab>", [[<C-\><C-n><c-w>w]])
+
+M.bind("n", "<a-w>", [[<c-w>w]])
+M.bind("t", "<a-w>", [[<C-\><C-n><c-w>w]])
 
 M.bind({ "n", "v" }, "<C-H>", [[^]])
 M.bind({ "n", "v" }, "<C-L>", [[g_]])
@@ -36,9 +37,10 @@ M.bind("n", "<C-.>", [[:<up><cr>]])
 M.bind("n", "Y", [[yy]])
 
 -- NOTE without copying to clipboard
-M.bind("n", "D", [["_D]], { desc = "blackhole" })
-M.bind("n", "C", [["_C]], { desc = "blackhole" })
-M.bind("n", "d", [["_d]], { desc = "blackhole" })
+local blackhole_key = { "S", "D", "C", "d" }
+for _, key in ipairs(blackhole_key) do
+    M.bind("n", key, '"_' .. key, { desc = "blackhole" .. key })
+end
 
 local function delete_line()
   local empty_line = vim.api.nvim_get_current_line():match("^%s*$")
@@ -56,13 +58,15 @@ M.bind("c", "<F1>", [[\(.*\)]], { silent = false })
 M.bind("c", "<F2>", [[\<.*\>]], { silent = false })
 
 -- NOTE Lua expression
-M.bind("c", "%%", 'getcmdtype() == ":" ? expand("%:p:h/") . "/" : "%%"', { silent = false, expr = true })
-M.bind("c", "$$", 'getcmdtype() == ":" ? expand("%:p")  : "$"',          { silent = false, expr = true })
+M.bind("c", "<C-5>", 'getcmdtype() == ":" ? expand("%:p:h/") . "/" : "%%"', { silent = false, expr = true })
+M.bind("c", "<C-4>", 'getcmdtype() == ":" ? expand("%:p")  : "$"',          { silent = false, expr = true })
 
 M.bind("c", "<C-V>",      [[<C-R>"]], { desc = "paste cmd-mode", silent = false  })
 M.bind("c", "<C-X><C-V>", [[<C-R>+]], { desc = "paste cmd-mode", silent = false  })
 
-M.bind("t", "<c-v>", [[<C-\><C-N>""pi]], { desc = "paste term-mode"})
+-- M.bind("t", "<M-r>", [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
+M.bind("t", "<c-v>", [['<C-\><C-N>""pi']], { expr = true })
+M.bind("t", "<a-v>", [['<C-\><C-N>"+pi']], { expr = true })
 
 M.bind("c", "<c-space>", [[.\{-}]], { silent = false })
 M.bind("c", "<a-space>", [[\s\+]], { silent = false })
@@ -74,8 +78,6 @@ M.bind("n", "J", "'mz' . v:count1 . 'J`z'", { expr = true })
 M.bind("n", "g<C-v>", "`[v`]", { desc = "visual select last yank/paste" })
 
 M.bind("n", "<leader>w", vim.cmd.update, { desc = "Save" })
-M.bind("n", "<leader>W", vim.cmd.wq,     { desc = "Save and quit" })
-M.bind("n", "<leader>Q", vim.cmd.q,      { desc = "quit all" })
 
 M.bind("x", "p", [['pgv"' . v:register . 'y']], { noremap = true, expr = true, desc = "paste in visual mode without replacing register content" })
 
@@ -103,16 +105,14 @@ local asynctasks       = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
 local git_diff_buff    = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
 local yankround        = [[<cmd>Unite -vertical yankround<cr>]]
 
-M.bind("n", "st", translate_nm,     { desc = "translate" })
-M.bind("x", "st", translate_vm,     { desc = "translate" })
+M.bind("n", "st", translate_nm,  { desc = "translate" })
+M.bind("x", "st", translate_vm,  { desc = "translate" })
 
--- M.bind("n", "g=", toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
-M.bind("n", "go", git_diff_buff,    { desc = "Toggle overlay" })
-M.bind("n", "gw", asynctasks,       { desc = "ASYNCTASKS" })
-M.bind("n", "gy", yankround,        { desc = "YANKROUND" })
-M.bind("n", "gcd", set_cwd,          { desc = "SET CWD" })
+M.bind("n", "go", git_diff_buff, { desc = "Toggle overlay" })
+M.bind("n", "gy", yankround,     { desc = "YANKROUND" })
+M.bind("n", "gcd", set_cwd,      { desc = "SET CWD" })
 
-M.bind("n", "gA", vim.cmd.Agit,           { desc = "AGIT" })
+M.bind("n", "gl", vim.cmd.Agit,           { desc = "AGIT" })
 M.bind("n", "ga", vim.cmd.AgitFile,       { desc = "AGITfILE" })
 M.bind("n", "gu", vim.cmd.UndotreeToggle, { desc = "UNDOTREEtOGGLE" })
 
@@ -123,18 +123,20 @@ M.bind("n", "<leader>Y", '"+Y$',{ desc = "yank line to clipboard" })
 M.bind({ "n", "v" }, "<leader>P", [["+P]], { desc = "paste BEFORE from clipboard" })
 M.bind({ "n", "v" }, "<leader>p", [["+p]], { desc = "paste AFTER from clipboard" })
 
-M.bind({ "n", "v" }, "gp", [["*p]], { desc = "paste AFTER from primary" })
-M.bind({ "n", "v" }, "gP", [["*P]], { desc = "paste BEFORE from primary" })
+M.bind({ "n", "v" }, "gp", [["0p]], { desc = "paste AFTER  from yank (reg:0)" })
+M.bind({ "n", "v" }, "gP", [["0P]], { desc = "paste BEFORE from yank (reg:0)" })
 
+M.bind("n", "<Leader>tt", asynctasks,       { desc = "ASYNCTASKS" })
+M.bind("n", "<Leader>td", toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
 M.bind("n", "<Leader>t1", "<Cmd>AsyncTask regex-tutor<CR>", { desc = "regex-tutor" })
 M.bind("n", "<Leader>t2", "<Cmd>AsyncTask vim-tutor<CR>",   { desc = "vim-tutor" })
 
 -- toogle number
-M.bind("n", '<Leader>tr', [[:set nonumber norelativenumber<CR>]], { desc ="noactive number" } )
-M.bind("n", '<Leader>tR', [[:set number relativenumber<CR>]], { desc ="active number" } )
+M.bind("n", '<Leader>tn', [[:set nonumber norelativenumber<CR>]], { desc ="noactive number" } )
+M.bind("n", '<Leader>tN', [[:set number relativenumber<CR>]], { desc ="active number" } )
+M.bind("n", "<Leader>tm", vim.cmd.messages,  { desc = "messages" })
 
 M.bind("n", "<Leader>n",  "<Cmd>nohlsearch|diffupdate|echo<CR>",  { desc = "nohlsearch" })
-M.bind("n", "<Leader>m",  "<Cmd>20messages<CR>",  { desc = "messages" })
 
 -- any jump over 5 modifies the jumplist
 -- so we can use <C-o> <C-i> to jump back and forth
@@ -239,8 +241,8 @@ end
 
 M.bind({ 'n', 'v' }, 'Q', '@q') -- execute macro
 
-M.bind("x", "<leader>s", [[y<cmd>let @/=substitute(escape(@", '/'), '\n', '\\n', 'g')<cr>"_cgn]], { noremap = true, desc = "Add selection to search then replace"})
-M.bind("n", "<leader>s", [[<cmd>let @/='\<'.expand('<cword>').'\>'<cr>"_cgn]], { noremap = true, desc = "Add word to search then replace"})
+M.bind("x", "<leader>c", [[y<cmd>let @/=substitute(escape(@", '/'), '\n', '\\n', 'g')<cr>"_cgn]], { noremap = true, desc = "Add selection to search then replace"})
+M.bind("n", "<leader>c", [[<cmd>let @/='\<'.expand('<cword>').'\>'<cr>"_cgn]], { noremap = true, desc = "Add word to search then replace"})
 
 M.bind('n', 'zq', '*Nqz', { desc = 'mc start macro (foward)' })
 M.bind('n', 'zQ', '#Nqz', { desc = 'mc start macro (backward)' })
@@ -313,10 +315,11 @@ M.bind("n", "<C-F>", sr_word_g,         { desc = "replace cword" })
 M.bind("x", "<C-B>", sr_visual_word,    { desc = "replace cword" })
 M.bind("n", "<C-B>", sr_selection_word, { desc = "replace cword", silent = false })
 
-M.bind("x", "ss", sr_visual,    { desc = "Search Replace Search" })
-M.bind("n", "ss", sr_normal,    { desc = "Search Replace Search" })
-M.bind('x', 'sr', M.sad_visual, { desc = 'sad_visual' })
-M.bind('n', 'sr', M.sad_cword,  { desc = 'sad_cword' })
+M.bind("x", "<a-s>", sr_visual,    { desc = "Search Replace Search" })
+M.bind("n", "<a-s>", sr_normal,    { desc = "Search Replace Search" })
+
+M.bind('x', '<a-f>', M.sad_visual, { desc = 'sad_visual' })
+M.bind('n', '<a-f>', M.sad_cword,  { desc = 'sad_cword' })
 
 local function toggle_smart_case()
   vim.o.ignorecase = not vim.o.ignorecase
@@ -337,11 +340,27 @@ M.bind("n", "s-", copy.list_paths, { desc = "List Path" })
 M.bind({ "n", "v" }, "0", ":", { desc = "cmd", silent = false })
 M.bind({ "n", "v" }, "s=", "=", { desc = "indent" })
 
-M.bind("n", "<c-s-space>", [[:<C-U>call signature#mark#Purge('all')<CR>]],   { desc = "purge all mark buffer" })
-M.bind("n", "<c-space>",   [[:<C-U>call signature#mark#ToggleAtLine()<CR>]], { desc = "toggle mark line" })
-M.bind("n", "<s-space>",   [[:<C-U>call signature#mark#List(0, 0)<CR>]],     { desc = "list all mark in quickfix" })
+M.bind("n", "<leader>E",  [[:<C-U>call signature#mark#Purge('all')<CR>]],   { desc = "purge all mark buffer" })
+M.bind("n", "<leader>e",  [[:<C-U>call signature#mark#ToggleAtLine()<CR>]], { desc = "toggle mark line" })
+M.bind("n", "<leader>te", [[:<C-U>call signature#mark#List(0, 0)<CR>]],     { desc = "list all mark in quickfix" })
 
 M.bind("n", "<c-[>", [[:<C-U>call signature#mark#Goto("prev", "spot", "alpha")<CR>]], { desc = "prev mark" })
 M.bind("n", "<c-]>", [[:<C-U>call signature#mark#Goto("next", "spot", "alpha")<CR>]], { desc = "next mark" })
+
+local function is_visual_block()
+  local mode = vim.api.nvim_get_mode().mode
+  return mode == 'x' or mode == 'V'
+end
+
+function M.handle_v()
+  if is_visual_block() then
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-v>', true, false, true), 'n', true)
+  else
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-v>', true, false, true), 'n', true)
+  end
+end
+
+M.bind('x', 'v', function() M.handle_v() end, { noremap = true, silent = true })
+M.bind('v', 'v', function() M.handle_v() end, { noremap = true, silent = true })
 -- stylua: ignore end
 return M

@@ -13,7 +13,7 @@ end
 o.inccommand     = "split" -- for live subtitute
 o.termguicolors  = true   -- enable 24bit colors
 o.synmaxcol      = 200    -- for `syntax`
-o.timeoutlen     = 300
+o.timeoutlen     = 500
 o.updatetime     = 250    -- decrease update time
 o.fileformat     = "unix" -- <nl> for EOL
 o.switchbuf      = "useopen"
@@ -34,7 +34,7 @@ o.scrolloff      = 3                            -- min number of lines to keep b
 o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth      = 99                           -- max inserted text width for paste operations
 o.number         = true                        -- show absolute line no. at the cursor pos
-o.relativenumber = true                        -- otherwise, show relative numbers in the ruler
+o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
 o.cursorline     = false                        -- Show a line where the current cursor is
 o.signcolumn     = "yes"  -- Show sign column as first column
 
@@ -178,9 +178,9 @@ g.markdown_fenced_languages = {
 }
 
 -- NOTE disable default keybind
-local disable_key = { "s", "<c-z>", "<space>" }
+local disable_key = { "s", "m", "<c-z>", "<space>" }
 for _, key in ipairs(disable_key) do
-    vim.keymap.set("n", key, "<Nop>")
+    vim.keymap.set("", key, "<Nop>")
 end
 
 -- Map leader to <space>
