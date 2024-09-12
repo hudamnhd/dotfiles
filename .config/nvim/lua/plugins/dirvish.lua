@@ -39,12 +39,17 @@
 --   callback = mappings,
 -- })
 
-pcall(vim.cmd, [[hi! link DirvishSuffix Comment]])
-vim.g.dirvish_mode = ":sort ,^.*[\\/],"
-vim.keymap.set("n", "<C-->", vim.cmd.Dirvish, {})
-
+-- pcall(vim.cmd, [[hi! link DirvishSuffix Delimiter]])
+-- vim.g.dirvish_mode = ":sort ,^.*[\\/],"
+-- vim.keymap.set("n", "-", vim.cmd.Dirvish, {})
+--
+-- vim.api.nvim_create_autocmd("BufRead", {
+--   group = vim.api.nvim_create_augroup("DirvishNoList", {}),
+--   pattern = "dirvish",
+--   command = "set bufhidden=delete",
+-- })
 return {
-  { "hudamnhd/vim-dirvish", event = { "VeryLazy" } },
+  -- { "hudamnhd/vim-dirvish", event = { "VeryLazy" } },
   -- { "justinmk/vim-dirvish", event = { "VeryLazy" } },
   -- { "kristijanhusak/vim-dirvish-git", event = { "VeryLazy" } },
   -- { "jeetsukumaran/vim-filebeagle", event = "VeryLazy" }, -- fast  navigation

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+rofi -show window -me-select-entry '' -me-accept-entry 'MousePrimary' &

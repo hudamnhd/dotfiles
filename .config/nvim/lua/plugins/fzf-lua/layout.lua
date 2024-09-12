@@ -1,6 +1,8 @@
 local winopts = {
   sm = {
     no_preview = {
+      -- row = 0.85,
+      -- col = 0.5,
       height = 0.45,
       width = 0.75,
       preview = { hidden = "hidden" },

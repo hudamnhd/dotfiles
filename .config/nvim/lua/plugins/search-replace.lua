@@ -13,7 +13,7 @@ return {
   --   cmd = "RipSubstitute",
   --   keys = {
   --     {
-  --       "<leader>s",
+  --       "<space>s",
   --       function()
   --         require("rip-substitute").sub()
   --       end,

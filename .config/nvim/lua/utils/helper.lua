@@ -202,7 +202,7 @@ end
 
 -- expand or minimize current buffer in a more natural direction (tmux-like)
 -- ':resize <+-n>' or ':vert resize <+-n>' increases or decreasese current
--- window horizontally or vertically. When mapped to '<leader><arrow>' this
+-- window horizontally or vertically. When mapped to '<space><arrow>' this
 -- can get confusing as left might actually be right, etc
 -- the below can be mapped to arrows and will work similar to the tmux binds
 -- map to: "<cmd>lua require'utils'.resize(false, -5)<CR>"

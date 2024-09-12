@@ -1,22 +1,21 @@
 local o = vim.opt
 local g = vim.g
 
--- stylua: ignore start
-if g.neovide then
-  g.neovide_text_gamma    = 0.9
-  g.neovide_text_contrast = 0.3
-  g.neovide_scale_factor  = 1.0
-  o.linespace             = 0
-end
+local env = vim.env
 
+g.has_ui = #vim.api.nvim_list_uis() > 0
+g.has_gui = vim.fn.has("gui_running") == 1
+g.modern_ui = g.has_ui and env.DISPLAY ~= nil
+g.no_nf = not g.modern_ui or env.NVIM_NONF or false
+-- stylua: ignore start
 -- o.mouse          = ""     -- disable the mouse
 o.inccommand     = "split" -- for live subtitute
 o.termguicolors  = true   -- enable 24bit colors
 o.synmaxcol      = 200    -- for `syntax`
-o.timeoutlen     = 500
+o.timeoutlen     = 650
 o.updatetime     = 250    -- decrease update time
 o.fileformat     = "unix" -- <nl> for EOL
-o.switchbuf      = "useopen"
+-- o.switchbuf      = "useopen"
 o.fileencoding   = "utf-8"
 o.matchpairs     = { "(:)", "{:}", "[:]", "<:>" }
 o.lazyredraw   = true
@@ -28,15 +27,16 @@ vim.cmd([[set path=.,,,$PWD/**]])
 -- unnamed     = use the * register (cmd-s paste in our term)
 -- unnamedplus = use the + register (cmd-v paste in our term)
 -- o.clipboard         = 'unnamedplus'
-o.showmode       = false
+o.showmode       = true
+-- o.laststatus     = 0                            -- cmdline height
 o.cmdheight      = 1                            -- cmdline height
 o.scrolloff      = 3                            -- min number of lines to keep between cursor and screen edge
 o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth      = 99                           -- max inserted text width for paste operations
 o.number         = true                        -- show absolute line no. at the cursor pos
-o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
-o.cursorline     = false                        -- Show a line where the current cursor is
-o.signcolumn     = "yes"  -- Show sign column as first column
+o.relativenumber = true                        -- otherwise, show relative numbers in the ruler
+o.cursorline     = true                        -- Show a line where the current cursor is
+-- o.signcolumn     = "yes:1"  -- Show sign column as first column
 
 -- o.cursorlineopt    = "number"
 -- g._colorcolumn = 0        -- global var, mark column 100
@@ -178,11 +178,11 @@ g.markdown_fenced_languages = {
 }
 
 -- NOTE disable default keybind
-local disable_key = { "s", "m", "<c-z>", "<space>" }
+local disable_key = { "s", "m", "c", "q", "<c-z>", "<space>" }
 for _, key in ipairs(disable_key) do
-    vim.keymap.set("", key, "<Nop>")
+  vim.keymap.set("", key, "<Nop>")
 end
 
 -- Map leader to <space>
-vim.g.mapleader      = " "
-vim.g.maplocalleader = " "
+-- vim.g.mapleader = " "
+-- vim.g.maplocalleader = " "

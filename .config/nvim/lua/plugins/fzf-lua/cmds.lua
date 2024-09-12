@@ -25,8 +25,13 @@ function M.mru()
     for _, file in ipairs(files_all) do
       local file_absolute_path = vim.fn.fnamemodify(file, ":p")
       if vim.fn.stridx(file_absolute_path, cwd) == 0 then
-        table.insert(files_cwd, file)
+        local relative_path = vim.fn.fnamemodify(file_absolute_path, ":.")
+        table.insert(files_cwd, relative_path)
       end
+      -- local file_absolute_path = vim.fn.fnamemodify(file, ":p")
+      -- if vim.fn.stridx(file_absolute_path, cwd) == 0 then
+      --   table.insert(files_cwd, file)
+      -- end
     end
   end
 
@@ -55,7 +60,13 @@ function M.mru()
         ["--multi"] = "",
       },
       prompt = prompt .. "> ",
-      winopts = { height = 0.4, width = 0.75 },
+      winopts = {
+        -- row = 0.85,
+        -- col = 0.5,
+        height = 0.45,
+        width = 0.75,
+        preview = { hidden = "hidden" },
+      },
     })
   end
 
@@ -224,10 +235,11 @@ local function show_bookmark_dir()
   require("fzf-lua").fzf_exec(files, {
     actions = {
       ["default"] = function(selected)
-        vim.cmd("cd " .. selected[1])
-      end,
-      ["alt-f"] = function(selected)
         vim.cmd("F " .. selected[1])
+      end,
+      ["alt-c"] = function(selected)
+        vim.cmd("cd " .. selected[1])
+        vim.notify("cwd change to: " .. selected[1])
       end,
       ["delete"] = function(selected)
         if selected[1] then
@@ -249,37 +261,19 @@ local function save_bookmark_dir()
   handle_save(path, bookmark_file)
 end
 
-local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
-local files = {}
-local cwd = vim.fn.expand(vim.uv.cwd())
+vim.api.nvim_create_user_command("Cd", function(info)
+  _G.fzf_dirs({ cwd = info.fargs[1] })
+end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
 
-for line in io.lines(bookmark_file) do
-  local file_absolute_path = vim.fn.fnamemodify(line, ":p")
-  if vim.fn.stridx(file_absolute_path, cwd) == 0 then
-    local file = vim.fn.expand(line)
-    table.insert(files, file)
-  end
-end
+-- for file
+vim.keymap.set("n", "<space>ba", save_bookmark_file, { desc = "add file bookmark" })
+vim.keymap.set("n", "<space>bs", show_bookmark_file, { desc = "show file bookmark" })
+vim.keymap.set("n", "<space>be", function() vim.cmd.vsplit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "edit file bookmark" })
 
-
--- stylua: ignore start
-for i = 1, 4 do
-    vim.keymap.set('n', string.format('<a-%d>', i), function() vim.cmd.edit(files[i]) end, { desc = "go bookmark " ..i })
-end
--- stylua: ignore end
-
-
--- stylua: ignore start
-vim.api.nvim_create_user_command("C", function(info) _G.fzf_dirs({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
-
-vim.keymap.set("n", "mm", function() vim.cmd.vsplit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "edit file bookmark" })
-vim.keymap.set("n", "mM", function() vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths") end, { desc = "edit dir bookmark" })
-
-vim.keymap.set("n", "sm", show_bookmark_file, { desc = "show file bookmark" })
-vim.keymap.set("n", "ma", save_bookmark_file, { desc = "save file bookmark" })
-
-vim.keymap.set("n", "sM", show_bookmark_dir, { desc = "show dir bookmark" })
-vim.keymap.set("n", "mA", save_bookmark_dir, { desc = "save dir bookmark" })
+-- for dir
+vim.keymap.set("n", "<space>bA", save_bookmark_dir, { desc = "save dir bookmark" })
+vim.keymap.set("n", "<space>bS", show_bookmark_dir, { desc = "show dir bookmark" })
+vim.keymap.set("n", "<space>bE", function() vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths") end, { desc = "edit dir bookmark" })
 
 -- stylua: ignore end
 

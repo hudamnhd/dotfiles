@@ -1,21 +1,39 @@
 --- tabbed.c
 +++ tabbed.c
-@@ -1137,11 +1184,17 @@ sigchld(int unused)
- void
- spawn(const Arg *arg)
+@@ -127,6 +127,7 @@ static void sendxembed(int c, long msg, long detail, long d1, long d2);
+ static void setcmd(int argc, char *argv[], int);
+ static void setup(void);
+ static void sigchld(int unused);
++static void showbar(const Arg *arg);
+ static void spawn(const Arg *arg);
+ static int textnw(const char *text, unsigned int len);
+ static void toggle(const Arg *arg);
+@@ -154,7 +155,7 @@ static void (*handler[LASTEvent]) (const XEvent *) = {
+ 	[MapRequest] = maprequest,
+ 	[PropertyNotify] = propertynotify,
+ };
+-static int bh, wx, wy, ww, wh;
++static int bh, wx, wy, ww, wh, vbh;
+ static unsigned int numlockmask;
+ static Bool running = True, nextfocus, doinitspawn = True,
+             fillagain = False, closelastclient = False,
+@@ -318,9 +320,18 @@ void
+ drawbar(void)
  {
--	if (fork() == 0) {
-+	char sel_cwd[PATH_MAX];
-+
-+	pid_t pid = fork();
-+	if (pid == 0) {
- 		if(dpy)
- 			close(ConnectionNumber(dpy));
+ 	XftColor *col;
+-	int c, cc, fc, width;
++	int c, cc, fc, width, nbh;
+ 	char *name = NULL;
  
- 		setsid();
-+		if (sel >= 0 && clients[sel] && clients[sel]->pid > 0 && getpidcwd(getchildpid(clients[sel]->pid), sel_cwd, PATH_MAX) == 0) {
-+			chdir(sel_cwd);
-+		}
- 		if (arg && arg->v) {
- 			execvp(((char **)arg->v)[0], (char **)arg->v);
- 			fprintf(stderr, "%s: execvp %s", argv0,
++	nbh = barvisibility ? vbh : 0;
++	if (nbh != bh) {
++		bh = nbh;
++		for (c = 0; c < nclients; c++)
++			XMoveResizeWindow(dpy, clients[c]->win, 0, bh, ww, wh-bh);
++	}
++
++	if (bh == 0) return;
++
+ 	if (nclients == 0) {
+ 		dc.x = 0;
+ 		dc.w = ww;

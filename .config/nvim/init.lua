@@ -15,8 +15,8 @@ end
 vim.loader.enable()
 
 -- Load default colorscheme
-pcall(vim.cmd, [[colorscheme default]])
-pcall(vim.cmd, [[hi! link LineNr Comment]])
+-- pcall(vim.cmd, [[colorscheme default]])
+-- pcall(vim.cmd, [[hi! link LineNr Comment]])
 
 -- Load configuration files
 safeRequire("mru")
@@ -24,6 +24,9 @@ safeRequire("options")
 safeRequire("autocmd")
 safeRequire("keymaps")
 safeRequire("lazyplug")
-safeRequire("utils.vscript")
+safeRequire("vscript")
+safeRequire("utils.buffers")
+safeRequire("plugin._load")
 
-vim.api.nvim_set_hl(0, "SignatureMarkLine", { underdashed = true })
+-- vim.api.nvim_set_hl(0, "SignatureMarkLine", { bold = true })
+vim.api.nvim_set_hl(0, "SignatureMarkLine", { bg = "NvimDarkGrey3" })

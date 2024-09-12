@@ -5,10 +5,13 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font =
-    "IosevkaTree Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true";
-static char *font2[] = {
-    "IosevkaTree Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true"};
+
+// static char *font = "IosevkaTree Nerd Font:style=Medium:pixelsize=16";
+// static char *font2[] = { "IosevkaTree Nerd Font:style=Medium:pixelsize=16"};
+static char *font = "JetBrainsMonoNL Nerd Font:style=Medium:pixelsize=15:antialias=true:autohint=true";
+static char *font2[] = { "JetBrainsMonoNL Nerd Font:pixelsize=15:antialias=true:autohint=true" };
+// static char *font = "iosevka normal Medium:pixelsize=16:antialias=true:autohint=true";
+// static char *font2[] = { "iosevka normal Medium:pixelsize=16:antialias=true:autohint=true" };
 static int borderpx = 0;
 
 /*
@@ -359,7 +362,7 @@ static KeySym mappedkeys[] = {
 	XK_3,
 	XK_4,
 	XK_5,
-	// XK_6,
+	XK_6,
 	XK_7,
 	XK_8,
 	XK_9,
@@ -995,7 +998,7 @@ static Key key[] = {
 	{ XK_4,            Mod1Mask|ControlMask,           "\033[52;7u",  0,  0},
 	{ XK_5,            ControlMask,                    "\033[53;5u",  0,  0},
 	{ XK_5,            Mod1Mask|ControlMask,           "\033[53;7u",  0,  0},
-	// { XK_6,            ControlMask,                    "\033[54;5u",  0,  0},
+	{ XK_6,            ControlMask,                    "\033[54;5u",  0,  0},
 	{ XK_6,            Mod1Mask|ControlMask,           "\033[54;7u",  0,  0},
 	{ XK_7,            ControlMask,                    "\033[55;5u",  0,  0},
 	{ XK_7,            Mod1Mask|ControlMask,           "\033[55;7u",  0,  0},

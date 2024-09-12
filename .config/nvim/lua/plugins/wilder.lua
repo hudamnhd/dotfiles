@@ -11,11 +11,12 @@ return {
     local wilder = require("wilder")
     wilder.setup({
       modes = { ":", "/", "?" },
-      next_key = "<C-N>",
-      previous_key = "<C-P>",
-      -- accept_key = "<tab>",
-      -- reject_key = "<s-tab>",
     })
+
+    vim.cmd([[
+            cmap <expr> <C-N> wilder#in_context() ? wilder#next() : "\<Tab>"
+            cmap <expr> <C-P> wilder#in_context()  ? wilder#previous()  : "\<S-Tab>"
+    ]])
 
     wilder.set_option(
       "renderer",

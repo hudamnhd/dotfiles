@@ -1,0 +1,22 @@
+-- local chadtree_settings = {
+--   view = { open_direction = "left" },
+--   theme = {
+--     icon_colour_set = "none",
+--     -- text_colour_set = "nord",
+--   },
+--   keymap = {
+--     primary = { "<enter>", "l" },
+--     collapse = { "<s-tab>", "h" },
+--   },
+-- }
+-- vim.api.nvim_set_var("chadtree_settings", chadtree_settings)
+return {
+  -- "ms-jpq/chadtree",
+  -- branch = "chad",
+  -- build = "python3 -m chadtree deps",
+  -- event = "VimEnter",
+  -- cmd = { "CHADopen" },
+  -- keys = {
+  --   { "<space>v", "<cmd>CHADopen<CR>", desc = "CHADopen", mode = "n" },
+  -- },
+}

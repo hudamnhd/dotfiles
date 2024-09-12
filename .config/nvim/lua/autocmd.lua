@@ -61,6 +61,18 @@ augroup("HelpOpenVert", {
   },
 })
 
+augroup("BufferManager", {
+  {
+    event = "FileType",
+    opts = {
+      pattern = "buffer_manager,harpoon",
+      callback = function()
+        vim.keymap.set("n", "<space>", ":", { buffer = true, nowait = true, silent = false })
+      end,
+    },
+  },
+})
+
 -- LSP and formatter mappings
 local function lsp_get_clients(...)
   ---@diagnostic disable-next-line: deprecated
@@ -74,9 +86,11 @@ augroup("GQFormatter", {
       pattern = "*",
       callback = function(e)
         local lsp_has_formatting = false
-        local lsp_clients = lsp_get_clients({ bufnr = e.buf })
+        local lsp_clients = vim.lsp.get_clients({ bufnr = e.buf })
+
+        -- Set up keymap for LSP formatting
         local lsp_keymap_set = function(m, c)
-          vim.keymap.set(m, "gq", function()
+          vim.keymap.set(m, "<space>gq", function()
             vim.lsp.buf.format({ async = true, bufnr = e.buf })
           end, {
             silent = true,
@@ -85,6 +99,7 @@ augroup("GQFormatter", {
           })
         end
 
+        -- Check for LSP formatting capabilities
         vim.tbl_map(function(c)
           if c.supports_method("textDocument/rangeFormatting", { bufnr = e.buf }) then
             lsp_keymap_set("x", c)
@@ -96,11 +111,13 @@ augroup("GQFormatter", {
           end
         end, lsp_clients)
 
+        -- Check if conform is available and list formatters
         local ok, conform = pcall(require, "conform")
         local formatters = ok and conform.list_formatters(e.buf) or {}
 
         if #formatters > 0 then
-          vim.keymap.set("n", lsp_has_formatting and "gQ" or "gq", function()
+          -- Set up keymap for conform formatting
+          vim.keymap.set("n", "gq", function()
             require("conform").format({ async = true, buffer = e.buf, lsp_fallback = false })
           end, {
             silent = true,
@@ -112,3 +129,64 @@ augroup("GQFormatter", {
     },
   },
 })
+
+-- https://github.com/neovim/nvim-lspconfig/issues/69#issuecomment-1877781941
+-- vim.api.nvim_create_autocmd({ "DiagnosticChanged" }, {
+--   group = vim.api.nvim_create_augroup("user_diagnostic_qflist", {}),
+--   callback = function(args)
+--     -- Use pcall because I was getting inconsistent errors when quitting vim.
+--     -- Possibly timing errors from trying to get/create diagnostics/qflists
+--     -- that don't exist anymore. DiagnosticChanged fires at some strange times.
+--     local has_diagnostics, diagnostics = pcall(vim.diagnostic.get)
+--     local has_qflist, qflist = pcall(vim.fn.getqflist, { title = 0, id = 0, items = 0 })
+--     if not has_diagnostics or not has_qflist then
+--       return
+--     end
+--
+--     -- Sometimes the event fires with an empty diagnostic list in the data.
+--     -- This conditional prevents re-creating the qflist with the same
+--     -- diagnostics, which reverts selection to the first item.
+--     if
+--       #args.data.diagnostics == 0
+--       and #diagnostics > 0
+--       and qflist.title == "All Diagnostics"
+--       and #qflist.items == #diagnostics
+--     then
+--       return
+--     end
+--
+--     vim.schedule(function()
+--       -- If the last qflist was created by this autocmd, replace it so other
+--       -- lists (e.g., vimgrep results) aren't buried due to diagnostic changes.
+--       pcall(vim.fn.setqflist, {}, qflist.title == "All Diagnostics" and "r" or " ", {
+--         title = "All Diagnostics",
+--         items = vim.diagnostic.toqflist(diagnostics),
+--       })
+--
+--       -- Don't steal focus from other qflists. For example, when working
+--       -- through vimgrep results, you likely want :cnext to take you to the
+--       -- next match, rather than the next diagnostic. Use :cnew to switch to
+--       -- the diagnostic qflist when you want it.
+--       if qflist.id ~= 0 and qflist.title ~= "All Diagnostics" then
+--         pcall(vim.cmd.cold)
+--       end
+--     end)
+--   end,
+-- })
+local g = vim.g
+local function _load(runtime, flag, event)
+  if not g[flag] then
+    g[flag] = 0
+    vim.api.nvim_create_autocmd(event, {
+      once = true,
+      callback = function()
+        g[flag] = nil
+        vim.cmd.runtime(runtime)
+        return true
+      end,
+    })
+  end
+end
+
+_load("plugin/rplugin.vim", "loaded_remote_plugins", "FileType")
+_load("provider/python3.vim", "loaded_python3_provider", "FileType")

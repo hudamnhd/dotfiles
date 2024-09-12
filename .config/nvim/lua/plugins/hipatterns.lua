@@ -2,7 +2,7 @@ return {
   "echasnovski/mini.hipatterns",
   version = "*",
   keys = {
-    { "<leader>th", ":lua MiniHipatterns.toggle()<CR>", mode = "n", desc = "Hipatterns toggle" },
+    { "<space>th", ":lua MiniHipatterns.toggle()<CR>", mode = "n", desc = "Hipatterns toggle" },
   },
   config = function()
     local hipatterns = require("mini.hipatterns")

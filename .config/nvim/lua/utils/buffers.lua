@@ -9,10 +9,10 @@ function M.bind(mode, lhs, rhs, opts)
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
-M.bind("n", "<leader>Q", '<CMD>lua require("utils.buffers").only()<CR>',        { desc = "delete all buff not current" })
-M.bind("n", "<leader>X", '<CMD>lua require("utils.buffers").clear()<CR>',       { desc = "delete all buff" })
-M.bind("n", "<leader>q", '<CMD>lua require("utils.buffers").delete(false)<CR>', { desc = "delete buff current save window" })
-M.bind("n", "<leader>x", '<CMD>lua require("utils.buffers").delete(true)<CR>',  { desc = "delete buff current close window" })
+M.bind("n", "<space>bx", '<CMD>lua require("utils.buffers").clear()<CR>',       { desc = "delete all buff" })
+M.bind("n", "<space>bq", '<CMD>lua require("utils.buffers").only()<CR>',        { desc = "delete all buff not current" })
+M.bind("n", "<space>bd", '<CMD>lua require("utils.buffers").delete(false)<CR>', { desc = "delete buff current save window" })
+M.bind("n", "<space>bw", '<CMD>lua require("utils.buffers").delete(true)<CR>',  { desc = "delete buff current close window" })
 ---@class Opts
 ---@field non_modifiable boolean: Whether to delete non-modifiable buffers
 

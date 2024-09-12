@@ -1,10 +1,10 @@
-local M       = {}
+local M = {}
 local actions = require("fzf-lua.actions")
-local fzf     = require("fzf-lua")
+local fzf = require("fzf-lua")
 local actions = require("fzf-lua.actions")
-local core    = require("fzf-lua.core")
-local path    = require("fzf-lua.path")
-local config  = require("fzf-lua.config")
+local core = require("fzf-lua.core")
+local path = require("fzf-lua.path")
+local config = require("fzf-lua.config")
 
 function M.get_preview_command(items)
   local opts = fzf.config.__resume_data.opts
@@ -21,6 +21,7 @@ function M.get_preview_command(items)
   end
 end
 
+pcall(vim.cmd, [[hi! link FzfLuaDirPart FzfLuaDirIcon]])
 require("fzf-lua").setup({
   global_resume = true,
   global_resume_query = true,
@@ -38,21 +39,21 @@ require("fzf-lua").setup({
   },
 
   winopts = {
-    height  = 0.85,
-    width   = 0.85,
-    row     = 0.35,
-    col     = 0.50,
-    border  = "none",
+    height = 0.85,
+    width = 0.85,
+    row = 0.35,
+    col = 0.50,
+    border = "none",
     preview = {
-      default      = "bat",
-      border       = "noborder", -- border|noborder, applies only to
-      wrap         = "nowrap", -- wrap|nowrap
-      hidden       = "nohidden", -- hidden|nohidden
-      vertical     = "up:65%", -- up|down:size
-      horizontal   = "right:60%", -- right|left:size
-      layout       = "flex", -- horizontal|vertical|flex
+      default = "bat",
+      border = "noborder", -- border|noborder, applies only to
+      wrap = "nowrap", -- wrap|nowrap
+      hidden = "nohidden", -- hidden|nohidden
+      vertical = "up:65%", -- up|down:size
+      horizontal = "right:60%", -- right|left:size
+      layout = "flex", -- horizontal|vertical|flex
       flip_columns = 200, -- #cols to switch to horizontal on flex
-      delay        = 100, -- delay(ms) displaying the preview
+      delay = 100, -- delay(ms) displaying the preview
     },
   },
 
@@ -83,9 +84,9 @@ require("fzf-lua").setup({
 
   files = {
     prompt = "Files  ",
-    fd_opts = [[--color=never --type f --type d]],
+    fd_opts = [[--color=never --type f]],
     fzf_opts = {
-      ["--ansi"] = false,
+      ["--ansi"] = true,
     },
     previewer = false,
     preview = {
@@ -95,6 +96,7 @@ require("fzf-lua").setup({
       end,
     },
     actions = {
+      ["ctrl-space"] = require("fzf-lua").actions.arg_add,
       ["ctrl-y"] = function(selected, opts)
         local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
         if entry.path == "<none>" then
@@ -106,69 +108,14 @@ require("fzf-lua").setup({
         local switch = vim.api.nvim_replace_termcodes("<Right>", true, false, true)
         vim.api.nvim_feedkeys(switch, "n", false)
       end,
-      ["alt-f"] = function(selected)
-        local cwd = vim.fn.expand(vim.uv.cwd())
-        local cmd = string.format(":F %s", cwd)
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
-      end,
-      ["alt-d"] = function(selected, opts)
+      ["ctrl-l"] = function(selected, opts)
         local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
         if entry.path == "<none>" then
           return
         end
         local _path = entry.path
         local path = vim.fn.fnamemodify(_path, ":p:h")
-        local cmd = string.format(":!mkdir %s", path .. "/")
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
-      end,
-      ["alt-c"] = function(selected, opts)
-        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
-        if entry.path == "<none>" then
-          return
-        end
-        local _path = entry.path
-        local path = vim.fn.fnamemodify(_path, ":p:h")
-        local cmd = string.format(":!touch %s", path .. "/")
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
-      end,
-      ["alt-y"] = function(selected, opts)
-        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
-        if entry.path == "<none>" then
-          return
-        end
-        local _path = entry.path
-        local path = vim.fn.fnamemodify(_path, ":p")
-        local cmd = string.format(":!cp -r %s %s", path, path)
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
-      end,
-      ["alt-m"] = function(selected, opts)
-        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
-        if entry.path == "<none>" then
-          return
-        end
-        local _path = entry.path
-        local path = vim.fn.fnamemodify(_path, ":p")
-        local cmd = string.format(":!mv %s %s", path, path)
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
-      end,
-      ["alt-X"] = function(selected, opts)
-        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
-        if entry.path == "<none>" then
-          return
-        end
-        local _path = entry.path
-        local path = vim.fn.fnamemodify(_path, ":p")
-        local cmd = string.format(":!rm -r %s", path)
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
-      end,
-      ["alt-x"] = function(selected, opts)
-        local entry = path.entry_to_file(selected[1], opts, opts.force_uri)
-        if entry.path == "<none>" then
-          return
-        end
-        local _path = entry.path
-        local path = vim.fn.fnamemodify(_path, ":p")
-        local cmd = string.format(":!trash %s", path)
+        local cmd = string.format(":e %s", path .. "/" .. "<CR>")
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
       end,
     },
@@ -206,16 +153,11 @@ require("fzf-lua").setup({
       end,
     },
   },
-  lsp = {
-    code_actions = {
-      previewer = false,
-      winopts = {
-        row = 0.85,
-        col = 0.5,
-        height = 0.35,
-        width = 0.5,
-        preview = { hidden = "hidden" },
-      },
+  buffers = {
+    formatter = { "path.dirname_first", v = 2 },
+    actions = {
+      ["ctrl-l"] = require("fzf-lua").actions.file_edit,
+      ["ctrl-space"] = require("fzf-lua").actions.file_edit,
     },
   },
 })

@@ -1,54 +1,62 @@
 local M = {}
 
 -- stylua: ignore start
-M.F         = require("fzf-lua")
-M.bind      = require("keymaps").bind
-M.winopts   = require("plugins.fzf-lua.layout")
-M.mru       = require("plugins.fzf-lua.cmds").mru
-M.get_range = require("utils.helper").get_range
+M.F          = require("fzf-lua")
+M.bind       = require("keymaps").bind
+M.winopts    = require("plugins.fzf-lua.layout")
+M.mru        = require("plugins.fzf-lua.cmds").mru
+M.get_range  = require("utils.helper").get_range
+M.list_paths = require("utils.copy").list_paths
 
-M.bind("n", "<leader>lw", function() M.F.lsp_document_diagnostics({ winopts = M.winopts.lg.vertical }) end,   { desc = "Document Diagnostics"  })
-M.bind("n", "<leader>lW", function() M.F.lsp_workspace_diagnostics({ winopts = M.winopts.lg.vertical }) end,  { desc = "Workspace Diagnostics"  })
-M.bind("n", "<leader>ls", function() M.F.lsp_document_symbols({ winopts = M.winopts.lg.vertical }) end,       { desc = "Document Symbols"  })
-M.bind("n", "<leader>lS", function() M.F.lsp_live_workspace_symbols({ winopts = M.winopts.lg.vertical }) end, { desc = "Workspace Symbols"  })
+M.bind("n", "sga", vim.cmd.AgitFile, { desc = "AGITfILE" })
+M.bind("n", "sgg", vim.cmd.Agit,     { desc = "AGIT" })
+M.bind("n", "sgs", function() M.F.git_status({ winopts = M.winopts.lg.vertical }) end,   { desc = "Status"  })
+M.bind("n", "sgb", function() M.F.git_bcommits({ winopts = M.winopts.lg.vertical }) end, { desc = "Bcommits"  })
+M.bind("n", "sgc", function() M.F.git_commits({ winopts = M.winopts.lg.vertical }) end,  { desc = "Commits"  })
 
+M.bind("n", "<space>o", function() M.F.blines({ winopts = M.winopts.sm.no_preview }) end, { desc = "Grep prompt input"  })
+M.bind("n", "<space>i", function() M.F.grep({ winopts = M.winopts.sm.no_preview }) end, { desc = "Grep prompt input"  })
 M.bind("n", "sl", function() M.get_range(function(result) M.F.lgrep_curbuf({ winopts = M.winopts.sm.no_preview, query = result }) end) end, { desc = "Grep Buffer"  })
 M.bind("n", "sk", function() M.get_range(function(result) M.F.grep({ winopts = M.winopts.sm.no_preview, search = result }) end) end, { desc = "Grep Project"  })
 M.bind("x", "sk", function() M.F.grep_visual({ winopts = M.winopts.sm.no_preview }) end, { desc = "Grep Project Selection"  })
+M.bind("n", "sgr", function() M.F.live_grep_resume({ winopts = M.winopts.lg.vertical }) end,  { desc = "Grep Resume"  })
 
-M.bind("n", "s/", function() M.F.grep({ winopts = M.winopts.sm.no_preview }) end,            { desc = "Grep"  })
+M.bind("n", "s'", function() M.F.registers({ winopts = M.winopts.lg.vertical }) end,         { desc = "Registers"  })
+M.bind("n", "sc", function() M.F.changes({ winopts = M.winopts.lg.vertical }) end,           { desc = "changes"  })
+M.bind("n", "sH", function() M.F.command_history({ winopts = M.winopts.sm.no_preview }) end, { desc = "Command History"  })
+M.bind("n", "sh", function() M.F.search_history({ winopts = M.winopts.sm.no_preview }) end,  { desc = "Search History"  })
 
-M.bind("n", "ghs", function() M.F.git_status({ winopts = M.winopts.lg.vertical }) end,   { desc = "Status"  })
-M.bind("n", "ghb", function() M.F.git_bcommits({ winopts = M.winopts.lg.vertical }) end, { desc = "Bcommits"  })
-M.bind("n", "ghc", function() M.F.git_commits({ winopts = M.winopts.lg.vertical }) end,  { desc = "Commits"  })
-
-M.bind("n", "sfm", function() M.F.marks({ winopts = M.winopts.lg.vertical }) end,             { desc = "Marks"  })
-M.bind("n", "sfj", function() M.F.jumps({ winopts = M.winopts.lg.vertical }) end,             { desc = "Jumps"  })
-M.bind("n", "sfr", function() M.F.registers({ winopts = M.winopts.lg.vertical }) end,         { desc = "Registers"  })
-M.bind("n", "sfc", function() M.F.command_history({ winopts = M.winopts.sm.no_preview }) end, { desc = "Command History"  })
-M.bind("n", "sfh", function() M.F.changes({ winopts = M.winopts.lg.vertical }) end,           { desc = "changes"  })
-M.bind("n", "sfs", function() M.F.search_history({ winopts = M.winopts.sm.no_preview }) end,  { desc = "Search History"  })
-M.bind("n", "sfb", function() M.F.buffers({ winopts = M.winopts.sm.no_preview }) end,         { desc = "Buffers"  })
-M.bind("n", "sfg", function() M.F.live_grep_resume({ winopts = M.winopts.lg.vertical }) end,  { desc = "Grep Resume"  })
 M.bind("n", "sfv", function() M.F.files({ cwd = "~/.config/nvim" }) end, { desc = "VIMRC"  })
 M.bind("n", "sfn", function() M.F.files({ cwd = "~/vimwiki" }) end,      { desc = "NOTES"  })
-M.bind("n", "sfp", function() M.F.files({ cwd = "%:h" }) end,            { desc = "FILES Sibling" })
+
 M.bind("n", "sff", function() M.F.files({ query = vim.fn.expand("<cword>") }) end, { desc = "Grep files under cursor"  })
 
-M.bind("n", "sp", M.F.files,   { desc = "FILES"  })
-M.bind("n", "s0", M.F.resume,  { desc = "RESUME" } )
-M.bind("n", "sq", M.F.builtin, { desc = "BUILTIN"  })
-M.bind("n", "so", M.mru,       { desc = "OLDFILES" })
+M.bind("n", "<c-space>", function() M.F.buffers({ winopts = M.winopts.sm.no_preview }) end, { desc = "Buffers"  })
+-- M.bind("n", "sB", function() M.F.args({ winopts = M.winopts.sm.no_preview }) end, { desc = "Buffers"  })
 
-M.bind("i", "<c-k>", M.F.complete_path, { desc = "Fuzzy complete path" }) -- remap <C-X><C-F>
+M.bind("n", "sfb", M.list_paths, { desc = "List Path Buffer" })
+
+M.bind("n", "dp", function() M.F.files({ cwd = "%:h" }) end, { desc = "FILES Sibling" })
+M.bind("n", "sp", M.F.files,   { desc = "FILES"  })
+
+M.bind("n", "so", M.mru, { desc = "OLDFILES" })
+
+M.bind("n", "s<space>", M.F.resume,  { desc = "RESUME" } )
+M.bind("n", "s0", M.F.builtin, { desc = "BUILTIN"  })
+
+M.bind("i", "<c-x><c-k>", M.F.complete_path, { desc = "Fuzzy complete path" }) -- remap <C-X><C-F>
 M.bind("i", "<c-l>", M.F.complete_line, { desc = "Fuzzy complete line" }) -- remap <C-X><C-L>
 
 M.bind("n", "z=", function() M.F.spell_suggest({ winopts = M.winopts.sm.relative_cursor, }) end, { desc = "spell_suggest" })
 
 vim.api.nvim_create_user_command("F", function(info) M.F.files({ cwd = info.fargs[1] }) end, { nargs = "?", complete = "dir", desc = "Fuzzy find files.", })
 
+M.bind("n", "<space>lt", function() M.F.lsp_typedefs({ winopts = M.winopts.lg.vertical }) end,   { desc = "type def"  })
+M.bind("n", "<space>le", function() M.F.lsp_document_diagnostics({ winopts = M.winopts.lg.vertical }) end,   { desc = "Document Diagnostics"  })
+M.bind("n", "<space>lw", function() M.F.lsp_workspace_diagnostics({ winopts = M.winopts.lg.vertical }) end,  { desc = "Workspace Diagnostics"  })
+
 M.lsp_attach = function()
-  M.bind("n", "<leader>ld", function()
+  M.bind("n", "<space>ld", function()
     M.F.lsp_definitions({
       jump_to_single_result = true,
       jump_type = "vsplit",
@@ -56,7 +64,7 @@ M.lsp_attach = function()
     })
   end, { desc = "Go to [D]efinition" })
 
-  M.bind("n", "<leader>lr", function()
+  M.bind("n", "<space>lr", function()
     M.F.lsp_references({
       jump_to_single_result = true,
       jump_type = "vsplit",
@@ -66,7 +74,7 @@ M.lsp_attach = function()
     })
   end, { desc = "Go to [R]eferences" })
 
-  M.bind("n", "<leader>la", function() M.F.lsp_code_actions() end, { desc = "[C]ode [A]ction" })
+  M.bind("n", "<space>la", function() M.F.lsp_code_actions() end, { desc = "[C]ode [A]ction" })
 end
 
 vim.api.nvim_create_autocmd("LspAttach", {

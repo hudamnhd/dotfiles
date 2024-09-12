@@ -2,51 +2,68 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
-    -- dependencies = {
-    --   -- main one
-    --   { "ms-jpq/coq_nvim", branch = "coq" },
-    --
-    --   -- 9000+ Snippets
-    --   { "ms-jpq/coq.artifacts", branch = "artifacts" },
-    --
-    --   -- lua & third party sources -- See https://github.com/ms-jpq/coq.thirdparty
-    --   -- Need to **configure separately**
-    --   -- { "ms-jpq/coq.thirdparty", branch = "3p" },
-    --   -- - shell repl
-    --   -- - nvim lua api
-    --   -- - scientific calculator
-    --   -- - comment banner
-    --   -- - etc
-    -- },
-    -- init = function()
-    --   vim.g.coq_settings = {
-    --     display = {
-    --       statusline = { helo = false },
-    --       pum = {
-    --         fast_close = false,
-    --         source_context = { "|", "|" },
-    --       },
-    --     },
-    --     auto_start = true, -- if you want to start COQ at startup
-    --     keymap = {
-    --       recommended = false,
-    --       jump_to_mark = "<a-tab>",
-    --     },
-    --     -- display = { icons = { mode = "none" } },
-    --   }
-    --
-    --     -- stylua: ignore start
-    --     vim.api.nvim_set_keymap('i', '<Esc>', [[pumvisible() ? "\<C-e><Esc>" : "\<Esc>"]], { expr = true, silent = true })
-    --     vim.api.nvim_set_keymap('i', '<C-c>', [[pumvisible() ? "\<C-e><C-c>" : "\<C-c>"]], { expr = true, silent = true })
-    --     vim.api.nvim_set_keymap('i', '<BS>',  [[pumvisible() ? "\<C-e><BS>" : "\<BS>"]], { expr = true, silent = true })
-    --     vim.api.nvim_set_keymap("i", "<CR>",  [[pumvisible() ? (complete_info().selected == -1 ? "\<C-e><CR>" : "\<C-y>") : "\<CR>"]], { expr = true, silent = true })
-    --     vim.api.nvim_set_keymap("i", "<Tab>", [[pumvisible() ? (complete_info().selected == -1 ? "\<C-N><C-Y>" : "\<C-y>") : "\<Tab>"]], { expr = true, silent = true })
-    --     vim.api.nvim_set_keymap('i', '<C-N>', [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true, silent = true })
-    --     vim.api.nvim_set_keymap('i', '<C-P>', [[pumvisible() ? "\<C-p>" : "\<BS>"]], { expr = true, silent = true })
-    --   -- stylua: ignore end
-    -- end,
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      {
+        "lewis6991/hover.nvim",
+        event = { "BufReadPost" },
+        config = function()
+          require("hover").setup({
+            init = function()
+              -- Require providers
+              require("hover.providers.lsp")
+              -- require('hover.providers.gh')
+              -- require('hover.providers.gh_user')
+              -- require('hover.providers.jira')
+              -- require('hover.providers.dap')
+              -- require('hover.providers.fold_preview')
+              -- require('hover.providers.diagnostic')
+              -- require('hover.providers.man')
+              -- require('hover.providers.dictionary')
+            end,
+            preview_opts = {
+              border = "single",
+            },
+            -- Whether the contents of a currently open hover window should be moved
+            -- to a :h preview-window when pressing the hover keymap.
+            preview_window = false,
+            title = true,
+            mouse_providers = {
+              "LSP",
+            },
+            mouse_delay = 1000,
+          })
+          -- Setup keymaps
+          vim.keymap.set("n", "K", require("hover").hover, { desc = "hover.nvim" })
+          vim.keymap.set("n", "gK", require("hover").hover_select, { desc = "hover.nvim (select)" })
+          vim.keymap.set("n", "<a-[>", function() require("hover").hover_switch("previous") end, { desc = "hover.nvim (previous source)" })
+          vim.keymap.set("n", "<a-]>", function() require("hover").hover_switch("next") end, { desc = "hover.nvim (next source)" })
+
+          -- Mouse support
+          vim.keymap.set(
+            "n",
+            "<MouseMove>",
+            require("hover").hover_mouse,
+            { desc = "hover.nvim (mouse)" }
+          )
+          vim.o.mousemoveevent = true
+        end,
+      },
+    },
     config = function()
-      require("lspconfig").biome.setup({})
+      local util = require("lspconfig.util")
+      -- require("lspconfig").biome.setup({})
+      -- require("lspconfig").denols.setup({
+      --   cmd = { "/home/hudamnhd/.deno/bin/deno", "lsp" },
+      --   filetypes = {
+      --     "javascript",
+      --     "javascriptreact",
+      --     "javascript.jsx",
+      --     "typescript",
+      --     "typescriptreact",
+      --     "typescript.tsx",
+      --   },
+      -- })
       -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
       local sign_defs = {
         {
@@ -114,5 +131,32 @@ return {
         end,
       }
     end,
+  },
+  {
+    "pmizio/typescript-tools.nvim",
+    ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    opts = {
+      root_dir = function(fname)
+        local util = require("lspconfig.util")
+        -- Disable tsserver on js files when a flow project is detected
+        if not string.match(fname, ".tsx?$") and util.root_pattern(".flowconfig")(fname) then
+          return nil
+        end
+        local ts_root = util.root_pattern("tsconfig.json")(fname)
+          or util.root_pattern("package.json", "jsconfig.json", ".git")(fname)
+        if ts_root then
+          return ts_root
+        end
+        if vim.g.started_by_firenvim then
+          return util.path.dirname(fname)
+        end
+        return nil
+      end,
+      settings = {
+        separate_diagnostic_server = false,
+        tsserver_max_memory = 8 * 1024,
+      },
+    },
   },
 }

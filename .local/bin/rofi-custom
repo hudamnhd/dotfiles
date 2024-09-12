@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-rofi -show drun -me-select-entry '' -me-accept-entry 'MousePrimary' &
+rofi -show drun -modi drun -me-select-entry '' -me-accept-entry 'MousePrimary' &
