@@ -4,41 +4,15 @@ return {
     branch = "perf-up",
     event = "VeryLazy",
     dependencies = {
-      -- {
-      --   "L3MON4D3/LuaSnip",
-      --   build = (function()
-      --     if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
-      --       return
-      --     end
-      --     return "make install_jsregexp"
-      --   end)(),
-      --   dependencies = {
-      --     {
-      --       "rafamadriz/friendly-snippets",
-      --       config = function()
-      --         require("luasnip.loaders.from_vscode").lazy_load()
-      --         local luasnip = require("luasnip")
-      --         luasnip.setup()
-      --
-      --         luasnip.filetype_extend("lua", { "lua" })
-      --         luasnip.filetype_extend("markdown", { "markdown" })
-      --         luasnip.filetype_extend("javascriptreact", { "html" })
-      --         luasnip.filetype_extend("php", { "html" })
-      --         luasnip.filetype_extend("typescriptreact", { "html" })
-      --       end,
-      --     },
-      --   },
-      -- },
-      -- "saadparwaiz1/cmp_luasnip", -- for autocompletion
-      "saadparwaiz1/cmp_luasnip",
-      "L3MON4D3/LuaSnip",
+      "L3MON4D3/LuaSnip", -- for autocompletion
+      "saadparwaiz1/cmp_luasnip", -- for autocompletion
       "hrsh7th/cmp-buffer", -- source for text in buffer
-      "hrsh7th/cmp-nvim-lsp",
     },
     config = function()
       local cmp = require("cmp")
-      local icons = require("utils.static").icons
-      local icon_dot = icons.DotLarge
+      local utils = require("utils")
+      local icons = utils.icons
+
       -- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
       cmp.setup({
         completion = {
@@ -67,20 +41,26 @@ return {
             ["i"] = function(fallback)
               if cmp.visible() then
                 cmp.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true })
-              elseif require("luasnip").expand_or_jumpable() then
-                vim.fn.feedkeys(
-                  vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true),
-                  ""
-                )
+              -- elseif require("luasnip").expand_or_jumpable() then
+              --   vim.fn.feedkeys( vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
               else
                 fallback()
               end
             end,
           },
-          ["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i" }),
-          ["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i" }),
-          ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i" }),
-          ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i" }),
+          ["<S-Tab>"] = {
+            ["c"] = function()
+              if cmp.visible() then
+                cmp.select_prev_item()
+              else
+                cmp.complete()
+              end
+            end,
+          },
+          ["<C-k>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
+          ["<C-j>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+          ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+          ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
           ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i" }),
           ["<C-e>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
           ["<C-y>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
@@ -98,7 +78,6 @@ return {
         }, -- sources for autocompletion
 
         sources = cmp.config.sources({
-          { name = "nvim_lsp" },
           { name = "luasnip", max_item_count = 7, priority = 15 },
           {
             name = "buffer",
@@ -118,14 +97,13 @@ return {
             },
           },
         }),
+        -- configure lspkind for vs-code like pictograms in completion menu
         formatting = {
           fields = { "kind", "abbr", "menu" },
           format = function(entry, cmp_item)
             local compltype = vim.fn.getcmdcompltype()
             -- Use special icons for file / directory completions
-            cmp_item.kind = entry.source.name == "cmdline" and icon_dot
-              or icons.kinds[cmp_item.kind]
-              or ""
+            cmp_item.kind = icons.kinds[cmp_item.kind] or ""
             ---@param field string
             ---@param min_width integer
             ---@param max_width integer
@@ -162,10 +140,6 @@ return {
           ghost_text = false,
         },
       })
-
-      -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-
-      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
     end,
   },
 }

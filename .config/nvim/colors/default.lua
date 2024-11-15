@@ -6,8 +6,8 @@
 -- License:      GPL-3.0
 -- Last Updated: Wed 03 Jan 2024 01:53:29 AM CST
 
-vim.cmd.hi('clear')
-vim.g.colors_name = 'default'
+vim.cmd.hi("clear")
+vim.g.colors_name = "default"
 
 -- stylua: ignore start
 if vim.go.background == 'dark' then

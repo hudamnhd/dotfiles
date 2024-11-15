@@ -1,6 +1,5 @@
 return {
   "gelguy/wilder.nvim",
-  -- event = "CmdlineEnter",
   event = "VeryLazy",
   build = function()
     vim.cmd("UpdateRemotePlugins")
@@ -26,14 +25,5 @@ return {
         -- right = { " ", wilder.popupmenu_scrollbar() },
       })
     )
-    -- wilder.set_option(
-    --   "renderer",
-    --   wilder.wildmenu_renderer({
-    --     highlighter = wilder.basic_highlighter(),
-    --     separator = " · ",
-    --     left = { " ", wilder.wildmenu_spinner(), " " },
-    --     right = { " ", wilder.wildmenu_index() },
-    --   })
-    -- )
   end,
 }

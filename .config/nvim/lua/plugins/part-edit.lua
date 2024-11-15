@@ -1,4 +1,4 @@
 return {
   "thinca/vim-partedit",
-  keys = { { "<CR>", ":Partedit -opener vnew -filetype vimpe -prefix '>'<CR>", mode = { "x" } } },
+  keys = { { "<C-E>", ":Partedit -opener vnew -filetype vimpe -prefix '>'<CR>", mode = { "x" } } },
 }

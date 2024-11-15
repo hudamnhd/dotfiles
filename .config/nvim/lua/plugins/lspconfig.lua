@@ -4,6 +4,7 @@ return {
     event = { "BufReadPost" },
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
+      -- "saghen/blink.cmp",
       {
         "lewis6991/hover.nvim",
         event = { "BufReadPost" },
@@ -34,36 +35,28 @@ return {
             mouse_delay = 1000,
           })
           -- Setup keymaps
-          vim.keymap.set("n", "K", require("hover").hover, { desc = "hover.nvim" })
-          vim.keymap.set("n", "gK", require("hover").hover_select, { desc = "hover.nvim (select)" })
-          vim.keymap.set("n", "<a-[>", function() require("hover").hover_switch("previous") end, { desc = "hover.nvim (previous source)" })
-          vim.keymap.set("n", "<a-]>", function() require("hover").hover_switch("next") end, { desc = "hover.nvim (next source)" })
+          local bind = require("keymaps").bind
+          bind("n", "K", require("hover").hover, { desc = "hover.nvim" })
+          bind("n", "go", require("hover").hover_select, { desc = "hover.nvim (select)" })
+          bind("n", "<a-[>", function()
+            require("hover").hover_switch("previous")
+          end, { desc = "hover.nvim (previous source)" })
+          bind("n", "<a-]>", function()
+            require("hover").hover_switch("next")
+          end, { desc = "hover.nvim (next source)" })
 
           -- Mouse support
-          vim.keymap.set(
-            "n",
-            "<MouseMove>",
-            require("hover").hover_mouse,
-            { desc = "hover.nvim (mouse)" }
-          )
+          bind("n", "<MouseMove>", require("hover").hover_mouse, { desc = "hover.nvim (mouse)" })
           vim.o.mousemoveevent = true
         end,
       },
     },
     config = function()
       local util = require("lspconfig.util")
-      -- require("lspconfig").biome.setup({})
-      -- require("lspconfig").denols.setup({
-      --   cmd = { "/home/hudamnhd/.deno/bin/deno", "lsp" },
-      --   filetypes = {
-      --     "javascript",
-      --     "javascriptreact",
-      --     "javascript.jsx",
-      --     "typescript",
-      --     "typescriptreact",
-      --     "typescript.tsx",
-      --   },
-      -- })
+      -- require("lspconfig").lua_ls.setup({})
+      require("lspconfig").biome.setup({})
+      -- require("lspconfig").denols.setup({})
+
       -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
       local sign_defs = {
         {
@@ -134,7 +127,7 @@ return {
   },
   {
     "pmizio/typescript-tools.nvim",
-    ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+    -- ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     opts = {
       root_dir = function(fname)
@@ -155,8 +148,34 @@ return {
       end,
       settings = {
         separate_diagnostic_server = false,
-        tsserver_max_memory = 8 * 1024,
+        tsserver_max_memory = 4 * 1024,
       },
     },
+    config = function(_, opts)
+      local ts = require("typescript-tools")
+      ts.setup(opts)
+      -- Key mappings for typescript-tools.nvim
+      local bind = require("keymaps").bind
+
+      bind("n", "<space>lo", ":TSToolsOrganizeImports<CR>", { desc = "TSToolsOrganizeImports" })
+      bind("n", "<space>ls", ":TSToolsSortImports<CR>", { desc = "TSToolsSortImports" })
+      bind(
+        "n",
+        "<space>lr",
+        ":TSToolsRemoveUnusedImports<CR>",
+        { desc = "TSToolsRemoveUnusedImports" }
+      )
+      bind("n", "<space>lR", ":TSToolsRemoveUnused<CR>", { desc = "TSToolsRemoveUnused" })
+      bind("n", "<space>lm", ":TSToolsAddMissingImports<CR>", { desc = "TSToolsAddMissingImports" })
+      bind("n", "<space>lfa", ":TSToolsFixAll<CR>", { desc = "TSToolsFixAll" })
+      bind(
+        "n",
+        "<space>ld",
+        ":TSToolsGoToSourceDefinition<CR>",
+        { desc = "TSToolsGoToSourceDefinition" }
+      )
+      bind("n", "<space>lfR", ":TSToolsRenameFile<CR>", { desc = "TSToolsRenameFile" })
+      bind("n", "<space>lfr", ":TSToolsFileReferences<CR>", { desc = "TSToolsFileReferences" })
+    end,
   },
 }

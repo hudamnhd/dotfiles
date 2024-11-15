@@ -354,11 +354,13 @@ fzf.setup({
     builtin = {
       ["<F1>"] = "toggle-help",
       ["<F2>"] = "toggle-fullscreen",
+      ["<C-d>"] = "preview-page-down",
+      ["<C-u>"] = "preview-page-up",
     },
     fzf = {
       -- fzf '--bind=' options
-      ["ctrl-z"] = "abort",
       -- ['ctrl-k'] = 'kill-line',
+      ["ctrl-z"] = "abort",
       ["ctrl-u"] = "unix-line-discard",
       ["ctrl-a"] = "beginning-of-line",
       ["ctrl-e"] = "end-of-line",
@@ -559,74 +561,77 @@ fzf.setup({
   },
 })
 
-
--- stylua: ignore start
-local bind       = require("keymaps").bind
-local mru        = require("plugins.fzf-lua.cmds").mru
-local get_range  = require("utils.helper").get_range
+local bind = require("keymaps").bind
+local mru = require("plugins.fzf-lua.cmds").mru
 local list_paths = require("utils.copy").list_paths
 
-bind("n", "sl", function() get_range(function(result) fzf.lgrep_curbuf({ query = result }) end) end, { desc = "Grep Buffer"  })
-bind("n", "sk", function() get_range(function(result) fzf.grep({ search = result }) end) end, { desc = "Grep Project"  })
-bind("n", "<space>o", fzf.blines, { desc = "Grep prompt input"  })
-bind("n", "<space>i", fzf.grep, { desc = "Grep prompt input"  })
-bind("x", "sk", fzf.grep_visual, { desc = "Grep Project Selection"  })
-bind("n", "sgr", fzf.live_grep_resume,  { desc = "Grep Resume"  })
+bind("n", "sl", function()
+  fzf.lgrep_curbuf({ search = vim.fn.expand("<cword>") })
+end, { desc = "Grep Buffer" })
+bind("n", "<space>o", fzf.blines, { desc = "Grep prompt input" })
+bind("n", "<space>i", fzf.grep, { desc = "Grep prompt input" })
+bind("n", "sk", fzf.grep_cword, { desc = "Grep Project cword" })
+bind("x", "sk", fzf.grep_visual, { desc = "Grep Project Selection" })
+bind("n", "s/", fzf.live_grep_resume, { desc = "Grep Resume" })
 
-bind("n", "<c-y>", fzf.buffers, { desc = "Buffers"  })
+bind("n", "<c-b>", fzf.buffers, { desc = "Buffers" })
 
-bind("n", "sfp", function() fzf.files({ cwd = "%:h" }) end, { desc = "FILES Sibling" })
-bind("n", "sfo", fzf.oldfiles, { desc = "OLDFILES"  })
+bind("n", "<space>fp", function()
+  fzf.files({ cwd = "%:h" })
+end, { desc = "FILES Sibling" })
+bind("n", "<space>fo", fzf.oldfiles, { desc = "OLDFILES" })
 
-bind("n", "sp", fzf.files, { desc = "FILES"  })
-bind("n", "so", mru,       { desc = "MRU" })
+bind("n", "sp", fzf.files, { desc = "FILES" })
+bind("n", "so", mru, { desc = "MRU" })
 
-bind("n", "s<space>", fzf.resume,  { desc = "RESUME" } )
-bind("n", "s<tab>",   fzf.builtin, { desc = "BUILTIN"  })
+bind("n", "s<space>", fzf.resume, { desc = "RESUME" })
+bind("n", "s<tab>", fzf.builtin, { desc = "BUILTIN" })
 
 bind("i", "<c-k>", fzf.complete_path, { desc = "Fuzzy complete path" }) -- remap <C-X><C-F>
 bind("i", "<c-l>", fzf.complete_line, { desc = "Fuzzy complete line" }) -- remap <C-X><C-L>
 
-bind("n", "sga", vim.cmd.AgitFile, { desc = "AGITfILE" })
-bind("n", "sgg", vim.cmd.Agit,     { desc = "AGIT" })
-bind("n", "sgs", fzf.git_status,   { desc = "Status"  })
-bind("n", "sgb", fzf.git_bcommits, { desc = "Bcommits"  })
-bind("n", "sgc", fzf.git_commits,  { desc = "Commits"  })
+bind("n", "gp", fzf.git_status, { desc = "Status" })
+bind("n", "sgb", fzf.git_bcommits, { desc = "Bcommits" })
+bind("n", "sgc", fzf.git_commits, { desc = "Commits" })
 
-bind("n", "s'", fzf.registers, { desc = "Registers"  })
-bind("n", "s;", fzf.changes,   { desc = "changes"  })
-bind("n", "z=", fzf.spell_suggest,   { desc = "spell_suggest" })
-bind("n", "s0", fzf.command_history, { desc = "Command History"  }) -- remap : to 0 easy press
-bind("n", "s/", fzf.search_history,  { desc = "Search History"  })
+bind("n", "s'", fzf.registers, { desc = "Registers" })
+bind("n", "s;", fzf.changes, { desc = "changes" })
+bind("n", "z=", fzf.spell_suggest, { desc = "spell_suggest" })
+bind("n", "sh", fzf.search_history, { desc = "Search History" })
+bind("n", "s0", fzf.command_history, { desc = "Command History" }) -- remap : to 0 easy press
 
-bind("n", "sfl", fzf.loclist,        { desc = "fzf.loclist" })
-bind("n", "sfq", fzf.quickfix,       { desc = "fzf.quickfix" })
-bind("n", "sfL", fzf.loclist_stack,  { desc = "fzf.loclist_stack" })
-bind("n", "sfQ", fzf.quickfix_stack, { desc = "fzf.quickfix_stack" })
+bind("n", "sql", fzf.loclist, { desc = "fzf.loclist" })
+bind("n", "sqq", fzf.quickfix, { desc = "fzf.quickfix" })
+bind("n", "<space>fl", fzf.loclist_stack, { desc = "fzf.loclist_stack" })
+bind("n", "<space>fq", fzf.quickfix_stack, { desc = "fzf.quickfix_stack" })
 
-bind("n", "sfe", fzf.diagnostics_document,  { desc = "fzf.diagnostics_document" })
-bind("n", "sfE", fzf.diagnostics_workspace, { desc = "fzf.diagnostics_workspace" })
+bind("n", "sqb", list_paths, { desc = "List Path Buffer" })
+bind("n", "sqv", function()
+  fzf.files({ cwd = "~/.config/nvim" })
+end, { desc = "VIMRC" })
+bind("n", "sqn", function()
+  fzf.files({ cwd = "~/vimwiki" })
+end, { desc = "NOTES" })
+bind("n", "sqf", function()
+  fzf.files({ query = vim.fn.expand("<cfile>") })
+end, { desc = "Grep files under cursor" })
 
-bind("n", "sfs", fzf.lsp_document_symbols,       { desc = "fzf.lsp_document_symbols" })
-bind("n", "sfS", fzf.lsp_live_workspace_symbols, { desc = "fzf.lsp_live_workspace_symbols" })
-
-
-bind("n", "sfb", list_paths, { desc = "List Path Buffer" })
-bind("n", "sfv", function() fzf.files({ cwd = "~/.config/nvim" }) end, { desc = "VIMRC"  })
-bind("n", "sfn", function() fzf.files({ cwd = "~/vimwiki" }) end,      { desc = "NOTES"  })
-bind("n", "sff", function() fzf.files({ query = vim.fn.expand("<cword>") }) end, { desc = "Grep files under cursor"  })
+bind("n", "sd", fzf.diagnostics_document, { desc = "fzf.diagnostics_document" })
+bind("n", "sD", fzf.diagnostics_workspace, { desc = "fzf.diagnostics_workspace" })
 
 local lsp_attach = function()
-  bind("n", "<space>fD", fzf.lsp_typedefs,        { desc = "fzf.lsp_typedefs" })
-  bind("n", "<space>fd", fzf.lsp_definitions,     { desc = "fzf.lsp_definitions" })
-  bind("n", "<space>fi", fzf.lsp_implementations, { desc = "fzf.lsp_implementations" })
-  bind("n", "<space>f[", fzf.lsp_incoming_calls,  { desc = "fzf.lsp_incoming_calls" })
-  bind("n", "<space>f]", fzf.lsp_outgoing_calls,  { desc = "fzf.lsp_outgoing_calls" })
-  bind("n", "<space>fr", fzf.lsp_references,      { desc = "fzf.lsp_references" })
-  bind("n", "<space>fR", fzf.lsp_finder,          { desc = "fzf.lsp_finder" })
-  bind("n", "<space>gd", fzf.lsp_definitions,     { desc = "fzf.lsp_definitions" })
-  bind("n", "<space>gr", fzf.lsp_references,      { desc = "fzf.lsp_references" })
-  bind("n", "<space>ga", fzf.lsp_code_actions,    { desc = "fzf.lsp_code_actions" })
+  bind("n", "<space>gs", fzf.lsp_document_symbols, { desc = "document_symbols" })
+  bind("n", "<space>gS", fzf.lsp_live_workspace_symbols, { desc = "live_workspace_symbols" })
+  bind("n", "<space>gd", fzf.lsp_definitions, { desc = "definitions" })
+  bind("n", "<space>gD", fzf.lsp_definitions, { desc = "definitions" })
+  bind("n", "<space>gt", fzf.lsp_typedefs, { desc = "typedefs" })
+  bind("n", "<space>gi", fzf.lsp_implementations, { desc = "implementations" })
+  bind("n", "<space>g[", fzf.lsp_incoming_calls, { desc = "incoming_calls" })
+  bind("n", "<space>g]", fzf.lsp_outgoing_calls, { desc = "outgoing_calls" })
+  bind("n", "<space>gr", fzf.lsp_references, { desc = "references" })
+  bind("n", "<space>gf", fzf.lsp_finder, { desc = "finder" })
+  bind("n", "<space>gc", fzf.lsp_code_actions, { desc = "code_actions" })
+  bind("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", {})
 end
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -835,22 +840,20 @@ local fzf_args_cmd = {
   },
 }
 
--- stylua: ignore start
-vim.api.nvim_create_user_command('Ls', unpack(fzf_ls_cmd))
-vim.api.nvim_create_user_command('Files', unpack(fzf_ls_cmd))
-vim.api.nvim_create_user_command('Args', unpack(fzf_args_cmd))
-vim.api.nvim_create_user_command('Autocmd', unpack(fzf_au_cmd))
-vim.api.nvim_create_user_command('Buffers', unpack(fzf_ls_cmd))
-vim.api.nvim_create_user_command('Marks', unpack(fzf_marks_cmd))
-vim.api.nvim_create_user_command('Highlight', unpack(fzf_hi_cmd))
-vim.api.nvim_create_user_command('Registers', unpack(fzf_reg_cmd))
-vim.api.nvim_create_user_command('Display', unpack(fzf_display_cmd))
-vim.api.nvim_create_user_command('Oldfiles', fzf.oldfiles, {})
-vim.api.nvim_create_user_command('Changes', fzf.changes, {})
-vim.api.nvim_create_user_command('Tags', fzf.tagstack, {})
-vim.api.nvim_create_user_command('Jumps', fzf.jumps, {})
-vim.api.nvim_create_user_command('Tabs', fzf.tabs, {})
--- stylua: ignore end
+vim.api.nvim_create_user_command("Ls", unpack(fzf_ls_cmd))
+vim.api.nvim_create_user_command("Files", unpack(fzf_ls_cmd))
+vim.api.nvim_create_user_command("Args", unpack(fzf_args_cmd))
+vim.api.nvim_create_user_command("Autocmd", unpack(fzf_au_cmd))
+vim.api.nvim_create_user_command("Buffers", unpack(fzf_ls_cmd))
+vim.api.nvim_create_user_command("Marks", unpack(fzf_marks_cmd))
+vim.api.nvim_create_user_command("Highlight", unpack(fzf_hi_cmd))
+vim.api.nvim_create_user_command("Registers", unpack(fzf_reg_cmd))
+vim.api.nvim_create_user_command("Display", unpack(fzf_display_cmd))
+vim.api.nvim_create_user_command("Oldfiles", fzf.oldfiles, {})
+vim.api.nvim_create_user_command("Changes", fzf.changes, {})
+vim.api.nvim_create_user_command("Tags", fzf.tagstack, {})
+vim.api.nvim_create_user_command("Jumps", fzf.jumps, {})
+vim.api.nvim_create_user_command("Tabs", fzf.tabs, {})
 
 ---Set telescope default hlgroups for a borderless view
 ---@return nil
@@ -887,29 +890,29 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 -- stylua: ignore start
-if vim.fn.has("nvim") == 1 then
-  vim.g.terminal_color_0  = "#2A2A37"
-  vim.g.terminal_color_1  = "#E78A4E"
-  vim.g.terminal_color_2  = "#99c794"
-  vim.g.terminal_color_3  = "#fac863"
-  vim.g.terminal_color_4  = "#6699cc"
-  vim.g.terminal_color_5  = "#c594c5"
-  vim.g.terminal_color_6  = "#5fb3b3"
-  vim.g.terminal_color_7  = "#c0caf5"
-  vim.g.terminal_color_8  = "#555555"
-  vim.g.terminal_color_9  = "#FFA066"
-  vim.g.terminal_color_10 = "#99c794"
-  vim.g.terminal_color_11 = "#fac863"
-  vim.g.terminal_color_12 = "#6699cc"
-  vim.g.terminal_color_13 = "#c594c5"
-  vim.g.terminal_color_14 = "#5fb3b3"
-  vim.g.terminal_color_15 = "#c0caf5"
-else
-  vim.g.terminal_ansi_colors = {
-    "#1a1b26", "#ec5f67", "#99c794", "#fac863",
-    "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
-    "#555555", "#ec5f67", "#99c794", "#fac863",
-    "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
-  }
-end
+-- if vim.fn.has("nvim") == 1 then
+--   vim.g.terminal_color_0  = "#2A2A37"
+--   vim.g.terminal_color_1  = "#E78A4E"
+--   vim.g.terminal_color_2  = "#99c794"
+--   vim.g.terminal_color_3  = "#fac863"
+--   vim.g.terminal_color_4  = "#6699cc"
+--   vim.g.terminal_color_5  = "#c594c5"
+--   vim.g.terminal_color_6  = "#5fb3b3"
+--   vim.g.terminal_color_7  = "#c0caf5"
+--   vim.g.terminal_color_8  = "#555555"
+--   vim.g.terminal_color_9  = "#FFA066"
+--   vim.g.terminal_color_10 = "#99c794"
+--   vim.g.terminal_color_11 = "#fac863"
+--   vim.g.terminal_color_12 = "#6699cc"
+--   vim.g.terminal_color_13 = "#c594c5"
+--   vim.g.terminal_color_14 = "#5fb3b3"
+--   vim.g.terminal_color_15 = "#c0caf5"
+-- else
+--   vim.g.terminal_ansi_colors = {
+--     "#1a1b26", "#ec5f67", "#99c794", "#fac863",
+--     "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
+--     "#555555", "#ec5f67", "#99c794", "#fac863",
+--     "#6699cc", "#c594c5", "#5fb3b3", "#c0caf5",
+--   }
+-- end
 -- stylua: ignore end

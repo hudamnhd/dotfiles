@@ -261,19 +261,29 @@ local function save_bookmark_dir()
   handle_save(path, bookmark_file)
 end
 
-vim.api.nvim_create_user_command("Cd", function(info)
+local cmd = vim.api.nvim_create_user_command
+local bind = vim.keymap.set
+
+cmd("Cd", function(info)
   _G.fzf_dirs({ cwd = info.fargs[1] })
 end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
 
+cmd("BookmarkFile", save_bookmark_file, { desc = "Save File." })
+cmd("BookmarkDir", save_bookmark_dir, { desc = "Save Directorie." })
+
+cmd("EditBookmarkFile", function()
+  vim.cmd.vsplit(vim.fn.stdpath("cache") .. "/bookmark")
+end, { desc = "edit file bookmark" })
+
+cmd("EditBookmarkDir", function()
+  vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths")
+end, { desc = "edit dir bookmark" })
+
 -- for file
-vim.keymap.set("n", "<space>ba", save_bookmark_file, { desc = "add file bookmark" })
-vim.keymap.set("n", "<space>bs", show_bookmark_file, { desc = "show file bookmark" })
-vim.keymap.set("n", "<space>be", function() vim.cmd.vsplit(vim.fn.stdpath("cache") .. "/bookmark") end, { desc = "edit file bookmark" })
+bind("n", "<M-f>", show_bookmark_file, { desc = "show file bookmark" })
 
 -- for dir
-vim.keymap.set("n", "<space>bA", save_bookmark_dir, { desc = "save dir bookmark" })
-vim.keymap.set("n", "<space>bS", show_bookmark_dir, { desc = "show dir bookmark" })
-vim.keymap.set("n", "<space>bE", function() vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths") end, { desc = "edit dir bookmark" })
+bind("n", "<M-d>", show_bookmark_dir, { desc = "show dir bookmark" })
 
 -- stylua: ignore end
 

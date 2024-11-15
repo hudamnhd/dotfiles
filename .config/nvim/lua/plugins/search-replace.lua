@@ -8,25 +8,4 @@ return {
       })
     end,
   },
-  -- {
-  --   "chrisgrieser/nvim-rip-substitute",
-  --   cmd = "RipSubstitute",
-  --   keys = {
-  --     {
-  --       "<space>s",
-  --       function()
-  --         require("rip-substitute").sub()
-  --       end,
-  --       mode = { "n", "x" },
-  --       desc = " rip substitute",
-  --     },
-  --   },
-  --   config = function()
-  --     require("rip-substitute").setup({
-  --       prefill = {
-  --         startInReplaceLineIfPrefill = true,
-  --       },
-  --     })
-  --   end,
-  -- },
 }

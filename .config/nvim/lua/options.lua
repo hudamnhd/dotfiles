@@ -9,6 +9,7 @@ g.modern_ui = g.has_ui and env.DISPLAY ~= nil
 g.no_nf = not g.modern_ui or env.NVIM_NONF or false
 -- stylua: ignore start
 -- o.mouse          = ""     -- disable the mouse
+-- o.background     = "light" -- for live subtitute
 o.inccommand     = "split" -- for live subtitute
 o.termguicolors  = true   -- enable 24bit colors
 o.synmaxcol      = 200    -- for `syntax`
@@ -34,9 +35,9 @@ o.scrolloff      = 3                            -- min number of lines to keep b
 o.sidescrolloff  = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth      = 99                           -- max inserted text width for paste operations
 o.number         = true                        -- show absolute line no. at the cursor pos
-o.relativenumber = true                        -- otherwise, show relative numbers in the ruler
+o.relativenumber = false                        -- otherwise, show relative numbers in the ruler
 o.cursorline     = true                        -- Show a line where the current cursor is
--- o.signcolumn     = "yes:1"  -- Show sign column as first column
+o.signcolumn     = "yes:1"  -- Show sign column as first column
 
 -- o.cursorlineopt    = "number"
 -- g._colorcolumn = 0        -- global var, mark column 100
@@ -178,7 +179,7 @@ g.markdown_fenced_languages = {
 }
 
 -- NOTE disable default keybind
-local disable_key = { "s", "m", "c", "q", "<c-z>", "<space>" }
+local disable_key = { "s", "m", "c", "q", "Q", "<c-z>", "<space>" }
 for _, key in ipairs(disable_key) do
   vim.keymap.set("", key, "<Nop>")
 end

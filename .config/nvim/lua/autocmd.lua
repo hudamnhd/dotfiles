@@ -61,18 +61,6 @@ augroup("HelpOpenVert", {
   },
 })
 
-augroup("BufferManager", {
-  {
-    event = "FileType",
-    opts = {
-      pattern = "buffer_manager,harpoon",
-      callback = function()
-        vim.keymap.set("n", "<space>", ":", { buffer = true, nowait = true, silent = false })
-      end,
-    },
-  },
-})
-
 -- LSP and formatter mappings
 local function lsp_get_clients(...)
   ---@diagnostic disable-next-line: deprecated

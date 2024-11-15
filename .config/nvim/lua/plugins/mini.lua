@@ -30,8 +30,8 @@ function M.config()
       { mode = 'n', keys = ']' },
       { mode = 'x', keys = '[' },
       { mode = 'x', keys = ']' },
-      -- { mode = 'n', keys = 'g' },
-      -- { mode = 'x', keys = 'g' },
+      { mode = 'n', keys = 'g' },
+      { mode = 'x', keys = 'g' },
       { mode = 'n', keys = 's' },        -- `s` key
       { mode = 'n', keys = "'" },        -- Marks
       { mode = 'n', keys = '`' },
@@ -48,10 +48,11 @@ function M.config()
       { mode = 'x', keys = '<space>' },
       { mode = 'n', keys = '\\' }, -- space triggers
       { mode = 'x', keys = '\\' },
-      { mode = 'n', keys = '<C-w>' },    -- Window commands
+      { mode = 'n', keys = '<C-a>' },    -- Window commands
+      { mode = 'x', keys = '<C-a>' },    -- Window commands
     },
     window = {
-      delay = 300,
+      delay = 0,
       config = {
         border = 'single',
         anchor = anchor,
@@ -69,21 +70,21 @@ function M.config()
   -- vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
   -- vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
-  -- require("mini.diff").setup({
-  --
-  --   view = {
-  --     style = "sign",
-  --     -- signs = { add = " ", change = " ", delete = "" },
-  --     signs = { add = "+", change = "~", delete = "-" },
-  --     -- signs = { add = "█", change = "█", delete = "█" },
-  --     priority = 100,
-  --   },
-  -- })
+  require("mini.diff").setup({
+
+    view = {
+      style = "sign",
+      -- signs = { add = " ", change = " ", delete = "" },
+      signs = { add = "+", change = "~", delete = "-" },
+      -- signs = { add = "█", change = "█", delete = "█" },
+      priority = 100,
+    },
+  })
 
   -- Define custom colors for MiniDiff signs
-  -- vim.api.nvim_set_hl(0, 'MiniDiffSignAdd', { fg = '#b3f6c0', bold = true })    -- Green for added lines
-  -- vim.api.nvim_set_hl(0, 'MiniDiffSignChange', { fg = '#8cf8f7', bold = true }) -- Yellow for changed lines
-  -- vim.api.nvim_set_hl(0, 'MiniDiffSignDelete', { fg = '#ffc0b9', bold = true }) -- Red for deleted lines
+  vim.api.nvim_set_hl(0, "MiniDiffSignAdd", { fg = "#b3f6c0", bold = true }) -- Green for added lines
+  vim.api.nvim_set_hl(0, "MiniDiffSignChange", { fg = "#8cf8f7", bold = true }) -- Yellow for changed lines
+  vim.api.nvim_set_hl(0, "MiniDiffSignDelete", { fg = "#ffc0b9", bold = true }) -- Red for deleted lines
   require("mini.pairs").setup({
     modes = { insert = true, command = false, terminal = false },
     mappings = {
@@ -91,11 +92,6 @@ function M.config()
       [">"] = { action = "close", pair = "<>", neigh_pattern = "[^\\]." },
     },
   })
-
-  -- stylua: ignore start
-  -- vim.keymap.set("n", "<C-N>", ":lua MiniBracketed.quickfix('forward', {})<CR>",  { silent = true, desc = "qnext" })
-  -- vim.keymap.set("n", "<C-P>", ":lua MiniBracketed.quickfix('backward', {})<CR>", { silent = true, desc = "qprev" })
-  -- stylua: ignore end
 
   require("mini.operators").setup({
     sort = {
@@ -106,62 +102,15 @@ function M.config()
 
   -- require("mini.statusline").setup()
 
-  require("mini.align").setup({
-    modifiers = {
-      j = function(_, opts)
-        local next_option = ({
-          left = "center",
-          center = "right",
-          right = "none",
-          none = "left",
-        })[opts.justify_side]
-        opts.justify_side = next_option or "left"
-      end,
-    },
-    -- steps = {
-    --   pre_justify = { require("mini.align").gen_step.filter('n == 1') }
-    -- },
-  })
-  --
-  -- local function get_buffer_index(buf_id)
-  --   local buffers = vim.fn.getbufinfo({ buflisted = 1 })
-  --   for i, buffer in ipairs(buffers) do
-  --     if buffer.bufnr == buf_id then
-  --       return i
-  --     end
-  --   end
-  --   return -1
-  -- end
-  -- --
-  -- -- -- Example usage in your format function
-  -- require("mini.tabline").setup({
-  --   format = function(buf_id, label)
-  --     local suffix = vim.bo[buf_id].modified and "+ " or ""
-  --     local buffer_index = get_buffer_index(buf_id)
-  --     return " " .. buffer_index .. "." .. MiniTabline.default_format(buf_id, label) .. suffix
-  --   end,
-  -- })
-  --
-  --     -- stylua: ignore start
-  -- vim.api.nvim_set_hl(0, "MiniTablineCurrent", { fg = "#343D46", bg = "#eeeeee", bold = true })
-  -- vim.api.nvim_set_hl(0, "MiniTablineVisible", { fg = "#eeeeee", bg = "#343D46", bold = true })
-  -- vim.api.nvim_set_hl(0, "MiniTablineHidden", { fg = "#eeeeee", bg = "#343D46", bold = false })
-  -- vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { fg = "#F9AE58", bg = "#000000", bold = true })
-  -- vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { fg = "#000000", bg = "#F9AE58", bold = true })
-  -- vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { fg = "#000000", bg = "#F9AE58", bold = true })
-  -- vim.api.nvim_set_hl(0, "MiniTablineTabpagesection", { fg = "#eeeeee", bg = "#343D46", bold = true })
-
   -- stylua: ignore end
   require("mini.bracketed").setup({
-    -- buffer = { suffix = "", options = {} },
+    buffer = { suffix = "", options = {} },
     -- quickfix = { suffix = "", options = {} },
   })
 
   local map = vim.keymap.set
-  map("n", "<C-S-N>", "<Cmd>lua MiniBracketed.quickfix('first')<CR>")
-  map("n", "<C-P>", "<Cmd>lua MiniBracketed.quickfix('backward')<CR>")
-  map("n", "<C-N>", "<Cmd>lua MiniBracketed.quickfix('forward')<CR>")
-  map("n", "<C-S-N>", "<Cmd>lua MiniBracketed.quickfix('last')<CR>")
+  map("n", "<C-T>", "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
+  map("n", "<C-Y>", "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
   --
   require("mini.notify").setup({
     lsp_progress = {

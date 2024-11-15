@@ -44,5 +44,5 @@ return {
     })
   end,
   -- ft = langs,
-  enabled = true,
+  enabled = false,
 }
