@@ -3,7 +3,7 @@ return {
     "RRethy/nvim-align",
     keys = function()
       return {
-        { "<C-N>", mode = { "x" }, ":Align<space>", desc = "nvim-align" },
+        { "gn", mode = { "x" }, ":Align<space>", desc = "nvim-align" },
       }
     end,
     config = function()

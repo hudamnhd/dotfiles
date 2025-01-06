@@ -3,7 +3,8 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
+      "iguanacucumber/mag-nvim-lsp",
+      -- "hrsh7th/cmp-nvim-lsp",
       -- "saghen/blink.cmp",
       {
         "lewis6991/hover.nvim",

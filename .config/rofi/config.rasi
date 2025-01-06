@@ -7,8 +7,8 @@ configuration{
     kb-mode-previous: "Shift+Left,Control+Shift+Tab,Control+h";
     kb-remove-char-back: "BackSpace";
     lines: 1;
-    font: "JetBrainsMonoNL Nerd Font 14";
-    show-icons: false;
+    font: "Iosevka Nerd Font 14";
+    show-icons: true;
     icon-theme: "Breeze Dark";
     terminal: "st";
     drun-display-format: "{icon} {name}";
@@ -16,7 +16,7 @@ configuration{
     disable-history: false;
     hide-scrollbar: true;
   modi: "drun,window";
-  display-drun: "  Menu";
+  display-drun: "   Menu";
   display-run: "  Run";
   display-window: "   Window";
   display-windowcd: "   Window+";

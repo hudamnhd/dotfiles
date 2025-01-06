@@ -33,6 +33,12 @@ M.bind(
   '<CMD>lua require("utils.buffers").delete(true)<CR>',
   { desc = "delete buff current close window" }
 )
+M.bind(
+  "n",
+  "<a-q>",
+  '<CMD>lua require("utils.buffers").delete(true)<CR>',
+  { desc = "delete buff current close window" }
+)
 ---@class Opts
 ---@field non_modifiable boolean: Whether to delete non-modifiable buffers
 

@@ -1,0 +1,32 @@
+Regex
+
+(.*)                              -- find all word
+^                                 -- start of line
+\r                                -- add new line :s/\\n/\r/g
+$                                 -- end of line
+\v                                -- very magic
+(abc|cba)                         -- match either abc or cba
+:%s/\v(abc|cba)//g                -- find and remove abc and cba
+:s/\(.*\)/abc \1 abc              -- add abc first and last word, using visual mode
+:s/<\(.*\)/{\/*\<\1 *\/}          -- find < and add {*/ *\} before and after
+:4,9s/^/#/                        -- add # at first line 4-9
+:s/\v(\w+),/\1={\1}/g             -- word to word={word}
+:s/\v\(\w+\)                      -- Menemukan Kata yang Diapit oleh Kurung
+:s/\v".*"                         -- Mencari atau Mengganti Semua Teks dalam Tanda Kutip
+:s/\<Select\>/new/g               -- Mengganti kata `Select` yang berdiri sendiri, bukan bagian dari kata lain seperti `Selected`
+:s/\([^)]*\)                      -- Menangkap Semua Karakter dalam Tanda Kurung
+:s/(\([^)]*\))/\1Replaced/g       -- Mengganti `Select(Item)` menjadi `ItemReplaced`
+:s/\(Select\)\(Item\)/\1Radix\2/g -- Mengganti `SelectItem` menjadi `SelectRadixItem`.
+
+:s/\(.*\)                         -- Tangkap Semua Teks**: Menangkap semua teks pada baris saat ini.
+:s/\(.*\)/X \1 X/g                -- Bungkus Teks**: Membungkus teks yang ditemukan dengan karakter tertentu (mis. X).
+:\v(\d+)                          -- Angka**: Menangkap angka dalam teks.
+:s/^\s*//g                        -- Hapus Spasi di Awal Baris**: Membersihkan spasi di awal setiap baris.
+:s/\s*$//g                        -- Hapus Spasi di Akhir Baris**: Membersihkan spasi di akhir setiap baris.
+:\v([a-zA-Z]+)                    -- Tangkap Kata**: Menangkap semua kata alphabetik.
+:s/\v([a-zA-Z]+)/\U\1/g           -- Ubah Huruf ke Kapital**: Mengubah semua huruf menjadi huruf kapital.
+:s/\v([a-zA-Z]+)/\L\1/g           -- Ubah Huruf ke Kecil**: Mengubah semua huruf menjadi huruf kecil.
+:s/([aeiou])/X/g                  -- Ganti Vokal**: Mengganti semua vokal (a, e, i, o, u) dengan huruf tertentu (mis. X).
+:s/\v^\s+//g                      -- Hapus Spasi Awal**: Menghapus semua spasi awal dari teks.
+:s/\v\s+$//g                      -- Hapus Spasi Akhir**: Menghapus semua spasi akhir dari teks.
+:s/\v(\w+)\s+(\w+)/\2 \1/g        -- Balik Kata**: Membalik posisi kata pertama dan kedua pada setiap pasangan kata.

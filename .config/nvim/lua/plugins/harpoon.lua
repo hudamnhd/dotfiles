@@ -35,7 +35,7 @@ return {
         return Path:new(buf_name):make_relative(root)
       end
 
-      vim.keymap.set("n", "<C-E>", function()
+      vim.keymap.set("n", "<C-P>", function()
         local ui_opts = {
           ui_fallback_width = 7,
           ui_width_ratio = 0.7,
@@ -46,7 +46,7 @@ return {
         vim.cmd(cmd)
       end, { desc = "toggle_quick_menu harpoon" })
 
-      vim.keymap.set("n", "<space><tab>", function() harpoon:list():add() vim.notify("harpoon add")end, { desc = "mark harpoon" })
+      vim.keymap.set("n", "<space>h", function() harpoon:list():add() vim.notify("harpoon add")end, { desc = "mark harpoon" })
 
       -- vim.keymap.set("n", "[a", function() harpoon:list():prev() end)
       -- vim.keymap.set("n", "]a", function() harpoon:list():next() end)

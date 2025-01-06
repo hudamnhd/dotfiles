@@ -1,5 +1,5 @@
 local function insert_json(pattern)
-  local text = "{JSON.stringify(" .. pattern .. ", null, 2)}"
+  local text = "<pre className='text-sm'>{JSON.stringify(" .. pattern .. ", null, 2)}</pre>"
   local buf = vim.api.nvim_get_current_buf()
   local cursor = vim.api.nvim_win_get_cursor(0) -- Cursor position as [line, column]
   local row = cursor[1] - 1 -- Convert to 0-based index for Neovim API

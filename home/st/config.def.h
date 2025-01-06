@@ -6,12 +6,14 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 
+static char *font = "IosevkaTerm Nerd Font:style=Medium:pixelsize=20";
+static char *font2[] = { "IosevkaTerm Nerd Font:style=Medium:pixelsize=20"};
 // static char *font = "IosevkaTree Nerd Font:style=Medium:pixelsize=16";
 // static char *font2[] = { "IosevkaTree Nerd Font:style=Medium:pixelsize=16"};
-static char *font = "JetBrainsMonoNL Nerd Font:style=Medium:pixelsize=15:antialias=true:autohint=true";
-static char *font2[] = { "JetBrainsMonoNL Nerd Font:pixelsize=15:antialias=true:autohint=true" };
-// static char *font = "iosevka normal Medium:pixelsize=16:antialias=true:autohint=true";
-// static char *font2[] = { "iosevka normal Medium:pixelsize=16:antialias=true:autohint=true" };
+// static char *font = "JetBrainsMonoNL Nerd Font:style=Medium:pixelsize=17:antialias=true:autohint=true";
+// static char *font2[] = { "JetBrainsMonoNL Nerd Font:pixelsize=17:antialias=true:autohint=true" };
+// static char *font = "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true";
+// static char *font2[] = { "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true" };
 static int borderpx = 0;
 
 /*
@@ -260,8 +262,8 @@ static Shortcut shortcuts[] = {
     {ControlMask,             XK_Print,     toggleprinter, {.i = 0}},
     {ShiftMask,               XK_Print,     printscreen,   {.i = 0}},
     {XK_ANY_MOD,              XK_Print,     printsel,      {.i = 0}},
-    {MODKEY,                  XK_comma,     zoom,          {.f = +1}},
-    {MODKEY,                  XK_period,    zoom,          {.f = -1}},
+    {MODKEY,                  XK_period,    zoom,          {.f = +1}},
+    {MODKEY,                  XK_comma,     zoom,          {.f = -1}},
     {MODKEY,                  XK_g,         zoomreset,     {.f = 0}},
     {ControlMask | ShiftMask, XK_C,         clipcopy,      {.i = 0}},
     {ShiftMask,               XK_Insert,    clippaste,     {.i = 0}},

@@ -609,6 +609,22 @@ bind("n", "sqb", list_paths, { desc = "List Path Buffer" })
 bind("n", "sqv", function()
   fzf.files({ cwd = "~/.config/nvim" })
 end, { desc = "VIMRC" })
+
+bind("n", "<space>l", function()
+  local year = os.date("%Y") -- Tahun saat ini
+  local logs_path = "~/daily-logs/" .. year
+  require("fzf-lua").files({ cwd = vim.fn.expand(logs_path) })
+end, { noremap = true, desc = "Fuzzy search daily logs for current year" })
+bind("n", "<space>n", function()
+  local year = os.date("%Y") -- Tahun saat ini
+  local month_number = os.date("%m") -- Nomor bulan
+  local month_name = os.date("%B") -- Nama bulan (contoh: December)
+  local file_name = month_number .. "-" .. month_name .. "-" .. year .. ".md"
+  local file_path = "~/daily-logs/" .. year .. "/" .. file_name
+
+  -- Expand `~` to absolute path and open the file
+  vim.cmd("edit " .. vim.fn.expand(file_path))
+end, { noremap = true, desc = "Open daily log file for current month" })
 bind("n", "sqn", function()
   fzf.files({ cwd = "~/vimwiki" })
 end, { desc = "NOTES" })
@@ -631,7 +647,7 @@ local lsp_attach = function()
   bind("n", "<space>gr", fzf.lsp_references, { desc = "references" })
   bind("n", "<space>gf", fzf.lsp_finder, { desc = "finder" })
   bind("n", "<space>gc", fzf.lsp_code_actions, { desc = "code_actions" })
-  bind("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", {})
+  bind("n", "<space>gR", "<cmd>lua vim.lsp.buf.rename()<cr>", {})
 end
 
 vim.api.nvim_create_autocmd("LspAttach", {

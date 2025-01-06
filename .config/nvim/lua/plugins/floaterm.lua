@@ -25,7 +25,7 @@ end
 
 local win = {
   full = "--width=0.95 --height=0.95",
-  bottom = "--height=0.4 --wintype=split",
+  bottom = "--height=0.4 ",
   top = "--height=0.5 --wintype=split --position=leftabove",
 }
 
@@ -53,7 +53,7 @@ return {
     { "<a-x>", vim.cmd.FloatermKill, mode = "t", desc = "FloatermKill" },
     { "<c-space>", vim.cmd.FloatermHide, mode = "t", desc = "FloatermHide" },
     {
-      "<a-b>",
+      "<F2>",
       function()
         toggleFloaterm("--name=buffer --cwd=<buffer> --disposable " .. win.bottom .. " bash")
       end,

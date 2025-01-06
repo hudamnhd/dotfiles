@@ -19,6 +19,8 @@ M.bind("x", "<", [[<gv]])
 M.bind("t", "<C-\\>", [[<C-\><C-n>]])
 
 M.bind("n", "<a-w>", [[<c-w>w]])
+M.bind("n", "<c-[>", [[<c-w>w]])
+M.bind("n", "<c-]>", [[<c-w>w]])
 M.bind("t", "<a-w>", [[<C-\><C-n><c-w>w]])
 
 M.bind({ "n", "v" }, "<C-H>", [[^]])
@@ -48,27 +50,24 @@ M.bind("n", "ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
 M.bind("n", "cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
 M.bind("n", "cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
 
--- NOTE Lua expression
-M.bind("c", "<F1>", [[\(.*\)]], { silent = false })
-M.bind("c", "<F2>", [[s/\(.*\)/X\ \1\ X/g>]], { silent = false })
-M.bind(
-  "c",
-  "<F3>",
-  'getcmdtype() == ":" ? expand("%:h/") . "/" : ""',
-  { silent = false, expr = true }
-)
-M.bind(
-  "c",
-  "<F4>",
-  'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""',
-  { silent = false, expr = true }
-)
-M.bind(
-  "c",
-  "<F5>",
-  'getcmdtype() == ":" ? escape(expand("%:p"))  : ""',
-  { silent = false, expr = true }
-)
+-- M.bind(
+--   "c",
+--   "<F3>",
+--   'getcmdtype() == ":" ? expand("%:h/") . "/" : ""',
+--   { silent = false, expr = true }
+-- )
+-- M.bind(
+--   "c",
+--   "<F4>",
+--   'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""',
+--   { silent = false, expr = true }
+-- )
+-- M.bind(
+--   "c",
+--   "<F5>",
+--   'getcmdtype() == ":" ? escape(expand("%:p"))  : ""',
+--   { silent = false, expr = true }
+-- )
 
 M.bind("c", "<c-v>", [[<C-R>"]], { desc = "paste cmd-mode", silent = false })
 M.bind("c", "<a-v>", [[<C-R>+]], { desc = "paste cmd-mode", silent = false })
@@ -77,8 +76,8 @@ M.bind("t", "<M-r>", [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
 -- M.bind("t", "<c-v>", [['<C-\><C-N>""pi']], { expr = true })
 -- M.bind("t", "<a-v>", [['<C-\><C-N>"+pi']], { expr = true })
 
-M.bind("c", "<c-space>", [[.\{-}]], { silent = false })
-M.bind("c", "<a-space>", [[\s\+]], { silent = false })
+M.bind("c", "<c-bs>", [[.\{-}]], { silent = false })
+M.bind("c", "<a-bs>", [[\s\+]], { silent = false })
 
 -- NOTE join
 M.bind("n", "J", "'mz' . v:count1 . 'J`z'", { expr = true })
@@ -165,7 +164,7 @@ M.git_diff_buff = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
 M.bind("n", "<space>to", M.git_diff_buff, { desc = "Toggle overlay" })
 M.bind("n", "<space>td", M.toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
 M.bind("n", "<space>tu", M.undotree, { desc = "UNDOTREEtOGGLE" })
-M.bind("n", "<space>t%", M.set_cwd, { desc = "SET CWD" })
+M.bind("n", "<space>%", M.set_cwd, { desc = "SET CWD" })
 M.bind("n", "<space>tr", M.translate_nm, { desc = "translate" })
 M.bind("x", "<space>tr", M.translate_vm, { desc = "translate" })
 M.bind("n", "<space>t1", M.regex_tutor, { desc = "regex-tutor" })
@@ -376,8 +375,8 @@ local function cgn_visual()
   cgn(require("utils.helper").get_visual_selection())
 end
 
-M.bind("n", "<a-q>", cgn_word, { desc = "cgn word" })
-M.bind("x", "<a-q>", cgn_visual, { desc = "cgn visual" })
+M.bind("n", "<C-N>", cgn_word, { desc = "cgn word" })
+M.bind("x", "<C-N>", cgn_visual, { desc = "cgn visual" })
 
 M.show_documentation = function()
   local filetype = vim.bo.filetype
@@ -412,10 +411,8 @@ end
 M.bind("n", "K", M.show_documentation, { desc = "show_documentation" })
 M.bind("n", "<space>d", vim.diagnostic.open_float, { desc = "diagnostic.open_float" })
 
-M.bind("n", "<F2>", "<cmd>tab terminal<cr>", { desc = "tab term" })
-M.bind("t", "<C-^>", "<cmd>b#<cr>", { desc = "tab term" })
-M.bind("t", "<C-0>", "<cmd>bd!<cr>", { desc = "tab term" })
-
+M.bind("t", "<c-^>", [[<C-\><C-n><c-^>]], { desc = "move splite" })
+M.bind("t", "<a-x>", [[<C-\><C-n>:bd!<Cr>]], { desc = "force close" })
 M.bind("n", "<space>k", "<c-w>T", { desc = "move splite" })
 M.bind("n", "<space>c", "<c-w>c", { desc = "close" })
 M.bind("n", "<space>v", "<c-w>v", { desc = "vsplite" })
@@ -441,7 +438,7 @@ for i = 1, #keys do
   M.bind("n", key_combination, tabswitch(vim.cmd.tabnext, i), { desc = "go tab " .. i })
 end
 
-M.bind({ "x", "n" }, "<space>r", '<cmd>lua require("user.nui").local_menu()<cr>')
+M.bind({ "x", "n" }, "<space>s", '<cmd>lua require("user.nui").local_menu()<cr>')
 M.bind("n", "sqg", '<cmd>lua require("user.nui").git_menu()<cr>')
 
 M.bind(
@@ -461,7 +458,7 @@ M.bind(
 local sr_visual_g       = vim.cmd.SearchReplaceSingleBufferVisualSelection
 local sr_word_g         = vim.cmd.SearchReplaceSingleBufferCWord
 local sr_visual_word    = vim.cmd.SearchReplaceWithinVisualSelectionCWord
-local sr_selection_word = [[:'<,'>s/<C-r><C-w>/<C-r><C-w>/gI<left><left><left>]]
+local sr_selection_word = [[:'<,'>s/\v<C-r><C-w>/<C-r><C-w>/gI<left><left><left>]]
 local sr_visual         = vim.cmd.SearchReplaceWithinVisualSelection
 local sr_normal         = vim.cmd.SearchReplaceSingleBufferOpen
 
@@ -471,5 +468,20 @@ M.bind("n", "<c-f>", sr_word_g, { desc = "replace cword" })
 M.bind("x", "<c-s>", sr_visual_word, { desc = "replace cword" })
 M.bind("n", "<c-s>", sr_selection_word, { desc = "replace cword", silent = false })
 M.bind("x", "<c-r>", sr_visual, { desc = "Search Replace Search" })
+
+local camel_to_snace = [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]]
+M.bind("x", "<c-9>", camel_to_snace, { desc = "replace cword", silent = false })
 -- stylua: ignore end
+
+vim.keymap.set("n", "<leader>d", function()
+  local date = os.date("## %A %Y-%m-%d") -- Format tanggal
+  vim.api.nvim_put({ date }, "l", true, true) -- Masukkan ke baris di bawah kursor
+end, { noremap = true, desc = "Insert current date in format ## Monday 2019-12-02" })
+
+vim.keymap.set("n", "<leader>m", function()
+  local date = os.date("# %B %Y") -- Format bulan dan tahun
+  vim.api.nvim_put({ date }, "l", true, true) -- Masukkan ke baris di bawah kursor
+end, { noremap = true, desc = "Insert current month and year in format # December 2019" })
+
+-- hhdaCase
 return M

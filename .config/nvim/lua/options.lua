@@ -9,10 +9,10 @@ g.modern_ui = g.has_ui and env.DISPLAY ~= nil
 g.no_nf = not g.modern_ui or env.NVIM_NONF or false
 -- stylua: ignore start
 -- o.mouse          = ""     -- disable the mouse
--- o.background     = "light" -- for live subtitute
+o.background     = "light" -- for live subtitute
 o.inccommand     = "split" -- for live subtitute
 o.termguicolors  = true   -- enable 24bit colors
-o.synmaxcol      = 200    -- for `syntax`
+-- o.synmaxcol      = 200    -- for `syntax`
 o.timeoutlen     = 650
 o.updatetime     = 250    -- decrease update time
 o.fileformat     = "unix" -- <nl> for EOL

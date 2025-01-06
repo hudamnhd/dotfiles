@@ -4,6 +4,7 @@
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
+#include <Imlib2.h>
 
 #include "drw.h"
 #include "util.h"
@@ -15,6 +16,8 @@ static const unsigned char utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0}
 static const unsigned char utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
 static const long utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
 static const long utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
+extern const int enablecolorfonts;
+extern const int removevs16codepoints;
 
 static long
 utf8decodebyte(const char c, size_t *i)
@@ -71,6 +74,7 @@ drw_create(Display *dpy, int screen, Window root, unsigned int w, unsigned int h
 	drw->w = w;
 	drw->h = h;
 	drw->drawable = XCreatePixmap(dpy, root, w, h, DefaultDepth(dpy, screen));
+	drw->picture = XRenderCreatePicture(dpy, drw->drawable, XRenderFindVisualFormat(dpy, DefaultVisual(dpy, screen)), 0, NULL);
 	drw->gc = XCreateGC(dpy, root, 0, NULL);
 	XSetLineAttributes(dpy, drw->gc, 1, LineSolid, CapButt, JoinMiter);
 
@@ -85,18 +89,83 @@ drw_resize(Drw *drw, unsigned int w, unsigned int h)
 
 	drw->w = w;
 	drw->h = h;
+	if (drw->picture)
+		XRenderFreePicture(drw->dpy, drw->picture);
 	if (drw->drawable)
 		XFreePixmap(drw->dpy, drw->drawable);
 	drw->drawable = XCreatePixmap(drw->dpy, drw->root, w, h, DefaultDepth(drw->dpy, drw->screen));
+	drw->picture = XRenderCreatePicture(drw->dpy, drw->drawable, XRenderFindVisualFormat(drw->dpy, DefaultVisual(drw->dpy, drw->screen)), 0, NULL);
 }
 
 void
 drw_free(Drw *drw)
 {
+	XRenderFreePicture(drw->dpy, drw->picture);
 	XFreePixmap(drw->dpy, drw->drawable);
 	XFreeGC(drw->dpy, drw->gc);
 	drw_fontset_free(drw->fonts);
 	free(drw);
+}
+
+Picture
+drw_picture_create_resized(Drw *drw, char *src, unsigned int srcw, unsigned int srch, unsigned int dstw, unsigned int dsth) {
+	Pixmap pm;
+	Picture pic;
+	GC gc;
+
+	if (srcw <= (dstw << 1u) && srch <= (dsth << 1u)) {
+		XImage img = {
+			srcw, srch, 0, ZPixmap, src,
+			ImageByteOrder(drw->dpy), BitmapUnit(drw->dpy), BitmapBitOrder(drw->dpy), 32,
+			32, 0, 32,
+			0, 0, 0
+		};
+		XInitImage(&img);
+
+		pm = XCreatePixmap(drw->dpy, drw->root, srcw, srch, 32);
+		gc = XCreateGC(drw->dpy, pm, 0, NULL);
+		XPutImage(drw->dpy, pm, gc, &img, 0, 0, 0, 0, srcw, srch);
+		XFreeGC(drw->dpy, gc);
+
+		pic = XRenderCreatePicture(drw->dpy, pm, XRenderFindStandardFormat(drw->dpy, PictStandardARGB32), 0, NULL);
+		XFreePixmap(drw->dpy, pm);
+
+		XRenderSetPictureFilter(drw->dpy, pic, FilterBilinear, NULL, 0);
+		XTransform xf;
+		xf.matrix[0][0] = (srcw << 16u) / dstw; xf.matrix[0][1] = 0; xf.matrix[0][2] = 0;
+		xf.matrix[1][0] = 0; xf.matrix[1][1] = (srch << 16u) / dsth; xf.matrix[1][2] = 0;
+		xf.matrix[2][0] = 0; xf.matrix[2][1] = 0; xf.matrix[2][2] = 65536;
+		XRenderSetPictureTransform(drw->dpy, pic, &xf);
+	} else {
+		Imlib_Image origin = imlib_create_image_using_data(srcw, srch, (DATA32 *)src);
+		if (!origin) return None;
+		imlib_context_set_image(origin);
+		imlib_image_set_has_alpha(1);
+		Imlib_Image scaled = imlib_create_cropped_scaled_image(0, 0, srcw, srch, dstw, dsth);
+		imlib_free_image_and_decache();
+		if (!scaled) return None;
+		imlib_context_set_image(scaled);
+		imlib_image_set_has_alpha(1);
+
+		XImage img = {
+		    dstw, dsth, 0, ZPixmap, (char *)imlib_image_get_data_for_reading_only(),
+		    ImageByteOrder(drw->dpy), BitmapUnit(drw->dpy), BitmapBitOrder(drw->dpy), 32,
+		    32, 0, 32,
+		    0, 0, 0
+		};
+		XInitImage(&img);
+
+		pm = XCreatePixmap(drw->dpy, drw->root, dstw, dsth, 32);
+		gc = XCreateGC(drw->dpy, pm, 0, NULL);
+		XPutImage(drw->dpy, pm, gc, &img, 0, 0, 0, 0, dstw, dsth);
+		imlib_free_image_and_decache();
+		XFreeGC(drw->dpy, gc);
+
+		pic = XRenderCreatePicture(drw->dpy, pm, XRenderFindStandardFormat(drw->dpy, PictStandardARGB32), 0, NULL);
+		XFreePixmap(drw->dpy, pm);
+	}
+
+	return pic;
 }
 
 /* This function is an implementation detail. Library users should use
@@ -131,6 +200,21 @@ xfont_create(Drw *drw, const char *fontname, FcPattern *fontpattern)
 		}
 	} else {
 		die("no font specified.");
+	}
+
+	/* Do not allow using color fonts. This is a workaround for a BadLength
+	 * error from Xft with color glyphs. Modelled on the Xterm workaround. See
+	 * https://bugzilla.redhat.com/show_bug.cgi?id=1498269
+	 * https://lists.suckless.org/dev/1701/30932.html
+	 * https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=916349
+	 * and lots more all over the internet.
+	 */
+	if (!enablecolorfonts) {
+		FcBool iscol;
+		if(FcPatternGetBool(xfont->pattern, FC_COLOR, 0, &iscol) == FcResultMatch && iscol) {
+			XftFontClose(drw->dpy, xfont);
+			return NULL;
+		}
 	}
 
 	font = ecalloc(1, sizeof(Fnt));
@@ -190,6 +274,8 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
 	                       DefaultColormap(drw->dpy, drw->screen),
 	                       clrname, dest))
 		die("error, cannot allocate color '%s'", clrname);
+
+    dest->pixel |= 0xff << 24;
 }
 
 /* Wrapper to create color schemes. The caller has to call free(3) on the
@@ -238,10 +324,12 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
 int
 drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert)
 {
-	int i, ty, ellipsis_x = 0;
-	unsigned int tmpw, ew, ellipsis_w = 0, ellipsis_len;
+	char buf[1024];
+	int ty;
+	unsigned int mw, ew = 0;
 	XftDraw *d = NULL;
 	Fnt *usedfont, *curfont, *nextfont;
+	int len, n, m;
 	int utf8strlen, utf8charlen, render = x || y || w || h;
 	long utf8codepoint = 0;
 	const char *utf8str;
@@ -250,19 +338,19 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 	FcPattern *match;
 	XftResult result;
 	int charexists = 0, overflow = 0;
-	/* keep track of a couple codepoints for which we have no match. */
-	enum { nomatches_len = 64 };
-	static struct { long codepoint[nomatches_len]; unsigned int idx; } nomatches;
-	static unsigned int ellipsis_width = 0;
+	static unsigned int ellipsis_w;
+	static Fnt *ellipsis_font;
 
-	if (!drw || (render && (!drw->scheme || !w)) || !text || !drw->fonts)
+	if (!drw || (render && !drw->scheme) || !text || !drw->fonts)
 		return 0;
 
 	if (!render) {
-		w = invert ? invert : ~invert;
+		w = ~w;
 	} else {
 		XSetForeground(drw->dpy, drw->gc, drw->scheme[invert ? ColFg : ColBg].pixel);
 		XFillRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w, h);
+		if (w < lpad)
+			return x + w;
 		d = XftDrawCreate(drw->dpy, drw->drawable,
 		                  DefaultVisual(drw->dpy, drw->screen),
 		                  DefaultColormap(drw->dpy, drw->screen));
@@ -271,10 +359,13 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 	}
 
 	usedfont = drw->fonts;
-	if (!ellipsis_width && render)
-		ellipsis_width = drw_fontset_getwidth(drw, "...");
+	if (usedfont != ellipsis_font) {
+		ellipsis_font = usedfont;
+		drw_font_getexts(ellipsis_font, "...", 3, &ellipsis_w, NULL);
+	}
+
 	while (1) {
-		ew = ellipsis_len = utf8strlen = 0;
+		utf8strlen = 0;
 		utf8str = text;
 		nextfont = NULL;
 		while (*text) {
@@ -282,27 +373,9 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 			for (curfont = drw->fonts; curfont; curfont = curfont->next) {
 				charexists = charexists || XftCharExists(drw->dpy, curfont->xfont, utf8codepoint);
 				if (charexists) {
-					drw_font_getexts(curfont, text, utf8charlen, &tmpw, NULL);
-					if (ew + ellipsis_width <= w) {
-						/* keep track where the ellipsis still fits */
-						ellipsis_x = x + ew;
-						ellipsis_w = w - ew;
-						ellipsis_len = utf8strlen;
-					}
-
-					if (ew + tmpw > w) {
-						overflow = 1;
-						/* called from drw_fontset_getwidth_clamp():
-						 * it wants the width AFTER the overflow
-						 */
-						if (!render)
-							x += tmpw;
-						else
-							utf8strlen = ellipsis_len;
-					} else if (curfont == usedfont) {
+					if (curfont == usedfont) {
 						utf8strlen += utf8charlen;
 						text += utf8charlen;
-						ew += tmpw;
 					} else {
 						nextfont = curfont;
 					}
@@ -310,23 +383,67 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 				}
 			}
 
-			if (overflow || !charexists || nextfont)
+			if (!charexists || nextfont)
 				break;
 			else
 				charexists = 0;
 		}
 
 		if (utf8strlen) {
-			if (render) {
-				ty = y + (h - usedfont->h) / 2 + usedfont->xfont->ascent;
-				XftDrawStringUtf8(d, &drw->scheme[invert ? ColBg : ColFg],
-				                  usedfont->xfont, x, ty, (XftChar8 *)utf8str, utf8strlen);
+			drw_font_getexts(usedfont, utf8str, utf8strlen, &ew, NULL);
+			/* shorten text if necessary */
+			mw = (!*text) ? w : ((w > ellipsis_w) ? w - ellipsis_w : 0);
+			for (len = MIN(utf8strlen, sizeof(buf) - 1); len && ew > mw;) {
+				drw_font_getexts(usedfont, utf8str, --len, &ew, NULL);
+				mw = (w > ellipsis_w) ? w - ellipsis_w : 0;
+				overflow = 1;
 			}
-			x += ew;
-			w -= ew;
+
+			if (len) {
+				if (removevs16codepoints) {
+					for (n = 0, m = 0; m <= len-3;) {
+						/* VS15 = ef b8 8e, VS16 = ef b8 8f, zero width joiner = e2 80 8d */
+						if ((unsigned char)utf8str[m] == 0xef &&
+							    (unsigned char)utf8str[m+1] == 0xb8 &&
+							    ((unsigned char)utf8str[m+2] == 0x8e ||
+							     (unsigned char)utf8str[m+2] == 0x8f))
+							m += 3;
+						else if ((unsigned char)utf8str[m] == 0xe2 &&
+							    (unsigned char)utf8str[m+1] == 0x80 &&
+							    (unsigned char)utf8str[m+2] == 0x8d)
+							m += 3;
+						else
+							buf[n++] = utf8str[m++];
+					}
+					while (m < len) buf[n++] = utf8str[m++];
+					buf[n] = '\0';
+					if (n < len)
+						drw_font_getexts(usedfont, buf, n, &ew, NULL);
+					len = n;
+				} else {
+					memcpy(buf, utf8str, len);
+					buf[len] = '\0';
+				}
+
+				if (render && len) {
+					ty = y + (h - usedfont->h) / 2 + usedfont->xfont->ascent;
+					XftDrawStringUtf8(d, &drw->scheme[invert ? ColBg : ColFg],
+					                  usedfont->xfont, x, ty, (XftChar8 *)buf, len);
+				}
+				x += ew;
+				w -= ew;
+			}
+
+			if (overflow && ellipsis_w <= w) {
+				if (render) {
+					ty = y + (h - ellipsis_font->h) / 2 + ellipsis_font->xfont->ascent;
+					XftDrawStringUtf8(d, &drw->scheme[invert ? ColBg : ColFg],
+					                  ellipsis_font->xfont, x, ty, (XftChar8 *)"...", 3);
+				}
+				x += ellipsis_w;
+				w -= ellipsis_w;
+			}
 		}
-		if (render && overflow)
-			drw_text(drw, ellipsis_x, y, ellipsis_w, h, 0, "...", invert);
 
 		if (!*text || overflow) {
 			break;
@@ -337,12 +454,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 			/* Regardless of whether or not a fallback font is found, the
 			 * character must be drawn. */
 			charexists = 1;
-
-			for (i = 0; i < nomatches_len; ++i) {
-				/* avoid calling XftFontMatch if we know we won't find a match */
-				if (utf8codepoint == nomatches.codepoint[i])
-					goto no_match;
-			}
 
 			fccharset = FcCharSetCreate();
 			FcCharSetAddChar(fccharset, utf8codepoint);
@@ -355,6 +466,7 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 			fcpattern = FcPatternDuplicate(drw->fonts->pattern);
 			FcPatternAddCharSet(fcpattern, FC_CHARSET, fccharset);
 			FcPatternAddBool(fcpattern, FC_SCALABLE, FcTrue);
+			FcPatternAddBool(fcpattern, FC_COLOR, FcFalse);
 
 			FcConfigSubstitute(NULL, fcpattern, FcMatchPattern);
 			FcDefaultSubstitute(fcpattern);
@@ -371,8 +483,6 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 					curfont->next = usedfont;
 				} else {
 					xfont_free(usedfont);
-					nomatches.codepoint[++nomatches.idx % nomatches_len] = utf8codepoint;
-no_match:
 					usedfont = drw->fonts;
 				}
 			}
@@ -382,6 +492,14 @@ no_match:
 		XftDrawDestroy(d);
 
 	return x + (render ? w : 0);
+}
+
+void
+drw_pic(Drw *drw, int x, int y, unsigned int w, unsigned int h, Picture pic)
+{
+	if (!drw)
+		return;
+	XRenderComposite(drw->dpy, PictOpOver, pic, None, drw->picture, 0, 0, 0, 0, x, y, w, h);
 }
 
 void
@@ -400,15 +518,6 @@ drw_fontset_getwidth(Drw *drw, const char *text)
 	if (!drw || !drw->fonts || !text)
 		return 0;
 	return drw_text(drw, 0, 0, 0, 0, 0, text, 0);
-}
-
-unsigned int
-drw_fontset_getwidth_clamp(Drw *drw, const char *text, unsigned int n)
-{
-	unsigned int tmp = 0;
-	if (drw && drw->fonts && text && n)
-		tmp = drw_text(drw, 0, 0, 0, 0, 0, text, n);
-	return MIN(n, tmp);
 }
 
 void
