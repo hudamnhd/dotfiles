@@ -48,7 +48,7 @@ const int removevs16codepoints      = 1;  /* remove VS15, VS16 and zero-width-jo
 static const char dmenufont[]       = "JetBrainsMonoNL Nerd Font:style=Medium:pixelsize=15:antialias=true:autohint=true";
 static const char dmenuheight[]     = "23";
 
-#include "themes/grey-white.h"
+#include "themes/one-white.h"
 
 /* color schemes */
 enum { SchemeNorm,
@@ -244,6 +244,7 @@ static const char *mocp[]              = { "/home/hudamnhd/.local/bin/mocp.sh", 
 static const char *screenshotcmd[]     = { "/home/hudamnhd/.local/bin/screenshot", NULL};
 static const char *screenshotfullcmd[] = { "/home/hudamnhd/.local/bin/screenshot-full", NULL};
 static const char *screenrecordcmd[]   = { "/home/hudamnhd/.local/bin/screenrecord", NULL};
+static const char *xkbswitchcmd[]      = { "/home/hudamnhd/.local/bin/xkb-switch.sh", NULL};
 
 #include <X11/XF86keysym.h>
 static const Key keys[] = {
@@ -252,6 +253,7 @@ static const Key keys[] = {
     { MODKEY,                       XK_Print,        spawn,              {.v = screenshotcmd } },
 	{ MODKEY,                       XK_Delete,       spawn,              {.v = rofipowercmd } },
 	{ MODKEY,                       XK_F12,          spawn,              {.v = screenrecordcmd } },
+	{ MODKEY,                       XK_F11,          spawn,              {.v = xkbswitchcmd } },
     { MODKEY,                       XK_m,            spawn,              {.v = mocp } },
     { MODKEY,                       XK_s,            spawn,              {.v = rofilauncher } },
     { MODKEY|ShiftMask,             XK_s,            spawn,              {.v = rofiemoji } },

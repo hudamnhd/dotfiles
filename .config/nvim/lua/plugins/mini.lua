@@ -79,10 +79,6 @@ function M.config()
     },
   })
 
-  -- Define custom colors for MiniDiff signs
-  vim.api.nvim_set_hl(0, "MiniDiffSignAdd", { fg = "#b3f6c0", bold = true }) -- Green for added lines
-  vim.api.nvim_set_hl(0, "MiniDiffSignChange", { fg = "#8cf8f7", bold = true }) -- Yellow for changed lines
-  vim.api.nvim_set_hl(0, "MiniDiffSignDelete", { fg = "#ffc0b9", bold = true }) -- Red for deleted lines
   require("mini.pairs").setup({
     modes = { insert = true, command = false, terminal = false },
     mappings = {

@@ -168,6 +168,7 @@ return {
           }, -- sources for autocompletion
 
           sources = cmp.config.sources({
+            { name = "nvim_lsp" },
             { name = "luasnip", max_item_count = 7, priority = 15 },
             {
               name = "buffer",

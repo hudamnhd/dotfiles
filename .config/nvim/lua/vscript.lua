@@ -16,6 +16,7 @@ cnoremap <expr> / (mode() =~# "[vV\<C-v>]" && getcmdtype() =~ '[/?]' && getcmdli
 xnoremap <expr> I (mode()=~#'[vV]'?'<C-v>^o^I':'I')
 xnoremap <expr> A (mode()=~#'[vV]'?'<C-v>1o$A':'A')
 
+cnoremap <F1> \(.*\)
 " Insert formatted datetime (from @tpope vimrc)
 inoremap <silent> <C-T> <C-R>=repeat(complete(col('.'),map(["%Y-%m-%d %H:%M:%S","%a, %d %b %Y %H:%M:%S %z","%Y %b %d","%d-%b-%y","%a %b %d %T %Z %Y","%Y%m%d"],'strftime(v:val)')+[localtime()]),0)<CR>
 " Print unix time at cursor as human-readable datetime. 1677604904 => '2023-02-28 09:21:45'

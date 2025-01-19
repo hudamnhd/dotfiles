@@ -1,7 +1,7 @@
 return {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
-  event = { "BufReadPost" },
+  -- event = { "BufReadPost" },
   config = function(plugin)
     local langs = { "javascript", "typescript", "tsx" }
     require("nvim-treesitter.configs").setup({
@@ -27,6 +27,7 @@ return {
         -- list of language that will be disabled
         -- disable = {},
         -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
+
         disable = function(lang, buf)
           local max_filesize = 50 * 1024 -- 50 KB
           local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))

@@ -9,10 +9,11 @@ local function safeRequire(module)
 end
 
 -- disable treesitter
--- vim.treesitter.stop()
+vim.treesitter.stop()
 
 -- enable loader
 vim.loader.enable()
+vim.env.NOTES_DIR = "/home/hudamnhd/Projects/notes"
 
 -- Load configuration files
 safeRequire("mru")
@@ -24,5 +25,4 @@ safeRequire("vscript")
 safeRequire("utils.buffers")
 
 -- Load default colorscheme
-pcall(vim.cmd, [[colorscheme onedark]])
--- pcall(vim.cmd, [[hi! link LineNr Comment]])
+pcall(vim.cmd, [[colorscheme default]])

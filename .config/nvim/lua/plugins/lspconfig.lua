@@ -3,7 +3,7 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
     dependencies = {
-      "iguanacucumber/mag-nvim-lsp",
+      { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
       -- "hrsh7th/cmp-nvim-lsp",
       -- "saghen/blink.cmp",
       {
@@ -128,7 +128,7 @@ return {
   },
   {
     "pmizio/typescript-tools.nvim",
-    -- ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+    ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     opts = {
       root_dir = function(fname)
