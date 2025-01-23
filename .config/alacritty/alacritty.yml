@@ -6,7 +6,7 @@ env:
 
 window:
   # Spread additional padding evenly around the terminal content.
-  dynamic_padding: false
+  dynamic_padding: true
 
   # Startup Mode (changes require restart)
   startup_mode: Maximized
@@ -34,15 +34,16 @@ font:
     # Font name
     # family: iosevka-normal
     # family: JetBrainsMono Nerd Font
-    family: JetBrainsMonoNL Nerd Font
+    family: Fira Code
+    # family: Iosevka Nerd Font 
     # Font face
-    style: SemiBold
+    style: Regular
 
   # Bold font face
   bold:
-    # family: iosevka-normal
-    family: JetBrainsMonoNL Nerd Font
-    style: Bold
+    family: Fira Code
+    # family: JetBrainsMonoNL Font
+    style: Semibold
 
   # Italic font face
   # italic:
@@ -56,7 +57,7 @@ font:
   # for your font
 
   # Font size
-  size: 11.5
+  size: 16
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing
@@ -118,8 +119,8 @@ colors:
 
     # Cursor colors
     cursor:
-        text: "#1E1E2E" # base
-        cursor: "#F5E0DC" # rosewater
+        text: "#ffffff" # base
+        cursor: "#1E1E2E" # rosewater
     vi_mode_cursor:
         text: "#1E1E2E" # base
         cursor: "#B4BEFE" # lavender
@@ -152,36 +153,36 @@ colors:
 
     # Normal colors
     normal:
-        black: "#45475A" # surface1
-        red: "#F38BA8" # red
-        green: "#A6E3A1" # green
-        yellow: "#F9E2AF" # yellow
-        blue: "#89B4FA" # blue
-        magenta: "#F5C2E7" # pink
-        cyan: "#94E2D5" # teal
-        white: "#BAC2DE" # subtext1
+        black: "#111827" # surface1
+        red: "#dc2626" # red
+        green: "#16a34a" # green
+        yellow: "#ca8a04" # yellow
+        blue: "#2563eb" # blue
+        magenta: "#c026d3" # pink
+        cyan: "#0891b2" # teal
+        white: "#6b7280" # subtext1
 
     # Bright colors
     bright:
-        black: "#585B70" # surface2
-        red: "#F38BA8" # red
-        green: "#A6E3A1" # green
-        yellow: "#F9E2AF" # yellow
-        blue: "#89B4FA" # blue
-        magenta: "#F5C2E7" # pink
-        cyan: "#94E2D5" # teal
+        black: "#4b5563" # surface2
+        red: "#ef4444" # red
+        green: "#22c55e" # green
+        yellow: "#eab308" # yellow
+        blue: "#3b82f6" # blue
+        magenta: "#d946ef" # pink
+        cyan: "#06b6d4" # teal
         white: "#A6ADC8" # subtext0
 
     # Dim colors
     dim:
-        black: "#45475A" # surface1
-        red: "#F38BA8" # red
-        green: "#A6E3A1" # green
-        yellow: "#F9E2AF" # yellow
-        blue: "#89B4FA" # blue
-        magenta: "#F5C2E7" # pink
-        cyan: "#94E2D5" # teal
-        white: "#BAC2DE" # subtext1
+        black: "#111827" # surface1
+        red: "#dc2626" # red
+        green: "#16a34a" # green
+        yellow: "#ca8a04" # yellow
+        blue: "#2563eb" # blue
+        magenta: "#c026d3" # pink
+        cyan: "#0891b2" # teal
+        white: "#6b7280" # subtext1
 
     indexed_colors:
         - { index: 16, color: "#FAB387" }

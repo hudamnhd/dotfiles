@@ -3,23 +3,21 @@ configuration {
   display-drun: "Applications:";
   display-window: "Windows:";
   drun-display-format: "{icon} {name}";
-  font: "Roboto 12.3";
+  font: "Geist Mono 14";
   modi: "window,run,drun";
   kb-cancel: "Escape,Control+q,Super+d,Super+D,Super+period";
-  show-icons: true;
-  /* icon-theme: "Papirus"; */
+  show-icons: false;
 }
 
-@theme "/dev/null"
 
 * {
-  bg: #11121D;
-  bg-alt: #232730;
+  bg: #14161b;
+  bg-alt: #4f5258;
 
   fg: #FFFFFF;
   fg-alt: #909090;
 
-  window-border-color: #4A5057;
+  window-border-color: #4f5258;
 
   background-color: @bg;
 
@@ -32,15 +30,22 @@ configuration {
 element {
   padding: 5;
   text-color: @fg-alt;
+  background-color: @bg;
+}
+
+element-icon {
+    size: 25px;
 }
 
 element selected {
   text-color: @fg;
+  background-color: @bg-alt;
 }
 
 element-text {
   background-color: inherit;
   text-color: inherit;
+  padding: 0 0 0 12;
 }
 
 entry {
@@ -55,6 +60,7 @@ inputbar {
 
 listview {
   background-color: @bg;
+  margin: 5px 0px 0px 0px;
   columns: 1;
   lines: 10;
 }
@@ -62,6 +68,7 @@ listview {
 mainbox {
   background-color: @bg;
   children: [inputbar, listview];
+
 }
 
 prompt {
@@ -71,9 +78,8 @@ prompt {
   text-color: @fg;
 }
 
-/*
-window {
-  transparency: "real";
-}
-*/
 
+window {
+    border: 3px;
+    border-color: @window-border-color;
+}

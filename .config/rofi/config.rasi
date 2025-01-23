@@ -1,32 +1,32 @@
 configuration{
-    kb-row-up: "Up,Control+k,Shift+Tab,Shift+ISO_Left_Tab";
-    kb-row-down: "Down,Control+j";
-    kb-cancel: "Escape,Control+z,Super+s";
-    kb-accept-entry: "Control+m,Return,KP_Enter";
-    kb-remove-to-eol: "Control+Shift+e";
-    kb-mode-previous: "Shift+Left,Control+Shift+Tab,Control+h";
-    kb-remove-char-back: "BackSpace";
-    lines: 1;
-    font: "Iosevka Nerd Font 14";
-    show-icons: false;
-    fallback-icon: "application/gzip";
-    terminal: "st";
-    drun-display-format: "{icon} {name}";
-    location: 0;
-    disable-history: false;
-    hide-scrollbar: true;
-  modi: "drun,window";
-  display-drun: "   Menu";
-  display-run: "  Run";
-  display-window: "   Window";
-  display-windowcd: "   Window+";
-  display-keys: "   Keys";
-  display-filebrowser: "  Browse";
-  display-combi: "   Binds";
-
+    kb-row-up:                 "Up,Control+k,Shift+Tab,Shift+ISO_Left_Tab";
+    kb-row-down:               "Down,Control+j";
+    kb-cancel:                 "Escape,Control+z,Super+s";
+    kb-accept-entry:           "Control+m,Return,KP_Enter";
+    kb-remove-to-eol:          "Control+Shift+e";
+    kb-mode-previous:          "Shift+Left,Control+Shift+Tab,Control+h";
+    kb-remove-char-back:       "BackSpace";
+    lines:                     1;
+    font:                      "Geist Mono 12";
+    show-icons:                true;
+    terminal:                  "st";
+    drun-display-format:       "{icon} {name}";
+    location:                  0;
+    disable-history:           false;
+    hide-scrollbar:            true;
+    modi:                      "run,drun,window";
+    display-drun:              "  Apps";
+    display-run:               "  Run";
+    display-window:            "  Window";
+    display-windowcd:          "  Window+";
+    display-keys:              "  Keys";
+    display-filebrowser:       "  Browse";
+    display-combi:             "  Binds";
+    icon-theme:                "Breeze";
+    application-fallback-icon: "application-x-addon";
 }
 
-@theme "github"
+@theme "dark"
 
 element-text, element-icon , mode-switcher {
     background-color: inherit;
@@ -34,8 +34,7 @@ element-text, element-icon , mode-switcher {
 }
 
 window {
-    height: 55%;
-    width: 55%;
+    height: 360px;
     border: 3px;
     border-color: @border-col;
     background-color: @bg-col;
@@ -74,9 +73,9 @@ entry {
 
 listview {
     border: 0px 0px 0px;
-    padding: 6px;
-    margin: 10px 10px 10px 20px;
-    columns: 4;
+    padding: 6px 0px 0px;
+    margin: 10px 0px 0px 20px;
+    columns: 2;
     background-color: @bg-col;
 }
 
@@ -87,11 +86,10 @@ element {
 }
 
 element-icon {
-    size: 25px;
+    size: 22px;
 }
 
 element selected {
-    border-radius: 3px;
     background-color:  @selected-col ;
     text-color: @fg-col2  ;
 }

@@ -1,4 +1,40 @@
 return {
+  -- Lazy
+  -- {
+  --   "RRethy/base16-nvim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     require("base16-colorscheme").setup({
+  --       base00 = "#000000",
+  --       base01 = "#413f3f",
+  --       base02 = "#5b5858",
+  --       base03 = "#a7a4a4",
+  --       base04 = "#a7a4a4",
+  --       base05 = "#ffffff",
+  --       base06 = "#c2c983",
+  --       base07 = "#c2c983",
+  --       base08 = "#ffffff",
+  --       base09 = "#fb923c",
+  --       base0A = "#e5c07b",
+  --       base0B = "#c2c983",
+  --       base0C = "#38bdf8",
+  --       base0D = "#38bdf8",
+  --       base0E = "#fb923c",
+  --       base0F = "#fb923c",
+  --     })
+  --   end,
+  -- },
+  {
+    "2kabhishek/tdo.nvim",
+    cmd = { "Tdo", "TdoEntry", "TdoNote", "TdoTodos", "TdoToggle", "TdoFind", "TdoFiles" },
+    keys = { "[t", "]t" },
+  },
+
+  {
+    "mong8se/buffish.nvim",
+    event = "VeryLazy",
+    config = function() end,
+  },
   {
     "chrisgrieser/nvim-early-retirement",
     event = "VeryLazy",

@@ -6,24 +6,24 @@ vim.o.background = "light"
 vim.g.colors_name = "onelight"
 
 -- stylua: ignore start
-local red            = "#b91c1c"
-local dark_red       = "#b91c1c"
-local green          = "#166534"
-local yellow         = "#854d0e"
-local orange         = "#92400e"
-local blue           = "#1e40af"
-local purple         = "#6b21a8"
-local cyan           = "#155e75"
-local white          = "#14161b"
-local black          = "#e0e2ea"
-local dim            = "#1c1d23"
+local red            = "#015692"
+local dark_red       = "#015692"
+local green          = "#54790d"
+local yellow         = "#b75501"
+local orange         = "#803378"
+local blue           = "#b75501"
+local purple         = "#2f3337"
+local cyan           = "#2f3337"
+local white          = "#2f3337"
+local black          = "#F4F3F2"
+local dim            = "#2f3337"
 local light_grey     = "#4b5563"
-local comment_grey   = "#6b7280"
-local gutter_fg_grey = "#6b7280"
+local comment_grey   = "#656e77"
+local gutter_fg_grey = "#656e77"
 local cursor_grey    = "#d1d5db"
-local float_grey     = "#e0e2ea"
+local float_grey     = "#F4F3F2"
 local visual_grey    = "#c4c6cd"
-local menu_grey      = "#e0e2ea"
+local menu_grey      = "#FFFFFF"
 local special_grey   = "#0f172a"
 local vertsplit      = "#0f172a"
 local diff_delete    = "#ffbcb5"
@@ -31,10 +31,36 @@ local diff_add       = "#aaedb7"
 local diff_change    = "#9fd8ff"
 local diff_text      = "#f4d88c"
 local visual_black   = "NONE"
+
+-- local red            = "#b91c1c"
+-- local dark_red       = "#b91c1c"
+-- local green          = "#166534"
+-- local yellow         = "#854d0e"
+-- local orange         = "#92400e"
+-- local blue           = "#1e40af"
+-- local purple         = "#6b21a8"
+-- local cyan           = "#155e75"
+-- local white          = "#14161b"
+-- local black          = "#FFFFFF"
+-- local dim            = "#1c1d23"
+-- local light_grey     = "#4b5563"
+-- local comment_grey   = "#6b7280"
+-- local gutter_fg_grey = "#6b7280"
+-- local cursor_grey    = "#d1d5db"
+-- local float_grey     = "#FFFFFF"
+-- local visual_grey    = "#c4c6cd"
+-- local menu_grey      = "#FFFFFF"
+-- local special_grey   = "#0f172a"
+-- local vertsplit      = "#0f172a"
+-- local diff_delete    = "#ffbcb5"
+-- local diff_add       = "#aaedb7"
+-- local diff_change    = "#9fd8ff"
+-- local diff_text      = "#f4d88c"
+-- local visual_black   = "NONE"
 -- stylua: ignore end
 
 local theme = {
-  Comment = { fg = comment_grey, italic = false },
+  Comment = { fg = comment_grey, italic = true },
   Constant = { fg = cyan },
   String = { fg = green },
   Character = { fg = green },
@@ -43,16 +69,16 @@ local theme = {
   Float = { fg = orange },
   Identifier = { fg = red },
   Function = { fg = blue },
-  Statement = { fg = purple, bold = true },
-  Conditional = { fg = purple, bold = true },
+  Statement = { fg = purple },
+  Conditional = { fg = purple },
   Repeat = { fg = purple },
-  Label = { fg = purple, bold = true },
+  Label = { fg = purple },
   Operator = { fg = purple },
-  Keyword = { fg = red, bold = true },
+  Keyword = { fg = red },
   Exception = { fg = purple },
   PreProc = { fg = yellow },
   Include = { fg = blue },
-  Define = { fg = purple, bold = true },
+  Define = { fg = purple },
   Macro = { fg = purple },
   PreCondit = { fg = yellow },
   Type = { fg = yellow },
@@ -134,8 +160,8 @@ local theme = {
   IndentBlanklineSpaceCharBlankline = { link = "IndentBlanklineChar" },
 
   -- Neovim diagnostics
-  DiagnosticError = { fg = red },
-  DiagnosticWarn = { fg = yellow },
+  DiagnosticError = { fg = orange },
+  DiagnosticWarn = { fg = red },
   DiagnosticInfo = { fg = blue },
   DiagnosticHint = { fg = cyan },
   DiagnosticUnderlineError = { underline = true, fg = red },
@@ -231,10 +257,10 @@ local theme = {
   jsExtendsKeyword = { fg = purple },
   jsFrom = { fg = purple },
   jsFuncCall = { fg = blue },
-  jsFunction = { fg = purple, bold = true },
+  jsFunction = { fg = purple },
   jsGenerator = { fg = yellow },
   jsGlobalObjects = { fg = yellow },
-  jsImport = { fg = purple, bold = true },
+  jsImport = { fg = purple },
   jsModuleAs = { fg = purple },
   jsModuleWords = { fg = purple },
   jsModules = { fg = purple },
@@ -404,7 +430,7 @@ local theme = {
   texRefZone = { fg = blue },
 
   -- TypeScript
-  typescriptReserved = { fg = purple, bold = true },
+  typescriptReserved = { fg = purple },
   typescriptEndColons = { fg = white },
   typescriptBraces = { fg = white },
 
@@ -465,6 +491,21 @@ local theme = {
   LirSymLink = { fg = cyan },
   LirEmptyDirText = { fg = white },
 
+  -- cheatsheet
+  NvChAsciiHeader = { bg = black, fg = white }, -- Title
+  NvChSection = { bg = black }, -- Each card
+
+  NvCheatsheetWhite = { bg = white, fg = black },
+  NvCheatsheetGray = { bg = gray, fg = white },
+  NvCheatsheetBlue = { bg = blue, fg = black },
+  NvCheatsheetCyan = { bg = cyan, fg = black },
+  NvCheatsheetRed = { bg = red, fg = black },
+  NvCheatsheetGreen = { bg = green, fg = black },
+  NvCheatsheetYellow = { bg = yellow, fg = black },
+  NvCheatsheetOrange = { bg = orange, fg = black },
+  NvCheatsheetPurple = { bg = purple, fg = black },
+  NvCheatsheetMagenta = { bg = magenta, fg = black },
+
   -- cmp
   CmpItemAbbr = { fg = white },
   CmpItemAbbrDeprecated = { fg = light_grey },
@@ -519,3 +560,16 @@ local set_hl = vim.api.nvim_set_hl
 for k, v in pairs(theme) do
   set_hl(0, k, v)
 end
+
+vim.api.nvim_set_hl(0, "MiniHipatternsFixme", { bg = red, fg = black })
+vim.api.nvim_set_hl(0, "MiniHipatternsHack", { bg = orange, fg = black })
+vim.api.nvim_set_hl(0, "MiniHipatternsTodo", { bg = green, fg = black })
+vim.api.nvim_set_hl(0, "MiniHipatternsNote", { bg = blue, fg = black })
+vim.api.nvim_set_hl(0, "LineflyNormal", { bg = red, fg = black })
+vim.api.nvim_set_hl(0, "LineflyInsert", { bg = green, fg = black })
+vim.api.nvim_set_hl(0, "LineflyVisual", { bg = orange, fg = black })
+vim.api.nvim_set_hl(0, "LineflyReplace", { bg = yellow, fg = black })
+vim.api.nvim_set_hl(0, "LineflyCommand", { bg = "#007373", fg = black })
+vim.api.nvim_set_hl(0, "MiniDiffSignAdd", { fg = green, bold = true }) -- Green for added lines
+vim.api.nvim_set_hl(0, "MiniDiffSignChange", { fg = red, bold = true }) -- Yellow for changed lines
+vim.api.nvim_set_hl(0, "MiniDiffSignDelete", { fg = yellow, bold = true }) -- Red for deleted lines

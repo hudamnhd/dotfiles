@@ -6,16 +6,8 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 
-static char *font = "Victor Mono Medium:style=Medium:pixelsize=20";
-static char *font2[] = { "Victor Mono Medium Medium:style=Medium:pixelsize=20"};
-// static char *font = "IosevkaTerm Nerd Font:style=Medium:pixelsize=20";
-// static char *font2[] = { "IosevkaTerm Nerd Font:style=Medium:pixelsize=20"};
-// static char *font = "IosevkaTree Nerd Font:style=Medium:pixelsize=16";
-// static char *font2[] = { "IosevkaTree Nerd Font:style=Medium:pixelsize=16"};
-// static char *font = "JetBrainsMonoNL Nerd Font:style=Medium:pixelsize=17:antialias=true:autohint=true";
-// static char *font2[] = { "JetBrainsMonoNL Nerd Font:pixelsize=17:antialias=true:autohint=true" };
-// static char *font = "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true";
-// static char *font2[] = { "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true" };
+static char *font = "FiraCode Nerd Font:style=Regular:pixelsize=17";
+static char *font2[] = { "FiraCode Nerd Font:style=Regular:pixelsize=17" };
 static int borderpx = 0;
 
 /*

@@ -9,7 +9,7 @@ function M.win_safe_set_height(win, height)
     return
   end
   local winnr = vim.fn.winnr()
-  if vim.fn.winnr('j') ~= winnr or vim.fn.winnr('k') ~= winnr then
+  if vim.fn.winnr("j") ~= winnr or vim.fn.winnr("k") ~= winnr then
     vim.api.nvim_win_set_height(win, height)
   end
 end
@@ -27,7 +27,7 @@ function M.effective_lines()
       or (ls == 2 or ls == 3) and 1
       or (
         #vim.tbl_filter(function(win)
-              return vim.fn.win_gettype(win) ~= 'popup'
+              return vim.fn.win_gettype(win) ~= "popup"
             end, vim.api.nvim_tabpage_list_wins(0))
             > 1
           and 1
@@ -93,9 +93,9 @@ local views = {}
 local ratios = {}
 local heights = {}
 
-vim.api.nvim_create_autocmd('WinClosed', {
-  desc = 'Clear window data when window is closed.',
-  group = vim.api.nvim_create_augroup('WinUtilsClearData', {}),
+vim.api.nvim_create_autocmd("WinClosed", {
+  desc = "Clear window data when window is closed.",
+  group = vim.api.nvim_create_augroup("WinUtilsClearData", {}),
   callback = function(info)
     local win = tonumber(info.match)
     if win then
@@ -132,11 +132,11 @@ end, ratios)
 ---Restore window ratios, respect &winfixheight and &winfixwidth and keep
 ---command window height untouched
 M.restratio = M.rest(function(win, ratio)
-  local hr = type(ratio.hr) == 'table' and ratio.hr[vim.val_idx] or ratio.hr
-  local wr = type(ratio.wr) == 'table' and ratio.wr[vim.val_idx] or ratio.wr
+  local hr = type(ratio.hr) == "table" and ratio.hr[vim.val_idx] or ratio.hr
+  local wr = type(ratio.wr) == "table" and ratio.wr[vim.val_idx] or ratio.wr
   local h = ratio.h
   local w = ratio.w
-  local cmdwin = vim.fn.win_gettype() == 'command'
+  local cmdwin = vim.fn.win_gettype() == "command"
 
   if not vim.wo.wfh and not cmdwin then
     M.win_safe_set_height(win, vim.fn.round(M.effective_lines() * hr))

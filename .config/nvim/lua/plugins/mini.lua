@@ -1,11 +1,12 @@
 local M = {
   "echasnovski/mini.nvim",
-  version = false,
-  event = "VimEnter",
+  version = "*",
+  event = "VeryLazy",
 }
 
 function M.config()
   require("mini.icons").setup()
+  require("mini.colors").setup()
   vim.g.nvim_web_devicons = 1
   MiniIcons.mock_nvim_web_devicons()
 

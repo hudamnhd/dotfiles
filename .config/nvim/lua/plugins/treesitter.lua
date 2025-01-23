@@ -1,7 +1,7 @@
 return {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
-  -- event = { "BufReadPost" },
+  event = { "BufReadPost" },
   config = function(plugin)
     local langs = { "javascript", "typescript", "tsx" }
     require("nvim-treesitter.configs").setup({

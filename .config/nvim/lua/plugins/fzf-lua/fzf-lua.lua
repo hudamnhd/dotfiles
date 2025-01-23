@@ -610,6 +610,10 @@ bind("n", "sqv", function()
   fzf.files({ cwd = "~/.config/nvim" })
 end, { desc = "VIMRC" })
 
+bind("n", "sqt", function()
+  fzf.files({ cwd = vim.env.NOTES_DIR })
+end, { desc = "NOTES_DIR" })
+
 bind("n", "<space>l", function()
   local year = os.date("%Y") -- Tahun saat ini
   local logs_path = "~/daily-logs/" .. year
