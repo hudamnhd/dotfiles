@@ -6,7 +6,7 @@ vim.cmd([[
 map <C-J> <Plug>(edgemotion-j)
 map <C-K> <Plug>(edgemotion-k)
 
-"command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
+command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
 autocmd BufRead,BufWritePre *.blade.php setlocal filetype=php
 

@@ -50,34 +50,27 @@ M.bind("n", "ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
 M.bind("n", "cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
 M.bind("n", "cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
 
--- M.bind(
---   "c",
---   "<F3>",
---   'getcmdtype() == ":" ? expand("%:h/") . "/" : ""',
---   { silent = false, expr = true }
--- )
--- M.bind(
---   "c",
---   "<F4>",
---   'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""',
---   { silent = false, expr = true }
--- )
--- M.bind(
---   "c",
---   "<F5>",
---   'getcmdtype() == ":" ? escape(expand("%:p"))  : ""',
---   { silent = false, expr = true }
--- )
+M.bind(
+  "c",
+  "<F3>",
+  'getcmdtype() == ":" ? expand("%:h/") . "/" : ""',
+  { silent = false, expr = true }
+)
+M.bind(
+  "c",
+  "<F4>",
+  'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""',
+  { silent = false, expr = true }
+)
+M.bind("c", "<F5>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true })
 
 M.bind("c", "<c-v>", [[<C-R>"]], { desc = "paste cmd-mode", silent = false })
 M.bind("c", "<a-v>", [[<C-R>+]], { desc = "paste cmd-mode", silent = false })
 
 M.bind("t", "<M-r>", [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
--- M.bind("t", "<c-v>", [['<C-\><C-N>""pi']], { expr = true })
--- M.bind("t", "<a-v>", [['<C-\><C-N>"+pi']], { expr = true })
 
-M.bind("c", "<c-bs>", [[.\{-}]], { silent = false })
-M.bind("c", "<a-bs>", [[\s\+]], { silent = false })
+M.bind("c", "<C-BS>", [[.\{-}]], { silent = false })
+M.bind("c", "<S-BS>", [[\s\+]], { silent = false })
 
 -- NOTE join
 M.bind("n", "J", "'mz' . v:count1 . 'J`z'", { expr = true })
@@ -157,29 +150,29 @@ M.set_cwd = [[<cmd>lua require"utils.helper".set_cwd()<cr>]]
 M.asynctasks = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
 M.yankround = [[<cmd>Unite -vertical yankround<cr>]]
 M.regex_tutor = [[<Cmd>AsyncTask regex-tutor<CR>]]
-M.vim_tutor = [[<Cmd>AsyncTask vim-tutor<CR>]]
 M.undotree = [[<Cmd>UndotreeToggle<CR>]]
 M.git_diff_buff = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
 
+M.bind("n", "<space>%", M.set_cwd, { desc = "SET CWD" })
 M.bind("n", "<space>to", M.git_diff_buff, { desc = "Toggle overlay" })
 M.bind("n", "<space>td", M.toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
-M.bind("n", "<space>tu", M.undotree, { desc = "UNDOTREEtOGGLE" })
-M.bind("n", "<space>%", M.set_cwd, { desc = "SET CWD" })
+M.bind("n", "<space>tu", M.undotree, { desc = "Undotree toggle" })
 M.bind("n", "<space>tr", M.translate_nm, { desc = "translate" })
 M.bind("x", "<space>tr", M.translate_vm, { desc = "translate" })
 M.bind("n", "<space>t1", M.regex_tutor, { desc = "regex-tutor" })
-M.bind("n", "<space>t2", M.vim_tutor, { desc = "vim-tutor" })
 
 M.bind("n", "<a-a>", M.asynctasks, { desc = "ASYNCTASKS" })
 
 M.bind("n", "sy", M.yankround, { desc = "YANKROUND" })
 
 M.bind("n", "<space>tw", [[:set wrap!<CR>]], { desc = "toggle wrap" })
+
 -- toogle number
 M.bind("n", "<space>tn", [[:set nonumber norelativenumber<CR>]], { desc = "noactive number" })
 M.bind("n", "<space>tN", [[:set number relativenumber<CR>]], { desc = "active number" })
 
 M.bind("n", "<esc>", "<Cmd>nohlsearch|diffupdate|echo<CR>", { desc = "nohlsearch" })
+
 M.bind("c", "<C-J>", function()
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Down>", true, false, true), "n", false)
 end)
@@ -340,6 +333,22 @@ M.bind(
   { desc = "toggle quickfix list" }
 )
 
+local sr_key = {
+  '"',
+  "`",
+  "'",
+  ")",
+  "]",
+  "}",
+}
+
+for _, key in ipairs(sr_key) do
+  local key_combination = string.format("<space>%s", key)
+  local act_combination = string.format("ysiw%s", key)
+  local desc_combination = string.format("MiniSurround add word %s", key)
+  vim.keymap.set("n", key_combination, act_combination, { remap = true, desc = desc_combination })
+end
+
 M.bind("n", "sm", "gmm", { remap = true, desc = "MiniOperator clone line" })
 M.bind("n", "sx", "gxiw", { remap = true, desc = "MiniOperator exchange word" })
 M.bind("n", "rw", "griw", { remap = true, desc = "MiniSurround replace word" })
@@ -389,29 +398,10 @@ M.show_documentation = function()
   end
 end
 
--- Tabpages
----@param tab_action function
----@param default_count number?
----@return function
-local function tabswitch(tab_action, default_count)
-  return function()
-    local count = default_count or vim.v.count
-    local num_tabs = vim.fn.tabpagenr("$")
-    if num_tabs >= count then
-      tab_action(count ~= 0 and count or nil)
-      return
-    end
-    vim.cmd.tablast()
-    for _ = 1, count - num_tabs do
-      vim.cmd.tabnew()
-    end
-  end
-end
-
 M.bind("n", "K", M.show_documentation, { desc = "show_documentation" })
 M.bind("n", "<space>d", vim.diagnostic.open_float, { desc = "diagnostic.open_float" })
 
-M.bind("t", "<c-^>", [[<C-\><C-n><c-^>]], { desc = "move splite" })
+M.bind("t", "<c-^>", [[<C-\><C-n><c-^>]], { desc = "back recent" })
 M.bind("t", "<a-x>", [[<C-\><C-n>:bd!<Cr>]], { desc = "force close" })
 M.bind("n", "<space>k", "<c-w>T", { desc = "move splite" })
 M.bind("n", "<space>c", "<c-w>c", { desc = "close" })
@@ -424,6 +414,7 @@ M.bind(
   [[:s/"[^"]*"/string/g]],
   { desc = "All string to type string", silent = false }
 )
+
 M.bind(
   "x",
   "<a-->",
@@ -431,14 +422,10 @@ M.bind(
   { desc = "Rmv - and change to capitalize", silent = false }
 )
 
-local keys = "123456789"
-for i = 1, #keys do
-  local key = keys:sub(i, i)
-  local key_combination = string.format("<space>%s", key)
-  M.bind("n", key_combination, tabswitch(vim.cmd.tabnext, i), { desc = "go tab " .. i })
-end
+local camel_to_snace = [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]]
+M.bind("x", "<a-c>", camel_to_snace, { desc = "replace cword", silent = false })
 
-M.bind({ "x", "n" }, "<space>s", '<cmd>lua require("user.nui").local_menu()<cr>')
+M.bind({ "x", "n" }, "<space>r", '<cmd>lua require("user.nui").local_menu()<cr>')
 M.bind("n", "sqg", '<cmd>lua require("user.nui").git_menu()<cr>')
 
 M.bind(
@@ -469,8 +456,6 @@ M.bind("x", "<c-s>", sr_visual_word, { desc = "replace cword" })
 M.bind("n", "<c-s>", sr_selection_word, { desc = "replace cword", silent = false })
 M.bind("x", "<c-r>", sr_visual, { desc = "Search Replace Search" })
 
-local camel_to_snace = [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]]
-M.bind("x", "<c-9>", camel_to_snace, { desc = "replace cword", silent = false })
 -- stylua: ignore end
 
 vim.keymap.set("n", "<leader>d", function()

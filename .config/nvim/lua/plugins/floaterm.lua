@@ -45,7 +45,7 @@ return {
     {
       "<F1>",
       function()
-        toggleFloaterm("--name=bash " .. win.bottom .. " bash")
+        toggleFloaterm("--name=bash " .. win.full .. " bash")
       end,
       mode = { "n", "t" },
       desc = "Bash",
@@ -55,7 +55,7 @@ return {
     {
       "<F2>",
       function()
-        toggleFloaterm("--name=buffer --cwd=<buffer> --disposable " .. win.bottom .. " bash")
+        toggleFloaterm("--name=buffer --cwd=<buffer> --disposable " .. win.full .. " bash")
       end,
       mode = { "n", "t" },
       desc = "Buffer cwd",

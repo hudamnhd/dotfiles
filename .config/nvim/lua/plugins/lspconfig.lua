@@ -53,9 +53,10 @@ return {
       },
     },
     config = function()
-      local util = require("lspconfig.util")
+      -- local util = require("lspconfig.util")
       -- require("lspconfig").lua_ls.setup({})
-      require("lspconfig").biome.setup({})
+      -- require("lspconfig").biome.setup({})
+      -- require("lspconfig").dprint.setup({})
       -- require("lspconfig").denols.setup({})
 
       -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
@@ -128,7 +129,7 @@ return {
   },
   {
     "pmizio/typescript-tools.nvim",
-    ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+    ft = { "typescript", "typescriptreact", "javascriptreact" },
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     opts = {
       root_dir = function(fname)
@@ -150,6 +151,8 @@ return {
       settings = {
         separate_diagnostic_server = false,
         tsserver_max_memory = 4 * 1024,
+        complete_function_calls = false,
+        include_completions_with_insert_text = false,
       },
     },
     config = function(_, opts)

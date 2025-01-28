@@ -9,7 +9,8 @@ local function safeRequire(module)
 end
 
 -- disable treesitter
-vim.treesitter.stop()
+safeRequire("lazyplug")
+-- vim.treesitter.stop()
 
 -- enable loader
 vim.loader.enable()
@@ -20,9 +21,9 @@ safeRequire("mru")
 safeRequire("options")
 safeRequire("autocmd")
 safeRequire("keymaps")
-safeRequire("lazyplug")
 safeRequire("vscript")
 safeRequire("utils.buffers")
 
 -- Load default colorscheme
 pcall(vim.cmd, [[colorscheme default]])
+-- pcall(vim.cmd, [[colorscheme onelight]])

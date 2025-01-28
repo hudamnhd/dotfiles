@@ -1,13 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]        = "IosevkaTree Nerd Font:style=Medium:pixelsize=14:antialias=true:autohint=true";
-static const char* normbgcolor  = "#222222";
-static const char* normfgcolor  = "#cccccc";
-static const char* selbgcolor   = "#555555";
-static const char* selfgcolor   = "#ffffff";
-static const char* urgbgcolor   = "#111111";
-static const char* urgfgcolor   = "#cc0000";
+static const char font[]        = "FiraCode Nerd Font:style=Medium:pixelsize=14:antialias=true:autohint=true";
+static const char* normbgcolor  = "#07080d";
+static const char* normfgcolor  = "#c4c6cd";
+static const char* selbgcolor   = "#2c2e33";
+static const char* selfgcolor   = "#8cf8f7";
+static const char* urgbgcolor   = "#14161b";
+static const char* urgfgcolor   = "#ffc0b9";
 static const char before[]      = "<";
 static const char after[]       = ">";
 static const char titletrim[]   = "...";
@@ -46,12 +46,13 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,     XK_k,      movetab,     { .i = +1 } },
 	{ MODKEY,               XK_Tab,    rotate,      { .i = 0 } },
 
-	{ MODKEY,               XK_grave,  spawn,       SETPROP("_TABBED_SELECT_TAB") },
-	{ MODKEY,               XK_1,      move,        { .i = 0 } },
-	{ MODKEY,               XK_2,      move,        { .i = 1 } },
-	{ MODKEY,               XK_3,      move,        { .i = 2 } },
-	{ MODKEY,               XK_4,      move,        { .i = 3 } },
-	{ MODKEY,               XK_5,      move,        { .i = 4 } },
+    { MODKEY,               XK_1,      move,        { .i = 0 } },
+    { MODKEY,               XK_2,      move,        { .i = 1 } },
+    { MODKEY,               XK_3,      move,        { .i = 2 } },
+    { MODKEY,               XK_4,      move,        { .i = 3 } },
+    { MODKEY,               XK_5,      move,        { .i = 4 } },
+
+	// { MODKEY,               XK_grave,  spawn,       SETPROP("_TABBED_SELECT_TAB") },
 	// { MODKEY,               XK_6,      move,        { .i = 5 } },
 	// { MODKEY,               XK_7,      move,        { .i = 6 } },
 	// { MODKEY,               XK_8,      move,        { .i = 7 } },

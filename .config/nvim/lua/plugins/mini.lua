@@ -143,7 +143,7 @@ function M.config()
         input = { "%{%/%*().-()%*%/%}" },
         output = { left = "{/*", right = "*/}" },
       },
-      b = {
+      B = {
         input = { "%{%{%-%-().-()%-%-%}%}" },
         output = { left = "{{--", right = "--}}" },
       },
