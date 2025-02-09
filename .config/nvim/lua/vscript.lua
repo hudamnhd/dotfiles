@@ -8,7 +8,8 @@ map <C-K> <Plug>(edgemotion-k)
 
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
-autocmd BufRead,BufWritePre *.blade.php setlocal filetype=php
+"autocmd BufRead,BufWritePre *.blade.php setlocal filetype=php
+"autocmd BufRead,BufWritePre * setlocal syntax=text
 
 cnoremap <expr> / (mode() =~# "[vV\<C-v>]" && getcmdtype() =~ '[/?]' && getcmdline() == '') ? "\<C-c>\<Esc>/\\%V" : '/'
 
@@ -28,4 +29,27 @@ augroup vimrc_autocmd
   autocmd VimEnter,BufNew * autocmd InsertEnter <buffer=abuf> ++once if &filetype ==# '' | exe 'runtime! after/ftplugin/text.vim' | endif
 augroup END
 "map <C-q> :s/ASDF/\=line('.')-line("'<")"
+
+"nnoremap : ,
+"xnoremap : ,
+"onoremap : ,
+"
+"nnoremap , :
+"xnoremap , :
+"onoremap , :
+"
+"nnoremap g: g,
+"nnoremap g, <NOP>
+"
+"nnoremap @, @:
+"nnoremap @: <NOP>
+"
+"" NOTE: Causes lag when 'q' is hit, for example when
+"" - stopping to record a macro or
+"" - exiting a buffer by a custom mapping to 'q'.
+"nnoremap q, q:
+"xnoremap q, q:
+"
+"nnoremap q: <NOP>
+"xnoremap q: <NOP>
 ]])

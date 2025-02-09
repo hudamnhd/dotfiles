@@ -1,11 +1,4 @@
 local Menu = require("nui.menu")
-local event = require("nui.utils.autocmd").event
-
-local cmd = vim.api.nvim_create_user_command
-
-local function T(keys)
-  return vim.api.nvim_replace_termcodes(keys, true, false, true)
-end
 
 local function create_menu(title, lines)
   return Menu({

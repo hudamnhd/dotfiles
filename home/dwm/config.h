@@ -33,10 +33,10 @@ static const int attachmode              = 4;         /* default attach mode: 0 
 #define SHOWWINICON 0                                 /* 0 means no winicon */
 
 static const char *fonts[]          = {
-    "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true",                            /* tags, layout */
-    "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true",                            /* status monitor */
-    "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true",                            /* window titles */
-    "Iosevka Nerd Font:style=Medium:pixelsize=16:antialias=true:autohint=true",                            /* cjk font */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* tags, layout */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* status monitor */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* window titles */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* cjk font */
     // "Symbola:size=13.5:antialias=true",                                                                    /* outline emojis */
     "Noto Color Emoji:size=10:antialias=true:autohint=true"                                                /* color emojis */
 };
@@ -44,8 +44,8 @@ static const char *fonts[]          = {
 const int enablecolorfonts          = 1;  /* color fonts require libxft 2.3.5 or newer */
 const int removevs16codepoints      = 1;  /* remove VS15, VS16 and zero-width-joiner codepoints/glyphs from emojis */
 
-#define NOTIFYFONT                    "JetBrainsMonoNL Nerd Font:style=Medium:pixelsize=15:antialias=true:autohint=true"
-static const char dmenufont[]       = "JetBrainsMonoNL Nerd Font:style=Medium:pixelsize=15:antialias=true:autohint=true";
+#define NOTIFYFONT                    "FiraCode Nerd Font:style=Regular:pixelsize=19:antialias=true:autohint=true"
+static const char dmenufont[]       = "FiraCode Nerd Font:style=Regular:pixelsize=19:antialias=true:autohint=true";
 static const char dmenuheight[]     = "23";
 
 #include "themes/one-white.h"
@@ -232,7 +232,7 @@ static const char *layoutmenucmd       = "dwm-layoutmenu";
 static const char *vivaldi[]           = { "vivaldi-stable", NULL };
 static const char *firefox[]           = { "firefox", NULL };
 static const char *filemanager[]       = { "pcmanfm", NULL };
-static const char *rofipowercmd[]      = { "rofi", "-show", "p", "-modi", "p:~/.local/bin/rofi-power-menu", "-me-select-entry", "", "-me-accept-entry", "MousePrimary",  NULL };
+static const char *rofipowercmd[]      = { "rofi", "-show", "p", "-modi", "p:~/.local/bin/rofi-power-menu", "-me-select-entry", "", "-me-accept-entry", "MousePrimary", "-no-show-icons",  NULL };
 static const char *rofilauncher[]      = { "/home/hudamnhd/.local/bin/rofi-custom", NULL };
 static const char *pavucontrolcmd[]    = { "pavucontrol", NULL};
 static const char *rofiemoji[]         = { "/home/hudamnhd/.local/bin/rofi-emoji", NULL };
@@ -305,18 +305,21 @@ static const Key keys[] = {
 	{ MODKEY|ControlMask|Alt, XK_Left,   moveresizeedge, {.v = "L"} },
 	{ MODKEY|ControlMask|Alt, XK_Right,  moveresizeedge, {.v = "R"} },
 */
-	{ MODKEY,                       XK_bracketleft,       incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_bracketright,      incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_bracketright,      incnmaster,     {.i = +1 } },
+	{ MODKEY,                       XK_bracketleft,       incnmaster,     {.i = -1 } },
+
 	{ MODKEY|ControlMask,           XK_h,                 setmfact,       {.f = -0.05} },
 	{ MODKEY|ControlMask,           XK_l,                 setmfact,       {.f = +0.05} },
 	{ MODKEY|ControlMask,           XK_j,                 setcfact,       {.f = -0.25} },
 	{ MODKEY|ControlMask,           XK_k,                 setcfact,       {.f = +0.25} },
 	{ MODKEY|ControlMask,           XK_n,                 setcfact,       {.f =  0.00} },
+
 	{ MODKEY|ShiftMask,             XK_Return,            zoom,           {0} },
 	{ MODKEY,                       XK_Return,            zoomswap,       {0} },
-	{ MODKEY,                       XK_z,                 incrgaps,       {.i = +2 } },
-	{ MODKEY|ShiftMask,             XK_z,                 incrgaps,       {.i = -2 } },
-	{ MODKEY|ControlMask,           XK_z,                 defaultgaps,    {0} },
+
+	{ MODKEY,                       XK_bracketright,      incrgaps,       {.i = +2 } },
+	{ MODKEY,                       XK_bracketleft,       incrgaps,       {.i = -2 } },
+	{ MODKEY|ShiftMask,             XK_BackSpace,         defaultgaps,    {0} },
     { MODKEY,                       XK_BackSpace,         togglegaps,     {0} },
 /*
 	{ MODKEY|Mod4Mask,              XK_i,      incrigaps,      {.i = +1 } },
@@ -360,8 +363,8 @@ static const Key keys[] = {
     { MODKEY,                       XK_n,                  togglealttag,   {0} },
     { MODKEY,                       XK_minus,              hide,           {0} },
     { MODKEY,                       XK_equal,              show,           {0} },
-    { MODKEY|ShiftMask,             XK_q,                  togglesticky,   {0} },
-    { MODKEY,                       XK_q,                  togglescratch,  {.ui = 0 } },
+    { MODKEY,                       XK_q,                  togglesticky,   {0} },
+    { MODKEY|ShiftMask,             XK_q,                  togglescratch,  {.ui = 0 } },
     // dual monitor
 	// { MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	// { MODKEY,                       XK_period, focusmon,       {.i = +1 } },
@@ -389,17 +392,20 @@ static const Button buttons[] = {
 	{ ClkLtSymbol,          0,                  Button1,    setlayout,      {0} },
 	{ ClkLtSymbol,          0,                  Button3,    layoutmenu,     {0} },
 	{ ClkWinTitle,          0,                  Button1,    togglewin,      {0} },
+	{ ClkWinTitle,          0,                  Button3,    show,           {0} },
 	{ ClkWinTitle,          0,                  Button2,    zoom,           {0} },
 	{ ClkClientWin,         MODKEY,             Button1,    movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,             Button2,    togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,             Button3,    resizemouse,    {0} },
-	{ ClkClientWin,         MODKEY|ShiftMask,   Button1,    dragmfact,      {0} },
-	{ ClkClientWin,         MODKEY|ShiftMask,   Button3,    dragcfact,      {0} },
+	{ ClkClientWin,         Alt,                Button1,    dragmfact,      {0} },
+	{ ClkClientWin,         Alt,                Button3,    dragcfact,      {0} },
+    { ClkRootWin,           Alt,                Button1,    dragmfact,      {0} },
+    { ClkClientWin,         MODKEY,             Button4,    focusstackvis,      {.i = +1 } },
+    { ClkClientWin,         MODKEY,             Button5,    focusstackvis,      {.i = -1 } },
 	{ ClkTagBar,            0,                  Button1,    view,           {0} },
 	{ ClkTagBar,            0,                  Button3,    toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,             Button1,    tag,            {0} },
 	{ ClkTagBar,            MODKEY,             Button3,    toggletag,      {0} },
-	{ ClkRootWin,           MODKEY|ShiftMask,   Button1,    dragmfact,      {0} },
 	{ ClkStatusText,        0,                  Button1,    spawn,          {.v = rofilauncher } },
 	{ ClkStatusText,        0,                  Button3,    spawn,          {.v = pavucontrolcmd } },
 };

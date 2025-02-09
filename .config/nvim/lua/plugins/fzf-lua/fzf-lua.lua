@@ -72,52 +72,128 @@ end
 
 ---Switch cwd while preserving the last query
 ---@return nil
+-- function actions.switch_cwd()
+--   fzf.config.__resume_data.opts = fzf.config.__resume_data.opts or {}
+--   local opts = fzf.config.__resume_data.opts
+--
+--   -- Remove old fn_selected, else selected item will be opened
+--   -- with previous cwd
+--   opts.fn_selected = nil
+--   opts.cwd = opts.cwd or vim.uv.cwd()
+--   opts.query = fzf.config.__resume_data.last_query
+--
+--   vim.ui.input({
+--     prompt = "New cwd: ",
+--     default = opts.cwd,
+--     completion = "dir",
+--   }, function(input)
+--     if not input then
+--       return
+--     end
+--     input = vim.fs.normalize(input)
+--     local stat = vim.uv.fs_stat(input)
+--     if not stat or not stat.type == "directory" then
+--       print("\n")
+--       vim.notify("[Fzf-lua] invalid path: " .. input .. "\n", vim.log.levels.ERROR)
+--       vim.cmd.redraw()
+--       return
+--     end
+--     opts.cwd = input
+--   end)
+--
+--   -- Adapted from fzf-lua `core.set_header()` function
+--   if opts.cwd_prompt then
+--     opts.prompt = vim.fn.fnamemodify(opts.cwd, ":.:~")
+--     local shorten_len = tonumber(opts.cwd_prompt_shorten_len)
+--     if shorten_len and #opts.prompt >= shorten_len then
+--       opts.prompt = path.shorten(opts.prompt, tonumber(opts.cwd_prompt_shorten_val) or 1)
+--     end
+--     if not path.ends_with_separator(opts.prompt) then
+--       opts.prompt = opts.prompt .. path.separator()
+--     end
+--   end
+--
+--   if opts.headers then
+--     opts = core.set_header(opts, opts.headers)
+--   end
+--
+--   actions.resume()
+-- end
+
 function actions.switch_cwd()
-  fzf.config.__resume_data.opts = fzf.config.__resume_data.opts or {}
-  local opts = fzf.config.__resume_data.opts
+  local resume_data = vim.deepcopy(fzf.config.__resume_data)
+  resume_data.opts = resume_data.opts or {}
 
   -- Remove old fn_selected, else selected item will be opened
   -- with previous cwd
+  local opts = resume_data.opts
   opts.fn_selected = nil
   opts.cwd = opts.cwd or vim.uv.cwd()
   opts.query = fzf.config.__resume_data.last_query
 
-  vim.ui.input({
-    prompt = "New cwd: ",
-    default = opts.cwd,
-    completion = "dir",
-  }, function(input)
-    if not input then
-      return
-    end
-    input = vim.fs.normalize(input)
-    local stat = vim.uv.fs_stat(input)
-    if not stat or not stat.type == "directory" then
-      print("\n")
-      vim.notify("[Fzf-lua] invalid path: " .. input .. "\n", vim.log.levels.ERROR)
-      vim.cmd.redraw()
-      return
-    end
-    opts.cwd = input
-  end)
+  local at_home = utils.fs.contains("~", opts.cwd)
+  fzf.files({
+    cwd_prompt = false,
+    prompt = "New cwd: " .. (at_home and "~/" or "/"),
+    cwd = at_home and "~" or "/",
+    query = vim.fn.fnamemodify(opts.cwd, at_home and ":~" or ":p"):gsub("^~", ""):gsub("^/", ""),
+    -- Append current dir './' to the result list to allow switching to home
+    -- or root directory
+    cmd = string.format(
+      [[%s | sed '1i ./']],
+      (function()
+        local fd_cmd = vim.fn.executable("fd") == 1 and "fd"
+          or vim.fn.executable("fdfind") == 1 and "fdfind"
+          or nil
 
-  -- Adapted from fzf-lua `core.set_header()` function
-  if opts.cwd_prompt then
-    opts.prompt = vim.fn.fnamemodify(opts.cwd, ":.:~")
-    local shorten_len = tonumber(opts.cwd_prompt_shorten_len)
-    if shorten_len and #opts.prompt >= shorten_len then
-      opts.prompt = path.shorten(opts.prompt, tonumber(opts.cwd_prompt_shorten_val) or 1)
-    end
-    if not path.ends_with_separator(opts.prompt) then
-      opts.prompt = opts.prompt .. path.separator()
-    end
-  end
+        if not fd_cmd then
+          return [[find -L * -type d -print0 | xargs -0 ls -Fd]]
+        end
 
-  if opts.headers then
-    opts = core.set_header(opts, opts.headers)
-  end
+        local grep_cmd = vim.fn.executable("rg") == 1 and "rg" or "grep"
+        return string.format([[%s --hidden --follow --type d --type l | %s /$]], fd_cmd, grep_cmd)
+      end)()
+    ),
+    fzf_opts = { ["--no-multi"] = true },
+    winopts = {
+      preview = {
+        hidden = "hidden",
+      },
+    },
+    actions = {
+      ["enter"] = function(selected)
+        opts.cwd = vim.fs.normalize(
+          vim.fs.joinpath(at_home and "~" or "/", path.entry_to_file(selected[1]).path)
+        )
 
-  actions.resume()
+        -- Adapted from fzf-lua `core.set_header()` function
+        if opts.cwd_prompt then
+          opts.prompt = vim.fn.fnamemodify(opts.cwd, ":.:~")
+          local shorten_len = tonumber(opts.cwd_prompt_shorten_len)
+          if shorten_len and #opts.prompt >= shorten_len then
+            opts.prompt = path.shorten(opts.prompt, tonumber(opts.cwd_prompt_shorten_val) or 1)
+          end
+          if not path.ends_with_separator(opts.prompt) then
+            opts.prompt = opts.prompt .. path.separator()
+          end
+        end
+
+        if opts.headers then
+          opts = core.set_header(opts, opts.headers)
+        end
+
+        fzf.config.__resume_data = resume_data
+        actions.resume()
+      end,
+      ["esc"] = function()
+        fzf.config.__resume_data = resume_data
+        actions.resume()
+      end,
+      -- Should not change dir or exclude dirs when selecting cwd
+      ["alt-c"] = false,
+      ["alt-/"] = false,
+    },
+  })
 end
 
 ---Include directories, not only files when using the `files` picker
@@ -351,23 +427,23 @@ fzf.setup({
   },
   keymap = {
     -- Overrides default completion completely
-    builtin = {
-      ["<F1>"] = "toggle-help",
-      ["<F2>"] = "toggle-fullscreen",
-      ["<C-d>"] = "preview-page-down",
-      ["<C-u>"] = "preview-page-up",
-    },
-    fzf = {
-      -- fzf '--bind=' options
-      -- ['ctrl-k'] = 'kill-line',
-      ["ctrl-z"] = "abort",
-      ["ctrl-u"] = "unix-line-discard",
-      ["ctrl-a"] = "beginning-of-line",
-      ["ctrl-e"] = "end-of-line",
-      ["alt-a"] = "toggle-all",
-      ["alt-}"] = "last",
-      ["alt-{"] = "first",
-    },
+    -- builtin = {
+    --   ["<F1>"] = "toggle-help",
+    --   ["<F2>"] = "toggle-fullscreen",
+    --   ["<C-d>"] = "preview-page-down",
+    --   ["<C-u>"] = "preview-page-up",
+    -- },
+    -- fzf = {
+    --   -- fzf '--bind=' options
+    --   -- ['ctrl-k'] = 'kill-line',
+    --   ["ctrl-z"] = "abort",
+    --   ["ctrl-u"] = "unix-line-discard",
+    --   ["ctrl-a"] = "beginning-of-line",
+    --   ["ctrl-e"] = "end-of-line",
+    --   ["alt-a"] = "toggle-all",
+    --   ["alt-}"] = "last",
+    --   ["alt-{"] = "first",
+    -- },
   },
   actions = {
     files = {
@@ -576,10 +652,10 @@ bind("n", "s/", fzf.live_grep_resume, { desc = "Grep Resume" })
 
 bind("n", "<c-b>", fzf.buffers, { desc = "Buffers" })
 
-bind("n", "<space>fp", function()
+bind("n", "sP", function()
   fzf.files({ cwd = "%:h" })
 end, { desc = "FILES Sibling" })
-bind("n", "<space>fo", fzf.oldfiles, { desc = "OLDFILES" })
+bind("n", "sO", fzf.oldfiles, { desc = "OLDFILES" })
 
 bind("n", "sp", fzf.files, { desc = "FILES" })
 bind("n", "so", mru, { desc = "MRU" })
@@ -590,9 +666,9 @@ bind("n", "s<tab>", fzf.builtin, { desc = "BUILTIN" })
 bind("i", "<c-k>", fzf.complete_path, { desc = "Fuzzy complete path" }) -- remap <C-X><C-F>
 bind("i", "<c-l>", fzf.complete_line, { desc = "Fuzzy complete line" }) -- remap <C-X><C-L>
 
-bind("n", "gp", fzf.git_status, { desc = "Status" })
-bind("n", "sgb", fzf.git_bcommits, { desc = "Bcommits" })
-bind("n", "sgc", fzf.git_commits, { desc = "Commits" })
+bind("n", "svs", fzf.git_status, { desc = "Status" })
+bind("n", "svb", fzf.git_bcommits, { desc = "Bcommits" })
+bind("n", "svc", fzf.git_commits, { desc = "Commits" })
 
 bind("n", "s'", fzf.registers, { desc = "Registers" })
 bind("n", "s;", fzf.changes, { desc = "changes" })
@@ -602,8 +678,8 @@ bind("n", "s0", fzf.command_history, { desc = "Command History" }) -- remap : to
 
 bind("n", "sql", fzf.loclist, { desc = "fzf.loclist" })
 bind("n", "sqq", fzf.quickfix, { desc = "fzf.quickfix" })
-bind("n", "<space>fl", fzf.loclist_stack, { desc = "fzf.loclist_stack" })
-bind("n", "<space>fq", fzf.quickfix_stack, { desc = "fzf.quickfix_stack" })
+bind("n", "sqL", fzf.loclist_stack, { desc = "fzf.loclist_stack" })
+bind("n", "sqQ", fzf.quickfix_stack, { desc = "fzf.quickfix_stack" })
 
 bind("n", "sqb", list_paths, { desc = "List Path Buffer" })
 bind("n", "sqv", function()
@@ -614,12 +690,12 @@ bind("n", "sqt", function()
   fzf.files({ cwd = vim.env.NOTES_DIR })
 end, { desc = "NOTES_DIR" })
 
-bind("n", "<space>l", function()
+bind("n", "sqL", function()
   local year = os.date("%Y") -- Tahun saat ini
   local logs_path = "~/daily-logs/" .. year
   require("fzf-lua").files({ cwd = vim.fn.expand(logs_path) })
 end, { noremap = true, desc = "Fuzzy search daily logs for current year" })
-bind("n", "<space>n", function()
+bind("n", "sql", function()
   local year = os.date("%Y") -- Tahun saat ini
   local month_number = os.date("%m") -- Nomor bulan
   local month_name = os.date("%B") -- Nama bulan (contoh: December)
@@ -632,6 +708,7 @@ end, { noremap = true, desc = "Open daily log file for current month" })
 bind("n", "sqn", function()
   fzf.files({ cwd = "~/vimwiki" })
 end, { desc = "NOTES" })
+
 bind("n", "sqf", function()
   fzf.files({ query = vim.fn.expand("<cfile>") })
 end, { desc = "Grep files under cursor" })

@@ -106,33 +106,32 @@ function M.config()
   local map = vim.keymap.set
   map("n", "<C-T>", "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
   map("n", "<C-Y>", "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
-  --
-  require("mini.notify").setup({
-    lsp_progress = {
-      -- oh god please stop annoying me
-      enable = false,
-    },
 
-    window = {
-      -- https://github.com/echasnovski/mini.nvim/blob/a118a964c94543c06d8b1f2f7542535dd2e19d36/doc/mini-notify.txt#L186-L198
-      config = {
-        anchor = "SE",
-        col = vim.o.columns * 0.5,
-        row = vim.o.lines - 2,
-        -- width = math.floor(vim.o.columns * 0.6),
-        border = "single",
-      },
-      winblend = 10,
-    },
-  })
-  vim.notify = require("mini.notify").make_notify()
+  -- replace with notification "folke/snacks.nvim",
+  -- require("mini.notify").setup({
+  --   lsp_progress = {
+  --     -- oh god please stop annoying me
+  --     enable = false,
+  --   },
+  --
+  --   window = {
+  --     -- https://github.com/echasnovski/mini.nvim/blob/a118a964c94543c06d8b1f2f7542535dd2e19d36/doc/mini-notify.txt#L186-L198
+  --     config = {
+  --       anchor = "SE",
+  --       col = vim.o.columns * 0.5,
+  --       row = vim.o.lines - 2,
+  --       -- width = math.floor(vim.o.columns * 0.6),
+  --       border = "single",
+  --     },
+  --     winblend = 10,
+  --   },
+  -- })
+  -- vim.notify = require("mini.notify").make_notify()
 
   require("mini.splitjoin").setup({ mappings = { toggle = "gs" } })
-
   require("mini.trailspace").setup({})
   require("mini.move").setup({})
   require("mini.extra").setup({})
-
   require("mini.surround").setup({
     custom_surroundings = {
       s = {

@@ -3,7 +3,7 @@ return {
     "iguanacucumber/magazine.nvim",
     name = "nvim-cmp", -- Otherwise highlighting gets messed up
     -- branch = "perf-up",
-    event = "VeryLazy",
+    event = "InsertEnter *",
 
     enabled = function()
       local disabled = false
@@ -23,6 +23,7 @@ return {
       "https://codeberg.org/FelipeLema/cmp-async-path", -- not by me, but better than cmp-path
     },
     config = function()
+      local MAX_INDEX_FILE_SIZE = 4000
       local cmp = require("cmp")
       local utils = require("utils")
       local icons = utils.icons
@@ -146,6 +147,8 @@ return {
             },
             ["<C-k>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
             ["<C-j>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+            ["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
+            ["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
             ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
             ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
             ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i" }),
@@ -169,22 +172,23 @@ return {
 
           sources = cmp.config.sources({
             { name = "nvim_lsp" },
-            { name = "luasnip", max_item_count = 7, priority = 15 },
+            { name = "luasnip" },
             {
               name = "buffer",
-              keyword_length = 3,
-              max_item_count = 5,
-              priority = 1,
+              keyword_length = 4,
               options = {
-                keyword_pattern = [[\k\+]],
                 get_bufnrs = function()
-                  local buf = vim.api.nvim_get_current_buf()
-                  local byte_size =
-                    vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
-                  if byte_size > 250 * 1024 then -- 250kb
-                    return {}
+                  local bufs = {}
+                  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+                    -- Don't index giant files
+                    if
+                      vim.api.nvim_buf_is_loaded(bufnr)
+                      and vim.api.nvim_buf_line_count(bufnr) < MAX_INDEX_FILE_SIZE
+                    then
+                      table.insert(bufs, bufnr)
+                    end
                   end
-                  return { buf }
+                  return bufs
                 end,
               },
             },
@@ -236,7 +240,25 @@ return {
       cmp.setup.cmdline({ "/", "?" }, {
         mapping = cmp.mapping.preset.cmdline(),
         sources = {
-          { name = "buffer" },
+          {
+            name = "buffer",
+            keyword_length = 4,
+            options = {
+              get_bufnrs = function()
+                local bufs = {}
+                for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+                  -- Don't index giant files
+                  if
+                    vim.api.nvim_buf_is_loaded(bufnr)
+                    and vim.api.nvim_buf_line_count(bufnr) < MAX_INDEX_FILE_SIZE
+                  then
+                    table.insert(bufs, bufnr)
+                  end
+                end
+                return bufs
+              end,
+            },
+          },
         },
       })
 

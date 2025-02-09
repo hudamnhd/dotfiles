@@ -33,10 +33,10 @@ static const int attachmode              = 4;         /* default attach mode: 0 
 #define SHOWWINICON 0                                 /* 0 means no winicon */
 
 static const char *fonts[]          = {
-    "FiraCode Nerd Font:style=Regular:pixelsize=16:antialias=true:autohint=true",                            /* tags, layout */
-    "FiraCode Nerd Font:style=Regular:pixelsize=16:antialias=true:autohint=true",                            /* status monitor */
-    "FiraCode Nerd Font:style=Regular:pixelsize=16:antialias=true:autohint=true",                            /* window titles */
-    "FiraCode Nerd Font:style=Regular:pixelsize=16:antialias=true:autohint=true",                            /* cjk font */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* tags, layout */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* status monitor */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* window titles */
+    "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true",                            /* cjk font */
     // "Symbola:size=13.5:antialias=true",                                                                    /* outline emojis */
     "Noto Color Emoji:size=10:antialias=true:autohint=true"                                                /* color emojis */
 };

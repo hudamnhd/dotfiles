@@ -44,6 +44,6 @@ return {
       },
     })
   end,
-  -- ft = langs,
-  -- enabled = false,
+  ft = langs,
+  enabled = true,
 }

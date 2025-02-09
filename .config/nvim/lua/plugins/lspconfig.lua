@@ -3,7 +3,7 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
     dependencies = {
-      { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
+      -- { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
       -- "hrsh7th/cmp-nvim-lsp",
       -- "saghen/blink.cmp",
       {
@@ -54,7 +54,7 @@ return {
     },
     config = function()
       -- local util = require("lspconfig.util")
-      -- require("lspconfig").lua_ls.setup({})
+      require("lspconfig").lua_ls.setup({})
       -- require("lspconfig").biome.setup({})
       -- require("lspconfig").dprint.setup({})
       -- require("lspconfig").denols.setup({})
@@ -129,7 +129,7 @@ return {
   },
   {
     "pmizio/typescript-tools.nvim",
-    ft = { "typescript", "typescriptreact", "javascriptreact" },
+    -- ft = { "typescript", "typescriptreact", "javascriptreact" },
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     opts = {
       root_dir = function(fname)

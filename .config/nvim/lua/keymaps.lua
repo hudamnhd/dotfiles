@@ -4,6 +4,7 @@ local M = {}
 M.leader_group_clues = {
   { mode = "n", keys = "<space>t", desc = "+Toggle and other" },
   { mode = "n", keys = "<space>b", desc = "+Bookmark" },
+  { mode = "n", keys = "<space>s", desc = "+SNACKS" },
   { mode = "n", keys = "<space>g", desc = "+LSP" },
 }
 
@@ -19,8 +20,6 @@ M.bind("x", "<", [[<gv]])
 M.bind("t", "<C-\\>", [[<C-\><C-n>]])
 
 M.bind("n", "<a-w>", [[<c-w>w]])
-M.bind("n", "<c-[>", [[<c-w>w]])
-M.bind("n", "<c-]>", [[<c-w>w]])
 M.bind("t", "<a-w>", [[<C-\><C-n><c-w>w]])
 
 M.bind({ "n", "v" }, "<C-H>", [[^]])
@@ -49,20 +48,6 @@ M.bind("n", "dd", delete_line, { expr = true, desc = "delete blank lines to blac
 M.bind("n", "ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" })
 M.bind("n", "cu", "mzgUiw`z", { desc = "󰬴 lowercase to UPPERCASE" })
 M.bind("n", "cl", "mzguiw`z", { desc = "󰬴 UPPERCASE to lowercase" })
-
-M.bind(
-  "c",
-  "<F3>",
-  'getcmdtype() == ":" ? expand("%:h/") . "/" : ""',
-  { silent = false, expr = true }
-)
-M.bind(
-  "c",
-  "<F4>",
-  'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""',
-  { silent = false, expr = true }
-)
-M.bind("c", "<F5>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true })
 
 M.bind("c", "<c-v>", [[<C-R>"]], { desc = "paste cmd-mode", silent = false })
 M.bind("c", "<a-v>", [[<C-R>+]], { desc = "paste cmd-mode", silent = false })
@@ -94,82 +79,9 @@ M.bind("n", "N", "Nzz", { desc = "Back search '/' or '?'" })
 M.bind("n", "<C-d>", "<C-d>zz")
 M.bind("n", "<C-u>", "<C-u>zz")
 
--- NOTE resize window
-M.bind(
-  "n",
-  "<C-Up>",
-  "<cmd>lua require'utils.helper'.resize(false, -5)<CR>",
-  { desc = "horizontal split increase" }
-)
-M.bind(
-  "n",
-  "<C-Down>",
-  "<cmd>lua require'utils.helper'.resize(false,  5)<CR>",
-  { desc = "horizontal split decrease" }
-)
-M.bind(
-  "n",
-  "<C-Left>",
-  "<cmd>lua require'utils.helper'.resize(true,  -5)<CR>",
-  { desc = "vertical split decrease" }
-)
-M.bind(
-  "n",
-  "<C-Right>",
-  "<cmd>lua require'utils.helper'.resize(true,   5)<CR>",
-  { desc = "vertical split increase" }
-)
-
-M.bind(
-  "n",
-  "zk",
-  [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]],
-  { desc = "newline above (no insert-mode)" }
-)
-M.bind(
-  "n",
-  "zj",
-  [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]],
-  { desc = "newline below (no insert-mode)" }
-)
-M.bind(
-  "n",
-  "zg",
-  [[:<C-u>call append(0, expand('<cword>'))<CR>]],
-  { desc = "append word in first line" }
-)
-
 M.bind({ "n", "v" }, "<space>y", [["+y]], { desc = "yank to clipboard" })
 M.bind({ "n", "v" }, "<space>P", [["+P]], { desc = "paste BEFORE from clipboard" })
 M.bind({ "n", "v" }, "<space>p", [["+p]], { desc = "paste AFTER from clipboard" })
-
-M.toggle_diff_buff = [[<cmd>call luaeval('require"utils.helper".toggle_diff_buff()')<cr>]]
-M.translate_nm = [[<cmd>call luaeval('require"utils.translate".translate_nm()')<cr>]]
-M.translate_vm = [[<cmd>call luaeval('require"utils.translate".translate_vm()')<cr>]]
-M.set_cwd = [[<cmd>lua require"utils.helper".set_cwd()<cr>]]
-M.asynctasks = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
-M.yankround = [[<cmd>Unite -vertical yankround<cr>]]
-M.regex_tutor = [[<Cmd>AsyncTask regex-tutor<CR>]]
-M.undotree = [[<Cmd>UndotreeToggle<CR>]]
-M.git_diff_buff = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
-
-M.bind("n", "<space>%", M.set_cwd, { desc = "SET CWD" })
-M.bind("n", "<space>to", M.git_diff_buff, { desc = "Toggle overlay" })
-M.bind("n", "<space>td", M.toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
-M.bind("n", "<space>tu", M.undotree, { desc = "Undotree toggle" })
-M.bind("n", "<space>tr", M.translate_nm, { desc = "translate" })
-M.bind("x", "<space>tr", M.translate_vm, { desc = "translate" })
-M.bind("n", "<space>t1", M.regex_tutor, { desc = "regex-tutor" })
-
-M.bind("n", "<a-a>", M.asynctasks, { desc = "ASYNCTASKS" })
-
-M.bind("n", "sy", M.yankround, { desc = "YANKROUND" })
-
-M.bind("n", "<space>tw", [[:set wrap!<CR>]], { desc = "toggle wrap" })
-
--- toogle number
-M.bind("n", "<space>tn", [[:set nonumber norelativenumber<CR>]], { desc = "noactive number" })
-M.bind("n", "<space>tN", [[:set number relativenumber<CR>]], { desc = "active number" })
 
 M.bind("n", "<esc>", "<Cmd>nohlsearch|diffupdate|echo<CR>", { desc = "nohlsearch" })
 
@@ -236,8 +148,6 @@ M.bind("n", "z.", modify_line_end_delimiter("."), { desc = "add '.' to end of li
 vim.cmd("command! -nargs=+ -complete=file Grep  grep! <args> | redraw! | copen")
 vim.cmd("command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw! | lopen")
 
--- M.bind("n", "<space>l", ":syntax sync fromstart<CR>:redraw<CR>:echo 'syntax sync fromstart done'<CR>")
-
 -- Definisikan fungsi zoom_toggle
 local function zoom_toggle()
   vim.cmd("normal! " .. "|")
@@ -285,7 +195,6 @@ local function mc_macro(selection)
 end
 
 M.bind("n", "<leader>q", "q", { desc = "remap q" })
-
 M.bind("n", "zq", "*Nqz", { desc = "mc start macro (foward)" })
 M.bind("n", "zQ", "#Nqz", { desc = "mc start macro (backward)" })
 M.bind("n", "<c-0>", mc_macro(), { expr = true, desc = "mc end or replay macro" })
@@ -294,44 +203,12 @@ M.bind("x", "zq", mc_select .. "``qz", { desc = "mc start macro (foward)" })
 M.bind("x", "zQ", mc_select:gsub("/", "?") .. "``qz", { desc = "mc start macro (backward)" })
 M.bind("x", "<c-0>", mc_macro(mc_select), { expr = true, desc = "mc end or replay macro" })
 
----Remove all trailing whitespaces within the current buffer
----Retain cursor position & last search content
-local function remove_trailing_whitespaces()
-  local pos = vim.api.nvim_win_get_cursor(0)
-  local last_search = vim.fn.getreg("/")
-  local hl_state = vim.v.hlsearch
-
-  vim.cmd(":%s/\\s\\+$//e")
-
-  vim.fn.setreg("/", last_search) -- restore last search
-  vim.api.nvim_win_set_cursor(0, pos) -- restore cursor position
-  if hl_state == 0 then
-    vim.cmd.nohlsearch() -- disable search highlighting again if it was disabled before
-  end
-end
-
-M.bind("n", "<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
-
 M.bind({ "o", "x" }, "q", [[iq]], { remap = true })
 M.bind({ "o", "x" }, "Q", [[aq]], { remap = true })
 M.bind({ "o", "x" }, "w", [[iw]], { remap = true })
 M.bind({ "o", "x" }, "W", [[iW]], { remap = true })
 M.bind({ "o", "x" }, "t", [[it]], { remap = true })
 M.bind({ "o", "x" }, "T", [[at]], { remap = true })
-
--- Quickfix|loclist toggles
-M.bind(
-  "n",
-  ">",
-  "<cmd>lua require'utils.helper'.toggle_qf('l')<CR>",
-  { desc = "toggle location list" }
-)
-M.bind(
-  "n",
-  "<",
-  "<cmd>lua require'utils.helper'.toggle_qf('q')<CR>",
-  { desc = "toggle quickfix list" }
-)
 
 local sr_key = {
   '"',
@@ -368,7 +245,6 @@ local function toggle_smart_case()
 end
 
 M.bind("c", "<C-S>", toggle_smart_case, { desc = "Toggle smartcase" })
-
 M.bind({ "n", "v" }, "0", ":", { desc = "cmd", silent = false })
 
 local function cgn(pattern)
@@ -407,40 +283,9 @@ M.bind("n", "<space>k", "<c-w>T", { desc = "move splite" })
 M.bind("n", "<space>c", "<c-w>c", { desc = "close" })
 M.bind("n", "<space>v", "<c-w>v", { desc = "vsplite" })
 
-M.bind("x", "<a-n>", [[:s/\d\+/number/g]], { desc = "All number to type number", silent = false })
-M.bind(
-  "x",
-  "<a-s>",
-  [[:s/"[^"]*"/string/g]],
-  { desc = "All string to type string", silent = false }
-)
-
-M.bind(
-  "x",
-  "<a-->",
-  [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]],
-  { desc = "Rmv - and change to capitalize", silent = false }
-)
-
-local camel_to_snace = [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]]
-M.bind("x", "<a-c>", camel_to_snace, { desc = "replace cword", silent = false })
-
 M.bind({ "x", "n" }, "<space>r", '<cmd>lua require("user.nui").local_menu()<cr>')
 M.bind("n", "sqg", '<cmd>lua require("user.nui").git_menu()<cr>')
 
-M.bind(
-  "x",
-  ".",
-  [[:normal .<cr>]],
-  { desc = "Repeat last command for each line of a visual selection." }
-)
-M.bind(
-  "n",
-  "gn",
-  [[:normal n.<cr>]],
-  { desc = "Repeat the last edit on the next [count] matches." }
-)
---
 -- stylua: ignore start
 local sr_visual_g       = vim.cmd.SearchReplaceSingleBufferVisualSelection
 local sr_word_g         = vim.cmd.SearchReplaceSingleBufferCWord
@@ -456,7 +301,6 @@ M.bind("x", "<c-s>", sr_visual_word, { desc = "replace cword" })
 M.bind("n", "<c-s>", sr_selection_word, { desc = "replace cword", silent = false })
 M.bind("x", "<c-r>", sr_visual, { desc = "Search Replace Search" })
 
--- stylua: ignore end
 
 vim.keymap.set("n", "<leader>d", function()
   local date = os.date("## %A %Y-%m-%d") -- Format tanggal
@@ -468,5 +312,70 @@ vim.keymap.set("n", "<leader>m", function()
   vim.api.nvim_put({ date }, "l", true, true) -- Masukkan ke baris di bawah kursor
 end, { noremap = true, desc = "Insert current month and year in format # December 2019" })
 
--- hhdaCase
+
+M.toggle_diff_buff = [[<cmd>call luaeval('require"utils.helper".toggle_diff_buff()')<cr>]]
+M.translate_nm = [[<cmd>call luaeval('require"utils.translate".translate_nm()')<cr>]]
+M.translate_vm = [[<cmd>call luaeval('require"utils.translate".translate_vm()')<cr>]]
+M.set_cwd = [[<cmd>lua require"utils.helper".set_cwd()<cr>]]
+M.asynctasks = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
+M.yankround = [[<cmd>Unite -vertical yankround<cr>]]
+M.regex_tutor = [[<Cmd>AsyncTask regex-tutor<CR>]]
+M.undotree = [[<Cmd>UndotreeToggle<CR>]]
+M.git_diff_buff = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
+
+M.bind("n", "<space>%", M.set_cwd, { desc = "SET CWD" })
+M.bind("n", "<space>to", M.git_diff_buff, { desc = "Toggle overlay" })
+M.bind("n", "<space>td", M.toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
+M.bind("n", "<space>tu", M.undotree, { desc = "Undotree toggle" })
+M.bind("n", "<space>tr", M.translate_nm, { desc = "translate" })
+M.bind("x", "<space>tr", M.translate_vm, { desc = "translate" })
+M.bind("n", "<space>t1", M.regex_tutor, { desc = "regex-tutor" })
+
+M.bind("n", "<a-a>", M.asynctasks, { desc = "ASYNCTASKS" })
+
+M.bind("n", "sy", M.yankround, { desc = "YANKROUND" })
+-- NOTE resize window
+M.bind("n", "<C-Up>",    "<cmd>lua require'utils.helper'.resize(false, -5)<CR>",  { desc = "horizontal split increase" })
+M.bind("n", "<C-Down>",  "<cmd>lua require'utils.helper'.resize(false,  5)<CR>",  { desc = "horizontal split decrease" })
+M.bind("n", "<C-Left>",  "<cmd>lua require'utils.helper'.resize(true,  -5)<CR>",  { desc = "vertical split decrease" })
+M.bind("n", "<C-Right>", "<cmd>lua require'utils.helper'.resize(true,   5)<CR>",  { desc = "vertical split increase" })
+
+M.bind("n", "zk", [[:<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>]], { desc = "newline above (no insert-mode)" })
+M.bind("n", "zj", [[:<C-u>call append(line("."),   repeat([""], v:count1))<CR>]], { desc = "newline below (no insert-mode)" })
+M.bind("n", "zg", [[:<C-u>call append(0, expand('<cword>'))<CR>]],                { desc = "append word in first line" })
+
+M.bind("c", "<F3>", 'getcmdtype() == ":" ? expand("%:h/") . "/" : ""', { silent = false, expr = true })
+M.bind("c", "<F4>", 'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""', { silent = false, expr = true })
+M.bind("c", "<F5>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true })
+
+---Remove all trailing whitespaces within the current buffer
+---Retain cursor position & last search content
+local function remove_trailing_whitespaces()
+  local pos = vim.api.nvim_win_get_cursor(0)
+  local last_search = vim.fn.getreg("/")
+  local hl_state = vim.v.hlsearch
+
+  vim.cmd(":%s/\\s\\+$//e")
+
+  vim.fn.setreg("/", last_search) -- restore last search
+  vim.api.nvim_win_set_cursor(0, pos) -- restore cursor position
+  if hl_state == 0 then
+    vim.cmd.nohlsearch() -- disable search highlighting again if it was disabled before
+  end
+end
+
+M.bind("n", "<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
+
+M.bind("x", "<a-n>", [[:s/\d\+/number/g]], { desc = "All number to type number", silent = false })
+M.bind("x", "<a-s>", [[:s/"[^"]*"/string/g]], { desc = "All string to type string", silent = false })
+M.bind("x", "<a-->", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc = "Rmv - and change to capitalize", silent = false })
+M.bind("x", "<a-c>", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]], { desc = "camel to snack", silent = false })
+
+M.bind("x", ".", [[:normal .<cr>]], { desc = "Repeat last command for each line of a visual selection." })
+M.bind("n", "gn", [[:normal n.<cr>]], { desc = "Repeat the last edit on the next [count] matches." })
+
+-- Quickfix|loclist toggles
+M.bind( "n", ">", "<cmd>lua require'utils.helper'.toggle_qf('l')<CR>", { desc = "toggle location list" })
+M.bind( "n", "<", "<cmd>lua require'utils.helper'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
+-- stylua: ignore end
 return M

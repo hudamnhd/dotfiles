@@ -7,7 +7,7 @@ configuration{
     kb-mode-previous:          "Shift+Left,Control+Shift+Tab,Control+h";
     kb-remove-char-back:       "BackSpace";
     lines:                     1;
-    font:                      "Geist Mono 12";
+    font:                      "JetBrainsMono NF Medium 14";
     show-icons:                true;
     terminal:                  "st";
     drun-display-format:       "{icon} {name}";
