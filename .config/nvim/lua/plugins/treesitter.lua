@@ -1,9 +1,9 @@
+local langs = { "javascript", "typescript", "tsx" }
 return {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
   event = { "BufReadPost" },
   config = function(plugin)
-    local langs = { "javascript", "typescript", "tsx" }
     require("nvim-treesitter.configs").setup({
       -- A list of parser names, or "all" (the five listed parsers should always be installed)
       ensure_installed = langs,

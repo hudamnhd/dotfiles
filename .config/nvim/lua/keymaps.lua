@@ -301,25 +301,12 @@ M.bind("x", "<c-s>", sr_visual_word, { desc = "replace cword" })
 M.bind("n", "<c-s>", sr_selection_word, { desc = "replace cword", silent = false })
 M.bind("x", "<c-r>", sr_visual, { desc = "Search Replace Search" })
 
-
-vim.keymap.set("n", "<leader>d", function()
-  local date = os.date("## %A %Y-%m-%d") -- Format tanggal
-  vim.api.nvim_put({ date }, "l", true, true) -- Masukkan ke baris di bawah kursor
-end, { noremap = true, desc = "Insert current date in format ## Monday 2019-12-02" })
-
-vim.keymap.set("n", "<leader>m", function()
-  local date = os.date("# %B %Y") -- Format bulan dan tahun
-  vim.api.nvim_put({ date }, "l", true, true) -- Masukkan ke baris di bawah kursor
-end, { noremap = true, desc = "Insert current month and year in format # December 2019" })
-
-
 M.toggle_diff_buff = [[<cmd>call luaeval('require"utils.helper".toggle_diff_buff()')<cr>]]
 M.translate_nm = [[<cmd>call luaeval('require"utils.translate".translate_nm()')<cr>]]
 M.translate_vm = [[<cmd>call luaeval('require"utils.translate".translate_vm()')<cr>]]
 M.set_cwd = [[<cmd>lua require"utils.helper".set_cwd()<cr>]]
 M.asynctasks = [[<cmd>lua require"utils.helper".asynctasks()<cr>]]
 M.yankround = [[<cmd>Unite -vertical yankround<cr>]]
-M.regex_tutor = [[<Cmd>AsyncTask regex-tutor<CR>]]
 M.undotree = [[<Cmd>UndotreeToggle<CR>]]
 M.git_diff_buff = [[<cmd>lua MiniDiff.toggle_overlay()<cr>]]
 
@@ -329,7 +316,6 @@ M.bind("n", "<space>td", M.toggle_diff_buff, { desc = "TOGGLE_DIFF_BUFF" })
 M.bind("n", "<space>tu", M.undotree, { desc = "Undotree toggle" })
 M.bind("n", "<space>tr", M.translate_nm, { desc = "translate" })
 M.bind("x", "<space>tr", M.translate_vm, { desc = "translate" })
-M.bind("n", "<space>t1", M.regex_tutor, { desc = "regex-tutor" })
 
 M.bind("n", "<a-a>", M.asynctasks, { desc = "ASYNCTASKS" })
 
@@ -375,7 +361,7 @@ M.bind("x", ".", [[:normal .<cr>]], { desc = "Repeat last command for each line 
 M.bind("n", "gn", [[:normal n.<cr>]], { desc = "Repeat the last edit on the next [count] matches." })
 
 -- Quickfix|loclist toggles
-M.bind( "n", ">", "<cmd>lua require'utils.helper'.toggle_qf('l')<CR>", { desc = "toggle location list" })
-M.bind( "n", "<", "<cmd>lua require'utils.helper'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
+M.bind( "n", "<", "<cmd>lua require'utils.helper'.toggle_qf('l')<CR>", { desc = "toggle location list" })
+M.bind( "n", ">", "<cmd>lua require'utils.helper'.toggle_qf('q')<CR>", { desc = "toggle quickfix list" })
 -- stylua: ignore end
 return M

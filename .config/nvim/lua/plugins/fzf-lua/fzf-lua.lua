@@ -340,8 +340,12 @@ function fzf.diagnostics_workspace(opts)
 end
 
 local icon_dir = utils.icons.kinds.Folder
-fzf.setup({
 
+-- FZF alternative
+local is_skim = true
+
+fzf.setup({
+  fzf_bin = is_skim and "sk" or "fzf",
   -- Use nbsp in tty to avoid showing box chars
   -- nbsp = not vim.g.modern_ui and "\xc2\xa0" or nil,
   dir_icon = icon_dir,
@@ -425,26 +429,7 @@ fzf.setup({
     ["pointer"] = { "fg", "TelescopeSelectionCaret" },
     ["marker"] = { "fg", "TelescopeMultiIcon" },
   },
-  keymap = {
-    -- Overrides default completion completely
-    -- builtin = {
-    --   ["<F1>"] = "toggle-help",
-    --   ["<F2>"] = "toggle-fullscreen",
-    --   ["<C-d>"] = "preview-page-down",
-    --   ["<C-u>"] = "preview-page-up",
-    -- },
-    -- fzf = {
-    --   -- fzf '--bind=' options
-    --   -- ['ctrl-k'] = 'kill-line',
-    --   ["ctrl-z"] = "abort",
-    --   ["ctrl-u"] = "unix-line-discard",
-    --   ["ctrl-a"] = "beginning-of-line",
-    --   ["ctrl-e"] = "end-of-line",
-    --   ["alt-a"] = "toggle-all",
-    --   ["alt-}"] = "last",
-    --   ["alt-{"] = "first",
-    -- },
-  },
+  keymap = {},
   actions = {
     files = {
       ["alt-s"] = actions.file_split,
@@ -579,7 +564,7 @@ fzf.setup({
   oldfiles = {
     prompt = "Oldfiles> ",
   },
-  fzf_opts = {
+  fzf_opts = is_skim and {} or {
     ["--no-scrollbar"] = "",
     ["--no-separator"] = "",
     ["--info"] = "inline-right",
@@ -641,94 +626,91 @@ local bind = require("keymaps").bind
 local mru = require("plugins.fzf-lua.cmds").mru
 local list_paths = require("utils.copy").list_paths
 
-bind("n", "sl", function()
+function fzf.lgrep_curbuf_custom()
   fzf.lgrep_curbuf({ search = vim.fn.expand("<cword>") })
-end, { desc = "Grep Buffer" })
-bind("n", "<space>o", fzf.blines, { desc = "Grep prompt input" })
-bind("n", "<space>i", fzf.grep, { desc = "Grep prompt input" })
-bind("n", "sk", fzf.grep_cword, { desc = "Grep Project cword" })
-bind("x", "sk", fzf.grep_visual, { desc = "Grep Project Selection" })
-bind("n", "s/", fzf.live_grep_resume, { desc = "Grep Resume" })
+end
 
-bind("n", "<c-b>", fzf.buffers, { desc = "Buffers" })
+--buffer
+bind("n", "g8", fzf.blines, { desc = "fzf.blines" })
+bind("n", "s8", fzf.lgrep_curbuf_custom, { desc = "Grep Buffer" })
 
-bind("n", "sP", function()
-  fzf.files({ cwd = "%:h" })
-end, { desc = "FILES Sibling" })
-bind("n", "sO", fzf.oldfiles, { desc = "OLDFILES" })
+--global
+bind("n", "<space>i", fzf.grep, { desc = "fzf.grep" })
+bind("n", "<C-8>", fzf.grep_cword, { desc = "fzf.grep_cword" })
+bind("x", "<C-8>", fzf.grep_visual, { desc = "fzf.grep_visual" })
+bind("n", "<space>8", fzf.live_grep_resume, { desc = "fzf.live_grep_resume" })
 
-bind("n", "sp", fzf.files, { desc = "FILES" })
-bind("n", "so", mru, { desc = "MRU" })
+bind("n", "<c-b>", fzf.buffers, { desc = "fzf.buffers" })
 
-bind("n", "s<space>", fzf.resume, { desc = "RESUME" })
-bind("n", "s<tab>", fzf.builtin, { desc = "BUILTIN" })
+bind("n", "sp", fzf.files, { desc = "fzf.files" })
+bind("n", "so", mru, { desc = "mru" })
 
-bind("i", "<c-k>", fzf.complete_path, { desc = "Fuzzy complete path" }) -- remap <C-X><C-F>
-bind("i", "<c-l>", fzf.complete_line, { desc = "Fuzzy complete line" }) -- remap <C-X><C-L>
+bind("n", "s.", fzf.resume, { desc = "fzf.resume" })
+bind("n", "s,", fzf.builtin, { desc = "fzf.builtin" })
 
-bind("n", "svs", fzf.git_status, { desc = "Status" })
-bind("n", "svb", fzf.git_bcommits, { desc = "Bcommits" })
-bind("n", "svc", fzf.git_commits, { desc = "Commits" })
+bind("i", "<c-k>", fzf.complete_path, { desc = "fzf.complete_path" }) -- remap <C-X><C-F>
+bind("i", "<c-l>", fzf.complete_line, { desc = "fzf.complete_line" }) -- remap <C-X><C-L>
 
-bind("n", "s'", fzf.registers, { desc = "Registers" })
-bind("n", "s;", fzf.changes, { desc = "changes" })
-bind("n", "z=", fzf.spell_suggest, { desc = "spell_suggest" })
-bind("n", "sh", fzf.search_history, { desc = "Search History" })
-bind("n", "s0", fzf.command_history, { desc = "Command History" }) -- remap : to 0 easy press
+bind("n", "z=", fzf.spell_suggest, { desc = "fzf.spell_suggest" })
+bind("n", "s'", fzf.registers, { desc = "fzf.registers" })
+bind("n", "s;", fzf.changes, { desc = "fzf.changes" })
+bind("n", "sh", fzf.search_history, { desc = "fzf.search_history" })
+bind("n", "s0", fzf.command_history, { desc = "fzf.command_history" }) -- remap : to 0 easy press
 
-bind("n", "sql", fzf.loclist, { desc = "fzf.loclist" })
-bind("n", "sqq", fzf.quickfix, { desc = "fzf.quickfix" })
-bind("n", "sqL", fzf.loclist_stack, { desc = "fzf.loclist_stack" })
-bind("n", "sqQ", fzf.quickfix_stack, { desc = "fzf.quickfix_stack" })
+bind("n", "sfl", fzf.loclist, { desc = "fzf.loclist" })
+bind("n", "sfq", fzf.quickfix, { desc = "fzf.quickfix" })
+bind("n", "<space>fl", fzf.loclist_stack, { desc = "fzf.loclist_stack" })
+bind("n", "<space>fq", fzf.quickfix_stack, { desc = "fzf.quickfix_stack" })
 
-bind("n", "sqb", list_paths, { desc = "List Path Buffer" })
-bind("n", "sqv", function()
-  fzf.files({ cwd = "~/.config/nvim" })
-end, { desc = "VIMRC" })
+bind("n", "sqb", list_paths, { desc = "list_paths" })
 
-bind("n", "sqt", function()
-  fzf.files({ cwd = vim.env.NOTES_DIR })
-end, { desc = "NOTES_DIR" })
+local function fzf_files(cwd)
+  return function()
+    fzf.files({ cwd = cwd })
+  end
+end
 
-bind("n", "sqL", function()
-  local year = os.date("%Y") -- Tahun saat ini
-  local logs_path = "~/daily-logs/" .. year
-  require("fzf-lua").files({ cwd = vim.fn.expand(logs_path) })
-end, { noremap = true, desc = "Fuzzy search daily logs for current year" })
+bind("n", "sqv", fzf_files("~/.config/nvim"), { desc = "VIMRC" })
+bind("n", "sqt", fzf_files(vim.env.NOTES_DIR), { desc = "NOTES_DIR" })
+bind("n", "sqn", fzf_files("~/vimwiki"), { desc = "Vimwiki" })
+
+local year = os.date("%Y") -- Tahun saat ini
+local logs_path = "~/daily-logs/" .. year
+local month_number = os.date("%m") -- Nomor bulan
+local month_name = os.date("%B") -- Nama bulan (contoh: December)
+local file_name = month_number .. "-" .. month_name .. "-" .. year .. ".md"
+local file_path = "~/daily-logs/" .. year .. "/" .. file_name
+
+bind("n", "sqk", fzf_files(vim.fn.expand(logs_path)), { desc = "logs for current year" })
 bind("n", "sql", function()
-  local year = os.date("%Y") -- Tahun saat ini
-  local month_number = os.date("%m") -- Nomor bulan
-  local month_name = os.date("%B") -- Nama bulan (contoh: December)
-  local file_name = month_number .. "-" .. month_name .. "-" .. year .. ".md"
-  local file_path = "~/daily-logs/" .. year .. "/" .. file_name
-
-  -- Expand `~` to absolute path and open the file
-  vim.cmd("edit " .. vim.fn.expand(file_path))
-end, { noremap = true, desc = "Open daily log file for current month" })
-bind("n", "sqn", function()
-  fzf.files({ cwd = "~/vimwiki" })
-end, { desc = "NOTES" })
+  vim.cmd("e " .. vim.fn.expand(file_path))
+end, { desc = "Open daily log file" })
 
 bind("n", "sqf", function()
   fzf.files({ query = vim.fn.expand("<cfile>") })
 end, { desc = "Grep files under cursor" })
 
-bind("n", "sd", fzf.diagnostics_document, { desc = "fzf.diagnostics_document" })
-bind("n", "sD", fzf.diagnostics_workspace, { desc = "fzf.diagnostics_workspace" })
+bind("n", "sqd", fzf.diagnostics_document, { desc = "fzf.diagnostics_document" })
+bind("n", "sqw", fzf.diagnostics_workspace, { desc = "fzf.diagnostics_workspace" })
 
 local lsp_attach = function()
-  bind("n", "<space>gs", fzf.lsp_document_symbols, { desc = "document_symbols" })
-  bind("n", "<space>gS", fzf.lsp_live_workspace_symbols, { desc = "live_workspace_symbols" })
-  bind("n", "<space>gd", fzf.lsp_definitions, { desc = "definitions" })
-  bind("n", "<space>gD", fzf.lsp_definitions, { desc = "definitions" })
-  bind("n", "<space>gt", fzf.lsp_typedefs, { desc = "typedefs" })
-  bind("n", "<space>gi", fzf.lsp_implementations, { desc = "implementations" })
-  bind("n", "<space>g[", fzf.lsp_incoming_calls, { desc = "incoming_calls" })
-  bind("n", "<space>g]", fzf.lsp_outgoing_calls, { desc = "outgoing_calls" })
-  bind("n", "<space>gr", fzf.lsp_references, { desc = "references" })
-  bind("n", "<space>gf", fzf.lsp_finder, { desc = "finder" })
-  bind("n", "<space>gc", fzf.lsp_code_actions, { desc = "code_actions" })
-  bind("n", "<space>gR", "<cmd>lua vim.lsp.buf.rename()<cr>", {})
+  bind("n", "<space>gs", fzf.lsp_document_symbols, { desc = "fzf.lsp_document_symbols" })
+  bind(
+    "n",
+    "<space>gS",
+    fzf.lsp_live_workspace_symbols,
+    { desc = "fzf.lsp_live_workspace_symbols" }
+  )
+  bind("n", "<space>gd", fzf.lsp_definitions, { desc = "fzf.lsp_definitions" })
+  bind("n", "<space>gD", fzf.lsp_definitions, { desc = "fzf.lsp_definitions" })
+  bind("n", "<space>gt", fzf.lsp_typedefs, { desc = "fzf.lsp_typedefs" })
+  bind("n", "<space>gi", fzf.lsp_implementations, { desc = "fzf.lsp_implementations" })
+  bind("n", "<space>g[", fzf.lsp_incoming_calls, { desc = "fzf.lsp_incoming_calls" })
+  bind("n", "<space>g]", fzf.lsp_outgoing_calls, { desc = "fzf.lsp_outgoing_calls" })
+  bind("n", "<space>gr", fzf.lsp_references, { desc = "fzf.lsp_references" })
+  bind("n", "<space>gf", fzf.lsp_finder, { desc = "fzf.lsp_finder" })
+  bind("n", "<space>gc", fzf.lsp_code_actions, { desc = "fzf.lsp_code_actions" })
+  bind("n", "<space>gR", "<cmd>lua vim.lsp.buf.rename()<cr>", { desc = "vim.lsp.buf.rename" })
 end
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -958,14 +940,45 @@ local function set_default_hlgroups()
   local hl = utils.hl
   local hl_norm = hl.get(0, { name = "Normal", link = false })
   local hl_special = hl.get(0, { name = "Special", link = false })
-  hl.set(0, "FzfLuaBufFlagAlt", {})
+  hl.set_default(0, "FzfLuaSymDefault", { link = "Special" })
+  hl.set_default(0, "FzfLuaSymArray", { link = "Operator" })
+  hl.set_default(0, "FzfLuaSymBoolean", { link = "Boolean" })
+  hl.set_default(0, "FzfLuaSymClass", { link = "Type" })
+  hl.set_default(0, "FzfLuaSymConstant", { link = "Constant" })
+  hl.set_default(0, "FzfLuaSymConstructor", { link = "@constructor" })
+  hl.set_default(0, "FzfLuaSymEnum", { link = "Constant" })
+  hl.set_default(0, "FzfLuaSymEnumMember", { link = "FzfLuaSymEnum" })
+  hl.set_default(0, "FzfLuaSymEvent", { link = "@lsp.type.event" })
+  hl.set_default(0, "FzfLuaSymField", { link = "FzfLuaSymDefault" })
+  hl.set_default(0, "FzfLuaSymFile", { link = "Directory" })
+  hl.set_default(0, "FzfLuaSymFunction", { link = "Function" })
+  hl.set_default(0, "FzfLuaSymInterface", { link = "Type" })
+  hl.set_default(0, "FzfLuaSymKey", { link = "@keyword" })
+  hl.set_default(0, "FzfLuaSymMethod", { link = "Function" })
+  hl.set_default(0, "FzfLuaSymModule", { link = "@module" })
+  hl.set_default(0, "FzfLuaSymNamespace", { link = "@lsp.type.namespace" })
+  hl.set_default(0, "FzfLuaSymNull", { link = "Constant" })
+  hl.set_default(0, "FzfLuaSymNumber", { link = "Number" })
+  hl.set_default(0, "FzfLuaSymObject", { link = "Statement" })
+  hl.set_default(0, "FzfLuaSymOperator", { link = "Operator" })
+  hl.set_default(0, "FzfLuaSymPackage", { link = "@module" })
+  hl.set_default(0, "FzfLuaSymProperty", { link = "FzfLuaSymDefault" })
+  hl.set_default(0, "FzfLuaSymString", { link = "@string" })
+  hl.set_default(0, "FzfLuaSymStruct", { link = "Type" })
+  hl.set_default(0, "FzfLuaSymTypeParameter", { link = "FzfLuaSymDefault" })
+  hl.set_default(0, "FzfLuaSymVariable", { link = "FzfLuaSymDefault" })
+  hl.set(0, "FzfLuaBufFlagAlt", { link = "FzfLuaSymDefault" })
+  hl.set(0, "FzfLuaBufFlagCur", { link = "Operator" })
+  hl.set(0, "FzfLuaLiveSym", { link = "WarningMsg" })
+  hl.set(0, "FzfLuaPathColNr", { link = "FzfLuaSymDefault" })
+  hl.set(0, "FzfLuaPathLineNr", { link = "FzfLuaSymDefault" })
   hl.set(0, "FzfLuaBufFlagCur", {})
   hl.set(0, "FzfLuaBufName", {})
   hl.set(0, "FzfLuaBufNr", {})
   hl.set(0, "FzfLuaBufLineNr", { link = "LineNr" })
   hl.set(0, "FzfLuaCursor", { link = "None" })
-  hl.set(0, "FzfLuaHeaderBind", { link = "Special" })
-  hl.set(0, "FzfLuaHeaderText", { link = "Special" })
+  hl.set(0, "FzfLuaHeaderBind", { link = "FzfLuaSymDefault" })
+  hl.set(0, "FzfLuaHeaderText", { link = "FzfLuaSymDefault" })
   hl.set(0, "FzfLuaTabMarker", { link = "Keyword" })
   hl.set(0, "FzfLuaTabTitle", { link = "Title" })
   hl.set_default(0, "TelescopeSelection", { link = "Visual" })
@@ -974,7 +987,13 @@ local function set_default_hlgroups()
   hl.set_default(0, "TelescopeTitle", {
     fg = hl_norm.bg,
     bg = hl_special.fg,
+    ctermfg = hl_norm.ctermbg,
+    ctermbg = hl_special.ctermfg,
     bold = true,
+  })
+  hl.set(0, "TelescopeNormal", {
+    fg = hl.blend("NonText", "Normal").fg,
+    bg = hl_norm.bg,
   })
 end
 

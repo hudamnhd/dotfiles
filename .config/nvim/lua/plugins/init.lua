@@ -27,6 +27,7 @@ return {
       vim.api.nvim_set_keymap("n", "sn", ":lua require('neogen').generate()<CR>", opts)
     end,
   },
+  { "skim-rs/skim", event = "VeryLazy", dir = "~/skim", build = "./install" },
   { "MunifTanjim/nui.nvim", lazy = true },
   { "stefandtw/quickfix-reflector.vim", ft = "qf" },
   { "LeafCage/yankround.vim", event = "VeryLazy" },
