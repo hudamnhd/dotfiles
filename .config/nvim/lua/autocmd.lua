@@ -1,5 +1,10 @@
 local aucmd = vim.api.nvim_create_autocmd
 
+local utils = require("utils")
+local function notify(msg)
+  vim.notify("HHH: " .. msg)
+end
+
 -- Helper function to create augroup and add autocmds
 local function augroup(name, commands)
   local group = vim.api.nvim_create_augroup(name, { clear = true })
@@ -43,7 +48,6 @@ augroup("NewlineNoAutoComments", {
     },
   },
 })
-
 -- Display help, man in vertical splits and map 'q' to quit
 augroup("HelpOpenVert", {
   {
@@ -161,3 +165,152 @@ augroup("GQFormatter", {
 --     end)
 --   end,
 -- })
+
+-- local api, completion, lsp = vim.api, vim.lsp.completion, vim.lsp
+-- local ms = lsp.protocol.Methods
+-- local InsertCharPre = "InsertCharPre"
+-- local pumvisible = vim.fn.pumvisible
+-- local g = api.nvim_create_augroup("glepnir.completion", { clear = true })
+--
+-- vim.opt.completeopt = "menu,menuone,noinsert,fuzzy,popup"
+-- vim.opt.completeitemalign = "kind,abbr,menu"
+--
+-- api.nvim_create_autocmd("LspAttach", {
+--   group = g,
+--   callback = function(args)
+--     local bufnr = args.buf
+--     local client = lsp.get_client_by_id(args.data.client_id)
+--     if not client or not client:supports_method(ms.textDocument_completion) then
+--       return
+--     end
+--
+--     completion.enable(true, client.id, bufnr, {
+--       autotrigger = true,
+--       convert = function(item)
+--         local kind = lsp.protocol.CompletionItemKind[item.kind] or "u"
+--         return {
+--           abbr = item.label:gsub("%b()", ""),
+--           kind = kind:sub(1, 1):lower(),
+--           kind_hlgroup = ("@lsp.type.%s"):format(kind:sub(1, 1):lower() .. kind:sub(2)),
+--         }
+--       end,
+--     })
+--     if #api.nvim_get_autocmds({ buffer = bufnr, event = "InsertCharPre", group = g }) ~= 0 then
+--       return
+--     end
+--     api.nvim_create_autocmd(InsertCharPre, {
+--       buffer = bufnr,
+--       group = g,
+--       callback = function()
+--         if tonumber(pumvisible()) == 1 then
+--           return
+--         end
+--         local triggerchars = vim.tbl_get(
+--           client,
+--           "server_capabilities",
+--           "completionProvider",
+--           "triggerCharacters"
+--         ) or {}
+--         if vim.v.char:match("[%w_]") and not vim.list_contains(triggerchars, vim.v.char) then
+--           vim.schedule(function()
+--             completion.trigger()
+--           end)
+--         end
+--       end,
+--       desc = "glepnir: completion on character which not exist in lsp client triggerCharacters",
+--     })
+--   end,
+-- })
+--
+-- vim.keymap.set("i", "<A-w>", function()
+--   local mark = vim.api.nvim_buf_get_mark(0, "a")
+--   local lnum, col = unpack(api.nvim_win_get_cursor(0))
+--   if mark[1] == 0 then
+--     api.nvim_buf_set_mark(0, "a", lnum, col, {})
+--   else
+--     local keys = "<ESC>d`aa"
+--     api.nvim_feedkeys(api.nvim_replace_termcodes(keys, true, true, true), "n", false)
+--     vim.schedule(function()
+--       api.nvim_buf_del_mark(0, "a")
+--     end)
+--   end
+-- end)
+--
+-- -- Ctrl-y works like emacs
+-- vim.keymap.set("i", "<C-y>", function()
+--   if tonumber(vim.fn.pumvisible()) == 1 or vim.fn.getreg('"0'):find("%w") == nil then
+--     return "<C-y>"
+--   end
+--   return "<Esc>p==a"
+-- end, { expr = true })
+--
+-- vim.keymap.set("i", "<TAB>", function()
+--   if tonumber(vim.fn.pumvisible()) == 1 then
+--     return "<C-n>"
+--   elseif vim.snippet.active({ direction = 1 }) then
+--     return "<cmd>lua vim.snippet.jump(1)<cr>"
+--   else
+--     return "<TAB>"
+--   end
+-- end, { expr = true })
+--
+-- vim.keymap.set("i", "<S-TAB>", function()
+--   if vim.fn.pumvisible() == 1 then
+--     return "<C-p>"
+--   elseif vim.snippet.active({ direction = -1 }) then
+--     return "<cmd>lua vim.snippet.jump(-1)<CR>"
+--   else
+--     return "<S-TAB>"
+--   end
+-- end, { expr = true })
+--
+-- vim.keymap.set("i", "<CR>", function()
+--   if tonumber(vim.fn.pumvisible()) == 1 then
+--     return "<C-y>"
+--   end
+--   local line = api.nvim_get_current_line()
+--   local col = api.nvim_win_get_cursor(0)[2]
+--   local before = line:sub(col, col)
+--   local after = line:sub(col + 1, col + 1)
+--   local t = {
+--     ["("] = ")",
+--     ["["] = "]",
+--     ["{"] = "}",
+--   }
+--
+--   if not t[before] then
+--     return "<CR>"
+--   end
+--   if t[before] == after then
+--     return "<CR><ESC>O"
+--   end
+-- end, { expr = true })
+--
+-- vim.keymap.set("i", "<C-e>", function()
+--   if vim.fn.pumvisible() == 1 then
+--     return "<C-e>"
+--   else
+--     return "<End>"
+--   end
+-- end, { expr = true })
+--
+-- local ns_id, mark_id = vim.api.nvim_create_namespace("my_marks"), nil
+--
+-- vim.keymap.set("i", "<a-t>", function()
+--   if not mark_id then
+--     local row, col = unpack(api.nvim_win_get_cursor(0))
+--     mark_id = api.nvim_buf_set_extmark(0, ns_id, row - 1, col, {
+--       virt_text = { { "⚑", "DiagnosticError" } },
+--       hl_group = "Search",
+--       virt_text_pos = "inline",
+--     })
+--     return
+--   end
+--   local mark = api.nvim_buf_get_extmark_by_id(0, ns_id, mark_id, {})
+--   if not mark or #mark == 0 then
+--     return
+--   end
+--   pcall(api.nvim_win_set_cursor, 0, { mark[1] + 1, mark[2] })
+--   api.nvim_buf_del_extmark(0, ns_id, mark_id)
+--   mark_id = nil
+-- end)

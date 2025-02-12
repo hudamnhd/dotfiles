@@ -121,11 +121,11 @@ function M.get_range(callback)
   local old_func = vim.go.operatorfunc
   -- Define a global function for the operatorfunc
   _G.op_func_formatting = function()
-    local start = vim.api.nvim_buf_get_mark(0, '[')
-    local finish = vim.api.nvim_buf_get_mark(0, ']')
+    local start = vim.api.nvim_buf_get_mark(0, "[")
+    local finish = vim.api.nvim_buf_get_mark(0, "]")
 
     if not start or not finish then
-      print('Invalid marks')
+      print("Invalid marks")
       return
     end
 
@@ -149,7 +149,7 @@ function M.get_range(callback)
       end
     end
 
-    local text = table.concat(lines, '\n')
+    local text = table.concat(lines, "\n")
 
     if callback then
       callback(text)
@@ -158,8 +158,8 @@ function M.get_range(callback)
     vim.go.operatorfunc = old_func
     _G.op_func_formatting = nil
   end
-  vim.go.operatorfunc = 'v:lua.op_func_formatting'
-  vim.api.nvim_feedkeys('g@', 'n', false)
+  vim.go.operatorfunc = "v:lua.op_func_formatting"
+  vim.api.nvim_feedkeys("g@", "n", false)
 end
 
 function M.get_visual_selection(nl_literal)
@@ -207,25 +207,27 @@ end
 -- the below can be mapped to arrows and will work similar to the tmux binds
 -- map to: "<cmd>lua require'utils'.resize(false, -5)<CR>"
 function M.resize(vertical, margin)
-  local cur_win = vim.api.nvim_get_current_win()
-  -- go (possibly) right
-  vim.cmd(string.format("wincmd %s", vertical and "l" or "j"))
-  local new_win = vim.api.nvim_get_current_win()
+  return function()
+    local cur_win = vim.api.nvim_get_current_win()
+    -- go (possibly) right
+    vim.cmd(string.format("wincmd %s", vertical and "l" or "j"))
+    local new_win = vim.api.nvim_get_current_win()
 
-  -- determine direction cond on increase and existing right-hand buffer
-  local not_last = not (cur_win == new_win)
-  local sign = margin > 0
-  -- go to previous window if required otherwise flip sign
-  if not_last == true then
-    vim.cmd([[wincmd p]])
-  else
-    sign = not sign
+    -- determine direction cond on increase and existing right-hand buffer
+    local not_last = not (cur_win == new_win)
+    local sign = margin > 0
+    -- go to previous window if required otherwise flip sign
+    if not_last == true then
+      vim.cmd([[wincmd p]])
+    else
+      sign = not sign
+    end
+
+    local sign_str = sign and "+" or "-"
+    local dir = vertical and "vertical " or ""
+    local cmd = dir .. "resize " .. sign_str .. math.abs(margin) .. "<CR>"
+    vim.cmd(cmd)
   end
-
-  local sign_str = sign and "+" or "-"
-  local dir = vertical and "vertical " or ""
-  local cmd = dir .. "resize " .. sign_str .. math.abs(margin) .. "<CR>"
-  vim.cmd(cmd)
 end
 -- 'q': find the quickfix window
 -- 'l': find all loclist windows
@@ -251,7 +253,9 @@ end
 -- open quickfix if not empty
 function M.open_qf()
   local qf_name = "quickfix"
-  local qf_empty = function() return vim.tbl_isempty(vim.fn.getqflist()) end
+  local qf_empty = function()
+    return vim.tbl_isempty(vim.fn.getqflist())
+  end
   if not qf_empty() then
     vim.cmd("copen")
     vim.cmd("wincmd J")
@@ -265,7 +269,9 @@ end
 function M.open_loclist_all()
   local wininfo = vim.fn.getwininfo()
   local qf_name = "loclist"
-  local qf_empty = function(winnr) return vim.tbl_isempty(vim.fn.getloclist(winnr)) end
+  local qf_empty = function(winnr)
+    return vim.tbl_isempty(vim.fn.getloclist(winnr))
+  end
   for _, win in pairs(wininfo) do
     if win["quickfix"] == 0 then
       if not qf_empty(win["winnr"]) then
@@ -284,17 +290,19 @@ end
 -- type='l': loclist toggle (all windows)
 function M.toggle_qf(type)
   local windows = M.find_qf(type)
-  if #windows > 0 then
-    -- hide all visible windows
-    for _, win in ipairs(windows) do
-      vim.api.nvim_win_hide(win.winid)
-    end
-  else
-    -- no windows are visible, attempt to open
-    if type == "l" then
-      M.open_loclist_all()
+  return function()
+    if #windows > 0 then
+      -- hide all visible windows
+      for _, win in ipairs(windows) do
+        vim.api.nvim_win_hide(win.winid)
+      end
     else
-      M.open_qf()
+      -- no windows are visible, attempt to open
+      if type == "l" then
+        M.open_loclist_all()
+      else
+        M.open_qf()
+      end
     end
   end
 end

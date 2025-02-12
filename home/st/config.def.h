@@ -5,29 +5,103 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
+static char *font = "JetBrainsMono NF Medium:style=Medium:pixelsize=15:antialias=true:autohint=true";
+/* Spare fonts */
+static char *font2[] = {
+/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
+/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
+};
 
-static char *font = "Fira Code:style=Medium:pixelsize=17:antialias=true:autohint=true";
-static char *font2[] = { "Fira Code:style=Medium:pixelsize=17:antialias=true:autohint=true" };
-static int borderpx = 0;
+/* pattern for regex mode,
+ * use () sub-patterns to define the range to be copied*/
+char *pattern_list[] = {
+	// Markdown URL
+	"\\[[^]]*\\]\\(([^)]+)\\)",
+	// URL
+	"((?:https?://|git@|git://|ssh://|ftp://|file://)\\S+)",
+	// Diff a
+	"(--- a/(\\S+))",
+	// Diff b
+	"(\\+\\+\\+ b/(\\S+))",
+	// Docker
+	"(sha256:([0-9a-f]{64}))",
+	// File path
+	"((?:[.\\pL\\pN_\\-@~]+)?(?:/+[.\\pL\\pN_\\-@]+)+)",
+	// Color hex code
+	"(#[0-9a-fA-F]{6})",
+	// UUID
+	"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
+	// IPFS
+	"(Qm[0-9a-zA-Z]{44})",
+	// SHA hash
+	"([0-9a-f]{7,40})",
+	// IPv4 address
+	"(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})",
+	// IPv6 address
+	"([A-f0-9:]+:+[A-f0-9:]+[%\\w\\d]+)",
+	// Hexadecimal address
+	"(0x[0-9a-fA-F]+)",
+	// Number (at least 4 digits)
+	"\\b([0-9]{4,})\\b",
+
+	// The NULL at the end is required, please do not remove it
+	NULL
+};
+
+/* use for url search when url is a same value*/
+unsigned int enable_url_same_label = 0;
+
+/* use for regex search when regex is a same value*/
+unsigned int enable_regex_same_label = 1;
+
+/* Disable bold and italic fonts globally */
+unsigned int disable_bold = 0;
+unsigned int disable_italic = 0;
+
+/* Borders in pixels */
+static int borderpx = 2;
+
+/* Borders as a percentage of the cell width. If greater than zero, overrides
+ * the borderpx setting. */
+static int borderperc = 0;
+
+/* Command that is executed when a URL or hyperlink is clicked */
+char *url_opener = "xdg-open";
+
+/* List of URL protocols to search for when detecting a URL under the mouse */
+char *url_protocols = "https://,http://,file:/,ftp://,mailto:,vscode://";
+
+/* Specifies the modifier that is required to be pressed when you are clicking
+ * on links. The options are ControlMask, ShiftMask and XK_ANY_MOD. */
+static uint url_opener_modkey = XK_ANY_MOD;
 
 /*
  * What program is execed by st depends of these precedence rules:
  * 1: program passed with -e
- * 2: utmp option
+ * 2: scroll and/or utmp
  * 3: SHELL environment variable
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
 static char *shell = "/bin/sh";
 char *utmp = NULL;
+/* scroll program: to enable use a string like "scroll" */
+char *scroll = NULL;
 char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
 /* identification sequence returned in DA and DECID */
-char *vtiden = "\033[?6c";
+char *vtiden = "\033[?62;4c"; /* VT200 family (62) with sixel (4) */
+
+/* sixel rgb byte order: LSBFirst or MSBFirst */
+int const sixelbyteorder = LSBFirst;
 
 /* Kerning / character bounding-box multipliers */
 static float cwscale = 1.0;
 static float chscale = 1.0;
+
+/* vertically center lines in the space available if you have set a larger
+ * chscale in config.h or .Xresources: 0 = off, 1 = on */
+int vertcenter = 0;
 
 /*
  * word delimiter string
@@ -36,6 +110,10 @@ static float chscale = 1.0;
  */
 wchar_t *worddelimiters = L" ";
 
+/* Word delimiters for short and long jumps in the keyboard select patch */
+wchar_t *kbds_sdelim = L"!\"#$%&'()*+,-./:;<=>?@[\\]^`{|}~ ";
+wchar_t *kbds_ldelim = L" ";
+
 /* selection timeouts (in milliseconds) */
 static unsigned int doubleclicktimeout = 300;
 static unsigned int tripleclicktimeout = 600;
@@ -43,20 +121,36 @@ static unsigned int tripleclicktimeout = 600;
 /* alt screens */
 int allowaltscreen = 1;
 
+/* allow certain non-interactive (insecure) window operations such as:
+   setting the clipboard text using the OSC 52 sequence */
+int allowwindowops = 0;
+
 /*
  * draw latency range in ms - from new content/keypress/etc until drawing.
  * within this range, st draws when content stops arriving (idle). mostly it's
  * near minlatency, but it waits longer for slow updates to avoid partial draw.
  * low minlatency will tear/flicker more, as it can "detect" idle too early.
  */
-static double minlatency = 8;
-static double maxlatency = 33;
+static float minlatency = 2;
+static float maxlatency = 33;
 
 /*
  * Synchronized-Update timeout in ms
  * https://gitlab.com/gnachman/iterm2/-/wikis/synchronized-updates-spec
  */
-static uint su_timeout = 200;
+static unsigned int su_timeout = 200;
+
+/*
+ * Specifies how fast the screen scrolls when you select text and drag the
+ * mouse to the top or bottom of the screen.
+ */
+static unsigned int autoscrolltimeout = 200;
+
+/*
+ * Specifies how fast the autoscroll accelerates. Set to 0 to disable the
+ * acceleration.
+ */
+static float autoscrollacceleration = 1.0;
 
 /*
  * blinking timeout (set to 0 to disable blinking) for the terminal blinking
@@ -65,16 +159,21 @@ static uint su_timeout = 200;
 static unsigned int blinktimeout = 800;
 
 /*
- * interval (in milliseconds) between each successive call to ximspot. This
- * improves terminal performance while not reducing functionality to those
- * whom need XIM support.
- */
-int ximspot_update_interval = 1000;
-
-/*
  * thickness of underline and bar cursors
  */
 static unsigned int cursorthickness = 2;
+
+/* Hide the X cursor whenever a key is pressed. 0: off, 1: on */
+int hidecursor = 0;
+
+/* Ligatures. 0: off, 1: on */
+int ligatures = 0;
+
+/*
+ * Permanently disable ligatures so that they won't be compiled in. You should
+ * also edit config.mk file so that the HarfBuzz library won't be linked either.
+ */
+#define DISABLE_LIGATURES 0
 
 /*
  * 1: render most of the lines/blocks characters without using the font for
@@ -82,17 +181,46 @@ static unsigned int cursorthickness = 2;
  *    Bold affects lines thickness if boxdraw_bold is not 0. Italic is ignored.
  * 0: disable (render all U25XX glyphs normally from the font).
  */
-const int boxdraw = 1;
-const int boxdraw_bold = 1;
+int boxdraw = 0;
+int boxdraw_bold = 0;
 
 /* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
-const int boxdraw_braille = 1;
+int boxdraw_braille = 0;
+
+/* extra: if enabled, render dashes/diagonals and proper rounded corners.
+ *        (boxdraw has to be enabled as well) */
+int boxdraw_extra = 1;
+
+/* branch symbols (UF5D0..U+F60D). Ref. https://github.com/kovidgoyal/kitty/pull/7681 */
+int boxdraw_branch = 1;
+
+/* line thickness of the branch symbols in pixels (0 = auto) */
+int boxdraw_branch_thickness = 0;
 
 /*
  * bell volume. It must be a value between -100 and 100. Use 0 for disabling
  * it
  */
 static int bellvolume = 0;
+
+/*
+ * Visual bell style: 0 = none, 1 = custom bell color, 2 = inverted colors
+ */
+static unsigned int visualbellstyle = 0;
+
+/*
+ * Duration of the visual bell flash in milliseconds
+ */
+static unsigned int visualbellduration = 100;
+
+/*
+ * Specifies how often the visual bell animation is updated. Set to 0 to disable
+ * the animation. Note that:
+ * - The animation only works with the custom bell color
+ * - This is just a target speed as render time may vary
+ * - Don't set this too high as it will increase CPU usage
+ */
+static unsigned int visualbellanimfps = 60;
 
 /* default TERM value */
 char *termname = "st-256color";
@@ -115,51 +243,134 @@ char *termname = "st-256color";
 unsigned int tabspaces = 8;
 
 /* bg opacity */
-float alpha = 1.0;
+float alpha = 0.93;
+float alphaUnfocused = 0.6;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-    "#282828", /* hard contrast: #1d2021 / soft contrast: #32302f */
-    "#cc241d", "#98971a", "#d79921", "#458588", "#b16286", "#689d6a", "#a89984",
-    "#928374", "#fb4934", "#b8bb26", "#fabd2f", "#83a598", "#d3869b", "#8ec07c",
-    "#ebdbb2", [255] = 0,
-    /* more colors can be added after 255 to use with DefaultXX */
-    "#add8e6", /* 256 -> cursor */
-    "#555555", /* 257 -> rev cursor*/
-    "#080808", /* 258 -> bg */
-    "#ffffff", /* 259 -> fg */
+	/* 8 normal colors */
+	"black",
+	"red3",
+	"green3",
+	"yellow3",
+	"blue2",
+	"magenta3",
+	"cyan3",
+	"gray90",
+
+	/* 8 bright colors */
+	"gray50",
+	"red",
+	"green",
+	"yellow",
+	"#5c5cff",
+	"magenta",
+	"cyan",
+	"white",
+
+	[255] = 0,
+
+	/* more colors can be added after 255 to use with DefaultXX */
+	"#cccccc", /* 256 -> cursor */
+	"#555555", /* 257 -> rev cursor */
+	"gray90",  /* 258 -> foreground */
+	"black",   /* 259 -> background */
+	"black",   /* 260 -> background unfocused */
+	"gray90",  /* 261 -> visual bell */
 };
 
 /*
  * Default colors (colorname index)
- * foreground, background, cursor, reverse cursor
+ * foreground, background, cursor, reverse cursor, visual bell
  */
-unsigned int defaultfg = 259;
-unsigned int defaultbg = 258;
+unsigned int defaultfg = 258;
+unsigned int defaultbg = 259;
 unsigned int defaultcs = 256;
-unsigned int defaultrcs = 257;
+static unsigned int defaultrcs = 257;
+unsigned int bg = 259;
+unsigned int bgUnfocused = 260;
+unsigned int visualbellcolor = 261;
+
+/* Foreground and background color of search results */
+unsigned int highlightfg = 15;
+unsigned int highlightbg = 160;
+
+/* Foreground and background color of flash label */
+unsigned int flashlabelfg = 15;
+unsigned int flashlabelbg = 4;
+unsigned int flashtextfg = 8;
+unsigned int flashtextbg = 0;
+
+/* Foreground and background color of the hyperlink hint */
+unsigned int hyperlinkhintfg = 0;
+unsigned int hyperlinkhintbg = 258;
+
+/* Foreground and background colors for keyboard selection mode bars */
+unsigned int kbselectfg = 0;
+unsigned int kbselectbg = 258;
+
+/* Bold text is not rendered in bright color. 0: off, 1: on */
+unsigned int bold_is_not_bright = 1;
+
+/*
+ * Dynamic cursor color
+ * 0: the cursor color is fixed (default st behavior)
+ * 1: the cursor uses reverse colors based on the colors of the text cell
+*/
+unsigned int dynamic_cursor_color = 1;
 
 /*
  * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Ps-SP-q.1D81
  * Default style of cursor
- * 0: Blinking block
- * 1: Blinking block (default)
- * 2: Steady block ("█")
- * 3: Blinking underline
- * 4: Steady underline ("_")
- * 5: Blinking bar
- * 6: Steady bar ("|")
- * 7: Blinking st cursor
- * 8: Steady st cursor
+ * 1: blinking block
+ * 2: steady block ("█")
+ * 3: blinking underline
+ * 4: steady underline ("_")
+ * 5: blinking bar
+ * 6: steady bar ("|")
+ * 7: blinking st cursor
+ * 8: steady st cursor
  */
-static unsigned int cursorshape = 1;
+static unsigned int cursorstyle = 2;
+static Rune stcursor = 0x2603; /* snowman ("☃") */
+
+/*
+ * Controls the blinking of the cursor
+ * 0: prevent the cursor from ever blinking
+ * 1: allow blinking
+ * 2: force to always blink
+ */
+static unsigned int cursorblinking = 1;
+
+/* Specifies how fast the blinking cursor blinks */
+static unsigned int cursorblinktimeout = 800;
 
 /*
  * Default columns and rows numbers
  */
-
 static unsigned int cols = 80;
 static unsigned int rows = 24;
+
+/* Allow resizing the window to any pixel size: 0 = off, 1 = on */
+unsigned int anysize = 1;
+
+/* Disable hyperlinks (OSC 8) */
+unsigned int disablehyperlinks = 0;
+
+/* Hyperlink style: 0 = none, 1 = dotted underline */
+unsigned int hyperlinkstyle = 1;
+
+/* Show a hyperlink hint at the bottom of the screen */
+unsigned int showhyperlinkhint = 1;
+
+/* Specifies how many hyperlinks can be cached on the primary screen and the
+ * scrollback. When the cache is full, the oldest hyperlinks will be thrown
+ * away. Default value is 8192, maximum value is 65536. */
+unsigned int hyperlinkcache_pri = 8192;
+
+/* Specifies how many hyperlinks can be cached on the alternate screen.
+ * Default value is 1024, maximum value is 65536. */
+unsigned int hyperlinkcache_alt = 1024;
 
 /*
  * Default colour and shape of the mouse cursor
@@ -175,120 +386,63 @@ static unsigned int mousebg = 0;
 static unsigned int defaultattr = 11;
 
 /*
- * Xresources preferences to load at startup
+ * Force mouse select/shortcuts while mask is active (when MODE_MOUSE is set).
+ * Note that if you want to use ShiftMask with selmasks, set this to an other
+ * modifier, set to 0 to not use it.
  */
-ResourcePref resources[] = {
-    {"font", STRING, &font},
-    {"fontalt0", STRING, &font2[0]},
-    {"color0", STRING, &colorname[0]},
-    {"color1", STRING, &colorname[1]},
-    {"color2", STRING, &colorname[2]},
-    {"color3", STRING, &colorname[3]},
-    {"color4", STRING, &colorname[4]},
-    {"color5", STRING, &colorname[5]},
-    {"color6", STRING, &colorname[6]},
-    {"color7", STRING, &colorname[7]},
-    {"color8", STRING, &colorname[8]},
-    {"color9", STRING, &colorname[9]},
-    {"color10", STRING, &colorname[10]},
-    {"color11", STRING, &colorname[11]},
-    {"color12", STRING, &colorname[12]},
-    {"color13", STRING, &colorname[13]},
-    {"color14", STRING, &colorname[14]},
-    {"color15", STRING, &colorname[15]},
-    {"background", STRING, &colorname[258]},
-    {"foreground", STRING, &colorname[259]},
-    {"cursorColor", STRING, &colorname[256]},
-    {"termname", STRING, &termname},
-    {"shell", STRING, &shell},
-    {"blinktimeout", INTEGER, &blinktimeout},
-    {"bellvolume", INTEGER, &bellvolume},
-    {"tabspaces", INTEGER, &tabspaces},
-    {"borderpx", INTEGER, &borderpx},
-    {"cwscale", FLOAT, &cwscale},
-    {"chscale", FLOAT, &chscale},
-    {"alpha", FLOAT, &alpha},
-    {"ximspot_update_interval", INTEGER, &ximspot_update_interval},
-};
+static uint forcemousemod = ShiftMask;
 
 /*
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
  */
-const unsigned int mousescrollincrement = 3;
 static MouseShortcut mshortcuts[] = {
-    /* button               mask            string */
-    {Button4, XK_NO_MOD, "\031"},
-    {Button5, XK_NO_MOD, "\005"},
+	/* mask                 button   function        argument       release  screen */
+	{ XK_ANY_MOD,           Button2, clippaste,      {.i = 0},      1 },
+	{ ShiftMask,            Button4, kscrollup,      {.i = 1},      0, S_PRI},
+	{ ShiftMask,            Button5, kscrolldown,    {.i = 1},      0, S_PRI},
+	{ XK_NO_MOD,            Button4, kscrollup,      {.i = 1},      0, S_PRI },
+	{ XK_NO_MOD,            Button5, kscrolldown,    {.i = 1},      0, S_PRI },
+	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"}, 0, S_ALT },
+	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"}, 0, S_ALT },
+	{ XK_ANY_MOD,           Button3, copylinktoclipboard, {0},      1 },
 };
 
 /* Internal keyboard shortcuts. */
-#define MODKEY (Mod4Mask | ControlMask)
-#define TERMMOD (Mod4Mask | ShiftMask)
-
-MouseKey mkeys[] = {
-    /* button               mask            function        argument */
-    {Button4, XK_NO_MOD, kscrollup, {.i = mousescrollincrement}},
-    {Button5, XK_NO_MOD, kscrolldown, {.i = mousescrollincrement}},
-    {Button4, Mod1Mask, zoom, {.f = +1}},
-    {Button5, Mod1Mask, zoom, {.f = -1}},
-};
-
-static char *openurlcmd[] = {"/bin/sh", "-c", "st-urlhandler", "externalpipe",
-                             NULL};
-
-static char *copyurlcmd[] = {
-    "/bin/sh", "-c",
-    "tmp=$(sed 's/.*│//g' | tr -d '\n' | grep -aEo "
-    "'(((http|https|gopher|gemini|ftp|ftps|git)://"
-    "|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./"
-    "@$&%?$#=_-~]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)' | uniq | sed "
-    "'s/^www./http:\\/\\/www\\./g' ); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu "
-    "-i -p 'Copy which url?' -l 10 | tr -d '\n' | xclip -selection clipboard",
-    "externalpipe", NULL};
-
-static char *copyoutput[] = {"/bin/sh", "-c", "st-copyout", "externalpipe",
-                             NULL};
+#define MODKEY Mod1Mask
+#define TERMMOD (ControlMask|ShiftMask)
 
 static Shortcut shortcuts[] = {
-    /* mask                 keysym          function        argument */
-    {XK_ANY_MOD,              XK_Break,     sendbreak,     {.i = 0}},
-    {ControlMask,             XK_Print,     toggleprinter, {.i = 0}},
-    {ShiftMask,               XK_Print,     printscreen,   {.i = 0}},
-    {XK_ANY_MOD,              XK_Print,     printsel,      {.i = 0}},
-    {MODKEY,                  XK_period,    zoom,          {.f = +1}},
-    {MODKEY,                  XK_comma,     zoom,          {.f = -1}},
-    {MODKEY,                  XK_g,         zoomreset,     {.f = 0}},
-    {ControlMask | ShiftMask, XK_C,         clipcopy,      {.i = 0}},
-    {ShiftMask,               XK_Insert,    clippaste,     {.i = 0}},
-    {ControlMask | ShiftMask, XK_V,         clippaste,     {.i = 0}},
-    {XK_ANY_MOD,              Button2,      selpaste,      {.i = 0}},
-    {MODKEY,                  XK_Num_Lock,  numlock,       {.i = 0}},
-    {ControlMask | ShiftMask, XK_U,         iso14755,      {.i = 0}},
-    {ShiftMask,               XK_Page_Up,   kscrollup,     {.i = -1}},
-    {ShiftMask,               XK_Page_Down, kscrolldown,   {.i = -1}},
-    {MODKEY,                  XK_Page_Up,   kscrollup,     {.i = -1}},
-    {MODKEY,                  XK_Page_Down, kscrolldown,   {.i = -1}},
-    {MODKEY,                  XK_k,         kscrollup,     {.i = 1}},
-    {MODKEY,                  XK_j,         kscrolldown,   {.i = 1}},
-    {MODKEY,                  XK_Up,        kscrollup,     {.i = 1}},
-    {MODKEY,                  XK_Down,      kscrolldown,   {.i = 1}},
-    {MODKEY,                  XK_u,         kscrollup,     {.i = -1}},
-    {MODKEY,                  XK_d,         kscrolldown,   {.i = -1}},
-    {MODKEY,                  XK_s,         changealpha,   {.f = -0.05}},
-    {MODKEY,                  XK_a,         changealpha,   {.f = +0.05}},
-    {MODKEY,                  XK_m,         changealpha,   {.f = +2.00}},
-    {TERMMOD,                 XK_Up,        zoom,          {.f = +1}},
-    {TERMMOD,                 XK_Down,      zoom,          {.f = -1}},
-    {TERMMOD,                 XK_K,         zoom,          {.f = +1}},
-    {TERMMOD,                 XK_J,         zoom,          {.f = -1}},
-    {TERMMOD,                 XK_U,         zoom,          {.f = +2}},
-    {TERMMOD,                 XK_D,         zoom,          {.f = -2}},
-    {MODKEY,                  XK_l,         externalpipe,  {.v = openurlcmd}},
-    {MODKEY,                  XK_y,         externalpipe,  {.v = copyurlcmd}},
-    {MODKEY,                  XK_o,         externalpipe,  {.v = copyoutput}},
-    {Mod4Mask,                XK_grave,     newterm,       {.i = 0}},
-
+	/* mask                 keysym          function         argument   screen */
+	{ XK_ANY_MOD,           XK_Break,       sendbreak,       {.i =  0} },
+	{ ControlMask,          XK_Print,       toggleprinter,   {.i =  0} },
+	{ ShiftMask,            XK_Print,       printscreen,     {.i =  0} },
+	{ XK_ANY_MOD,           XK_Print,       printsel,        {.i =  0} },
+	{ TERMMOD,              XK_Prior,       zoom,            {.f = +1} },
+	{ TERMMOD,              XK_Next,        zoom,            {.f = -1} },
+	{ TERMMOD,              XK_Home,        zoomreset,       {.f =  0} },
+	{ TERMMOD,              XK_C,           clipcopy,        {.i =  0} },
+	{ TERMMOD,              XK_V,           clippaste,       {.i =  0} },
+	{ TERMMOD,              XK_O,           changealpha,     {.f = +0.05} },
+	{ TERMMOD,              XK_P,           changealpha,     {.f = -0.05} },
+	//{ TERMMOD,              XK_,           changealphaunfocused, {.f = +0.05} },
+	//{ TERMMOD,              XK_,           changealphaunfocused, {.f = -0.05} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,       {.i = -1}, S_PRI },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,     {.i = -1}, S_PRI },
+	{ TERMMOD,              XK_Y,           clippaste,       {.i =  0} },
+	{ ShiftMask,            XK_Insert,      clippaste,       {.i =  0} },
+	{ TERMMOD,              XK_Num_Lock,    numlock,         {.i =  0} },
+	{ TERMMOD,              XK_Return,      newterm,         {.i =  NEWTERM_FG_CWD} },
+	{ TERMMOD,              XK_space,       keyboard_select, { 0 } },
+	{ TERMMOD,              XK_F,           searchforward,   { 0 } },
+	{ TERMMOD,              XK_B,           searchbackward,  { 0 } },
+	{ TERMMOD,              XK_I,           keyboard_flash,  { 0 } },
+	{ TERMMOD,              XK_N,           keyboard_regex,  { 0 } },
+	{ TERMMOD,              XK_M,           keyboard_url,    { 0 } },
+	{ TERMMOD,              XK_Z,           scrolltoprompt,  {.i = -1}, S_PRI },
+	{ TERMMOD,              XK_X,           scrolltoprompt,  {.i =  1}, S_PRI },
+	{ XK_NO_MOD,            XK_F11,         fullscreen,      {.i =  0} },
+	{ MODKEY,               XK_Return,      fullscreen,      {.i =  0} },
 };
 
 /*
@@ -306,10 +460,6 @@ static Shortcut shortcuts[] = {
  * * 0: no value
  * * > 0: cursor application mode enabled
  * * < 0: cursor application mode disabled
- * crlf value
- * * 0: no value
- * * > 0: crlf mode is enabled
- * * < 0: crlf mode is disabled
  *
  * Be careful with the order of the definitions because st searches in
  * this table sequentially, so any XK_ANY_MOD must be in the last
@@ -320,7 +470,6 @@ static Shortcut shortcuts[] = {
  * If you want keys other than the X11 function keys (0xFD00 - 0xFFFF)
  * to be mapped below, add them to this array.
  */
-// static KeySym mappedkeys[] = {-1};
 static KeySym mappedkeys[] = {
 	XK_space,
 	XK_m,
@@ -400,14 +549,7 @@ static KeySym mappedkeys[] = {
  * State bits to ignore when matching key or button events.  By default,
  * numlock (Mod2Mask) and keyboard layout (XK_SWITCH_MOD) are ignored.
  */
-static uint ignoremod = Mod2Mask | XK_SWITCH_MOD;
-
-/*
- * Override mouse-select while mask is active (when MODE_MOUSE is set).
- * Note that if you want to use ShiftMask with selmasks, set this to an other
- * modifier, set to 0 to not use it.
- */
-static uint forceselmod = ShiftMask;
+static uint ignoremod = Mod2Mask|XK_SWITCH_MOD;
 
 /*
  * This is the huge key array which defines all compatibility to the Linux
@@ -1202,13 +1344,139 @@ static Key key[] = {
  * If no match is found, regular selection is used.
  */
 static uint selmasks[] = {
-    [SEL_RECTANGULAR] = Mod1Mask,
+	[SEL_RECTANGULAR] = Mod1Mask,
 };
 
 /*
  * Printable characters in ASCII, used to estimate the advance width
  * of single wide characters.
  */
-static char ascii_printable[] = " !\"#$%&'()*+,-./0123456789:;<=>?"
-                                "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-                                "`abcdefghijklmnopqrstuvwxyz{|}~";
+static char ascii_printable[] =
+	" !\"#$%&'()*+,-./0123456789:;<=>?"
+	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+	"`abcdefghijklmnopqrstuvwxyz{|}~";
+
+/**
+ * Undercurl style. Set UNDERCURL_STYLE to one of the available styles.
+ *
+ * Spiky:
+ * /\  /\  /\  /\
+ *   \/  \/  \/
+ *
+ * Capped:
+ *  _     _     _
+ * / \   / \   / \
+ *    \_/   \_/
+ */
+// Available styles
+#define UNDERCURL_NONE 0
+#define UNDERCURL_SPIKY 2
+#define UNDERCURL_CAPPED 3
+// Active style
+int undercurl_style = UNDERCURL_SPIKY;
+// Adds 1 pixel of thickness for every undercurl_thickness_threshold pixels of font size
+int undercurl_thickness_threshold  = 28;
+// Extra thickness for spiky and capped waves: 0 = off, 1 = on
+int undercurl_extra_thickness  = 0;
+// Y-offset of undercurl
+int undercurl_yoffset = 0;
+// Scaling factor for undercurl height
+float undercurl_height_scale = 1.0;
+
+/*
+ * Xresources preferences to load at startup
+ */
+ResourcePref resources[] = {
+		{ "font",                STRING,  &font },
+		{ "font_fallback1",      STRING,  &font2_xresources[0] },
+		{ "font_fallback2",      STRING,  &font2_xresources[1] },
+		{ "font_fallback3",      STRING,  &font2_xresources[2] },
+		{ "font_fallback4",      STRING,  &font2_xresources[3] },
+		{ "font_fallback5",      STRING,  &font2_xresources[4] },
+		{ "font_fallback6",      STRING,  &font2_xresources[5] },
+		{ "font_fallback7",      STRING,  &font2_xresources[6] },
+		{ "font_fallback8",      STRING,  &font2_xresources[7] },
+		{ "disable_bold",        INTEGER, &disable_bold },
+		{ "disable_italic",      INTEGER, &disable_italic },
+		{ "color0",              STRING,  &colorname[0] },
+		{ "color1",              STRING,  &colorname[1] },
+		{ "color2",              STRING,  &colorname[2] },
+		{ "color3",              STRING,  &colorname[3] },
+		{ "color4",              STRING,  &colorname[4] },
+		{ "color5",              STRING,  &colorname[5] },
+		{ "color6",              STRING,  &colorname[6] },
+		{ "color7",              STRING,  &colorname[7] },
+		{ "color8",              STRING,  &colorname[8] },
+		{ "color9",              STRING,  &colorname[9] },
+		{ "color10",             STRING,  &colorname[10] },
+		{ "color11",             STRING,  &colorname[11] },
+		{ "color12",             STRING,  &colorname[12] },
+		{ "color13",             STRING,  &colorname[13] },
+		{ "color14",             STRING,  &colorname[14] },
+		{ "color15",             STRING,  &colorname[15] },
+		{ "foreground",          STRING,  &colorname[258] },
+		{ "background",          STRING,  &colorname[259] },
+		{ "bgUnfocused",         STRING,  &colorname[260] },
+		{ "cursorColor",         STRING,  &colorname[256] },
+		{ "reverseCursor",       STRING,  &colorname[257] },
+		{ "visualbellcolor",     STRING,  &colorname[261] },
+		{ "highlightfg",         INTEGER, &highlightfg },
+		{ "highlightbg",         INTEGER, &highlightbg },
+		{ "flashlabelfg",        INTEGER, &flashlabelfg },
+		{ "flashlabelbg",        INTEGER, &flashlabelbg },
+		{ "flashtextfg",         INTEGER, &flashtextfg },
+		{ "flashtextbg",         INTEGER, &flashtextbg },
+		{ "hyperlinkhintfg",     INTEGER, &hyperlinkhintfg },
+		{ "hyperlinkhintbg",     INTEGER, &hyperlinkhintbg },
+		{ "kbselectfg",          INTEGER, &kbselectfg },
+		{ "kbselectbg",          INTEGER, &kbselectbg },
+		{ "bold_is_not_bright",  INTEGER, &bold_is_not_bright },
+		{ "dynamic_cursor_color",INTEGER, &dynamic_cursor_color },
+		{ "cursorstyle",         INTEGER, &cursorstyle },
+		{ "cursorblinking",      INTEGER, &cursorblinking },
+		{ "cursorblinktimeout",  INTEGER, &cursorblinktimeout },
+		{ "alpha",               FLOAT,   &alpha },
+		{ "alphaUnfocused",      FLOAT,   &alphaUnfocused },
+		{ "termname",            STRING,  &termname },
+		{ "shell",               STRING,  &shell },
+		{ "minlatency",          FLOAT,   &minlatency },
+		{ "maxlatency",          FLOAT,   &maxlatency },
+		{ "su_timeout",          INTEGER, &su_timeout },
+		{ "blinktimeout",        INTEGER, &blinktimeout },
+		{ "doubleclicktimeout",  INTEGER, &doubleclicktimeout },
+		{ "tripleclicktimeout",  INTEGER, &tripleclicktimeout },
+		{ "visualbellstyle",     INTEGER, &visualbellstyle },
+		{ "visualbellduration",  INTEGER, &visualbellduration },
+		{ "visualbellanimfps",   INTEGER, &visualbellanimfps },
+		{ "bellvolume",          INTEGER, &bellvolume },
+		{ "tabspaces",           INTEGER, &tabspaces },
+		{ "cursorthickness",     INTEGER, &cursorthickness },
+		{ "borderpx",            INTEGER, &borderpx },
+		{ "borderperc",          INTEGER, &borderperc },
+		{ "cwscale",             FLOAT,   &cwscale },
+		{ "chscale",             FLOAT,   &chscale },
+		{ "boxdraw",             INTEGER, &boxdraw },
+		{ "boxdraw_bold",        INTEGER, &boxdraw_bold },
+		{ "boxdraw_braille",     INTEGER, &boxdraw_braille },
+		{ "boxdraw_extra",       INTEGER, &boxdraw_extra },
+		{ "boxdraw_branch",      INTEGER, &boxdraw_branch },
+		{ "boxdraw_branch_thickness", INTEGER, &boxdraw_branch_thickness },
+		{ "hidecursor",          INTEGER, &hidecursor },
+		{ "ligatures",           INTEGER, &ligatures },
+		{ "vertcenter",          INTEGER, &vertcenter },
+		{ "cols",                INTEGER, &cols },
+		{ "rows",                INTEGER, &rows },
+		{ "anysize",             INTEGER, &anysize },
+		{ "disablehyperlinks",   INTEGER, &disablehyperlinks },
+		{ "hyperlinkstyle",      INTEGER, &hyperlinkstyle },
+		{ "showhyperlinkhint",   INTEGER, &showhyperlinkhint },
+		{ "url_opener",          STRING,  &url_opener },
+		{ "url_protocols",       STRING,  &url_protocols },
+		{ "undercurl_style",               INTEGER, &undercurl_style },
+		{ "undercurl_thickness_threshold", INTEGER, &undercurl_thickness_threshold },
+		{ "undercurl_extra_thickness",     INTEGER, &undercurl_extra_thickness },
+		{ "undercurl_yoffset",             INTEGER, &undercurl_yoffset },
+		{ "undercurl_height_scale",        FLOAT,   &undercurl_height_scale },
+		{ "autoscrolltimeout",             INTEGER, &autoscrolltimeout },
+		{ "autoscrollacceleration",        FLOAT,   &autoscrollacceleration },
+};

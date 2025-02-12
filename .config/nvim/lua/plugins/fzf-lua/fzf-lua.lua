@@ -342,7 +342,8 @@ end
 local icon_dir = utils.icons.kinds.Folder
 
 -- FZF alternative
-local is_skim = true
+-- Skim is slower than FZF but more efficient RAM
+local is_skim = false
 
 fzf.setup({
   fzf_bin = is_skim and "sk" or "fzf",
@@ -622,57 +623,24 @@ fzf.setup({
   },
 })
 
-local bind = require("keymaps").bind
-local mru = require("plugins.fzf-lua.cmds").mru
-local list_paths = require("utils.copy").list_paths
+local map = require("utils.keymap").map
 
 function fzf.lgrep_curbuf_custom()
   fzf.lgrep_curbuf({ search = vim.fn.expand("<cword>") })
 end
 
---buffer
-bind("n", "g8", fzf.blines, { desc = "fzf.blines" })
-bind("n", "s8", fzf.lgrep_curbuf_custom, { desc = "Grep Buffer" })
+function fzf.mru()
+  require("plugins.fzf-lua.cmds").mru()
+end
+function fzf.list_paths()
+  utils.copy.list_paths()
+end
 
---global
-bind("n", "<space>i", fzf.grep, { desc = "fzf.grep" })
-bind("n", "<C-8>", fzf.grep_cword, { desc = "fzf.grep_cword" })
-bind("x", "<C-8>", fzf.grep_visual, { desc = "fzf.grep_visual" })
-bind("n", "<space>8", fzf.live_grep_resume, { desc = "fzf.live_grep_resume" })
-
-bind("n", "<c-b>", fzf.buffers, { desc = "fzf.buffers" })
-
-bind("n", "sp", fzf.files, { desc = "fzf.files" })
-bind("n", "so", mru, { desc = "mru" })
-
-bind("n", "s.", fzf.resume, { desc = "fzf.resume" })
-bind("n", "s,", fzf.builtin, { desc = "fzf.builtin" })
-
-bind("i", "<c-k>", fzf.complete_path, { desc = "fzf.complete_path" }) -- remap <C-X><C-F>
-bind("i", "<c-l>", fzf.complete_line, { desc = "fzf.complete_line" }) -- remap <C-X><C-L>
-
-bind("n", "z=", fzf.spell_suggest, { desc = "fzf.spell_suggest" })
-bind("n", "s'", fzf.registers, { desc = "fzf.registers" })
-bind("n", "s;", fzf.changes, { desc = "fzf.changes" })
-bind("n", "sh", fzf.search_history, { desc = "fzf.search_history" })
-bind("n", "s0", fzf.command_history, { desc = "fzf.command_history" }) -- remap : to 0 easy press
-
-bind("n", "sfl", fzf.loclist, { desc = "fzf.loclist" })
-bind("n", "sfq", fzf.quickfix, { desc = "fzf.quickfix" })
-bind("n", "<space>fl", fzf.loclist_stack, { desc = "fzf.loclist_stack" })
-bind("n", "<space>fq", fzf.quickfix_stack, { desc = "fzf.quickfix_stack" })
-
-bind("n", "sqb", list_paths, { desc = "list_paths" })
-
-local function fzf_files(cwd)
+local function files(cwd)
   return function()
     fzf.files({ cwd = cwd })
   end
 end
-
-bind("n", "sqv", fzf_files("~/.config/nvim"), { desc = "VIMRC" })
-bind("n", "sqt", fzf_files(vim.env.NOTES_DIR), { desc = "NOTES_DIR" })
-bind("n", "sqn", fzf_files("~/vimwiki"), { desc = "Vimwiki" })
 
 local year = os.date("%Y") -- Tahun saat ini
 local logs_path = "~/daily-logs/" .. year
@@ -681,37 +649,69 @@ local month_name = os.date("%B") -- Nama bulan (contoh: December)
 local file_name = month_number .. "-" .. month_name .. "-" .. year .. ".md"
 local file_path = "~/daily-logs/" .. year .. "/" .. file_name
 
-bind("n", "sqk", fzf_files(vim.fn.expand(logs_path)), { desc = "logs for current year" })
-bind("n", "sql", function()
-  vim.cmd("e " .. vim.fn.expand(file_path))
-end, { desc = "Open daily log file" })
+-- stylua: ignore start
+map({
+  [{ "i" }] = {
+    { "<c-k>", fzf.complete_path,         { desc = "(FZF) complete_path" } }, -- remap <C-X><C-F>
+    { "<c-l>", fzf.complete_line,         { desc = "(FZF) complete_line" } }, -- remap <C-X><C-L>
+  },
+  [{ "x" }] = {
+    { "gw",    fzf.grep_visual,           { desc = "(FZF) grep_visual" } },
+  },
+  [{ "n" }] = {
+    { "s/",    fzf.lgrep_curbuf_custom,   { desc = "(FZF) live_grep_buffer" } },
+    { "g/",    fzf.live_grep_resume,      { desc = "(FZF) live_grep_resume" } },
+    { "g8",    fzf.blines,                { desc = "(FZF) blines" } },
+    { "gi",    fzf.grep,                  { desc = "(FZF) grep" } },
+    { "gw",    fzf.grep_cword,            { desc = "(FZF) grep_cword" } },
+    { "gb",    fzf.buffers,               { desc = "(FZF) buffers" } },
+    { "s'",    fzf.registers,             { desc = "(FZF) registers" } },
+    { "s,",    fzf.builtin,               { desc = "(FZF) builtin" } },
+    { "s.",    fzf.resume,                { desc = "(FZF) resume" } },
+    { "s0",    fzf.command_history,       { desc = "(FZF) command_history" } }, -- remap : to 0 easy press
+    { "s;",    fzf.changes,               { desc = "(FZF) changes" } },
+    { "sP",    fzf.files,                 { desc = "(FZF) files" } },
+    { "sh",    fzf.search_history,        { desc = "(FZF) search_history" } },
+    { "so",    fzf.mru,                   { desc = "(FZF) mru" } },
+    { "z=",    fzf.spell_suggest,         { desc = "(FZF) spell_suggest" } },
+    { "sfl",   fzf.loclist_stack,         { desc = "(FZF) loclist_stack" } },
+    { "sfq",   fzf.quickfix_stack,        { desc = "(FZF) quickfix_stack" } },
+    { "sql",   fzf.loclist,               { desc = "(FZF) loclist" } },
+    { "sqq",   fzf.quickfix,              { desc = "(FZF) quickfix" } },
+    { "sqd",   fzf.diagnostics_document,  { desc = "(FZF) diagnostics_document" } },
+    { "sqw",   fzf.diagnostics_workspace, { desc = "(FZF) diagnostics_workspace" } },
+    { "sqb",   fzf.list_paths,            { desc = "(FZF) list_paths" } },
+    { "sqv",   files("~/.config/nvim"),   { desc = "(FZF) VIMRC" } },
+    { "sqn",   files("~/vimwiki"),        { desc = "(FZF) Vimwiki" } },
+    { "sqt",   files(vim.env.NOTES_DIR),  { desc = "(FZF) NOTES_DIR" } },
 
-bind("n", "sqf", function()
-  fzf.files({ query = vim.fn.expand("<cfile>") })
-end, { desc = "Grep files under cursor" })
+    { "sqk", files(vim.fn.expand(logs_path)), { desc = "(FZF) logs for current year" } },
+    { "sql", function() vim.cmd("e " .. vim.fn.expand(file_path)) end, { desc = "(FZF) daily log file" },
+    },
+  },
+}, {})
 
-bind("n", "sqd", fzf.diagnostics_document, { desc = "fzf.diagnostics_document" })
-bind("n", "sqw", fzf.diagnostics_workspace, { desc = "fzf.diagnostics_workspace" })
+--global
 
 local lsp_attach = function()
-  bind("n", "<space>gs", fzf.lsp_document_symbols, { desc = "fzf.lsp_document_symbols" })
-  bind(
-    "n",
-    "<space>gS",
-    fzf.lsp_live_workspace_symbols,
-    { desc = "fzf.lsp_live_workspace_symbols" }
-  )
-  bind("n", "<space>gd", fzf.lsp_definitions, { desc = "fzf.lsp_definitions" })
-  bind("n", "<space>gD", fzf.lsp_definitions, { desc = "fzf.lsp_definitions" })
-  bind("n", "<space>gt", fzf.lsp_typedefs, { desc = "fzf.lsp_typedefs" })
-  bind("n", "<space>gi", fzf.lsp_implementations, { desc = "fzf.lsp_implementations" })
-  bind("n", "<space>g[", fzf.lsp_incoming_calls, { desc = "fzf.lsp_incoming_calls" })
-  bind("n", "<space>g]", fzf.lsp_outgoing_calls, { desc = "fzf.lsp_outgoing_calls" })
-  bind("n", "<space>gr", fzf.lsp_references, { desc = "fzf.lsp_references" })
-  bind("n", "<space>gf", fzf.lsp_finder, { desc = "fzf.lsp_finder" })
-  bind("n", "<space>gc", fzf.lsp_code_actions, { desc = "fzf.lsp_code_actions" })
-  bind("n", "<space>gR", "<cmd>lua vim.lsp.buf.rename()<cr>", { desc = "vim.lsp.buf.rename" })
+  map({
+    [{ "n" }] = {
+      { "<space>gs", fzf.lsp_document_symbols,       { desc = "(FZF) lsp_document_symbols" } },
+      { "<space>gS", fzf.lsp_live_workspace_symbols, { desc = "(FZF) lsp_live_workspace_symbols" } },
+      { "<space>gd", fzf.lsp_definitions,            { desc = "(FZF) lsp_definitions" } },
+      { "<space>gD", fzf.lsp_definitions,            { desc = "(FZF) lsp_definitions" } },
+      { "<space>gt", fzf.lsp_typedefs,               { desc = "(FZF) lsp_typedefs" } },
+      { "<space>gi", fzf.lsp_implementations,        { desc = "(FZF) lsp_implementations" } },
+      { "<space>g[", fzf.lsp_incoming_calls,         { desc = "(FZF) lsp_incoming_calls" } },
+      { "<space>g]", fzf.lsp_outgoing_calls,         { desc = "(FZF) lsp_outgoing_calls" } },
+      { "<space>gr", fzf.lsp_references,             { desc = "(FZF) lsp_references" } },
+      { "<space>gf", fzf.lsp_finder,                 { desc = "(FZF) lsp_finder" } },
+      { "<space>gc", fzf.lsp_code_actions,           { desc = "(FZF) lsp_code_actions" } },
+      { "<space>gR", vim.lsp.buf.rename,             { desc = "(LSP) vim.lsp.buf.rename" } },
+    },
+  }, {})
 end
+-- stylua: ignore start
 
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("FzfLuaLspAttachGroup", { clear = true }),

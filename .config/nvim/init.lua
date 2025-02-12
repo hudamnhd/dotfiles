@@ -22,8 +22,8 @@ safeRequire("options")
 safeRequire("autocmd")
 safeRequire("keymaps")
 safeRequire("vscript")
--- safeRequire("utils.buffers")
+safeRequire("utils.buffers")
 
 -- Load default colorscheme
 -- pcall(vim.cmd, [[colorscheme default]])
--- pcall(vim.cmd, [[colorscheme onelight]])
+pcall(vim.cmd, [[colorscheme onedark]])

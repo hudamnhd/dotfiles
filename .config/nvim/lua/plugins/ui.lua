@@ -1,9 +1,35 @@
 return {
 
   {
+    "bluz71/vim-nightfly-guicolors",
+    enabled = false,
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.g.nightflyVirtualTextColor = true
+      vim.g.nightflyItalics = false
+      vim.cmd.colorscheme("nightfly")
+    end,
+  },
+  {
+    -- "bluz71/vim-nightfly-guicolors",
+    "bluz71/vim-moonfly-colors",
+    enabled = false,
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.g.moonflyVirtualTextColor = true
+      vim.g.moonflyItalics = false
+      vim.g.moonflyNormalFloat = true
+      vim.cmd.colorscheme("moonfly")
+      -- vim.cmd.colorscheme("nightfly")
+    end,
+  },
+  {
     "catppuccin/nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     name = "catppuccin",
+    enabled = false,
     priority = 1000,
     config = function()
       vim.g.catppuccin_flavour = "mocha"

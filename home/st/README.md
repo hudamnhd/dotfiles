@@ -1,128 +1,91 @@
-# St (Suckless Terminal)
+# st-sx - simple terminal with sixels
 
-## Xresources live-reload demo
+st-sx is a fork of suckless' [st terminal](https://st.suckless.org/) that aims to provide the best sixel support for the st users. It also includes many useful patches such as ligatures and text reflow. And it is the only st fork that supports hyperlinks (OSC 8) and [branch drawing symbols](https://github.com/kovidgoyal/kitty/pull/7681) as well!
 
-<img src="https://github.com/siduck/dotfiles/blob/all/rice%20flex/live-reloadXresources.gif"> <br><br>
+## Screenshots
+
+Sixels inside a [tmux](https://github.com/tmux/tmux) session. (apps: [lsix](https://github.com/hackerb9/lsix) and [vv](https://github.com/hackerb9/vv))
+
+![sixels](https://github.com/veltza/st-sx/assets/106755522/0ec5f614-07fc-4843-8455-1a0020e0a0e7)
+
+Branch drawing symbols are supported with built-in glyphs. (app/plugin: [vim-flog](https://github.com/rbong/vim-flog))
+
+![branch-symbols](https://github.com/user-attachments/assets/66c86691-616e-40c7-a4ee-b83848d5d5e6)
+
+## Patches
+
+- Alpha focus highlight
+- Anysize simple
+- Blinking cursor
+- Bold is not bright
+- Boxdraw
+- Clipboard
+- CSI 22 23
+- Dynamic cursor color
+- Font2
+- Fullscreen
+- Hidecursor
+- Keyboard select
+- Ligatures
+- Netwmicon
+- Newterm
+- Openurlonclick
+- Relativeborder
+- Scrollback-reflow
+- Sixel
+- Swapmouse
+- Sync
+- Undercurl
+- Vertcenter
+- Visualbell
+- Wide glyphs
+- Workingdir
+- Xresources
 
 ## Dependencies
 
-```
-# Void
-xbps-install libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel
-
-# Debian (and ubuntu probably)
-apt install build-essential libxft-dev libharfbuzz-dev libgd-dev
-
-# Nix
-nix develop github:siduck/st
-
-# Arch
-pacman -S gd
-
-# Install font-symbola and libXft-bgra
-```
-
-## Try it out!
-
-Before you install st on your system, you might want to try it out first.
-To do so, simply run (requires [Nix](https://nixos.org/download.html))
-`nix run github:siduck/st`
-
-## Install
+Arch:
 
 ```
-git clone https://github.com/siduck/st.git
-cd st
-sudo make install
-xrdb merge pathToXresourcesFile
+sudo pacman -S libx11 libxft imlib2 gd pcre2
 ```
 
-(note : put the xrdb merge command in your wm's autostart or similar)
-
-### Using Nix flakes
-
-Add `st.url = "github:siduck/st";` to your inputs and install `inputs.st.packages."${system}".st-snazzy` package
-
-## Fonts
-
-- Install JetbrainsMono Mono Nerd Font or any nerd font from [here](https://www.nerdfonts.com/font-downloads)
-
-## Patches:
-
-- Ligatures
-- sixel (check sixel branch)
-- scrollback
-- Clipboard
-- Alpha(Transparency)
-- Boxdraw
-- patch_column ( doesnt cut text while resizing)
-- font2
-- right click paste
-- st desktop entry
-- newterm
-- anygeometry
-- xresources
-- sync patch ( Better draw timing to reduce flicker/tearing and improve animation smoothness )
-- live reload ( change colors/fonts on the fly )
-  and more...
-  <br>
-
-## Xresources live-reload
+Ubuntu:
 
 ```
-# make an alias for this command
-
-alias rel="xrdb merge pathToXresourcesFile && kill -USR1 $(pidof st)"
+sudo apt install libx11-xcb-dev libxft-dev libimlib2-dev libgd-dev libharfbuzz-dev libpcre2-dev
 ```
 
-## Ram usage comparison with other terminals and speed test
+You don't have to install `libharfbuzz-dev`, if you don't use ligatures. Edit config.h and config.mk to disable ligatures.
 
-<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/terminal_ramUsage.jpg"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/speedTest.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/speedTest1.png"> <br><br>
+## Installation
 
-( note : This benchmark was done on my low-end machine which has a pentium cpu so the speed results might vary )
+Clone the repo and run `make`:
 
-## Default Keybindings<br>
+```
+git clone https://github.com/veltza/st-sx
+cd st-sx
+make
+```
 
-<pre>
-ctrl + shift + c        Copy  <br>
-ctrl + shift + v        Paste <br>
-right click on the terminal ( will paste the copied thing )
+Edit `config.h` and add your favorite fonts, colors, etc. and install:
 
-(Zoom)
-alt  + comma            Zoom in <br>
-alt  + .                Zoom out <br>
-alt  + g                Reset Zoom<br>
+```
+sudo make clean install
+```
 
-(Transparency)
-alt  + s                Increase Transparency<br>
-alt  + a                Decrease Transparency<br>
-alt  + m                Reset Transparency<br>
+The executable name is `st`.
 
-alt + k                 scroll down
-alt + j                 scroll up
+You can also configure st-sx via Xresources. See xresources-example file.
 
-mod + shift + enter    open a new terminal with same cwd ( current working directory )
-</pre>
+## Known issues
 
-you can change all of these in config.h
-<br>
+- Sixels work inside tmux, but...
+  * ...sixels might not be enabled if you install it from the repository. In that case, you have to compile tmux yourself with `./configure --enable-sixel`
+  * ...some sixels don't show up. The maximum size of sixels in tmux is 1 MB. You can increase the size limit by changing `INPUT_BUF_LIMIT` in `tmux/input.c`. Or after the commit [c26d71d](https://github.com/tmux/tmux/commit/c26d71d3e9425fd5a5f3075888b5425fe6219462), you can change the limit via tmux.conf: `set -g input-buffer-size 1048576`
+  * ...sixels may disappear or get stuck. The reason is that the sixel implementation in tmux is not robust yet.
 
-## Themes/Fonts used
+## Thanks
 
-- ls-icons: https://github.com/Yash-Handa/logo-ls <br>
-- Xresources: onedark (just `xrdb merge xresourcesfile`, do this everytime you make any change to xresources file) from this repo itself.<br>
-- Font: JetbrainsMono Nerd Font + material design icon fonts
-
-## Screenshots:
-
-<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/bruh.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/two7-00.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/u.png"> <br><hr>
-
-# Credits
-
-- [live-reload](https://github.com/nimaipatel/st)
-- [patch_column](https://github.com/nimaipatel/st/blob/all/patches/7672445bab01cb4e861651dc540566ac22e25812.diff)
+- [suckless.org](https://suckless.org/) and [st](https://st.suckless.org/) contributors
+- Bakkeby and his [st-flexipatch](https://github.com/bakkeby/st-flexipatch)

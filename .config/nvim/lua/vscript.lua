@@ -30,26 +30,4 @@ augroup vimrc_autocmd
 augroup END
 "map <C-q> :s/ASDF/\=line('.')-line("'<")"
 
-"nnoremap : ,
-"xnoremap : ,
-"onoremap : ,
-"
-"nnoremap , :
-"xnoremap , :
-"onoremap , :
-"
-"nnoremap g: g,
-"nnoremap g, <NOP>
-"
-"nnoremap @, @:
-"nnoremap @: <NOP>
-"
-"" NOTE: Causes lag when 'q' is hit, for example when
-"" - stopping to record a macro or
-"" - exiting a buffer by a custom mapping to 'q'.
-"nnoremap q, q:
-"xnoremap q, q:
-"
-"nnoremap q: <NOP>
-"xnoremap q: <NOP>
 ]])

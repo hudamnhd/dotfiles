@@ -3,7 +3,7 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
     dependencies = {
-      { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
+      -- { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
       -- "hrsh7th/cmp-nvim-lsp",
       -- "saghen/blink.cmp",
       {

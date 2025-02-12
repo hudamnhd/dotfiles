@@ -8,7 +8,7 @@ local M = {}
 function M.command_abbrev(trig, command, opts)
   -- Map a range, first one if command short name,
   -- second one if command full name
-  if type(trig) == 'table' then
+  if type(trig) == "table" then
     local trig_short = trig[1]
     local trig_full = trig[2]
     for i = #trig_short, #trig_full do
@@ -17,9 +17,9 @@ function M.command_abbrev(trig, command, opts)
     end
     return
   end
-  vim.keymap.set('ca', trig, function()
-    return vim.fn.getcmdcompltype() == 'command' and command or trig
-  end, vim.tbl_deep_extend('keep', { expr = true }, opts or {}))
+  vim.keymap.set("ca", trig, function()
+    return vim.fn.getcmdcompltype() == "command" and command or trig
+  end, vim.tbl_deep_extend("keep", { expr = true }, opts or {}))
 end
 
 ---Set keymap that only expand when the trigger is at the position of
@@ -28,9 +28,9 @@ end
 ---@param command string
 ---@param opts table?
 function M.command_map(trig, command, opts)
-  vim.keymap.set('c', trig, function()
-    return vim.fn.getcmdcompltype() == 'command' and command or trig
-  end, vim.tbl_deep_extend('keep', { expr = true }, opts or {}))
+  vim.keymap.set("c", trig, function()
+    return vim.fn.getcmdcompltype() == "command" and command or trig
+  end, vim.tbl_deep_extend("keep", { expr = true }, opts or {}))
 end
 
 ---@class keymap_def_t
@@ -74,7 +74,7 @@ function M.get(mode, lhs)
     if vim.keycode(map.lhs) == lhs_keycode then
       return {
         lhs = map.lhs,
-        rhs = map.rhs or '',
+        rhs = map.rhs or "",
         expr = map.expr == 1,
         callback = map.callback,
         desc = map.desc,
@@ -103,7 +103,7 @@ end
 ---@param def keymap_def_t
 ---@return function
 function M.fallback_fn(def)
-  local modes = def.noremap and 'in' or 'im'
+  local modes = def.noremap and "in" or "im"
   ---@param keys string
   ---@return nil
   local function feed(keys)
@@ -123,7 +123,7 @@ function M.fallback_fn(def)
   else
     -- Escape rhs to avoid nvim_eval() interpreting
     -- special characters
-    local rhs = vim.fn.escape(def.rhs, '\\')
+    local rhs = vim.fn.escape(def.rhs, "\\")
     return function()
       feed(vim.api.nvim_eval(rhs))
     end
@@ -138,7 +138,7 @@ end
 ---@param opts table?
 ---@return nil
 function M.amend(modes, lhs, rhs, opts)
-  modes = type(modes) ~= 'table' and { modes } or modes --[=[@as string[]]=]
+  modes = type(modes) ~= "table" and { modes } or modes --[=[@as string[]]=]
   for _, mode in ipairs(modes) do
     local fallback = M.fallback_fn(M.get(mode, lhs))
     vim.keymap.set(mode, lhs, function()
@@ -164,6 +164,29 @@ function M.count_wrap(fn, count)
     end
     return unpack(result)
   end
+end
+
+--- Wrapper keymap
+---@param keymaps table
+---@param keymap_opts table?
+---@param extra_opts table?
+---@return table
+function M.map(keymaps, keymap_opts, extra_opts)
+  extra_opts = extra_opts or {}
+  local lazy_keymaps = extra_opts.lazy and {}
+  keymap_opts = keymap_opts or {}
+  for modes, maps in pairs(keymaps) do
+    for _, m in pairs(maps) do
+      local opts = vim.tbl_extend("force", keymap_opts, m[3] or {})
+      opts.silent = opts.silent ~= false
+      if extra_opts.lazy then
+        table.insert(lazy_keymaps, vim.tbl_extend("force", { m[1], m[2], mode = modes }, opts))
+      else
+        vim.keymap.set(modes, m[1], m[2], opts)
+      end
+    end
+  end
+  return lazy_keymaps
 end
 
 return M

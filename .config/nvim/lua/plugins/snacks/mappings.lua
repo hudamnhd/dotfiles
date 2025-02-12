@@ -22,13 +22,10 @@ local keys = {
   { "<a-b>",       function() require "snacks".scratch() end,                 desc = "Toggle Scratch Buffer" },
   { "<a-z>",       function() require "snacks".zen() end,                     desc = "Toggle Zen Mode" },
   { "<space><F2>", function() require "snacks".rename.rename_file() end,      desc = "Rename File" },
-  { "<space>ba",   function() require "snacks".bufdelete.all() end,           desc = "Delete all buffers" },
   { "<space>bb",   function() require "snacks".scratch.select() end,          desc = "Select Scratch Buffer" },
-  { "<space>bq",   function() require "snacks".bufdelete.other() end,         desc = "Delete all buffers except the current one" },
   { "<space>gg",   function() require "snacks".lazygit() end,                 desc = "Lazygit" },
   { "<space>gx",   function() require "snacks".gitbrowse() end,               desc = "Git Browse", mode = { "n", "v" } },
   { "<space>n",    function() require "snacks".notifier.show_history() end,   desc = "Notification History" },
-  { "<space>q",    function() require "snacks".bufdelete.delete() end,        desc = "Delete Buffer" },
   { "<space>sp",   function() require "snacks".picker.smart() end,            desc = "Smart Find Files" },
   { "<space>un",   function() require "snacks".notifier.hide() end,           desc = "Dismiss All Notifications" },
   { "[[",          function() require "snacks".words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
@@ -37,6 +34,10 @@ local keys = {
   { "<space>C",    function() open_win(vim.fn.stdpath("config") .. "/cheatsheet.txt") end,       desc = "Cheatsheet" },
   { "<space>V",    function() open_win(vim.fn.stdpath("config") .. "/vimtutor.txt") end,         desc = "Vimtutor" },
   { "<space>R",    function() open_win(vim.fn.stdpath("config") .. "/panduan_regex_vim.md") end, desc = "Panduan regex vim" },
+
+  -- { "<space>ba",   function() require "snacks".bufdelete.all() end,           desc = "Delete all buffers" },
+  -- { "<space>bq",   function() require "snacks".bufdelete.other() end,         desc = "Delete all buffers except the current one" },
+  -- { "<space>q",    function() require "snacks".bufdelete.delete() end,        desc = "Delete Buffer" },
 }
 -- stylua: ignore end
 for _, m in ipairs(keys) do
