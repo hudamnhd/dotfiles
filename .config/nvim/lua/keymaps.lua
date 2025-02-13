@@ -82,7 +82,6 @@ map({
     { "<c-s>", vim.cmd.SearchReplaceWithinVisualSelectionCWord,  { desc = "replace cword" } },
     { "<c-r>", vim.cmd.SearchReplaceWithinVisualSelection,       { desc = "Search Replace Search" } },
 
-
     { "q", [[iq]], { remap = true } },
     { "Q", [[aq]], { remap = true } },
     { "w", [[iw]], { remap = true } },

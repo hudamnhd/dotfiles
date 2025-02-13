@@ -1,0 +1,370 @@
+#!/bin/bash
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+# base #################################################################
+export PATH="$HOME/.local/bin:$HOME/bin:/opt/nvim-linux-x86_64/bin:/opt/firefox:$DENO_INSTALL/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:$PATH"
+
+# Direktori instalasi Deno
+export DENO_INSTALL="$HOME/.deno"
+# Variabel sistem utama
+export EDITOR="nvim"
+export PAGER="most"
+export BROWSER="w3m"
+export ENV="$HOME/.bashrc"
+
+# Menyimpan semua ekspor dalam satu baris untuk efisiensi
+export PATH DENO_INSTALL EDITOR PAGER BROWSER ENV
+
+# colors & char ########################################################
+# text normal colors
+red='\e[0;31m'
+blue='\e[0;34m'
+cyan='\e[0;36m'
+green='\e[0;32m'
+yellow='\e[0;33m'
+# text bright colors
+bred='\e[0;91m'
+bblue='\e[0;94m'
+bcyan='\e[0;96m'
+bgreen='\e[0;92m'
+byellow='\e[0;93m'
+bwhite='\e[0;97m'
+# reset color
+NC='\e[0m'
+
+# dir_colors ###########################################################
+test -r "/etc/dir_colors" && eval $(dircolors /etc/dir_colors)
+
+# alias & functions files ##############################################
+if [ -f ~/.bash_aliases ]; then
+	. ~/.bash_aliases
+fi
+if [ -f ~/.bash_functions ]; then
+	. ~/.bash_functions
+fi
+
+# alias ################################################################
+# ls & grep ------------------------------------------------------------
+alias lf=lfrun
+alias ls='ls --color=auto'
+alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias l='br -sdp'
+# cd & goto ------------------------------------------------------------
+alias cd..='cd ..'
+alias ...='cd ..'
+alias ....='cd ../..'
+alias gm='cd /media'
+alias gc='cd ~/.config'
+# utils ----------------------------------------------------------------
+# get top 10 shell commands:
+alias top10='bat ~/.bash_history | uniq -c | sort -nr | head -n 10 | jfind'
+# process using web
+alias ports='lsof -i -n -P'
+# make parent directory if needed
+alias mkdir='mkdir -p'
+# packages -------------------------------------------------------------
+alias aptin='sudo apt install --no-install-recommends'
+alias aptrm='sudo apt autoremove --purge'
+alias aptup='sudo apt update && sudo apt full-upgrade'
+alias aptsr='apt search'
+alias aptvs='apt-cache policy'
+# quit, exit & reboot --------------------------------------------------
+alias :q='exit'
+alias oust='echo "bye $USER..."; sleep 2s && systemctl poweroff'
+alias comeback='echo "be back right now..."; sleep 2s && systemctl reboot'
+# bash cfg -------------------------------------------------------------
+alias ebash='$EDITOR ~/.bashrc'
+alias rbash='source ~/.bashrc'
+# misc -----------------------------------------------------------------
+alias nospace='rename "y/ /_/ " *'
+alias clr='clear'
+alias invertcolors='xcalib -i -a'
+# may the force be with you
+alias starwars="telnet towel.blinkenlights.nl"
+# get website
+alias getweb='wget -r -np --user-agent=Firefox -l5 -k -E '
+# password generator
+alias genpass='echo `< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12`'
+# bashmount
+alias bm='bashmount'
+alias vim='nvim'
+# end of alias #########################################################
+
+# functions ############################################################
+# generate a dated .bak from file
+function bak() { cp $1 $1_$(date +%Y-%m-%d_%H:%M:%S).bak; }
+# infos ----------------------------------------------------------------
+# generate space report
+function space() { du -skh * | sort -hr; }
+# archives -------------------------------------------------------------
+# extract
+function extract() {
+	if [ -f $1 ]; then
+		case $1 in
+		*.tar.bz2) tar xvjf $1 ;;
+		*.tar.gz) tar xvzf $1 ;;
+		*.bz2) bunzip2 $1 ;;
+		*.rar) unrar x $1 ;;
+		*.gz) gunzip $1 ;;
+		*.tar) tar xvf $1 ;;
+		*.tbz2) tar xvjf $1 ;;
+		*.tgz) tar xvzf $1 ;;
+		*.zip) unzip $1 ;;
+		*.Z) uncompress $1 ;;
+		*.7z) 7z x $1 ;;
+		*.xz) unxz $1 ;;
+		*) echo "'$1' cannot be extracted via >extract<" ;;
+		esac
+	else
+		echo "'$1' is not a valid file"
+	fi
+}
+# compress
+mktar() { tar cvf "${1%%/}.tar" "${1%%/}/"; }
+mktgz() { tar cvzf "${1%%/}.tar.gz" "${1%%/}/"; }
+mktbz() { tar cvjf "${1%%/}.tar.bz2" "${1%%/}/"; }
+mktxz() { tar cvJf "${1%%/}.tar.xz" "${1%%/}/"; }
+mkzip() { zip -r "${1%%/}.zip" "${1%%/}/"; }
+# cli colors preview
+function clipv() {
+	for i in {0..255}; do
+		printf "\x1b[48;5;%sm%3d\e[0m " "$i" "$i"
+		if ((i == 15)) || ((i > 15)) && (((i - 15) % 6 == 0)); then
+			printf "\n"
+		fi
+	done
+}
+
+# Setup cdg function
+unalias c 2>/dev/null
+
+c() {
+	local dest_dir=$(cdscuts_glob_echo | jfind)
+	if [[ $dest_dir != '' ]]; then
+		# printf 'builtin cd -- %q' "$dest_dir"
+		set +o pipefail
+		eval "$(printf 'builtin cd -- %q' "$dest_dir")"
+
+		# cd "$dest_dir"
+	fi
+}
+export -f c >/dev/null
+
+z() {
+	local dest_dir=$(fd . -t d | jfind)
+	if [[ $dest_dir != '' ]]; then
+		# printf 'builtin cd -- %q' "$dest_dir"
+		set +o pipefail
+		eval "$(printf 'builtin cd -- %q' "$dest_dir")"
+
+	fi
+}
+
+unmark() {
+	local dest_dir
+	dest_dir=$(cdscuts_glob_echo | jfind --prompt="Remove bookmarked directory: ")
+
+	if [[ -n "$dest_dir" ]]; then
+		local bookmark_file="$HOME/.cdg_paths"
+
+		[[ -f "$bookmark_file" ]] || {
+			echo "No bookmarks found."
+			return
+		}
+		local dir_to_remove="$1"
+
+		if ! grep -q "^$dir_to_remove$" "$bookmark_file"; then
+			echo "Directory is not bookmarked."
+			return
+		fi
+
+		sed -i.bak "\|^$dir_to_remove$|d" "$bookmark_file"
+		echo "Directory unmarked: $dir_to_remove"
+	fi
+}
+
+mark() {
+	local bookmark_file="$HOME/.cdg_paths"
+
+	[[ ! -f "$bookmark_file" ]] && touch "$bookmark_file"
+	local bookmarked_dir="$PWD"
+
+	if grep -q "^$bookmarked_dir$" "$bookmark_file"; then
+		echo "Directory is already bookmarked."
+		return
+	fi
+
+	echo "$bookmarked_dir" >>"$bookmark_file"
+	echo "Directory bookmarked: $bookmarked_dir"
+}
+
+# run yazi
+function yy() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+function t() {
+	echo -ne "\033]0;$1\007"
+}
+
+# end of functions #####################################################
+
+# If not running interactively, don't do anything
+case $- in
+*i*) ;;
+*) return ;;
+esac
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+export HISTCONTROL="ignoreboth:ignoredups:ignorespace"
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# ignore specific commands
+export HISTIGNORE="ls*:cd*:debsh*:debup*:debvs*:man*:nvim*:vim*:history:exit:c:htop:yy:t:yarn*"
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=100000
+HISTFILESIZE=200000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+# if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+#     debian_chroot=$(cat /etc/debian_chroot)
+# fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+xterm-color) color_prompt=yes ;;
+esac
+
+# prompt ###############################################################
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+	if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+		# We have color support; assume it's compliant with Ecma-48
+		# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+		# a case would tend to support setf rather than setaf.)
+		color_prompt=yes
+	else
+		color_prompt=
+	fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+	PS1='${debian_chroot:+($debian_chroot)} \e[01;32m\u\e[m@\e[0;36m\h\e[m \e[01;34m\w\e[m\n $ '
+	# regular Debian colored prompt:
+	# PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+export SKIM_DEFAULT_COMMAND="fdfind --type f --type d"
+export FZF_DEFAULT_COMMAND='fdfind --type f --type d'
+export FZF_DEFAULT_OPTS="
+--layout=reverse
+--border
+--preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
+  --color bg:#011627 \
+  --color bg+:#0e293f \
+  --color border:#2c3043 \
+  --color fg:#acb4c2 \
+  --color fg+:#d6deeb \
+  --color gutter:#0e293f \
+  --color header:#82aaff \
+  --color hl+:#f78c6c \
+  --color hl:#f78c6c \
+  --color info:#ecc48d \
+  --color marker:#f78c6c \
+  --color pointer:#ff5874 \
+  --color prompt:#82aaff \
+  --color spinner:#21c7a8
+"
+
+# night-owl
+# --color bg:#011627 \
+# --color bg+:#575656 \
+# --color border:#575656 \
+# --color fg:#d6deeb \
+# --color fg+:#82aaff \
+# --color gutter:#4b5263 \
+# --color header:#82aaff \
+# --color hl+:#ffeb95 \
+# --color hl:#ffeb95 \
+# --color info:#addb67 \
+# --color marker:#c792ea \
+# --color pointer:#ef5350 \
+# --color prompt:#82aaff \
+# --color spinner:#21c7a8
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+	if [ -f /usr/share/bash-completion/bash_completion ]; then
+		. /usr/share/bash-completion/bash_completion
+	elif [ -f /etc/bash_completion ]; then
+		. /etc/bash_completion
+	fi
+fi
+
+# fzf config variables
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+source ~/.config/broot/launcher/bash/br
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+source ~/.fzf-tab-completion/shell/bash/completion.bash
+source ~/.fzf-tab-completion/shell/bash/key-bindings.bash
+source ~/.fzf-tab-completion/shell/bash/fzf-bash-completion.sh
+
+bind -x '"\t": fzf_bash_completion'
+bind -x '"\C-y": yy'
+bind -x '"\et": t'
+bind -x '"\ec": br -f'
+bind -x '"\ea": asynctask -f'
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH=$BUN_INSTALL/bin:$PATH
+export NOTES_DIR=~/Projects/notes
+
+# Setup skim
+# ---------
+if [[ ! "$PATH" == */home/hudamnhd/skim/bin* ]]; then
+	PATH="${PATH:+${PATH}:}/home/hudamnhd/skim/bin"
+fi

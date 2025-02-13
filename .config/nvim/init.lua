@@ -25,5 +25,4 @@ safeRequire("vscript")
 safeRequire("utils.buffers")
 
 -- Load default colorscheme
--- pcall(vim.cmd, [[colorscheme default]])
-pcall(vim.cmd, [[colorscheme onedark]])
+-- pcall(vim.cmd, [[colorscheme onedark]])

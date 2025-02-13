@@ -9,12 +9,12 @@ function M.config()
   require("mini.icons").setup()
   require("mini.colors").setup()
   vim.g.nvim_web_devicons = 1
-  MiniIcons.mock_nvim_web_devicons()
+  require("mini.icons").mock_nvim_web_devicons()
 
   local mapping = require("keymaps")
   local miniclue = require("mini.clue")
   local anchor = "SW" -- bottom-left
-
+  -- require("mini.hues").setup({ background = "#282c34", foreground = "#abb2bf", accent = "blue" })
   --stylua: ignore
   miniclue.setup({
     clues = {

@@ -10,3 +10,4 @@ feh --no-fehbg --bg-fill '/home/hudamnhd/Images/wallpapers/basmalah.png' &
 /bin/bash ~/.dwm/scripts/setxmodmap-qwerty.sh &
 
 ~/.dwm/scripts/autostart_wait.sh &
+while type dwm >/dev/null; do dwm && continue || break; done

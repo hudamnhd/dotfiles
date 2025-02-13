@@ -5,7 +5,6 @@ if vim.g.syntax_on then
 end
 vim.o.background = 'dark'
 vim.g.colors_name = 'onedark'
-
 -- +---------------------------------------------+
 -- | Color Name   | RGB                | Hex     |
 -- | --------------+--------------------+---------|
@@ -38,32 +37,116 @@ vim.g.colors_name = 'onedark'
 -- | Visual Grey  | rgb(92, 99, 112)   | #434956 |
 -- +---------------------------------------------+
 
+local function adjust_brightness(color, amount)
+  local r, g, b = tonumber(color:sub(2, 3), 16), tonumber(color:sub(4, 5), 16), tonumber(color:sub(6, 7), 16)
+  r = math.max(0, math.min(255, r + amount))
+  g = math.max(0, math.min(255, g + amount))
+  b = math.max(0, math.min(255, b + amount))
+  return string.format("#%02X%02X%02X", r, g, b)
+end
 
-local red            = "#e06c75"
-local dark_red       = "#BE5046"
-local green          = "#98c379"
-local yellow         = "#e5c07b"
-local orange         = "#d19a66"
-local blue           = "#61afef"
-local purple         = "#c678dd"
-local cyan           = "#56b6c2"
-local white          = "#abb2bf"
-local black          = "#282c34"
-local dim            = "#282c34"
-local visual_black   = 'NONE'
-local light_grey     = "#5c6370"
-local comment_grey   = "#5c6370"
-local gutter_fg_grey = "#546175"
-local cursor_grey    = "#31363F"
-local float_grey     = "#282c34" --bg-floating
-local visual_grey    = "#434956"
-local menu_grey      = "#353b45"
-local special_grey   = "#4b5263"
-local vertsplit      = "#282c34"
-local diff_delete    = "#4C343B"
-local diff_add       = "#3E4C3E"
-local diff_change    = "#2F3135"
-local diff_text      = "#3E4C3E"
+local colors = {
+  red            = "#e06c75",
+  dark_red       = "#BE5046",
+  green          = "#98c379",
+  yellow         = "#e5c07b",
+  orange         = "#d19a66",
+  blue           = "#61afef",
+  purple         = "#c678dd",
+  cyan           = "#56b6c2",
+  white          = "#abb2bf",
+  black          = "#282c34",
+  dim            = "#282c34",
+  visual_black   = 'NONE',
+  light_grey     = "#5c6370",
+  comment_grey   = "#7f848e",
+  gutter_fg_grey = "#546175",
+  cursor_grey    = "#31363F",
+  float_grey     = "#282c34", --bg-floating
+  visual_grey    = "#434956",
+  menu_grey      = "#353b45",
+  special_grey   = "#4b5263",
+  vertsplit      = "#282c34",
+  diff_delete    = "#4C343B",
+  diff_add       = "#3E4C3E",
+  diff_change    = "#2F3135",
+  diff_text      = "#3E4C3E"
+}
+
+local themes = {
+  soft = function()
+    return {
+      red      = adjust_brightness(colors.red,      20),
+      dark_red = adjust_brightness(colors.dark_red, 20),
+      green    = adjust_brightness(colors.green,    20),
+      yellow   = adjust_brightness(colors.yellow,   20),
+      orange   = adjust_brightness(colors.orange,   20),
+      blue     = adjust_brightness(colors.blue,     20),
+      purple   = adjust_brightness(colors.purple,   20),
+      cyan     = adjust_brightness(colors.cyan,     20),
+      black    = adjust_brightness(colors.black,    20),
+      white    = adjust_brightness(colors.white,    20),
+    }
+  end,
+
+  dark = function()
+    return {
+      red      = adjust_brightness(colors.red     , -5),
+      dark_red = adjust_brightness(colors.dark_red, -5),
+      green    = adjust_brightness(colors.green   , -5),
+      yellow   = adjust_brightness(colors.yellow  , -5),
+      orange   = adjust_brightness(colors.orange  , -5),
+      blue     = adjust_brightness(colors.blue    , -5),
+      purple   = adjust_brightness(colors.purple  , -5),
+      cyan     = adjust_brightness(colors.cyan    , -5),
+      black    = adjust_brightness(colors.black,    -5),
+      white    = adjust_brightness(colors.white,    -5),
+    }
+  end,
+
+  warm = function()
+    return {
+      red      = adjust_brightness(colors.red     , 10),
+      dark_red = adjust_brightness(colors.dark_red, 10),
+      green    = adjust_brightness(colors.green   , 10),
+      yellow   = adjust_brightness(colors.yellow  , 10),
+      orange   = adjust_brightness(colors.orange  , 10),
+      blue     = adjust_brightness(colors.blue    , 10),
+      purple   = adjust_brightness(colors.purple  , 10),
+      cyan     = adjust_brightness(colors.cyan    , 10),
+      black    = adjust_brightness(colors.black,    10),
+      white    = adjust_brightness(colors.white,    10),
+    }
+  end,
+}
+
+local active_theme = themes.dark()
+
+local red            = active_theme.red
+local dark_red       = active_theme.dark_red
+local green          = active_theme.green
+local yellow         = active_theme.yellow
+local orange         = active_theme.orange
+local blue           = active_theme.blue
+local purple         = active_theme.purple
+local cyan           = active_theme.cyan
+local white          = active_theme.white
+local black          = active_theme.black
+local dim            = active_theme.black
+local visual_black   = "NONE"
+local light_grey     = colors.light_grey
+local comment_grey   = colors.comment_grey
+local gutter_fg_grey = colors.gutter_fg_grey
+local cursor_grey    = colors.cursor_grey
+local float_grey     = active_theme.black     --bg-floating
+local visual_grey    = colors.visual_grey
+local menu_grey      = colors.menu_grey
+local special_grey   = colors.special_grey
+local vertsplit      = colors.vertsplit
+local diff_delete    = colors.diff_delete
+local diff_add       = colors.diff_add
+local diff_change    = colors.diff_change
+local diff_text      = colors.diff_text
 
 local theme = {
   Comment        = { fg = comment_grey, italic = true },

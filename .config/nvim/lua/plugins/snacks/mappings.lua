@@ -1,3 +1,26 @@
+local function open_win_partial()
+  local file1 = vim.fn.stdpath("config") .. "/lua/plugins/fzf-lua/fzf-lua.lua"
+  local file2 = vim.fn.stdpath("config") .. "/lua/keymaps.lua"
+
+  -- Mengambil baris tertentu dari dua file dan menggabungkannya
+  local content =
+    vim.fn.system(string.format("sed -n '653,713p' %s; echo ''; sed -n '58,170p' %s", file1, file2))
+  -- local content = vim.fn.system(string.format("sed -n '653,713p' %s", file_path))
+
+  require("snacks").win({
+    text = content, -- Gunakan `text` untuk memasukkan output langsung
+    width = 0.95,
+    height = 0.96,
+    ft = "lua",
+    wo = {
+      spell = false,
+      wrap = false,
+      signcolumn = "yes",
+      statuscolumn = " ",
+      conceallevel = 3,
+    },
+  })
+end
 local function open_win(file_path)
   require("snacks").win({
     file = file_path,
@@ -31,7 +54,8 @@ local keys = {
   { "[[",          function() require "snacks".words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
   { "]]",          function() require "snacks".words.jump(vim.v.count1) end,  desc = "Next Reference", mode = { "n", "t" } },
 
-  { "<space>C",    function() open_win(vim.fn.stdpath("config") .. "/cheatsheet.txt") end,       desc = "Cheatsheet" },
+  -- { "<space>C",    function() open_win(vim.fn.stdpath("config") .. "/cheatsheet.txt") end,       desc = "Cheatsheet" },
+  { "<space>C",    function() open_win_partial() end,       desc = "Cheatsheet" },
   { "<space>V",    function() open_win(vim.fn.stdpath("config") .. "/vimtutor.txt") end,         desc = "Vimtutor" },
   { "<space>R",    function() open_win(vim.fn.stdpath("config") .. "/panduan_regex_vim.md") end, desc = "Panduan regex vim" },
 
