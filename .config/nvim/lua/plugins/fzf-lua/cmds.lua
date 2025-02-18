@@ -133,13 +133,13 @@ local function delete_bookmark_file(file, resume)
   handle_delete(path, bookmark_file, resume)
 end
 
-local function save_bookmark_file()
+function M.save_bookmark_file()
   local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
   local buffer_path = vim.fn.expand("%:p")
   handle_save(buffer_path, bookmark_file)
 end
 
-local function show_bookmark_file()
+function M.show_bookmark_file()
   local bookmark_file = vim.fn.stdpath("cache") .. "/bookmark"
   local files_all = {}
   local files_cwd = {}
@@ -173,7 +173,7 @@ local function show_bookmark_file()
         ["default"] = require("fzf-lua").actions.file_edit,
         ["delete"] = function(selected)
           if selected[1] then
-            delete_bookmark_file(selected[1], show_bookmark_file)
+            delete_bookmark_file(selected[1], M.show_bookmark_file)
           end
         end,
         ["ctrl-h"] = function()
@@ -214,13 +214,13 @@ _G.fzf_dirs = function(opts)
   fzf_lua.fzf_exec("fd --type d --hidden ", opts)
 end
 
-local function delete_bookmark_dir(file, resume)
+function M.delete_bookmark_dir(file, resume)
   local path = vim.fn.expand(file)
   local bookmark_file = os.getenv("HOME") .. "/.cdg_paths"
   handle_delete(path, bookmark_file, resume)
 end
 
-local function show_bookmark_dir()
+function M.show_bookmark_dir()
   local bookmark_file = os.getenv("HOME") .. "/.cdg_paths"
   local files = {}
 
@@ -243,7 +243,7 @@ local function show_bookmark_dir()
       end,
       ["delete"] = function(selected)
         if selected[1] then
-          delete_bookmark_dir(selected[1], show_bookmark_dir)
+          M.delete_bookmark_dir(selected[1], M.show_bookmark_dir)
         end
       end,
     },
@@ -255,36 +255,78 @@ local function show_bookmark_dir()
   })
 end
 
-local function save_bookmark_dir()
+function M.save_bookmark_dir()
   local bookmark_file = os.getenv("HOME") .. "/.cdg_paths"
   local path = vim.fn.expand(vim.uv.cwd())
   handle_save(path, bookmark_file)
 end
 
 local cmd = vim.api.nvim_create_user_command
-local bind = vim.keymap.set
 
 cmd("Cd", function(info)
   _G.fzf_dirs({ cwd = info.fargs[1] })
 end, { nargs = "?", complete = "dir", desc = "Fuzzy find Directories." })
 
-cmd("BookmarkFile", save_bookmark_file, { desc = "Save File." })
-cmd("BookmarkDir", save_bookmark_dir, { desc = "Save Directorie." })
+function M.create_show_toolbox(name, items)
+  return function()
+    local select_opts = vim.tbl_extend("force", {
+      prompt = name,
+      format_item = function(command)
+        return command.name
+      end,
+    }, {})
 
-cmd("EditBookmarkFile", function()
-  vim.cmd.vsplit(vim.fn.stdpath("cache") .. "/bookmark")
-end, { desc = "edit file bookmark" })
+    vim.ui.select(
+      items,
+      select_opts,
+      ---@param command toolbox.Command
+      function(command)
+        if command == nil then
+          return
+        end
 
-cmd("EditBookmarkDir", function()
-  vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths")
-end, { desc = "edit dir bookmark" })
+        local execute = command.execute
+        if type(execute) == "function" then
+          local ok, res = pcall(execute)
+          if not ok then
+            error(res, 0)
+          end
+        end
+      end
+    )
+  end
+end
 
--- for file
-bind("n", "<M-f>", show_bookmark_file, { desc = "show file bookmark" })
-
--- for dir
-bind("n", "<M-d>", show_bookmark_dir, { desc = "show dir bookmark" })
-
+function M.asynctasks()
+  local rows = vim.fn["asynctasks#source"](vim.go.columns * 48 / 100)
+  require("fzf-lua").fzf_exec(function(cb)
+    for _, e in ipairs(rows) do
+      local color = require("fzf-lua").utils.ansi_codes
+      local line = color.green(e[1]) .. " " .. color.cyan(e[2]) .. ": " .. color.yellow(e[3])
+      cb(line)
+    end
+    cb()
+  end, {
+    actions = {
+      ["default"] = function(selected)
+        print(vim.inspect(selected))
+        local str = require("fzf-lua").utils.strsplit(selected[1], " ")
+        local command = "AsyncTask " .. vim.fn.fnameescape(str[1])
+        vim.api.nvim_exec(command, false)
+        -- vim.defer_fn(function()
+        -- end, 500) -- 5000 milliseconds = 5 seconds
+      end,
+    },
+    fzf_opts = {
+      ["--no-multi"] = "",
+      ["--nth"] = "1",
+    },
+    winopts = {
+      height = 0.6,
+      width = 0.6,
+    },
+  })
+end
 -- stylua: ignore end
 
 return M

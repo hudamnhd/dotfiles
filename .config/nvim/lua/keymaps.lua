@@ -1,7 +1,8 @@
 ---@diagnostic disable: codestyle-check
 local M = {}
 
-local map = require("utils.keymap").map
+local utils = require("utils")
+local map = utils.keymap.map
 
 M.leader_group_clues = {
   { mode = "n", keys = "<space>t", desc = "+Toggle and other" },
@@ -66,17 +67,18 @@ map({
   [{ "c" }] = {
     { "<c-v>",  [[<C-R>"]], { desc = "paste cmd-mode", silent = false } },
     { "<a-v>",  [[<C-R>+]], { desc = "paste cmd-mode", silent = false } },
-    { "<C-BS>", [[.\{-}]],  { silent = false } },
-    { "<S-BS>", [[\s\+]],   { silent = false } },
+    { "<c-bs>", [[.\{-}]],  { silent = false } },
+    { "<s-bs>", [[\s\+]],   { silent = false } },
 
     { "<F3>", 'getcmdtype() == ":" ? expand("%:h/") . "/" : ""',   { silent = false, expr = true } },
     { "<F4>", 'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""', { silent = false, expr = true } },
     { "<F5>", 'getcmdtype() == ":" ? expand("%:p")  : ""',         { silent = false, expr = true } },
   },
   [{"v", "o", "x" }] = {
-    { "zq",    mc_select .. "``qz",                { desc = "mc start macro (foward)" } },
-    { "zQ",    mc_select:gsub("/", "?") .. "``qz", { desc = "mc start macro (backward)" } },
-    { "<c-0>", mc_macro(mc_select),                { desc = "mc end or replay macro",  expr = true  } },
+    { "zq",        mc_select .. "``qz",                { desc = "mc start macro (foward)" } },
+    { "zQ",        mc_select:gsub("/", "?") .. "``qz", { desc = "mc start macro (backward)" } },
+    { "<c-0>",     mc_macro(mc_select),                { desc = "mc end or replay macro",  expr = true  } },
+    { "<space>tr", utils.translate.translate_vm,       { desc = "translate visual" } },
 
     { "<c-f>", vim.cmd.SearchReplaceSingleBufferVisualSelection, { desc = "replace visual" } },
     { "<c-s>", vim.cmd.SearchReplaceWithinVisualSelectionCWord,  { desc = "replace cword" } },
@@ -89,11 +91,10 @@ map({
     { "t", [[it]], { remap = true } },
     { "T", [[at]], { remap = true } },
 
-    { "<a-n>", [[:s/\d\+/number/g]],               { desc = "All number to type number", silent = false } },
-    { "<a-s>", [[:s/"[^"]*"/string/g]],            { desc = "All string to type string", silent = false } },
-    { "<a-c>", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]], { desc = "camel to snack", silent = false } },
-
-    { "<a-->", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc = "Rmv - and change to capitalize", silent = false } },
+    { "<leader>n", [[:s/\d\+/number/g]],                              { desc = "All number to type number", silent = false } },
+    { "<leader>s", [[:s/"[^"]*"/string/g]],                           { desc = "All string to type string", silent = false } },
+    { "<leader>c", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]],                { desc = "camel to snack", silent = false } },
+    { "<leader>-", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc = "Rmv - and change to capitalize", silent = false } },
 
     { "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true } },
     { ".", [[:normal .<cr>]],             { desc = "Repeat last command for each line of a visual selection." }, },
@@ -109,10 +110,10 @@ map({
     { "<c-f>", vim.cmd.SearchReplaceSingleBufferCWord,         { desc = "replace cword" } },
     { "<c-s>", [[:'<,'>s/\v<C-r><C-w>//gI<left><left><left>]], { desc = "replace cword", silent = false } },
 
-    { "<C-Up>",    require("utils.helper").resize(false, -5), { desc = "hsplit increase" } },
-    { "<C-Down>",  require("utils.helper").resize(false, 5),  { desc = "hsplit decrease" } },
-    { "<C-Left>",  require("utils.helper").resize(true, -5),  { desc = "vsplit decrease" } },
-    { "<C-Right>", require("utils.helper").resize(true, 5),   { desc = "vsplit increase" } },
+    { "<C-Up>",    utils.helper.resize(false, -5), { desc = "hsplit increase" } },
+    { "<C-Down>",  utils.helper.resize(false, 5),  { desc = "hsplit decrease" } },
+    { "<C-Left>",  utils.helper.resize(true, -5),  { desc = "vsplit decrease" } },
+    { "<C-Right>", utils.helper.resize(true, 5),   { desc = "vsplit increase" } },
 
     { "sm", "gmm",  { remap = true, desc = "MiniOperator clone line" } },
     { "sx", "gxiw", { remap = true, desc = "MiniOperator exchange word" } },
@@ -132,43 +133,34 @@ map({
     { "<space>d", vim.diagnostic.open_float,   { desc = "diagnostic.open_float" } },
     { "dd",       delete_line,                 { desc = "delete blank lines", expr = true  } },
 
-    { "<",         require("utils.helper").toggle_qf("l"),     { desc = "toggle location list" } },
-    { ">",         require("utils.helper").toggle_qf("q"),     { desc = "toggle quickfix list" } },
-    { "<a-a>",     require("utils.helper").asynctasks,         { desc = "ASYNCTASKS" } },
-    { "<space>%",  require("utils.helper").set_cwd,            { desc = "SET CWD" } },
-    { "<space>td", require("utils.helper").toggle_diff_buff,   { desc = "Toggle overlay" } },
-    { "<space>tr", require("utils.translate").translate_nm,    { desc = "translate" } },
-    { "<space>tr", require("utils.translate").translate_vm,    { desc = "translate" } },
-    { "<space>tu", vim.cmd.UndotreeToggle,                     { desc = "Undotree toggle" } },
-    { "<space>to", [[<cmd>lua MiniDiff.toggle_overlay()<cr>]], { desc = "TOGGLE_DIFF_BUFF" } },
+    { "<space>tr", utils.translate.translate_nm,               { desc = "translate" } },
     { "<space>ty", [[<cmd>Unite -vertical yankround<cr>]],     { desc = "YANKROUND" } },
     { "<esc>",     [[<Cmd>nohlsearch|diffupdate|echo<cr>]],    { desc = "Nohl search" } },
 
-    { "<C-d>", "<C-d>zz" },
-    { "<C-u>", "<C-u>zz" },
+    { "<c-d>", "<C-d>zz" },
+    { "<c-u>", "<C-u>zz" },
     -- emulate some basic commands from `vim-abolish`
     { "ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" } },
     { "cu", "mzgUiw`z",    { desc = "󰬴 lowercase to UPPERCASE" } },
     { "cl", "mzguiw`z",    { desc = "󰬴 UPPERCASE to lowercase" } },
 
     -- NOTE Keep matches center screen when cycling with n|N
-    { "n", "nzz",          { desc = "Fwd  search '/' or '?'" } },
-    { "N", "Nzz",          { desc = "Back search '/' or '?'" } },
+    { "n", "nzz", { desc = "Fwd  search '/' or '?'" } },
+    { "N", "Nzz", { desc = "Back search '/' or '?'" } },
   },
   [{ "n", "v" }] = {
     { "0",     [[:]] , { silent = false }},
     { "c",     [["_c]] },
     { "x",     [["_x]] },
-    { "<C-H>", [[^]] },
-    { "<C-L>", [[g_]] },
-    { "<C-Z>", [[%]], { remap = true } },
+    { "<c-h>", [[^]] },
+    { "<c-l>", [[g_]] },
+    { "<c-z>", [[%]], { remap = true } },
 
     { "<space>y", [["+y]],   { desc = "Yank to clipboard (primary)" } },
     { "<space>P", [["+P]],   { desc = "Paste before from clipboard (primary)" } },
     { "<space>p", [["+p]],   { desc = "Paste after from clipboard (primary)" } },
   },
 }, {})
--- stylua: ignore end
 
 -- any jump over 5 modifies the jumplist
 -- so we can use <C-o> <C-i> to jump back and forth
@@ -200,8 +192,9 @@ for _, m in ipairs({ "n", "v" }) do
   end
 end
 
+local delimiters = { ",", ";", "." }
+
 local function modify_line_end_delimiter(character)
-  local delimiters = { ",", ";", "." }
   return function()
     local line = vim.api.nvim_get_current_line()
     local last_char = line:sub(-1)
@@ -215,16 +208,11 @@ local function modify_line_end_delimiter(character)
   end
 end
 
-M.bind("n", "z,", modify_line_end_delimiter(","), { desc = "add ',' to end of line" })
-M.bind("n", "z;", modify_line_end_delimiter(";"), { desc = "add ';' to end of line" })
-M.bind("n", "z.", modify_line_end_delimiter("."), { desc = "add '.' to end of line" })
-
--- NOTE Use ':Grep' or ':LGrep' to grep into quickfix|loclist
--- NOTE without output or jumping to first match
--- NOTE Use ':Grep <pattern> %' to search only current file
--- NOTE Use ':Grep <pattern> %:h' to search the current file dir
-vim.cmd("command! -nargs=+ -complete=file Grep  grep! <args> | redraw! | copen")
-vim.cmd("command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw! | lopen")
+for _, key in ipairs(delimiters) do
+  local key_combination = string.format("z%s", key)
+  local desc_combination = string.format("add '%s' to end of line", key)
+  vim.keymap.set("n", key_combination, modify_line_end_delimiter(key), { desc = desc_combination })
+end
 
 -- Definisikan fungsi zoom_toggle
 local function zoom_toggle()
@@ -277,8 +265,6 @@ local function toggle_smart_case()
   vim.notify(status_message)
   M.feedkeys("<space>", "c")
   M.feedkeys("<bs>", "c")
-  -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<space>", true, false, true), "c", false)
-  -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<bs>", true, false, true), "c", false)
 end
 
 M.bind("c", "<C-S>", toggle_smart_case, { desc = "Toggle smartcase" })
@@ -291,7 +277,7 @@ end
 local function cgn_action(type)
   return function()
     if type == "v" then
-      cgn(require("utils.helper").get_visual_selection())
+      cgn(utils.helper.get_visual_selection())
     else
       cgn(vim.fn.expand("<cword>"))
     end
@@ -307,9 +293,6 @@ M.bind(
   '<cmd>lua require("user.nui").local_menu()<cr>',
   { desc = "(SUB) Search Replace" }
 )
-M.bind("n", "sqg", '<cmd>lua require("user.nui").git_menu()<cr>', { desc = "(GIT) Menu" })
-
--- stylua: ignore start
 
 ---Remove all trailing whitespaces within the current buffer
 ---Retain cursor position & last search content
@@ -330,5 +313,26 @@ end
 
 M.bind("n", "<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
 
--- stylua: ignore end
+
+-- vim.keymap.set("n", "<space>o", function()
+--   vim.ui.input({ prompt = "Masukkan nama: ", default = "John Doe" }, function(input)
+--     if input then
+--       vim.notify("Halo, " .. input .. "!", vim.log.levels.INFO)
+--     else
+--       vim.notify("Input dibatalkan", vim.log.levels.WARN)
+--     end
+--   end)
+--
+-- end, { desc = "Input Nama" })
+-- vim.keymap.set("n", "<leader>o", function()
+--   vim.ui.select({ "Option 1", "Option 2", "Option 3" }, {
+--     prompt = "Pilih opsi:",
+--   }, function(choice)
+--     if choice then
+--       vim.notify("Kamu memilih: " .. choice, vim.log.levels.INFO)
+--     else
+--       vim.notify("Tidak ada yang dipilih", vim.log.levels.WARN)
+--     end
+--   end)
+-- end, { desc = "Input Nama" })
 return M

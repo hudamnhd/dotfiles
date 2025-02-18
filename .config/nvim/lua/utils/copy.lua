@@ -65,7 +65,16 @@ M.list_paths = function()
     d_key = utils.ansi_codes.yellow(d_key)
     y_key = utils.ansi_codes.yellow(y_key)
     p_key = utils.ansi_codes.yellow(p_key)
-    return (":: %s to %s, %s to %s, %s to %s, %s to %s"):format(a_key, a_text, d_key, d_text, y_key, y_text, p_key, p_text)
+    return (":: %s to %s, %s to %s, %s to %s, %s to %s"):format(
+      a_key,
+      a_text,
+      d_key,
+      d_text,
+      y_key,
+      y_text,
+      p_key,
+      p_text
+    )
   end
 
   fzf.fzf_exec(entries, {

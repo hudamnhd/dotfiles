@@ -5,7 +5,7 @@
 -- vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -34,6 +34,8 @@ vim.opt.showmode = false
 
 -- Enable break indent
 vim.opt.breakindent = true
+
+vim.opt.wrap = false
 
 -- Don't save undo history
 vim.opt.undofile = false
@@ -85,3 +87,10 @@ if vim.fn.executable("rg") == 1 then
   vim.opt.grepprg = "rg --vimgrep --no-heading --smart-case --hidden"
   vim.opt.grepformat = "%f:%l:%c:%m"
 end
+
+-- NOTE Use ':Grep' or ':LGrep' to grep into quickfix|loclist
+-- NOTE without output or jumping to first match
+-- NOTE Use ':Grep <pattern> %' to search only current file
+-- NOTE Use ':Grep <pattern> %:h' to search the current file dir
+vim.cmd("command! -nargs=+ -complete=file Grep  grep! <args> | redraw! | copen")
+vim.cmd("command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw! | lopen")

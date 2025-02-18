@@ -1,10 +1,5 @@
 local aucmd = vim.api.nvim_create_autocmd
 
-local utils = require("utils")
-local function notify(msg)
-  vim.notify("HHH: " .. msg)
-end
-
 -- Helper function to create augroup and add autocmds
 local function augroup(name, commands)
   local group = vim.api.nvim_create_augroup(name, { clear = true })

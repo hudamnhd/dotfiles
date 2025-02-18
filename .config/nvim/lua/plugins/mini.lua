@@ -99,16 +99,14 @@ function M.config()
   -- require("mini.statusline").setup()
 
   -- stylua: ignore end
-  -- require("mini.bracketed").setup({
-  --   buffer = { suffix = "", options = {} },
-  --   -- quickfix = { suffix = "", options = {} },
-  -- })
-  --
-  -- local map = vim.keymap.set
-  -- map("n", "<C-T>", "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
-  -- map("n", "<C-Y>", "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
-  -- map("n", "zj", "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
-  -- map("n", "zk", "<Cmd>lua MiniBracketed.('forward')<CR>")
+  require("mini.bracketed").setup({
+    buffer = { suffix = "", options = {} },
+    -- quickfix = { suffix = "", options = {} },
+  })
+
+  local map = vim.keymap.set
+  map("n", "<C-T>", "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
+  map("n", "<C-Y>", "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
 
   -- replace with notification "folke/snacks.nvim",
   -- require("mini.notify").setup({

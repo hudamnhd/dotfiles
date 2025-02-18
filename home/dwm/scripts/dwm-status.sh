@@ -1,7 +1,6 @@
 #!/bin/bash
 
-while true
-do
+while true; do
 	bash ~/.dwm/scripts/dwm-status-refresh.sh
 	sleep 2
 done

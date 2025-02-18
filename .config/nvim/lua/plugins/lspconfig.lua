@@ -47,8 +47,8 @@ return {
           end, { desc = "hover.nvim (next source)" })
 
           -- Mouse support
-          bind("n", "<MouseMove>", require("hover").hover_mouse, { desc = "hover.nvim (mouse)" })
-          vim.o.mousemoveevent = true
+          -- bind("n", "<MouseMove>", require("hover").hover_mouse, { desc = "hover.nvim (mouse)" })
+          -- vim.o.mousemoveevent = true
         end,
       },
     },
@@ -158,28 +158,6 @@ return {
     config = function(_, opts)
       local ts = require("typescript-tools")
       ts.setup(opts)
-      -- Key mappings for typescript-tools.nvim
-      local bind = require("keymaps").bind
-
-      bind("n", "<space>lo", ":TSToolsOrganizeImports<CR>", { desc = "TSToolsOrganizeImports" })
-      bind("n", "<space>ls", ":TSToolsSortImports<CR>", { desc = "TSToolsSortImports" })
-      bind(
-        "n",
-        "<space>lr",
-        ":TSToolsRemoveUnusedImports<CR>",
-        { desc = "TSToolsRemoveUnusedImports" }
-      )
-      bind("n", "<space>lR", ":TSToolsRemoveUnused<CR>", { desc = "TSToolsRemoveUnused" })
-      bind("n", "<space>lm", ":TSToolsAddMissingImports<CR>", { desc = "TSToolsAddMissingImports" })
-      bind("n", "<space>lfa", ":TSToolsFixAll<CR>", { desc = "TSToolsFixAll" })
-      bind(
-        "n",
-        "<space>ld",
-        ":TSToolsGoToSourceDefinition<CR>",
-        { desc = "TSToolsGoToSourceDefinition" }
-      )
-      bind("n", "<space>lfR", ":TSToolsRenameFile<CR>", { desc = "TSToolsRenameFile" })
-      bind("n", "<space>lfr", ":TSToolsFileReferences<CR>", { desc = "TSToolsFileReferences" })
     end,
   },
 }

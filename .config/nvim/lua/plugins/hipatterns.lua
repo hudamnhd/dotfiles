@@ -1,9 +1,6 @@
 return {
   "echasnovski/mini.hipatterns",
   version = "*",
-  keys = {
-    { "<space>th", ":lua MiniHipatterns.toggle()<CR>", mode = "n", desc = "Hipatterns toggle" },
-  },
   event = { "BufReadPost" },
   config = function()
     local hipatterns = require("mini.hipatterns")

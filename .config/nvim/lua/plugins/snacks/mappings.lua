@@ -1,67 +1,107 @@
-local function open_win_partial()
-  local file1 = vim.fn.stdpath("config") .. "/lua/plugins/fzf-lua/fzf-lua.lua"
-  local file2 = vim.fn.stdpath("config") .. "/lua/keymaps.lua"
+---@class toolbox.Command
+---@field name string
+---@field execute fun()
+---
+---@class toolbox.finder.Item : snacks.picker.finder.Item
+---@field idx number
+---@field name string
+---@field execute fun()
 
-  -- Mengambil baris tertentu dari dua file dan menggabungkannya
-  local content =
-    vim.fn.system(string.format("sed -n '653,713p' %s; echo ''; sed -n '58,170p' %s", file1, file2))
-  -- local content = vim.fn.system(string.format("sed -n '653,713p' %s", file_path))
+---@return toolbox.finder.Item[]
+local function get_items()
+  ---@type toolbox.finder.Item[]
+  local items = {}
+  local commands = require("plugins.snacks.commands").all_commands()
+  for i, v in ipairs(commands) do
+    ---@type toolbox.finder.Item
+    local item = {
+      idx = i,
+      text = v.name,
+      name = v.name,
+      execute = v.execute,
+    }
+    table.insert(items, item)
+  end
+  return items
+end
+local function show_toolbox()
+  local items = get_items()
+  local select_opts = vim.tbl_extend("force", {
+    prompt = "Toolbox",
+    format_item = function(command)
+      return command.name
+    end,
+  }, {})
+  vim.ui.select(
+    items,
+    select_opts,
+    ---@param command toolbox.Command
+    function(command)
+      if command == nil then
+        return
+      end
 
-  require("snacks").win({
-    text = content, -- Gunakan `text` untuk memasukkan output langsung
-    width = 0.95,
-    height = 0.96,
-    ft = "lua",
-    wo = {
-      spell = false,
-      wrap = false,
-      signcolumn = "yes",
-      statuscolumn = " ",
-      conceallevel = 3,
-    },
-  })
+      local execute = command.execute
+      if type(execute) == "function" then
+        local ok, res = pcall(execute)
+        if not ok then
+          error(res, 0)
+        end
+      end
+    end
+  )
 end
-local function open_win(file_path)
-  require("snacks").win({
-    file = file_path,
-    width = 0.6,
-    height = 0.6,
-    wo = {
-      spell = false,
-      wrap = false,
-      signcolumn = "yes",
-      statuscolumn = " ",
-      conceallevel = 3,
+local win = {
+  vscode = {
+    preview = false,
+    layout = {
+      backdrop = false,
+      row = 2,
+      width = 0.4,
+      min_width = 80,
+      height = 0.4,
+      border = "none",
+      box = "vertical",
+      {
+        win = "input",
+        height = 1,
+        border = "rounded",
+        title = "{title} {live} {flags}",
+        title_pos = "center",
+      },
+      { win = "list", border = "rounded" },
+      { win = "preview", title = "{preview}", border = "rounded" },
     },
-  })
-end
+  },
+  vertical = {
+    layout = {
+      backdrop = false,
+      width = 0.7,
+      min_width = 80,
+      height = 0.8,
+      min_height = 30,
+      box = "vertical",
+      border = "rounded",
+      title = "{title} {live} {flags}",
+      title_pos = "center",
+      { win = "input", height = 1, border = "bottom" },
+      { win = "list", border = "none", height = 0.3 },
+      { win = "preview", title = "{preview}", height = 0.5, border = "top" },
+    },
+  },
+}
 
 -- stylua: ignore start
 local keys = {
+  { "<C-P>",       function() require "snacks".picker({ layout = win.vscode }) end,desc = "Snacks" },
   { "<C-->",       function() require "snacks".explorer() end,                desc = "File Explorer" },
-  { "<C-P>",       function() require "snacks".picker() end,                  desc = "Snacks" },
-  { "<F7>",        function() require "snacks".terminal() end,                desc = "which_key_ignore" },
-  { "<F8>",        function() require "snacks".terminal() end,                desc = "Toggle Terminal" },
-  { "<a-b>",       function() require "snacks".scratch() end,                 desc = "Toggle Scratch Buffer" },
+  { "<F7>",        function() require "snacks".scratch() end,                 desc = "Toggle Scratch Buffer" },
+  { "<F8>",        function() require "snacks".terminal() end,                desc = "Toggle Terminal", mode = { "n", "t" } },
   { "<a-z>",       function() require "snacks".zen() end,                     desc = "Toggle Zen Mode" },
-  { "<space><F2>", function() require "snacks".rename.rename_file() end,      desc = "Rename File" },
-  { "<space>bb",   function() require "snacks".scratch.select() end,          desc = "Select Scratch Buffer" },
-  { "<space>gg",   function() require "snacks".lazygit() end,                 desc = "Lazygit" },
-  { "<space>gx",   function() require "snacks".gitbrowse() end,               desc = "Git Browse", mode = { "n", "v" } },
-  { "<space>n",    function() require "snacks".notifier.show_history() end,   desc = "Notification History" },
   { "<space>sp",   function() require "snacks".picker.smart() end,            desc = "Smart Find Files" },
-  { "<space>un",   function() require "snacks".notifier.hide() end,           desc = "Dismiss All Notifications" },
   { "[[",          function() require "snacks".words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
   { "]]",          function() require "snacks".words.jump(vim.v.count1) end,  desc = "Next Reference", mode = { "n", "t" } },
-
-  -- { "<space>C",    function() open_win(vim.fn.stdpath("config") .. "/cheatsheet.txt") end,       desc = "Cheatsheet" },
-  { "<space>C",    function() open_win_partial() end,       desc = "Cheatsheet" },
-  { "<space>V",    function() open_win(vim.fn.stdpath("config") .. "/vimtutor.txt") end,         desc = "Vimtutor" },
-  { "<space>R",    function() open_win(vim.fn.stdpath("config") .. "/panduan_regex_vim.md") end, desc = "Panduan regex vim" },
-
-  -- { "<space>ba",   function() require "snacks".bufdelete.all() end,           desc = "Delete all buffers" },
-  -- { "<space>bq",   function() require "snacks".bufdelete.other() end,         desc = "Delete all buffers except the current one" },
-  -- { "<space>q",    function() require "snacks".bufdelete.delete() end,        desc = "Delete Buffer" },
+  { "<space>j",    function() show_toolbox() end, desc = "Toolbox", mode = { "n" } },
 }
 -- stylua: ignore end
 for _, m in ipairs(keys) do

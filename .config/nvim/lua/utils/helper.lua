@@ -18,38 +18,6 @@ do
   end
 end
 
-local fzf_lua = require("fzf-lua")
-function M.asynctasks()
-  local rows = vim.fn["asynctasks#source"](vim.go.columns * 48 / 100)
-  fzf_lua.fzf_exec(function(cb)
-    for _, e in ipairs(rows) do
-      local color = fzf_lua.utils.ansi_codes
-      local line = color.green(e[1]) .. " " .. color.cyan(e[2]) .. ": " .. color.yellow(e[3])
-      cb(line)
-    end
-    cb()
-  end, {
-    actions = {
-      ["default"] = function(selected)
-        print(vim.inspect(selected))
-        local str = fzf_lua.utils.strsplit(selected[1], " ")
-        local command = "AsyncTask " .. vim.fn.fnameescape(str[1])
-        vim.api.nvim_exec(command, false)
-        -- vim.defer_fn(function()
-        -- end, 500) -- 5000 milliseconds = 5 seconds
-      end,
-    },
-    fzf_opts = {
-      ["--no-multi"] = "",
-      ["--nth"] = "1",
-    },
-    winopts = {
-      height = 0.6,
-      width = 0.6,
-    },
-  })
-end
-
 local diff_enabled = false
 
 function M.toggle_diff_buff()

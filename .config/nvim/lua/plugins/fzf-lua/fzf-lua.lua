@@ -652,67 +652,141 @@ local file_path = "~/daily-logs/" .. year .. "/" .. file_name
 -- stylua: ignore start
 map({
   [{ "i" }] = {
-    { "<c-k>", fzf.complete_path,         { desc = "(FZF) complete_path" } }, -- remap <C-X><C-F>
-    { "<c-l>", fzf.complete_line,         { desc = "(FZF) complete_line" } }, -- remap <C-X><C-L>
+    { "<c-k>", fzf.complete_path, { desc = "(FZF) complete_path" } }, -- remap <C-X><C-F>
+    { "<c-l>", fzf.complete_line, { desc = "(FZF) complete_line" } }, -- remap <C-X><C-L>
   },
   [{ "x" }] = {
-    { "gw",    fzf.grep_visual,           { desc = "(FZF) grep_visual" } },
+    { "sk", fzf.grep_visual, { desc = "(FZF) grep_visual" } },
   },
   [{ "n" }] = {
-    { "s/",    fzf.lgrep_curbuf_custom,   { desc = "(FZF) live_grep_buffer" } },
-    { "g/",    fzf.live_grep_resume,      { desc = "(FZF) live_grep_resume" } },
-    { "g8",    fzf.blines,                { desc = "(FZF) blines" } },
-    { "gi",    fzf.grep,                  { desc = "(FZF) grep" } },
-    { "gw",    fzf.grep_cword,            { desc = "(FZF) grep_cword" } },
-    { "gb",    fzf.buffers,               { desc = "(FZF) buffers" } },
-    { "s'",    fzf.registers,             { desc = "(FZF) registers" } },
-    { "s,",    fzf.builtin,               { desc = "(FZF) builtin" } },
-    { "s.",    fzf.resume,                { desc = "(FZF) resume" } },
-    { "s0",    fzf.command_history,       { desc = "(FZF) command_history" } }, -- remap : to 0 easy press
-    { "s;",    fzf.changes,               { desc = "(FZF) changes" } },
-    { "sP",    fzf.files,                 { desc = "(FZF) files" } },
-    { "sh",    fzf.search_history,        { desc = "(FZF) search_history" } },
-    { "so",    fzf.mru,                   { desc = "(FZF) mru" } },
-    { "z=",    fzf.spell_suggest,         { desc = "(FZF) spell_suggest" } },
-    { "sfl",   fzf.loclist_stack,         { desc = "(FZF) loclist_stack" } },
-    { "sfq",   fzf.quickfix_stack,        { desc = "(FZF) quickfix_stack" } },
-    { "sql",   fzf.loclist,               { desc = "(FZF) loclist" } },
-    { "sqq",   fzf.quickfix,              { desc = "(FZF) quickfix" } },
-    { "sqd",   fzf.diagnostics_document,  { desc = "(FZF) diagnostics_document" } },
-    { "sqw",   fzf.diagnostics_workspace, { desc = "(FZF) diagnostics_workspace" } },
-    { "sqb",   fzf.list_paths,            { desc = "(FZF) list_paths" } },
-    { "sqv",   files("~/.config/nvim"),   { desc = "(FZF) VIMRC" } },
-    { "sqn",   files("~/vimwiki"),        { desc = "(FZF) Vimwiki" } },
-    { "sqt",   files(vim.env.NOTES_DIR),  { desc = "(FZF) NOTES_DIR" } },
-
-    { "sqk", files(vim.fn.expand(logs_path)), { desc = "(FZF) logs for current year" } },
-    { "sql", function() vim.cmd("e " .. vim.fn.expand(file_path)) end, { desc = "(FZF) daily log file" },
-    },
+    { "sr",    fzf.live_grep_resume,    { desc = "(FZF) live_grep_resume" } },
+    { "si",    fzf.grep,                { desc = "(FZF) grep" } },
+    { "sk",    fzf.grep_cword,          { desc = "(FZF) grep_cword" } },
+    { "sl",    fzf.lgrep_curbuf_custom, { desc = "(FZF) live_grep_buffer" } },
+    { "s/",    fzf.blines,              { desc = "(FZF) blines" } },
+    { "s'",    fzf.registers,           { desc = "(FZF) registers" } },
+    { "s.",    fzf.resume,              { desc = "(FZF) resume" } },
+    { "s0",    fzf.command_history,     { desc = "(FZF) command_history" } }, -- remap : to 0 easy press
+    { "sp",    fzf.files,               { desc = "(FZF) files" } },
+    { "sh",    fzf.search_history,      { desc = "(FZF) search_history" } },
+    { "so",    fzf.mru,                 { desc = "(FZF) mru" } },
+    { "z=",    fzf.spell_suggest,       { desc = "(FZF) spell_suggest" } },
+    { "<a-p>", fzf.builtin,             { desc = "(FZF) builtin" } },
+    { "<c-b>", fzf.buffers,             { desc = "(FZF) buffers" } },
   },
 }, {})
 
 --global
+local fzf_cmds = require("plugins.fzf-lua.cmds")
+local helper = utils.helper
+
+local show_toolbox_qlstack = fzf_cmds.create_show_toolbox("Toolbox Files", {
+  { execute = helper.toggle_qf("q"), name = "(TOGGLE) quickfix_list" },
+  { execute = helper.toggle_qf("l"), name = "(TOGGLE) loclist_list" },
+  { execute = fzf.loclist_stack,     name = "(FZF) loclist_stack" },
+  { execute = fzf.quickfix_stack,    name = "(FZF) quickfix_stack" },
+  { execute = fzf.loclist,           name = "(FZF) loclist" },
+  { execute = fzf.quickfix,          name = "(FZF) quickfix" },
+})
+
+map({
+  [{ "n" }] = {
+    { "<a-q>", show_toolbox_qlstack, { desc = "Files Command" } },
+  },
+}, {})
+
+
+local show_toolbox_files = fzf_cmds.create_show_toolbox("Toolbox Files", {
+  { execute = files(vim.fn.expand(logs_path)),                                       name = "(FZF) logs for current year" },
+  { execute = function() vim.cmd("e " .. vim.fn.expand(file_path)) end,              name = "(FZF) daily log file" },
+  { execute = files("~/.config/nvim"),                                               name = "(FZF) VIMRC" },
+  { execute = files("~/vimwiki"),                                                    name = "(FZF) Vimwiki" },
+  { execute = files(vim.env.NOTES_DIR),                                              name = "(FZF) NOTES_DIR" },
+  { execute = fzf_cmds.save_bookmark_file,                                           name = "Toggle bookmark file" },
+  { execute = fzf_cmds.save_bookmark_dir,                                            name = "Toggle bookmark dir" },
+  { execute = fzf_cmds.show_bookmark_file,                                           name = "Show bookmark file" },
+  { execute = fzf_cmds.show_bookmark_dir,                                            name = "Show bookmark dir" },
+  { execute = function() vim.cmd.vsplit(vim.fn.stdpath("cache") .. "/bookmark") end, name = "Edit bookmark file" },
+  { execute = function() vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths") end,     name = "Edit bookmark dir" },
+  { execute = fzf.list_paths,                                                        name = "(FZF) list_paths" },
+})
+
+map({
+  [{ "n" }] = {
+    { "<space>f", show_toolbox_files, { desc = "Files Command" } },
+  },
+}, {})
+
+
+
+local commands = {
+  { execute = fzf.diagnostics_document,  name = "(FZF) diagnostics_document" },
+  { execute = fzf.diagnostics_workspace, name = "(FZF) diagnostics_workspace" },
+}
 
 local lsp_attach = function()
+
+  local ft = vim.bo.filetype
+
+  -- Cek apakah filetype termasuk dalam daftar yang diinginkan
+  local allowed_ft = { typescript = true, typescriptreact = true, javascriptreact = true }
+
+  if allowed_ft[ft] then
+    local extra_commands = {
+      { execute = vim.cmd.TSToolsOrganizeImports, name = "(TS) OrganizeImports" },
+      { execute = vim.cmd.TSToolsSortImports, name = "(TS) SortImports" },
+      { execute = vim.cmd.TSToolsRemoveUnusedImports, name = "(TS) RemoveUnusedImports" },
+      { execute = vim.cmd.TSToolsRemoveUnused, name = "(TS) RemoveUnused" },
+      { execute = vim.cmd.TSToolsAddMissingImports, name = "(TS) AddMissingImports" },
+      { execute = vim.cmd.TSToolsFixAll, name = "(TS) FixAll" },
+      { execute = vim.cmd.TSToolsGoToSourceDefinition, name = "(TS) GoToSourceDefinition" },
+      { execute = vim.cmd.TSToolsRenameFile, name = "(TS) RenameFile" },
+      { execute = vim.cmd.TSToolsFileReferences, name = "(TS) FileReferences" },
+    }
+
+    for _, cmd in ipairs(extra_commands) do
+      table.insert(commands, cmd)
+    end
+  end
+
+  local lsp_commands = {
+    { execute = fzf.lsp_document_symbols, name = "(FZF) lsp_document_symbols" },
+    { execute = fzf.lsp_live_workspace_symbols, name = "(FZF) lsp_live_workspace_symbols" },
+    { execute = fzf.lsp_definitions, name = "(FZF) lsp_definitions" },
+    { execute = fzf.lsp_definitions, name = "(FZF) lsp_definitions" },
+    { execute = fzf.lsp_typedefs, name = "(FZF) lsp_typedefs" },
+    { execute = fzf.lsp_implementations, name = "(FZF) lsp_implementations" },
+    { execute = fzf.lsp_incoming_calls, name = "(FZF) lsp_incoming_calls" },
+    { execute = fzf.lsp_outgoing_calls, name = "(FZF) lsp_outgoing_calls" },
+    { execute = fzf.lsp_references, name = "(FZF) lsp_references" },
+    { execute = fzf.lsp_finder, name = "(FZF) lsp_finder" },
+    { execute = fzf.lsp_code_actions, name = "(FZF) lsp_code_actions" },
+    { execute = vim.lsp.buf.rename, name = "(LSP) vim.lsp.buf.rename" },
+  }
+
+  for _, cmd in ipairs(lsp_commands) do
+    table.insert(commands, cmd)
+  end
+
+  local function reverse_table(t)
+    local reversed = {}
+    for i = #t, 1, -1 do
+      table.insert(reversed, t[i])
+    end
+    return reversed
+  end
+
+  commands = reverse_table(commands)
+  local show_toolbox_lsp = fzf_cmds.create_show_toolbox("Toolbox Files", commands)
+
   map({
     [{ "n" }] = {
-      { "<space>gs", fzf.lsp_document_symbols,       { desc = "(FZF) lsp_document_symbols" } },
-      { "<space>gS", fzf.lsp_live_workspace_symbols, { desc = "(FZF) lsp_live_workspace_symbols" } },
-      { "<space>gd", fzf.lsp_definitions,            { desc = "(FZF) lsp_definitions" } },
-      { "<space>gD", fzf.lsp_definitions,            { desc = "(FZF) lsp_definitions" } },
-      { "<space>gt", fzf.lsp_typedefs,               { desc = "(FZF) lsp_typedefs" } },
-      { "<space>gi", fzf.lsp_implementations,        { desc = "(FZF) lsp_implementations" } },
-      { "<space>g[", fzf.lsp_incoming_calls,         { desc = "(FZF) lsp_incoming_calls" } },
-      { "<space>g]", fzf.lsp_outgoing_calls,         { desc = "(FZF) lsp_outgoing_calls" } },
-      { "<space>gr", fzf.lsp_references,             { desc = "(FZF) lsp_references" } },
-      { "<space>gf", fzf.lsp_finder,                 { desc = "(FZF) lsp_finder" } },
-      { "<space>gc", fzf.lsp_code_actions,           { desc = "(FZF) lsp_code_actions" } },
-      { "<space>gR", vim.lsp.buf.rename,             { desc = "(LSP) vim.lsp.buf.rename" } },
+      { "<space>l", show_toolbox_lsp, { desc = "LSP Command" } },
     },
   }, {})
 end
--- stylua: ignore start
 
+-- stylua: ignore end
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("FzfLuaLspAttachGroup", { clear = true }),
   callback = lsp_attach,
