@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Menampilkan menu Rofi
-selected_option=$(echo -e "Capture Fullscreen\nCapture Selection" | rofi -dmenu -no-show-icons -p "Screenshot")
+selected_option=$(echo -e "Screenshot Fullscreen\nScreenshot Selection" | rofi -dmenu -p "Screenshot")
 
-# Jika pengguna memilih Capture Fullscreen
-if [ "$selected_option" == "Capture Fullscreen" ]; then
+# Jika pengguna memilih Screenshot Fullscreen
+if [ "$selected_option" == "Screenshot Fullscreen" ]; then
 	sleep 1
 	scrot ~/Pictures/screenshot/screenshot_$(date '+%Y%m%d%H%M%S').png
 	notify-send "Screenshot Taken" "Fullscreen screenshot saved."
 fi
 
-# Jika pengguna memilih Capture Selection
-if [ "$selected_option" == "Capture Selection" ]; then
+# Jika pengguna memilih Screenshot Selection
+if [ "$selected_option" == "Screenshot Selection" ]; then
 	scrot -s ~/Pictures/screenshot/screenshot_$(date '+%Y%m%d%H%M%S').png
 	notify-send "Screenshot Taken" "Selection screenshot saved."
 fi

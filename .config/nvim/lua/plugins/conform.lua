@@ -45,6 +45,7 @@ return {
       lsp_format = "fallback",
     },
     formatters_by_ft = {
+      haskell = { "stylish-haskell" },
       sh = { "shfmt" },
       javascript = { "biome" },
       typescript = { "dprint" },

@@ -27,3 +27,7 @@ done
 for home_item in "$dotfiles_dir/home/"*; do
     remove_symlink "$HOME/.$(basename "$home_item")"
 done
+
+for config_item in "$dotfiles_dir/xmonad/"*; do
+    remove_symlink "$HOME/.config/xmonad/$(basename "$config_item")"
+done

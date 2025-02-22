@@ -5,7 +5,7 @@ layout=$(setxkbmap -query | grep layout | awk '{print $2}')
 
 # Beralih layout dan kirim notifikasi
 if [ "$layout" = "us" ]; then
-  setxkbmap ar
+  setxkbmap ara
   notify-send "Keyboard Layout Switched" "Sekarang menggunakan Arabic"
 else
   setxkbmap us

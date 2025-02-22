@@ -58,7 +58,7 @@ print_events = false
 render_timer = false
 
 [font.bold]
-family = "Iosevka Nerd Font Semibold"
+family = "IosevkaTree Nerd Font Semibold"
 style = "Medium"
 
 [font.glyph_offset]
@@ -66,11 +66,11 @@ x = 0
 y = 0
 
 [font.italic]
-family = "Iosevka Nerd Font Semibold"
+family = "IosevkaTree Nerd Font Semibold"
 style = "Light Italic"
 
 [font.normal]
-family = "Iosevka Nerd Font Semibold"
+family = "IosevkaTree Nerd Font Semibold"
 style = "Semibold"
 
 [font]

@@ -34,14 +34,14 @@ font:
     # Font name
     # family: iosevka-normal
     # family: JetBrainsMono Nerd Font
-    family: Fira Code
-    # family: Iosevka Nerd Font 
+    family: Fira Code Nerd Font
+    # family: Iosevka Nerd Font
     # Font face
     style: Regular
 
   # Bold font face
   bold:
-    family: Fira Code
+    family: Fira Code Nerd Font
     # family: JetBrainsMonoNL Font
     style: Semibold
 
@@ -57,7 +57,7 @@ font:
   # for your font
 
   # Font size
-  size: 16
+  size: 14
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing
@@ -109,84 +109,118 @@ key_bindings:
   # ctrl-^ doesn't work in some terminals like alacritty
   - { key: Key6, mods: Control, chars: "\x1e" }
 
+# TokyoNight Alacritty Colors
 colors:
-    primary:
-        background: "#1E1E2E" # base
-        foreground: "#CDD6F4" # text
-        # Bright and dim foreground colors
-        dim_foreground: "#CDD6F4" # text
-        bright_foreground: "#CDD6F4" # text
+  # Default colors
+  primary:
+    background: '0x222436'
+    foreground: '0xc8d3f5'
 
-    # Cursor colors
-    cursor:
-        text: "#ffffff" # base
-        cursor: "#1E1E2E" # rosewater
-    vi_mode_cursor:
-        text: "#1E1E2E" # base
-        cursor: "#B4BEFE" # lavender
+  # Normal colors
+  normal:
+    black:   '0x1b1d2b'
+    red:     '0xff757f'
+    green:   '0xc3e88d'
+    yellow:  '0xffc777'
+    blue:    '0x82aaff'
+    magenta: '0xc099ff'
+    cyan:    '0x86e1fc'
+    white:   '0x828bb8'
 
-    # Search colors
-    search:
-        matches:
-            foreground: "#1E1E2E" # base
-            background: "#A6ADC8" # subtext0
-        focused_match:
-            foreground: "#1E1E2E" # base
-            background: "#A6E3A1" # green
-        footer_bar:
-            foreground: "#1E1E2E" # base
-            background: "#A6ADC8" # subtext0
+  # Bright colors
+  bright:
+    black:   '0x444a73'
+    red:     '0xff757f'
+    green:   '0xc3e88d'
+    yellow:  '0xffc777'
+    blue:    '0x82aaff'
+    magenta: '0xc099ff'
+    cyan:    '0x86e1fc'
+    white:   '0xc8d3f5'
 
-    # Keyboard regex hints
-    hints:
-        start:
-            foreground: "#1E1E2E" # base
-            background: "#F9E2AF" # yellow
-        end:
-            foreground: "#1E1E2E" # base
-            background: "#A6ADC8" # subtext0
+  indexed_colors:
+    - { index: 16, color: '0xff966c' }
+    - { index: 17, color: '0xc53b53' }
 
-    # Selection colors
-    selection:
-        text: "#1E1E2E" # base
-        background: "#F5E0DC" # rosewater
 
-    # Normal colors
-    normal:
-        black: "#111827" # surface1
-        red: "#dc2626" # red
-        green: "#16a34a" # green
-        yellow: "#ca8a04" # yellow
-        blue: "#2563eb" # blue
-        magenta: "#c026d3" # pink
-        cyan: "#0891b2" # teal
-        white: "#6b7280" # subtext1
-
-    # Bright colors
-    bright:
-        black: "#4b5563" # surface2
-        red: "#ef4444" # red
-        green: "#22c55e" # green
-        yellow: "#eab308" # yellow
-        blue: "#3b82f6" # blue
-        magenta: "#d946ef" # pink
-        cyan: "#06b6d4" # teal
-        white: "#A6ADC8" # subtext0
-
-    # Dim colors
-    dim:
-        black: "#111827" # surface1
-        red: "#dc2626" # red
-        green: "#16a34a" # green
-        yellow: "#ca8a04" # yellow
-        blue: "#2563eb" # blue
-        magenta: "#c026d3" # pink
-        cyan: "#0891b2" # teal
-        white: "#6b7280" # subtext1
-
-    indexed_colors:
-        - { index: 16, color: "#FAB387" }
-        - { index: 17, color: "#F5E0DC" }
+# colors:
+#     primary:
+#         background: "#1E1E2E" # base
+#         foreground: "#CDD6F4" # text
+#         # Bright and dim foreground colors
+#         dim_foreground: "#CDD6F4" # text
+#         bright_foreground: "#CDD6F4" # text
+#
+#     # Cursor colors
+#     cursor:
+#         text: "#1E1E2E" # base
+#         cursor: "#ffffff" # rosewater
+#     vi_mode_cursor:
+#         text: "#1E1E2E" # base
+#         cursor: "#B4BEFE" # lavender
+#
+#     # Search colors
+#     search:
+#         matches:
+#             foreground: "#1E1E2E" # base
+#             background: "#A6ADC8" # subtext0
+#         focused_match:
+#             foreground: "#1E1E2E" # base
+#             background: "#A6E3A1" # green
+#         footer_bar:
+#             foreground: "#1E1E2E" # base
+#             background: "#A6ADC8" # subtext0
+#
+#     # Keyboard regex hints
+#     hints:
+#         start:
+#             foreground: "#1E1E2E" # base
+#             background: "#F9E2AF" # yellow
+#         end:
+#             foreground: "#1E1E2E" # base
+#             background: "#A6ADC8" # subtext0
+#
+#     # Selection colors
+#     selection:
+#         text: "#1E1E2E" # base
+#         background: "#F5E0DC" # rosewater
+#
+#     # Normal colors
+#     normal:
+#         black: "#111827" # surface1
+#         red: "#dc2626" # red
+#         green: "#16a34a" # green
+#         yellow: "#ca8a04" # yellow
+#         blue: "#2563eb" # blue
+#         magenta: "#c026d3" # pink
+#         cyan: "#0891b2" # teal
+#         white: "#6b7280" # subtext1
+#
+#     # Bright colors
+#     bright:
+#         black: "#4b5563" # surface2
+#         red: "#ef4444" # red
+#         green: "#22c55e" # green
+#         yellow: "#eab308" # yellow
+#         blue: "#3b82f6" # blue
+#         magenta: "#d946ef" # pink
+#         cyan: "#06b6d4" # teal
+#         white: "#A6ADC8" # subtext0
+#
+#     # Dim colors
+#     dim:
+#         black: "#111827" # surface1
+#         red: "#dc2626" # red
+#         green: "#16a34a" # green
+#         yellow: "#ca8a04" # yellow
+#         blue: "#2563eb" # blue
+#         magenta: "#c026d3" # pink
+#         cyan: "#0891b2" # teal
+#         white: "#6b7280" # subtext1
+#
+#     indexed_colors:
+#         - { index: 16, color: "#FAB387" }
+#         - { index: 17, color: "#F5E0DC" }
 
 # # Colors (Gruvbox dark)
 # colors:

@@ -1,2 +1,2 @@
 #!/bin/sh
-feh --no-fehbg --bg-fill '/home/hudamnhd/Images/wallpapers/68747470733a2f2f692e696d6775722e636f6d2f4c7a4a596b70532e6a706567.jpeg' 
+feh --no-fehbg --bg-fill '/usr/share/dynamic-wallpaper/images/firewatch/1.png' 

@@ -40,6 +40,8 @@
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
+#include <X11/extensions/Xcomposite.h>
+#include <X11/extensions/Xrender.h>
 
 #include "drw.h"
 #include "util.h"
@@ -55,6 +57,7 @@
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
+#define TAGSLENGTH              (LENGTH(tags))
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 
 /* enums */
@@ -62,7 +65,7 @@ enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
-       NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
+       NetWMWindowTypeDialog, NetClientList, NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops, NetCurrentDesktop, NetLast }; /* EWMH atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
@@ -84,6 +87,16 @@ typedef struct {
 
 typedef struct Monitor Monitor;
 typedef struct Client Client;
+
+typedef struct Preview Preview;
+struct Preview {
+  XImage *orig_image;
+  XImage *scaled_image;
+  Window win;
+  unsigned int x, y;
+  Preview *next;
+};
+
 struct Client {
 	char name[256];
 	float mina, maxa;
@@ -97,6 +110,7 @@ struct Client {
 	Client *snext;
 	Monitor *mon;
 	Window win;
+  Preview pre;
 };
 
 typedef struct {
@@ -198,11 +212,15 @@ static void scan(void);
 static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
+static void setcurrentdesktop(void);
+static void setdesktopnames(void);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
+static void setnumdesktops(void);
 static void setup(void);
+static void setviewport(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void spawn(const Arg *arg);
@@ -216,6 +234,7 @@ static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
+static void updatecurrentdesktop(void);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
 static void updateclientlist(void);
@@ -233,6 +252,10 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
+static void previewallwin();
+static void setpreviewwindowsizepositions(unsigned int n, Monitor *m, unsigned int gappo, unsigned int gappi);
+static XImage *getwindowximage(Client *c);
+static XImage *scaledownimage(XImage *orig_image, unsigned int cw, unsigned int ch);
 
 /* variables */
 static const char broken[] = "broken";
@@ -517,6 +540,7 @@ clientmessage(XEvent *e)
 {
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
+	unsigned int i;
 
 	if (!c)
 		return;
@@ -526,8 +550,14 @@ clientmessage(XEvent *e)
 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
-		if (c != selmon->sel && !c->isurgent)
-			seturgent(c, 1);
+		for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
+		if (i < LENGTH(tags)) {
+			const Arg a = {.ui = 1 << i};
+			selmon = c->mon;
+			view(&a);
+			focus(c);
+			restack(selmon);
+		}
 	}
 }
 
@@ -1441,6 +1471,16 @@ setclientstate(Client *c, long state)
 	XChangeProperty(dpy, c->win, wmatom[WMState], wmatom[WMState], 32,
 		PropModeReplace, (unsigned char *)data, 2);
 }
+void
+setcurrentdesktop(void){
+	long data[] = { 0 };
+	XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
+}
+void setdesktopnames(void){
+	XTextProperty text;
+	Xutf8TextListToTextProperty(dpy, tags, TAGSLENGTH, XUTF8StringStyle, &text);
+	XSetTextProperty(dpy, root, &text, netatom[NetDesktopNames]);
+}
 
 int
 sendevent(Client *c, Atom proto)
@@ -1465,6 +1505,12 @@ sendevent(Client *c, Atom proto)
 		XSendEvent(dpy, c->win, False, NoEventMask, &ev);
 	}
 	return exists;
+}
+
+void
+setnumdesktops(void){
+	long data[] = { TAGSLENGTH };
+	XChangeProperty(dpy, root, netatom[NetNumberOfDesktops], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 }
 
 void
@@ -1579,6 +1625,10 @@ setup(void)
 	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
+	netatom[NetDesktopViewport] = XInternAtom(dpy, "_NET_DESKTOP_VIEWPORT", False);
+	netatom[NetNumberOfDesktops] = XInternAtom(dpy, "_NET_NUMBER_OF_DESKTOPS", False);
+	netatom[NetCurrentDesktop] = XInternAtom(dpy, "_NET_CURRENT_DESKTOP", False);
+	netatom[NetDesktopNames] = XInternAtom(dpy, "_NET_DESKTOP_NAMES", False);
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
@@ -1601,6 +1651,10 @@ setup(void)
 	/* EWMH support per view */
 	XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
 		PropModeReplace, (unsigned char *) netatom, NetLast);
+	setnumdesktops();
+	setcurrentdesktop();
+	setdesktopnames();
+	setviewport();
 	XDeleteProperty(dpy, root, netatom[NetClientList]);
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
@@ -1611,6 +1665,11 @@ setup(void)
 	XSelectInput(dpy, root, wa.event_mask);
 	grabkeys();
 	focus(NULL);
+}
+void
+setviewport(void){
+	long data[] = { 0, 0 };
+	XChangeProperty(dpy, root, netatom[NetDesktopViewport], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 2);
 }
 
 void
@@ -1748,6 +1807,7 @@ toggletag(const Arg *arg)
 		focus(NULL);
 		arrange(selmon);
 	}
+	updatecurrentdesktop();
 }
 
 void
@@ -1760,6 +1820,7 @@ toggleview(const Arg *arg)
 		focus(NULL);
 		arrange(selmon);
 	}
+	updatecurrentdesktop();
 }
 
 void
@@ -1862,6 +1923,15 @@ updateclientlist()
 			XChangeProperty(dpy, root, netatom[NetClientList],
 				XA_WINDOW, 32, PropModeAppend,
 				(unsigned char *) &(c->win), 1);
+}
+void updatecurrentdesktop(void){
+	long rawdata[] = { selmon->tagset[selmon->seltags] };
+	int i=0;
+	while(*rawdata >> i+1){
+		i++;
+	}
+	long data[] = { i };
+	XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 }
 
 int
@@ -2060,6 +2130,7 @@ view(const Arg *arg)
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
 	focus(NULL);
 	arrange(selmon);
+	updatecurrentdesktop();
 }
 
 Client *
@@ -2138,6 +2209,212 @@ zoom(const Arg *arg)
 	if (c == nexttiled(selmon->clients) && !(c = nexttiled(c->next)))
 		return;
 	pop(c);
+}
+
+void
+previewallwin(){
+  int composite_event_base, composite_error_base;
+  if (!XCompositeQueryExtension(dpy, &composite_event_base, &composite_error_base)) {
+    fprintf(stderr, "Error: XComposite extension not available.\n");
+    return;
+  }
+  Monitor *m = selmon;
+  Client *c, *focus_c = NULL;
+  unsigned int n;
+  for (n = 0, c = m->clients; c; c = c->next, n++){
+    /* If you hit actualfullscreen patch Unlock the notes below */
+    // if (c->isfullscreen)
+    //   togglefullscr(&(Arg){0});
+    /* If you hit awesomebar patch Unlock the notes below */
+    // if (HIDDEN(c))
+    //   continue;
+    c->pre.orig_image = getwindowximage(c);
+  }
+  if (n == 0)
+    return;
+  setpreviewwindowsizepositions(n, m, 60, 15);
+  XEvent event;
+  for(c = m->clients; c; c = c->next){
+    if (!c->pre.win)
+      c->pre.win = XCreateSimpleWindow(dpy, root, c->pre.x, c->pre.y, c->pre.scaled_image->width, c->pre.scaled_image->height, 1, BlackPixel(dpy, screen), WhitePixel(dpy, screen));
+    else
+      XMoveResizeWindow(dpy, c->pre.win, c->pre.x, c->pre.y, c->pre.scaled_image->width, c->pre.scaled_image->height);
+    XSetWindowBorder(dpy, c->pre.win, scheme[SchemeNorm][ColBorder].pixel);
+    XSetWindowBorderWidth(dpy, c->pre.win, borderpx);
+    XUnmapWindow(dpy, c->win);
+    if (c->pre.win){
+      XSelectInput(dpy, c->pre.win, ButtonPress | EnterWindowMask | LeaveWindowMask );
+      XMapWindow(dpy, c->pre.win);
+      XPutImage(dpy, c->pre.win, drw->gc, c->pre.scaled_image, 0, 0, 0, 0, c->pre.scaled_image->width, c->pre.scaled_image->height);
+    }
+  }
+  while (1) {
+      XNextEvent(dpy, &event);
+      if (event.type == ButtonPress) 
+          if (event.xbutton.button == Button1){
+            for(c = m->clients; c; c = c->next){
+              XUnmapWindow(dpy, c->pre.win);
+              if (event.xbutton.window == c->pre.win){
+                selmon->seltags ^= 1; /* toggle sel tagset */
+                m->tagset[selmon->seltags] = c->tags;
+                focus_c = c;
+                focus(NULL);
+                /* If you hit awesomebar patch Unlock the notes below */
+                // if (HIDDEN(c)){
+                //   showwin(c);
+                //   continue;
+                // }
+              }
+              /* If you hit awesomebar patch Unlock the notes below; 
+               * And you should add the following line to "hidewin" Function
+               * c->pre.orig_image = getwindowximage(c);
+               * */
+              // if (HIDDEN(c)){
+              //   continue;
+              // }
+              XMapWindow(dpy, c->win);
+              XDestroyImage(c->pre.orig_image);
+              XDestroyImage(c->pre.scaled_image);
+            }
+            break;
+          }
+      if (event.type == EnterNotify)
+          for(c = m->clients; c; c = c->next)
+              if (event.xcrossing.window == c->pre.win){
+                  XSetWindowBorder(dpy, c->pre.win, scheme[SchemeSel][ColBorder].pixel);
+                  break;
+              }
+      if (event.type == LeaveNotify)
+          for(c = m->clients; c; c = c->next)
+              if (event.xcrossing.window == c->pre.win){
+                  XSetWindowBorder(dpy, c->pre.win, scheme[SchemeNorm][ColBorder].pixel);
+                  break;
+              }
+  }
+  arrange(m);
+  focus(focus_c);
+}
+
+void
+setpreviewwindowsizepositions(unsigned int n, Monitor *m, unsigned int gappo, unsigned int gappi){
+  unsigned int i, j;
+  unsigned int cx, cy, cw, ch, cmaxh;
+  unsigned int cols, rows;
+  Client *c, *tmpc;
+
+  if (n == 1) {
+    c = m->clients;
+    cw = (m->ww - 2 * gappo) * 0.8;
+    ch = (m->wh - 2 * gappo) * 0.9;
+    c->pre.scaled_image = scaledownimage(c->pre.orig_image, cw, ch);
+    c->pre.x = m->mx + (m->mw - c->pre.scaled_image->width) / 2;
+    c->pre.y = m->my + (m->mh - c->pre.scaled_image->height) / 2;
+    return;
+  }
+  if (n == 2) {
+    c = m->clients;
+    cw = (m->ww - 2 * gappo - gappi) / 2;
+    ch = (m->wh - 2 * gappo) * 0.7;
+    c->pre.scaled_image = scaledownimage(c->pre.orig_image, cw, ch);
+    c->next->pre.scaled_image = scaledownimage(c->next->pre.orig_image, cw, ch);
+    c->pre.x = m->mx + (m->mw - c->pre.scaled_image->width - gappi - c->next->pre.scaled_image->width) / 2;
+    c->pre.y = m->my + (m->mh - c->pre.scaled_image->height) / 2;
+    c->next->pre.x = c->pre.x + c->pre.scaled_image->width + gappi;
+    c->next->pre.y = m->my + (m->mh - c->next->pre.scaled_image->height) / 2;
+    return;
+  }
+  for (cols = 0; cols <= n / 2; cols++)
+    if (cols * cols >= n)
+      break;
+  rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
+  ch = (m->wh - 2 * gappo) / rows;
+  cw = (m->ww - 2 * gappo) / cols;
+  c = m->clients;
+  cy = 0;
+  for (i = 0; i < rows; i++) {
+    cx = 0;
+    cmaxh = 0;
+    tmpc = c;
+    for (int j = 0; j < cols; j++) {
+      if (!c)
+        break;
+      c->pre.scaled_image = scaledownimage(c->pre.orig_image, cw, ch);
+      c->pre.x = cx;
+      cmaxh = c->pre.scaled_image->height > cmaxh ? c->pre.scaled_image->height : cmaxh;
+      cx += c->pre.scaled_image->width + gappi;
+      c = c->next;
+    }
+    c = tmpc;
+    cx = m->wx + (m->ww - cx) / 2;
+    for (j = 0; j < cols; j++) {
+      if (!c)
+        break;
+      c->pre.x += cx;
+      c->pre.y = cy + (cmaxh - c->pre.scaled_image->height) / 2;
+      c = c->next;
+    }
+    cy += cmaxh + gappi;
+  }
+  cy = m->wy + (m->wh - cy) / 2;
+  for (c = m->clients; c; c = c->next)
+    c->pre.y += cy;
+}
+
+XImage
+*getwindowximage(Client *c) {
+  XCompositeRedirectWindow(dpy, c->win, CompositeRedirectAutomatic);
+  XWindowAttributes attr;
+  XGetWindowAttributes( dpy, c->win, &attr );
+  XRenderPictFormat *format = XRenderFindVisualFormat( dpy, attr.visual );
+  int hasAlpha = ( format->type == PictTypeDirect && format->direct.alphaMask );
+  XRenderPictureAttributes pa;
+  pa.subwindow_mode = IncludeInferiors;
+  Picture picture = XRenderCreatePicture( dpy, c->win, format, CPSubwindowMode, &pa );
+  Pixmap pixmap = XCreatePixmap(dpy, root, c->w, c->h, 32);
+  XRenderPictureAttributes pa2;
+  XRenderPictFormat *format2 = XRenderFindStandardFormat(dpy, PictStandardARGB32);
+  Picture pixmapPicture = XRenderCreatePicture( dpy, pixmap, format2, 0, &pa2 );
+  XRenderColor color;
+  color.red = 0x0000;
+  color.green = 0x0000;
+  color.blue = 0x0000;
+  color.alpha = 0x0000;
+  XRenderFillRectangle (dpy, PictOpSrc, pixmapPicture, &color, 0, 0, c->w, c->h);
+  XRenderComposite(dpy, hasAlpha ? PictOpOver : PictOpSrc, picture, 0,
+                   pixmapPicture, 0, 0, 0, 0, 0, 0,
+                   c->w, c->h);
+  XImage* temp = XGetImage( dpy, pixmap, 0, 0, c->w, c->h, AllPlanes, ZPixmap );
+  temp->red_mask = format2->direct.redMask << format2->direct.red;
+  temp->green_mask = format2->direct.greenMask << format2->direct.green;
+  temp->blue_mask = format2->direct.blueMask << format2->direct.blue;
+  temp->depth = DefaultDepth(dpy, screen);
+  XCompositeUnredirectWindow(dpy, c->win, CompositeRedirectAutomatic);
+  return temp;
+}
+
+XImage
+*scaledownimage(XImage *orig_image, unsigned int cw, unsigned int ch) {
+  int factor_w = orig_image->width / cw + 1;
+  int factor_h = orig_image->height / ch + 1;
+  int scale_factor = factor_w > factor_h ? factor_w : factor_h;
+  int scaled_width = orig_image->width / scale_factor;
+  int scaled_height = orig_image->height / scale_factor;
+  XImage *scaled_image = XCreateImage(dpy, DefaultVisual(dpy, DefaultScreen(dpy)),
+                                      orig_image->depth,
+                                      ZPixmap, 0, NULL,
+                                      scaled_width, scaled_height,
+                                      32, 0);
+  scaled_image->data = malloc(scaled_image->height * scaled_image->bytes_per_line);
+  for (int y = 0; y < scaled_height; y++) {
+      for (int x = 0; x < scaled_width; x++) {
+          int orig_x = x * scale_factor;
+          int orig_y = y * scale_factor;
+          unsigned long pixel = XGetPixel(orig_image, orig_x, orig_y);
+          XPutPixel(scaled_image, x, y, pixel);
+      }
+  }
+  scaled_image->depth = orig_image->depth;
+  return scaled_image;
 }
 
 int

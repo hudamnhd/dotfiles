@@ -2,12 +2,16 @@ local M = {
   "echasnovski/mini.nvim",
   version = "*",
   enabled = true,
+  -- priority = 1000,
   event = "VeryLazy",
 }
 
 function M.config()
   require("mini.icons").setup()
-  require("mini.colors").setup()
+  -- require("mini.colors").setup()
+
+  -- pcall(vim.cmd, [[colorscheme neovim_colors]])
+  -- pcall(vim.cmd, [[colorscheme custom_colors]])
   vim.g.nvim_web_devicons = 1
   require("mini.icons").mock_nvim_web_devicons()
 

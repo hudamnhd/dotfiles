@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-rofi -show window -me-select-entry '' -me-accept-entry 'MousePrimary' &
+rofi -show window -window-match-fields 'title' -show-icons -me-select-entry '' -me-accept-entry 'MousePrimary' &

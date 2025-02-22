@@ -1,26 +1,106 @@
 ! author: arpinux <https://arpinux.org>
 ! ~/.Xresources configuration file
 !-----------------------------------------------------------------------
-*background: #011627
-*foreground: #bdc1c6
 
-*color0: #1d3b53
-*color1: #fc514e
-*color2: #a1cd5e
-*color3: #e3d18a
+! TokyoNight colors for Xresources
+
+*background: #222436
+*foreground: #c8d3f5
+
+*color0: #1b1d2b
+*color1: #ff757f
+*color2: #c3e88d
+*color3: #ffc777
 *color4: #82aaff
-*color5: #c792ea
-*color6: #7fdbca
-*color7: #a1aab8
+*color5: #c099ff
+*color6: #86e1fc
+*color7: #828bb8
 
-*color8: #7c8f8f
-*color9: #ff5874
-*color10: #21c7a8
-*color11: #ecc48d
+*color8: #9599BC
+*color9: #ff757f
+*color10: #c3e88d
+*color11: #ffc777
 *color12: #82aaff
-*color13: #ae81ff
-*color14: #7fdbca
-*color15: #d6deeb
+*color13: #c099ff
+*color14: #86e1fc
+*color15: #c8d3f5
+! ! special
+! *.foreground:   #2f3337
+! *.background:   #f6f6f6
+! *.cursorColor:  #2f3337
+!
+! ! black
+! *.color0:       #f6f6f6
+! *.color8:       #656e77
+!
+! ! red
+! *.color1:       #c02d2e
+! *.color9:       #c02d2e
+!
+! ! green
+! *.color2:       #54790d
+! *.color10:      #54790d
+!
+! ! yellow
+! *.color3:       #b75501
+! *.color11:      #b75501
+!
+! ! blue
+! *.color4:       #015692
+! *.color12:      #015692
+!
+! ! magenta
+! *.color5:       #803378
+! *.color13:      #803378
+!
+! ! cyan
+! *.color6:       #2f6f44
+! *.color14:      #2f6f44
+!
+! ! white
+! *.color7:       #2f3337
+! *.color15:      #2f3337
+
+! *background: #eef1f8
+! *foreground: #07080d
+! *color0: #eef1f8
+! *color1: #4f0006
+! *color2: #004e20
+! *color3: #644e00
+! *color4: #00466b
+! *color5: #40003d
+! *color6: #006c6d
+! *color7: #07080d
+! *color8: #eef1f8
+! *color9: #4f0006
+! *color10: #004e20
+! *color11: #644e00
+! *color12: #00466b
+! *color13: #40003d
+! *color14: #006c6d
+! *color15: #07080d
+
+
+! *background: #011627
+! *foreground: #bdc1c6
+!
+! *color0: #1d3b53
+! *color1: #fc514e
+! *color2: #a1cd5e
+! *color3: #e3d18a
+! *color4: #82aaff
+! *color5: #c792ea
+! *color6: #7fdbca
+! *color7: #a1aab8
+!
+! *color8: #7c8f8f
+! *color9: #ff5874
+! *color10: #21c7a8
+! *color11: #ecc48d
+! *color12: #82aaff
+! *color13: #ae81ff
+! *color14: #7fdbca
+! *color15: #d6deeb
 !! special
 !*.foreground:   #d6deeb
 !*.background:   #011627
@@ -81,8 +161,8 @@ URxvt.termName: rxvt-unicode
 URxvt.imLocale: en_US.UTF-8
 URxvt.saveLines: 5000
 URxvt.cursorBlink: true
-URxvt.foreground: #eef1f8
-URxvt.background: #07080d
+URxvt.foreground: #c8d3f5
+URxvt.background: #222436
 URxvt.cursorColor: #eef1f8
 URxvt.throughColor: #4f5258
 URxvt.highlightColor: #4f5258
@@ -114,9 +194,9 @@ URxvt.iso14755_52: false
 ! xterm ----------------------------------------------------------------
 xterm*saveLines:      4096
 xterm*AllowIconInput: on
-xterm*background:     #eef1f8
-xterm*foreground:     #07080d
-xterm*border:         #9b9ea4
+xterm*background:     #222436
+xterm*foreground:     #c8d3f5
+xterm*border:         #4f5258
 xterm*faceName:       FiraCode Nerd Font:style=Medium:pixelsize=17:antialias=true:autohint=true
 xterm*Font:           FiraCode Nerd Font:style=Medium:pixelsize=17:antialias=true:autohint=true
 xterm*allowBoldFonts: false
@@ -146,6 +226,8 @@ xterm*VT100.Translations: #override \
 
 ! xmessage -------------------------------------------------------------
 Xmessage.form.okay.shapeStyle:       rectangle
+xmessage*faceName: DejaVu Sans Mono
+xmessage*faceSize: 12
 Xmessage.center:                     TRUE
 Xmessage*buttons:                    OK
 Xmessage*defaultButton:              OK
@@ -159,8 +241,8 @@ Xmessage*Command.internalWidth:      5
 Xmessage*Command.internalHeight:     1
 Xmessage*message.scrollHorizontal:   Never
 Xmessage*message.scrollVertical:     Never
-Xmessage.form.Command.background:    #2e3440
-Xmessage.form.Command.foreground:    #d8dee9
+Xmessage.form.Command.background:    #222436
+Xmessage.form.Command.foreground:    #c8d3f5
 Xmessage*international:              TRUE
 
 ! xcolorsel ------------------------------------------------------------

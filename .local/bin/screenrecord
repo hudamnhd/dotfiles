@@ -2,30 +2,30 @@
 
 start_record() {
     # Menampilkan menu untuk memilih preset encoding
-    encoding_option=$(echo -e "Ultrafast\nMedium\nSlow" | rofi -dmenu -no-show-icons -p "Choose Encoding Preset")
+    encoding_option=$(echo -e "Ultrafast\nMedium\nSlow" | rofi -dmenu -p "Choose Encoding Preset")
 
     # Menentukan preset encoding berdasarkan pilihan pengguna
     case "$encoding_option" in
-        "Ultrafast")
-            preset="ultrafast"
-            ;;
-        "Medium")
-            preset="medium"
-            ;;
-        "Slow")
-            preset="slow"
-            ;;
-        *)
-            echo "Invalid option selected."
-            exit 1
-            ;;
+    "Ultrafast")
+        preset="ultrafast"
+        ;;
+    "Medium")
+        preset="medium"
+        ;;
+    "Slow")
+        preset="slow"
+        ;;
+    *)
+        echo "Invalid option selected."
+        exit 1
+        ;;
     esac
 
     # Menentukan nama file dan memulai rekaman dengan preset yang dipilih
     filename=~/Videos/screenrecord_$(date '+%Y%m%d%H%M%S').mp4
     ffmpeg -f x11grab -s $(xdpyinfo | grep dimensions | awk '{print $2}') -r 25 -i :0.0 -preset $preset $filename &
     pid=$!
-    echo $pid > ~/.screenrecord_pid
+    echo $pid >~/.screenrecord_pid
     notify-send "Screen Recording Started" "Recording to $filename using $preset preset"
 }
 

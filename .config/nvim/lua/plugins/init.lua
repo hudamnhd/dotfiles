@@ -1,4 +1,24 @@
 return {
+
+  {
+    "linrongbin16/fzfx.nvim",
+    -- Optional to avoid break changes between major versions.
+    version = "v8.*",
+    event = "VeryLazy",
+    dependencies = { "nvim-tree/nvim-web-devicons", "junegunn/fzf" },
+    config = function()
+      require("fzfx").setup()
+    end,
+  },
+  {
+    "skywind3000/vim-color-export",
+    event = "VeryLazy",
+    config = function()
+      vim.g.color_export_all = 0
+      vim.g.color_export_extra = { "GitGutterAdd", "GitGutterChange", "GitGutterDelete" }
+      vim.g.color_export_convert = 1
+    end,
+  },
   {
     "chrisgrieser/nvim-early-retirement",
     event = "VeryLazy",
@@ -194,6 +214,7 @@ return {
   { "leafgarland/typescript-vim", event = "VeryLazy" },
   { "tpope/vim-rsi", event = "VeryLazy" },
   { "tpope/vim-repeat", event = "VeryLazy" },
+  { "tpope/vim-sleuth", event = "BufReadPost" },
   { "mbbill/undotree", event = "BufReadPost" },
   { "haya14busa/vim-edgemotion", event = "BufReadPost" },
 }

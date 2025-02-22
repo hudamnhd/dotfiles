@@ -38,3 +38,8 @@ done
 for home_item in "$dotfiles_dir/home/"*; do
     create_symlink "$home_item" "$HOME/.$(basename "$home_item")"
 done
+
+# Buat symlink untuk xmonad
+for config_item in "$dotfiles_dir/xmonad/"*; do
+    create_symlink "$config_item" "$HOME/.config/xmonad/$(basename "$config_item")"
+done

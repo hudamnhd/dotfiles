@@ -1,23 +1,23 @@
 configuration {
-  display-run: "Run:";
-  display-drun: "Applications:";
-  display-window: "Windows:";
-  drun-display-format: "{icon} {name}";
-  font: "Geist Mono 14";
-  modi: "window,run,drun";
-  kb-cancel: "Escape,Control+q,Super+d,Super+D,Super+period";
-  show-icons: false;
+	display-run: "Run:";
+	display-drun: "Applications:";
+	display-window: "Windows:";
+	drun-display-format: "{icon} {name}";
+	font:"FiraCode Nerd Font 14";
+	modi: "window,run,drun";
+	kb-cancel: "Escape,Control+q,Super+d,Super+D,Super+period";
+	show-icons: false;
 }
 
 
 * {
-  bg: #14161b;
-  bg-alt: #4f5258;
+  bg: #222436;
+  bg-alt: #3B3F5E;
 
-  fg: #FFFFFF;
-  fg-alt: #909090;
+  fg: #c8d3f5;
+  fg-alt: #7277A6;
 
-  window-border-color: #4f5258;
+  window-border-color: #3B3F5E;
 
   background-color: @bg;
 
@@ -52,6 +52,7 @@ entry {
   background-color: @bg-alt;
   padding: 12;
   text-color: @fg;
+  placeholder: "search...";
 }
 
 inputbar {
