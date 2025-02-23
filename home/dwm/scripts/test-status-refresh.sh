@@ -26,7 +26,7 @@ function get_velocity {
 	if test "$velKB" -gt 1024; then
 		echo $(echo "scale=2; $velKB/1024" | bc)MB/s
 	else
-		echo ${velKB}
+		echo ${velKB}KB/s
 	fi
 }
 
@@ -55,12 +55,56 @@ print_temp() {
 	echo $(head -c 2 /sys/class/thermal/thermal_zone0/temp)C
 }
 
+#!/bin/bash
+
+# get_time_until_charged() {
+
+# parses acpitool's battery info for the remaining charge of all batteries and sums them up
+# sum_remaining_charge=$(acpitool -B | grep -E 'Remaining capacity' | awk '{print $4}' | grep -Eo "[0-9]+" | paste -sd+ | bc);
+
+# finds the rate at which the batteries being drained at
+# present_rate=$(acpitool -B | grep -E 'Present rate' | awk '{print $4}' | grep -Eo "[0-9]+" | paste -sd+ | bc);
+
+# divides current charge by the rate at which it's falling, then converts it into seconds for `date`
+# seconds=$(bc <<< "scale = 10; ($sum_remaining_charge / $present_rate) * 3600");
+
+# prettifies the seconds into h:mm:ss format
+# pretty_time=$(date -u -d @${seconds} +%T);
+
+# echo $pretty_time;
+# }
+
+# print_bat(){
+#hash acpi || return 0
+#onl="$(grep "on-line" <(acpi -V))"
+#charge="$(awk '{ sum += $1 } END { print sum }' /sys/class/power_supply/BAT*/capacity)%"
+#if test -z "$onl"
+#then
+## suspend when we close the lid
+##systemctl --user stop inhibit-lid-sleep-on-battery.service
+#echo -e "${charge}"
+#else
+## On mains! no need to suspend
+##systemctl --user start inhibit-lid-sleep-on-battery.service
+#echo -e "${charge}"
+#fi
+#echo "$(get_battery_charging_status) $(get_battery_combined_percent)%, $(get_time_until_charged )";
+# echo "$(get_battery_charging_status) $(get_battery_combined_percent)%, $(get_time_until_charged )";
+# }
+
 print_date() {
-	date '+| %A  %d-%m-%Y  %H:%M'
+	date '+ %A  %d-%m-%Y  %H:%M'
+}
+
+show_record() {
+	test -f /tmp/r2d2 || return
+	rp=$(cat /tmp/r2d2 | awk '{print $2}')
+	size=$(du -h $rp | awk '{print $1}')
+	echo " $size $(basename $rp)"
 }
 
 LOC=$(readlink -f "$0")
-DIR="/home/hudamnhd/dotfiles/home/dwm/scripts"
+DIR=$(dirname "$LOC")
 export IDENTIFIER="unicode"
 
 #. "$DIR/dwmbar-functions/dwm_transmission.sh"
@@ -69,32 +113,30 @@ export IDENTIFIER="unicode"
 #. "$DIR/dwmbar-functions/dwm_battery.sh"
 #. "$DIR/dwmbar-functions/dwm_mail.sh"
 #. "$DIR/dwmbar-functions/dwm_backlight.sh"
-. "/home/hudamnhd/dotfiles/home/dwm/scripts/dwmbar-functions/dwm_alsa.sh"
+. "$DIR/dwmbar-functions/dwm_alsa.sh"
 #. "$DIR/dwmbar-functions/dwm_pulse.sh"
 #. "$DIR/dwmbar-functions/dwm_weather.sh"
 #. "$DIR/dwmbar-functions/dwm_vpn.sh"
 # . "$DIR/dwmbar-functions/dwm_network.sh"
-# . "$DIR/dwmbar-functions/dwm_keyboard.sh"
+. "$DIR/dwmbar-functions/dwm_keyboard.sh"
 #. "$DIR/dwmbar-functions/dwm_ccurse.sh"
 #. "$DIR/dwmbar-functions/dwm_date.sh"
 
 get_bytes
 
 # Calculates speeds
-vel_recv=$(get_velocity $received_bytes $old_received_bytes $now)/$(get_velocity $transmitted_bytes $old_transmitted_bytes $now)kb
+vel_recv=$(get_velocity $received_bytes $old_received_bytes $now)
+vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes $now)
 
 print_mem_used() {
 	free -m | grep "Mem" | awk '{ print $3 }'
 }
-print_key_used() {
-	printf " %s" "$(setxkbmap -query | awk '/layout/{print toupper($2)}')"
-}
 
-echo "$(print_key_used)  $(print_mem_used)M 󰓅 $vel_recv $(dwm_alsa) $(print_date)"
+xsetroot -name " $(dwm_keyboard)   $(print_mem_used)M/$(print_mem)M ⬇️ $vel_recv ⬆️ $vel_trans   $(dwm_alsa) $(print_date) $(show_record)"
 
 # Update old values to perform new calculations
 old_received_bytes=$received_bytes
 old_transmitted_bytes=$transmitted_bytes
 old_time=$now
 
-# exit 0
+exit 0

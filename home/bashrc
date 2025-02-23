@@ -12,7 +12,7 @@ export DENO_INSTALL="$HOME/.deno"
 # Variabel sistem utama
 export EDITOR="nvim"
 export PAGER="most"
-export BROWSER="w3m"
+export BROWSER="firefox"
 export ENV="$HOME/.bashrc"
 
 # Menyimpan semua ekspor dalam satu baris untuk efisiensi

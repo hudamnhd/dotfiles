@@ -1,0 +1,10 @@
+--- config.def.h
++++ config.def.h
+@@ -95,6 +95,7 @@ static const Key keys[] = {
+ 	TAGKEYS(                        XK_8,                      7)
+ 	TAGKEYS(                        XK_9,                      8)
+ 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
++ 	{ MODKEY,                       XK_r,      previewallwin,  {0} },
+ };
+ 
+ /* button definitions */

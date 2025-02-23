@@ -117,32 +117,31 @@ workspaceOnCurrentScreen = WSIs $ do
 myAditionalKeys :: [(String, X ())]
 myAditionalKeys =
 -- https://xmonad.github.io/xmonad-docs/xmonad-contrib/XMonad-Util-EZConfig.html#v:checkKeymap
-    -- apps
-	[ ("M-<Return>", spawn myTerminal)
-	, ("M-t",        spawn myTerminal)
-	, ("M-d",        spawn "~/.local/bin/rofi-custom")
-	, ("M-s k",      spawn "rofi -show p -modi p:~/.local/bin/rofi-calc.sh  -theme-str 'entry {placeholder: \"\";}'")
-	, ("M-<Delete>", spawn "rofi -show p -modi p:~/.local/bin/rofi-power-menu mouseprimary")
-	, ("M-<Tab>",    spawn "~/.local/bin/rofi-window")
-        , ("M-s d",      spawn "dmenu_run")
-	, ("M-s e",      spawn "~/.local/bin/rofi-emoji")
-	, ("M-s i",      spawn "~/.local/bin/rofi-icon")
-	, ("M-<F11>",    spawn "~/.local/bin/xkb-switch.sh")
-	, ("M-<F12>",    spawn "~/.local/bin/screenrecord")
-	, ("<Print>",    spawn "~/.local/bin/screenshot-full")
-	, ("M-<Print>",  spawn "~/.local/bin/screenshot")
-	, ("M-s y",      spawn "st -e bash -i -c 'yy; exec bash'")
-	, ("M-s f",      spawn "firefox")
-	, ("M-s v",      spawn "vivaldi-stable")
-	, ("M-s c",      spawn "pcmanfm")
-	, ("M-S-t",      spawn trayerRestartCommand)
-	, ("M-s p",      spawn "pavucontrol")
-	, ("M-s t",      spawn "tabbed -r 2 st -w '' -e")
+-- apps
+  [ ("M-d",        spawn myTerminal)
+  , ("M-t",        spawn "tabbed -r 2 st -w '' -e")
+  , ("M-c",        spawn "~/.local/bin/rofi-custom")
+  , ("M-<Delete>", spawn "rofi -show p -modi p:~/.local/bin/rofi-power-menu mouseprimary -theme-str 'entry {placeholder: \"\";} window {width: 15%;}'")
+  , ("M-<Tab>",    spawn "~/.local/bin/rofi-window")
+  , ("M-<F11>",    spawn "~/.local/bin/xkb-switch.sh")
+  , ("M-<F12>",    spawn "~/.local/bin/screenrecord")
+  , ("<Print>",    spawn "~/.local/bin/screenshot-full")
+  , ("M-<Print>",  spawn "~/.local/bin/screenshot")
+  , ("M-s k",      spawn "rofi -show p -modi p:~/.local/bin/rofi-calc.sh -theme-str 'entry {placeholder: \"\";} window {width: 15%;}'")
+  , ("M-s d",      spawn "dmenu_run")
+  , ("M-s e",      spawn "~/.local/bin/rofi-emoji")
+  , ("M-s i",      spawn "~/.local/bin/rofi-icon")
+  , ("M-s y",      spawn "st -e bash -i -c 'yy; exec bash'")
+  , ("M-s f",      spawn "firefox")
+  , ("M-s v",      spawn "vivaldi-stable")
+  , ("M-s c",      spawn "pcmanfm")
+  , ("M-s p",      spawn "pavucontrol")
+  , ("M-S-t",      spawn trayerRestartCommand)
 
-        , ("M-q", kill)
+  , ("M-q", kill)
 
-	-- scratchpads
-	, ("M-y", namedScratchpadAction myScratchPads "htop")
+  -- scratchpads
+  , ("M-y", namedScratchpadAction myScratchPads "htop")
 
 
   -- -- volume controls
@@ -151,25 +150,26 @@ myAditionalKeys =
   -- , ("M-<Pause>", spawn "amixer set Master 5%+")
 
   -- window controls
-  , ("M-j", windows W.focusDown)
-  , ("M-k", windows W.focusUp)
+  , ("M-a", windows W.focusDown)
+  , ("M-i", windows W.focusUp)
+  , ("M-S-a", windows W.swapDown)
+  , ("M-S-i", windows W.swapUp)
+  , ("M-C-a", sendMessage ShrinkSlave)
+  , ("M-C-i", sendMessage ExpandSlave)
   , ("M-h", windows W.focusMaster)
   , ("M-l", windows W.focusDown)
   , ("M-S-l", windows W.swapDown)
-  , ("M-S-j", windows W.swapDown)
-  , ("M-S-k", windows W.swapUp)
   , ("M-S-h", windows W.swapMaster)
+  , ("M-<Return>", windows W.swapMaster)
   , ("M-C-h", sendMessage Shrink)
   , ("M-C-l", sendMessage Expand)
-  , ("M-C-j", sendMessage ShrinkSlave)
-  , ("M-C-k", sendMessage ExpandSlave)
   , ("M-,", sendMessage $ IncMasterN 1)
   , ("M-.", sendMessage $ IncMasterN (-1))
   , ("M-<Space>", withFocused $ windows . W.sink)
 
   -- layout controls
-  , ("M-a", sendMessage $ Toggle NBFULL)
-  , ("M-S-a", sendMessage ToggleStruts)
+  , ("M-w", sendMessage $ Toggle NBFULL)
+  , ("M-S-w", sendMessage ToggleStruts)
   , ("M-n", sendMessage NextLayout)
   , ("M-m", spawn "xdotool key super+a && xdotool key super+A")
   , ("M-S-m", spawn "sleep 1; xset dpms force suspend")
@@ -273,12 +273,10 @@ myHandleEventHook = multiScreenFocusHook
 
 myStartupHook :: X ()
 myStartupHook = do
-	spawn "feh --no-fehbg --bg-fill /home/hudamnhd/Images/wallpapers/dciusmcz5i731.jpg"
-	-- spawn "xmobar &"
 	-- spawn trayerRestartCommand
+        spawn "~/.local/bin/dynamic-wall.sh"
 	spawn "/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"
 	spawn "unclutter-xfixes"
-	spawn "xrdb ~/.Xresources"
 	spawn "xrdb ~/.Xresources"
 	spawn "xset r rate 210 40"
 	spawn "setxkbmap -option 'caps:escape_shifted_capslock'"
