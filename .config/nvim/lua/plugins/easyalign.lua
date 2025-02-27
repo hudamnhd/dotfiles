@@ -17,8 +17,8 @@ return {
     "junegunn/vim-easy-align",
     keys = function()
       return {
-        { "ga", mode = { "n", "x" }, "<Plug>(EasyAlign)", desc = "EasyAlign" },
-        { "gA", mode = { "n", "x" }, "<Plug>(LiveEasyAlign)", desc = "LiveEasyAlign" },
+        { "<space>ga", mode = { "n", "x" }, "<Plug>(EasyAlign)", desc = "EasyAlign" },
+        { "<space>gA", mode = { "n", "x" }, "<Plug>(LiveEasyAlign)", desc = "LiveEasyAlign" },
       }
     end,
     config = function()

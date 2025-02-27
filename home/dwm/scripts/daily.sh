@@ -15,8 +15,6 @@ if [ ! -f "$DAILY_FILE" ]; then
 	touch "$DAILY_FILE"
 fi
 
-# # Buka file dengan editor default (ganti dengan nano, vim, atau code jika ingin)
-
 # st -e nvim "$DAILY_FILE"
 
 #!/bin/bash

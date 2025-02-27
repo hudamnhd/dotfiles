@@ -1,12 +1,12 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "JetBrainsMono NF Medium:style=Medium:size=12:antialias=true:autohint=true" };
-static const char dmenufont[]       = "JetBrainsMono NF Medium:style=Medium:size=12:antialias=true:autohint=true";
+static const char *fonts[]          = { "JetBrainsMono NF:style=Bold:size=12:antialias=true:autohint=true" };
+static const char dmenufont[]       = "JetBrainsMono NF:style=Bold:size=12:antialias=true:autohint=true";
 static const char col_gray1[]       = "#111111";
 static const char col_gray2[]       = "#7B7B7B";
 static const char col_gray3[]       = "#B4B4B4";
@@ -108,15 +108,15 @@ static const Key keys[] = {
 	{ MODKEY,                             XK_t,            spawn,          SHCMD("tabbed -r 2 st -w '' -e")},
 	{ MODKEY|ShiftMask,                   XK_t,            spawn,          SHCMD("st -e tmux")},
 	{ MODKEY,                             XK_y,            spawn,          SHCMD("st -e bash -i -c 'yy; exec bash'") },
-	{ MODKEY,                             XK_d,            spawn,          {.v = terminal } },
+	{ MODKEY,                             XK_x,            spawn,          {.v = terminal } },
 	{ MODKEY,                             XK_c,            spawn,          {.v = filemanager } },
 	{ MODKEY,                             XK_v,            spawn,          {.v = vivaldi } },
 	{ MODKEY,                             XK_b,            spawn,          {.v = firefox } },
 	{ MODKEY|ShiftMask,                   XK_b,            togglebar,      {0} },
-	{ MODKEY,                             XK_a,            focusstackvis,  {.i = +1 } },
-	{ MODKEY,                             XK_i,            focusstackvis,  {.i = -1 } },
-	{ MODKEY|ShiftMask,                   XK_a,            focusstackhid,  {.i = +1 } },
-	{ MODKEY|ShiftMask,                   XK_i,            focusstackhid,  {.i = -1 } },
+	{ MODKEY,                             XK_d,            focusstackvis,  {.i = +1 } },
+	{ MODKEY,                             XK_a,            focusstackvis,  {.i = -1 } },
+	{ MODKEY|ShiftMask,                   XK_d,            focusstackhid,  {.i = +1 } },
+	{ MODKEY|ShiftMask,                   XK_a,            focusstackhid,  {.i = -1 } },
 	{ MODKEY,                             XK_w,            togglelayout,   {0} },
 	{ MODKEY,                             XK_bracketright, incnmaster,     {.i = +1 } },
 	{ MODKEY,                             XK_bracketleft,  incnmaster,     {.i = -1 } },
@@ -127,6 +127,7 @@ static const Key keys[] = {
 	{ MODKEY,                             XK_q,            killclient,     {0} },
 	{ MODKEY,                             XK_grave,        previewallwin,  {0} },
 	{ MODKEY,                             XK_space,        togglefloating, {0} },
+	{ MODKEY,                             XK_g,            setlayout,      {.v = &layouts[3]} },
 	{ MODKEY|ShiftMask,                   XK_space,        setlayout,      {0} },
 	{ MODKEY,                             XK_0,            view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,                   XK_0,            tag,            {.ui = ~0 } },

@@ -67,7 +67,7 @@ alias gm='cd /media'
 alias gc='cd ~/.config'
 # utils ----------------------------------------------------------------
 # get top 10 shell commands:
-alias top10='bat ~/.bash_history | uniq -c | sort -nr | head -n 10 | jfind'
+alias top10='bat ~/.bash_history | uniq -c | sort -nr | head -n 10 | fzf'
 # process using web
 alias ports='lsof -i -n -P'
 # make parent directory if needed
@@ -149,7 +149,7 @@ function clipv() {
 unalias c 2>/dev/null
 
 c() {
-	local dest_dir=$(cdscuts_glob_echo | jfind)
+	local dest_dir=$(cdscuts_glob_echo | fzf)
 	if [[ $dest_dir != '' ]]; then
 		# printf 'builtin cd -- %q' "$dest_dir"
 		set +o pipefail
@@ -161,7 +161,7 @@ c() {
 export -f c >/dev/null
 
 z() {
-	local dest_dir=$(fd . -t d | jfind)
+	local dest_dir=$(fd . -t d -H | jfind)
 	if [[ $dest_dir != '' ]]; then
 		# printf 'builtin cd -- %q' "$dest_dir"
 		set +o pipefail
@@ -172,7 +172,7 @@ z() {
 
 unmark() {
 	local dest_dir
-	dest_dir=$(cdscuts_glob_echo | jfind --prompt="Remove bookmarked directory: ")
+	dest_dir=$(cdscuts_glob_echo | fzf --prompt="Remove bookmarked directory: ")
 
 	if [[ -n "$dest_dir" ]]; then
 		local bookmark_file="$HOME/.cdg_paths"

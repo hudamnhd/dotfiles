@@ -107,4 +107,29 @@ function M.get_range(callback)
   vim.api.nvim_feedkeys("g@", "n", false)
 end
 
+M.visual_charwise_selection = function()
+  local visual_selection = M.get_visual_selection()
+
+  if visual_selection == nil then
+    print("search-replace does not support visual-blockwise selections")
+    return
+  end
+
+  local backspace_keypresses = string.rep("\\<backspace>", 5)
+  local left_keypresses = string.rep("\\<Left>", 2)
+
+  vim.cmd(
+    ':call feedkeys(":'
+      .. backspace_keypresses
+      .. "%s/"
+      .. M.double_escape(visual_selection)
+      .. "/"
+      .. M.double_escape(visual_selection)
+      .. "/"
+      .. "g"
+      .. left_keypresses
+      .. '")'
+  )
+end
+
 return M

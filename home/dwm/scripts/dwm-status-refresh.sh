@@ -56,7 +56,7 @@ print_temp() {
 }
 
 print_date() {
-	date '+%a, %d %b 󰥔 %H:%M:%S'
+	date '+%a, %d %b 󰥔 %H:%M'
 }
 
 LOC=$(readlink -f "$0")

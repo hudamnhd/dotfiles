@@ -31,6 +31,7 @@ import           XMonad.Layout.Decoration            (ModifiedLayout)
 import           XMonad.Layout.DraggingVisualizer    (draggingVisualizer)
 import           XMonad.Layout.HintedGrid
 import           XMonad.Layout.IndependentScreens
+import qualified XMonad.Layout.Magnifier             as Mag
 import           XMonad.Layout.MouseResizableTile
 import           XMonad.Layout.MultiToggle           (EOT (EOT),
                                                       Toggle (Toggle), mkToggle,
@@ -119,6 +120,7 @@ myAditionalKeys =
 -- https://xmonad.github.io/xmonad-docs/xmonad-contrib/XMonad-Util-EZConfig.html#v:checkKeymap
 -- apps
   [ ("M-d",        spawn myTerminal)
+  , ("M-p",        spawn "via")
   , ("M-t",        spawn "tabbed -r 2 st -w '' -e")
   , ("M-c",        spawn "~/.local/bin/rofi-custom")
   , ("M-<Delete>", spawn "rofi -show p -modi p:~/.local/bin/rofi-power-menu mouseprimary -theme-str 'entry {placeholder: \"\";} window {width: 15%;}'")
@@ -222,11 +224,12 @@ switchScreen d = do s <- screenBy d
 mySpacing :: Integer -> Integer -> l a -> ModifiedLayout Spacing l a
 mySpacing i j = spacingRaw False (Border i i i i) True (Border j j j j) True
 
-myLayoutHook = avoidStruts $ onWorkspaces ["0_9"] layoutGrid $ layoutTall ||| layoutGrid ||| layoutTabbed ||| layoutFloat
+-- layoutThree = mkToggle (NBFULL ?? EOT) . renamed [Replace "ThreeCol"] $ Mag.magnifiercz' 1.3 $ draggingVisualizer $ smartBorders $ mySpacing 0 0 $ mouseResizableTile { masterFrac = 0.5, draggerType = FixedDragger 0 30}
+-- layoutFloat = mkToggle (NBFULL ?? EOT) . renamed [Replace "float"] $ simpleFloat
+myLayoutHook = avoidStruts $ onWorkspaces ["0_9"] layoutGrid $ layoutTall ||| layoutGrid ||| layoutTabbed
   where
     layoutTall = mkToggle (NBFULL ?? EOT) . renamed [Replace "tall"] $ draggingVisualizer $ smartBorders $ mySpacing 0 0 $ mouseResizableTile { masterFrac = 0.5, draggerType = FixedDragger 0 30}
     layoutGrid = mkToggle (NBFULL ?? EOT) . renamed [Replace "grid"] $ draggingVisualizer $ smartBorders $ mySpacing 0 0 $ Grid False
-    layoutFloat = mkToggle (NBFULL ?? EOT) . renamed [Replace "float"] $ simpleFloat
     layoutTabbed = mkToggle (NBFULL ?? EOT) . renamed [Replace "full"] $ smartBorders $ mySpacing 0 0 $ tabbed shrinkText myTabTheme
     myTabTheme = def
       { fontName            = "xft:FiraCode Nerd Font:size=12:bold"
@@ -281,7 +284,7 @@ myStartupHook = do
 	spawn "xset r rate 210 40"
 	spawn "setxkbmap -option 'caps:escape_shifted_capslock'"
 	spawn "xrandr --output HDMI-A-0  --brightness 0.5"
-	modify $ \xstate -> xstate { windowset = onlyOnScreen 1 "1_1" (windowset xstate) }
+	-- modify $ \xstate -> xstate { windowset = onlyOnScreen 1 "1_1" (windowset xstate) }
 
 ------------------------------------------------------------------------
 
@@ -400,7 +403,7 @@ main = xmonad
         , manageHook         = myManageHook
         , startupHook        = myStartupHook
 
-        , rootMask = rootMask def .|. pointerMotionMask
+        -- , rootMask = rootMask def .|. pointerMotionMask
         -- , logHook            = logHook def <+> myUpdatePointer (0.75, 0.75) (0, 0)
-        , handleEventHook    = myHandleEventHook
+        -- , handleEventHook    = myHandleEventHook
         } `additionalKeysP` myAditionalKeys

@@ -8,12 +8,12 @@ local function insert_json(pattern)
 end
 
 local function logjs_opr()
-  require("utils.helper").get_range(function(result)
+  require("utils.search-replace").get_range(function(result)
     insert_json(result)
   end)
 end
 
-vim.keymap.set("n", "<space>gj", logjs_opr, { desc = "logjs_opr" })
+vim.keymap.set("n", "g?j", logjs_opr, { desc = "logjs_opr" })
 
 return {
   "andrewferrier/debugprint.nvim",
@@ -21,26 +21,32 @@ return {
   opts = {
     keymaps = {
       normal = {
-        plain_below = "<space>gp",
-        plain_above = "<space>gP",
-        variable_below = "<space>gv",
-        variable_above = "<space>gV",
-        variable_below_alwaysprompt = nil,
-        variable_above_alwaysprompt = nil,
-        textobj_below = "<space>go",
-        textobj_above = "<space>gO",
-        toggle_comment_debug_prints = nil,
-        delete_debug_prints = nil,
+        plain_below = "g?p",
+        plain_above = "g?P",
+        variable_below = "g?v",
+        variable_above = "g?V",
+        variable_below_alwaysprompt = "",
+        variable_above_alwaysprompt = "",
+        textobj_below = "g?o",
+        textobj_above = "g?O",
+        toggle_comment_debug_prints = "",
+        delete_debug_prints = "",
+      },
+      insert = {
+        plain = "<C-G>p",
+        variable = "<C-G>v",
       },
       visual = {
-        variable_below = "<space>gv",
-        variable_above = "<space>gV",
+        variable_below = "g?v",
+        variable_above = "g?V",
       },
     },
     commands = {
       toggle_comment_debug_prints = "ToggleCommentDebugPrints",
       delete_debug_prints = "DeleteDebugPrints",
+      reset_debug_prints_counter = "ResetDebugPrintsCounter",
     },
+    -- … Other options
   },
   cmd = {
     "ToggleCommentDebugPrints",

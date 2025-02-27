@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export XDG_SESSION_DESKTOP=xmonad
+export XDG_SESSION_DESKTOP=dwm
 export XDG_SESSION_TYPE=x11
 export DISPLAY=:0
 export XDG_RUNTIME_DIR=/run/user/1000

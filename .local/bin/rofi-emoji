@@ -1651,14 +1651,11 @@ emojis="😀 grinning face
 🏴󠁧󠁢󠁳󠁣󠁴󠁿 flag: Scotland
 🏴󠁧󠁢󠁷󠁬󠁳󠁿 flag: Wales
 "
-# /home/hudamnhd/dotfiles/.config/rofi/bookmarks/bookmarks.rasi
-# ~/.config/rofi/themes/rofi-emoji.rasi
 
 opt="" theme=""
 if [ -e ~/.config/rofi/themes/rofi-emoji.rasi ]; then
 	opt="-theme"
-	theme="rofi-emoji"
-	# theme="~/.config/rofi/themes/bookmarks.rasi"
+	theme="~/.config/rofi/themes/rofi-emoji.rasi"
 fi
 
 chosen=$(printf '%s' "$emojis" | rofi -dmenu -i $opt $theme -p "" | cut -d" " -f1)

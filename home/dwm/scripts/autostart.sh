@@ -6,9 +6,9 @@
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 unclutter-xfixes --timeout 1 --jitter 1 --ignore-buttons 4,5,6,7 --hide-on-touch --start-hidden &
 xrdb ~/.Xresources &
-feh --no-fehbg --bg-fill '/home/hudamnhd/Images/wallpapers/dciusmcz5i731.jpg' &
-/bin/bash ~/.dwm/scripts/setxmodmap-qwerty.sh &
+/bin/bash ~/.dwm/scripts/setxmodmap-qwerty.sh
+dwall -s firewatch
+# feh --no-fehbg --bg-fill '/home/hudamnhd/Images/wallpapers/dciusmcz5i731.jpg' &
 
 ~/.dwm/scripts/autostart_wait.sh &
 while type dwm >/dev/null; do dwm && continue || break; done
-

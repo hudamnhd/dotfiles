@@ -25,8 +25,8 @@ end
 
 local win = {
   full = "--width=0.95 --height=0.95",
-  bottom = "--height=0.4 ",
-  top = "--height=0.5 --wintype=split --position=leftabove",
+  split = "--wintype=split --position=vsplit",
+  top = "--height=0.5 --wintype=split --position=botright",
 }
 
 return {
@@ -45,7 +45,7 @@ return {
     {
       "<F1>",
       function()
-        toggleFloaterm("--name=bash " .. win.full .. " bash")
+        toggleFloaterm("--name=bash " .. win.top .. " bash")
       end,
       mode = { "n", "t" },
       desc = "Bash",
@@ -55,7 +55,7 @@ return {
     {
       "<F2>",
       function()
-        toggleFloaterm("--name=buffer --cwd=<buffer> --disposable " .. win.full .. " bash")
+        toggleFloaterm("--name=buffer --cwd=<buffer> --disposable " .. win.split .. " bash")
       end,
       mode = { "n", "t" },
       desc = "Buffer cwd",

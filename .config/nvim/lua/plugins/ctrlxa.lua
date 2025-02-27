@@ -5,6 +5,7 @@ return {
     vim.cmd([[
     let g:CtrlXA_Toggles = [
     \ ['!=', '==' ],
+    \ ['!==', '===' ],
     \ ['true', 'false' ],
     \ ['yes', 'no' ],
     \ ['on', 'off' ],

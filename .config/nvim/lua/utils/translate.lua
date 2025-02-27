@@ -109,7 +109,7 @@ function M.translate_nm()
 end
 
 function M.translate_vm()
-  local text = require("utils.helper").get_visual_selection(true)
+  local text = require("utils.search-replace").get_visual_selection(true)
   enter_translate_cmd(text)
 end
 

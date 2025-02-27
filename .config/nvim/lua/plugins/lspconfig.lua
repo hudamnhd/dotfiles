@@ -3,9 +3,7 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
     dependencies = {
-      -- { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
-      -- "hrsh7th/cmp-nvim-lsp",
-      -- "saghen/blink.cmp",
+      { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
       {
         "lewis6991/hover.nvim",
         event = { "BufReadPost" },
@@ -36,7 +34,7 @@ return {
             mouse_delay = 1000,
           })
           -- Setup keymaps
-          local bind = require("keymaps").bind
+          local bind = require("utils.keymap").bind
           bind("n", "K", require("hover").hover, { desc = "hover.nvim" })
           bind("n", "go", require("hover").hover_select, { desc = "hover.nvim (select)" })
           bind("n", "<a-[>", function()

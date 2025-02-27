@@ -1,18 +1,3 @@
-local prettier = { "prettierd", "prettier", stop_after_first = true }
----@param bufnr integer
----@param ... string
----@return string
-local function first(bufnr, ...)
-  local conform = require("conform")
-  for i = 1, select("#", ...) do
-    local formatter = select(i, ...)
-    if conform.get_formatter_info(formatter, bufnr).available then
-      return formatter
-    end
-  end
-  return select(1, ...)
-end
-
 return {
   "stevearc/conform.nvim",
   event = { "BufWritePre" },
@@ -59,9 +44,7 @@ return {
       yaml = { "dprint" },
       -- markdown        = { "dprint" },
       lua = { "stylua" },
-      markdown = function(bufnr)
-        return { first(bufnr, "prettierd", "prettier"), "injected" }
-      end,
+      markdown = { "dprint" },
       ["_"] = { "trim_whitespace", "trim_newlines" },
     },
     formatters = {

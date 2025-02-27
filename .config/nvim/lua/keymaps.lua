@@ -2,7 +2,8 @@
 local M = {}
 
 local utils = require("utils")
-local map = utils.keymap.map
+local k = utils.keymap
+local map, bind, feedkeys = k.map, k.bind, k.feedkeys
 
 M.leader_group_clues = {
   { mode = "n", keys = "<space>t", desc = "+Toggle and other" },
@@ -12,16 +13,6 @@ M.leader_group_clues = {
   { mode = "n", keys = "sq", desc = "+FZF" },
   { mode = "n", keys = "sf", desc = "+FZF" },
 }
-
-function M.bind(mode, lhs, rhs, opts)
-  opts = opts or {}
-  opts.silent = opts.silent ~= false
-  vim.keymap.set(mode, lhs, rhs, opts)
-end
-
-function M.feedkeys(key, mode)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), mode, false)
-end
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~ multiple cursors (sort of) ~
@@ -47,7 +38,7 @@ end
 -- NOTE without copying to clipboard
 local blackhole_key = { "S", "D", "C", "d" }
 for _, key in ipairs(blackhole_key) do
-  M.bind("n", key, '"_' .. key, { desc = "blackhole" .. key })
+  bind("n", key, '"_' .. key, { desc = "blackhole" .. key })
 end
 
 local function delete_line()
@@ -55,24 +46,21 @@ local function delete_line()
   return (empty_line and '"_dd' or "dd")
 end
 
+
 -- stylua: ignore start
 map({
   [{ "t" }] = {
     { "<c-\\>", [[<C-\><C-n>]] },
-    { "<c-^>",  [[<C-\><C-n><c-^>]] },
     { "<a-x>",  [[<C-\><C-n>:bd!<Cr>]] },
     { "<a-w>",  [[<C-\><C-n><c-w>w]] },
     { "<m-r>",  [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true } },
   },
   [{ "c" }] = {
-    { "<c-v>",  [[<C-R>"]], { desc = "paste cmd-mode", silent = false } },
-    { "<a-v>",  [[<C-R>+]], { desc = "paste cmd-mode", silent = false } },
-    { "<c-bs>", [[.\{-}]],  { silent = false } },
-    { "<s-bs>", [[\s\+]],   { silent = false } },
-
-    { "<F3>", 'getcmdtype() == ":" ? expand("%:h/") . "/" : ""',   { silent = false, expr = true } },
-    { "<F4>", 'getcmdtype() == ":" ? expand("%:p:h/") . "/" : ""', { silent = false, expr = true } },
-    { "<F5>", 'getcmdtype() == ":" ? expand("%:p")  : ""',         { silent = false, expr = true } },
+    { "<c-v>",     [[<C-R>"]], { desc = "paste cmd-mode", silent = false } },
+    { "<a-v>",     [[<C-R>+]], { desc = "paste cmd-mode", silent = false } },
+    { "<c-space>", [[.\{-}]],  { silent = false } },
+    { "<s-space>", [[\s\+]],   { silent = false } },
+    { "<F2>", 'getcmdtype() == ":" ? expand("%:p")  : ""',         { silent = false, expr = true } },
   },
   [{"v", "o", "x" }] = {
     { "zq",        mc_select .. "``qz",                { desc = "mc start macro (foward)" } },
@@ -80,9 +68,8 @@ map({
     { "<c-0>",     mc_macro(mc_select),                { desc = "mc end or replay macro",  expr = true  } },
     { "<space>tr", utils.translate.translate_vm,       { desc = "translate visual" } },
 
-    { "<c-f>", vim.cmd.SearchReplaceSingleBufferVisualSelection, { desc = "replace visual" } },
-    { "<c-s>", vim.cmd.SearchReplaceWithinVisualSelectionCWord,  { desc = "replace cword" } },
-    { "<c-r>", vim.cmd.SearchReplaceWithinVisualSelection,       { desc = "Search Replace Search" } },
+    { "<c-f>", require("utils.search-replace").visual_charwise_selection, { desc = "replace visual" } },
+    { "<c-s>", [[:s/\v//g<left><left><left>]], { desc = "Search Replace Search", silent = false  } },
 
     { "q", [[iq]], { remap = true } },
     { "Q", [[aq]], { remap = true } },
@@ -91,9 +78,9 @@ map({
     { "t", [[it]], { remap = true } },
     { "T", [[at]], { remap = true } },
 
-    { "<leader>n", [[:s/\d\+/number/g]],                              { desc = "All number to type number", silent = false } },
-    { "<leader>s", [[:s/"[^"]*"/string/g]],                           { desc = "All string to type string", silent = false } },
-    { "<leader>c", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]],                { desc = "camel to snack", silent = false } },
+    { "<leader>n", [[:s/\d\+/number/g]],               { desc = "Number to type number", silent = false } },
+    { "<leader>s", [[:s/"[^"]*"/string/g]],            { desc = "String to type string", silent = false } },
+    { "<leader>c", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]], { desc = "Camel to snack",        silent = false } },
     { "<leader>-", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc = "Rmv - and change to capitalize", silent = false } },
 
     { "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true } },
@@ -107,22 +94,23 @@ map({
     { "zQ",    "#Nqz",     { desc = "mc start macro (backward)" } },
     { "<c-0>", mc_macro(), { desc = "mc end or replay macro",  expr = true } },
 
-    { "<c-f>", vim.cmd.SearchReplaceSingleBufferCWord,         { desc = "replace cword" } },
-    { "<c-s>", [[:'<,'>s/\v<C-r><C-w>//gI<left><left><left>]], { desc = "replace cword", silent = false } },
-
-    { "<C-Up>",    utils.helper.resize(false, -5), { desc = "hsplit increase" } },
-    { "<C-Down>",  utils.helper.resize(false, 5),  { desc = "hsplit decrease" } },
-    { "<C-Left>",  utils.helper.resize(true, -5),  { desc = "vsplit decrease" } },
-    { "<C-Right>", utils.helper.resize(true, 5),   { desc = "vsplit increase" } },
+    { "<c-s>", [[:'<,'>s/\v<C-r><C-w>//g<left><left>]], { desc = "replace cword", silent = false } },
+    { "<c-f>", [[:%s/\v<C-r><C-w>//g<left><left>]], { desc = "replace cword", silent = false } },
 
     { "sm", "gmm",  { remap = true, desc = "MiniOperator clone line" } },
-    { "sx", "gxiw", { remap = true, desc = "MiniOperator exchange word" } },
-    { "rw", "griw", { remap = true, desc = "MiniSurround replace word" } },
     { "sw", "ysiw", { remap = true, desc = "MiniSurround add word" } },
+
+    { "<C-T>", "<Cmd>lua MiniBracketed.buffer('backward')<CR>"},
+    { "<C-Y>", "<Cmd>lua MiniBracketed.buffer('forward')<CR>"},
+    { "<a-w>", [[<c-w>w]] },
+    { "<a-a>", require("plugins.fzf-lua.cmds").asynctasks },
+
+    {"sq", [[:lua require'menu'.bookmarks()<CR>]]},
 
     { "<a-w>",    [[<c-w>w]] },
     { "!",        [[:<up><cr>]] },
     { "J",        [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true } },
+    { "dd",       delete_line,                 { desc = "delete line", expr = true  } },
     { "gn",       [[:normal n.<cr>]],          { desc = "Repeat the last edit on the next [count] matches." } },
     { "<M-v>",    [[`[v`]],                    { desc = "visual select last yank/paste" } },
     { "\\q",      [[q]],                       { desc = "remap q" } },
@@ -130,8 +118,6 @@ map({
     { "<space>c", [[<c-w>c]],                  { desc = "close" } },
     { "<space>v", [[<c-w>v]],                  { desc = "vsplite" } },
     { "<space>w", vim.cmd.update,              { desc = "update" } },
-    { "<space>d", vim.diagnostic.open_float,   { desc = "diagnostic.open_float" } },
-    { "dd",       delete_line,                 { desc = "delete blank lines", expr = true  } },
 
     { "<space>tr", utils.translate.translate_nm,               { desc = "translate" } },
     { "<space>ty", [[<cmd>Unite -vertical yankround<cr>]],     { desc = "YANKROUND" } },
@@ -139,6 +125,7 @@ map({
 
     { "<c-d>", "<C-d>zz" },
     { "<c-u>", "<C-u>zz" },
+
     -- emulate some basic commands from `vim-abolish`
     { "ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" } },
     { "cu", "mzgUiw`z",    { desc = "󰬴 lowercase to UPPERCASE" } },
@@ -168,7 +155,7 @@ for _, c in ipairs({
   { "k", "Line up" },
   { "j", "Line down" },
 }) do
-  M.bind(
+  bind(
     "n",
     c[1],
     ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]),
@@ -183,7 +170,7 @@ for _, m in ipairs({ "n", "v" }) do
     { "k", "k", "Visual line up" },
     { "j", "j", "Visual line down" },
   }) do
-    M.bind(
+    bind(
       m,
       c[1],
       ([[v:count == 0 ? 'g%s' : '%s']]):format(c[2], c[2]),
@@ -214,85 +201,25 @@ for _, key in ipairs(delimiters) do
   vim.keymap.set("n", key_combination, modify_line_end_delimiter(key), { desc = desc_combination })
 end
 
--- Definisikan fungsi zoom_toggle
-local function zoom_toggle()
-  vim.cmd("normal! " .. "|")
-
-  -- Periksa apakah hanya ada satu jendela terbuka.
-  if vim.fn.winnr("$") == 1 then
-    return
-  end
-
-  local restore_cmd = vim.fn.winrestcmd()
-  vim.cmd("wincmd |")
-  vim.cmd("wincmd _")
-
-  -- Proses untuk menyimpan dan mengembalikan t:zoom_restore
-  if vim.g.zoom_restore then
-    vim.cmd(vim.g.zoom_restore)
-    vim.g.zoom_restore = nil
-  elseif vim.fn.winrestcmd() ~= restore_cmd then
-    vim.g.zoom_restore = restore_cmd
-  end
-end
-
-M.bind("n", "<C-=>", zoom_toggle, { desc = "ZOOM_TOGGLE" })
-
-local sr_key = {
-  '"',
-  "`",
-  "'",
-  ")",
-  "]",
-  "}",
-}
-
-for _, key in ipairs(sr_key) do
-  local key_combination = string.format("<space>%s", key)
-  local act_combination = string.format("ysiw%s", key)
-  local desc_combination = string.format("MiniSurround add word %s", key)
-  vim.keymap.set("n", key_combination, act_combination, { remap = true, desc = desc_combination })
-end
-
-local function toggle_smart_case()
-  vim.o.ignorecase = not vim.o.ignorecase
-  vim.o.smartcase = not vim.o.smartcase
-
-  local status_message = "Ignorecase: "
-    .. (vim.o.ignorecase and "on" or "off")
-    .. ", Smartcase: "
-    .. (vim.o.smartcase and "on" or "off")
-  vim.notify(status_message)
-  M.feedkeys("<space>", "c")
-  M.feedkeys("<bs>", "c")
-end
-
-M.bind("c", "<C-S>", toggle_smart_case, { desc = "Toggle smartcase" })
 
 local function cgn(pattern)
+  feedkeys("<esc>", "v")
   local cmd = vim.api.nvim_replace_termcodes('<CR>N"_cgn', true, false, true)
-  vim.api.nvim_feedkeys("/" .. pattern .. cmd, "n", false)
+  vim.api.nvim_feedkeys("/\\V" .. pattern .. cmd, "n", false)
 end
 
 local function cgn_action(type)
   return function()
     if type == "v" then
-      cgn(utils.helper.get_visual_selection())
+      cgn(require("utils.search-replace").get_visual_selection())
     else
       cgn(vim.fn.expand("<cword>"))
     end
   end
 end
 
-M.bind("n", "<C-N>", cgn_action("n"), { desc = "cgn word" })
-M.bind("x", "<C-N>", cgn_action("v"), { desc = "cgn visual" })
-
-M.bind(
-  { "x", "n" },
-  "<space>r",
-  '<cmd>lua require("user.nui").local_menu()<cr>',
-  { desc = "(SUB) Search Replace" }
-)
+bind("n", "<C-N>", cgn_action("n"), { desc = "cgn word" })
+bind("x", "<C-N>", cgn_action("v"), { desc = "cgn visual" })
 
 ---Remove all trailing whitespaces within the current buffer
 ---Retain cursor position & last search content
@@ -311,28 +238,24 @@ local function remove_trailing_whitespaces()
   end
 end
 
-M.bind("n", "<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
+bind("n", "<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
+
+bind("n", "<F3>", function ()
+  vim.cmd('tabedit')
+  vim.cmd('setlocal nonumber signcolumn=no')
+
+  -- Unset vim environment variables to be able to call `vim` without errors
+  -- Use custom `--git-dir` and `--work-tree` to be able to open inside
+  -- symlinked submodules
+  vim.fn.termopen('VIMRUNTIME= VIM= gitui', {
+    on_exit = function()
+      vim.cmd('silent! :checktime')
+      vim.cmd('silent! :bw')
+    end,
+  })
+  vim.cmd('startinsert')
+  vim.b.minipairs_disable = true
+end, { desc = "remove trailing whitespaces" })
 
 
--- vim.keymap.set("n", "<space>o", function()
---   vim.ui.input({ prompt = "Masukkan nama: ", default = "John Doe" }, function(input)
---     if input then
---       vim.notify("Halo, " .. input .. "!", vim.log.levels.INFO)
---     else
---       vim.notify("Input dibatalkan", vim.log.levels.WARN)
---     end
---   end)
---
--- end, { desc = "Input Nama" })
--- vim.keymap.set("n", "<leader>o", function()
---   vim.ui.select({ "Option 1", "Option 2", "Option 3" }, {
---     prompt = "Pilih opsi:",
---   }, function(choice)
---     if choice then
---       vim.notify("Kamu memilih: " .. choice, vim.log.levels.INFO)
---     else
---       vim.notify("Tidak ada yang dipilih", vim.log.levels.WARN)
---     end
---   end)
--- end, { desc = "Input Nama" })
 return M

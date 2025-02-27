@@ -1,33 +1,31 @@
 local A = vim.api
 local option = A.nvim_buf_get_option
+local bind = require("utils.keymap").bind
 
 local M = {}
 
-function M.bind(mode, lhs, rhs, opts)
-  opts = opts or {}
-  opts.silent = opts.silent ~= false
-  vim.keymap.set(mode, lhs, rhs, opts)
-end
-
-M.bind(
+bind("n", "<space>bs", function()
+  vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true))
+end, { desc = "scratch" })
+bind(
   "n",
   "<space>ba",
   '<CMD>lua require("utils.buffers").clear()<CR>',
   { desc = "delete all buff" }
 )
-M.bind(
+bind(
   "n",
   "<space>bq",
   '<CMD>lua require("utils.buffers").only()<CR>',
   { desc = "delete all buff not current" }
 )
-M.bind(
+bind(
   "n",
   "<space>bw",
   '<CMD>lua require("utils.buffers").delete(false)<CR>',
   { desc = "delete buff current save window" }
 )
-M.bind(
+bind(
   "n",
   "<space>q",
   '<CMD>lua require("utils.buffers").delete(true)<CR>',

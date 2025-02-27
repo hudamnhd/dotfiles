@@ -1,4 +1,4 @@
-Config { font = "FiraCode Nerd Font Bold 10"
+Config { font = "JetbrainsMono Nerd Font Bold 11"
        , additionalFonts =
           [ "FontAwesome 12"
           , "FontAwesome Bold 8"
@@ -10,7 +10,7 @@ Config { font = "FiraCode Nerd Font Bold 10"
        , bgColor = "#222436"
        , fgColor = "#c8d3f5"
        , alpha = 255
-       , position = TopSize L 100 30
+       -- , position = TopSize L 100 30
        -- , textOffset = 24
        -- , textOffsets = [ 25, 24 ]
        , lowerOnStart = True

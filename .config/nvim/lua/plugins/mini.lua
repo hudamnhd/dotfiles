@@ -3,22 +3,44 @@ local M = {
   version = "*",
   enabled = true,
   -- priority = 1000,
-  event = "VeryLazy",
+  -- event = "VeryLazy",
+  event = "VimEnter",
 }
 
 function M.config()
   require("mini.icons").setup()
-  -- require("mini.colors").setup()
-
-  -- pcall(vim.cmd, [[colorscheme neovim_colors]])
-  -- pcall(vim.cmd, [[colorscheme custom_colors]])
-  vim.g.nvim_web_devicons = 1
   require("mini.icons").mock_nvim_web_devicons()
+  require("mini.operators").setup()
+  require("mini.align").setup()
+  require("mini.basics").setup()
+  require("mini.indentscope").setup()
+  require("mini.splitjoin").setup()
+  require("mini.trailspace").setup()
+  require("mini.starter").setup()
+  require("mini.comment").setup()
+  require("mini.move").setup()
+  require("mini.extra").setup()
+  require("mini.tabline").setup()
+  require("mini.bracketed").setup()
+  require("mini.diff").setup()
+  -- require("mini.statusline").setup()
 
+  local hipatterns = require("mini.hipatterns")
+  hipatterns.setup({
+    highlighters = {
+      -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+      fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
+      hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
+      todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
+      note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+
+      -- Highlight hex color strings (`#rrggbb`) using that color
+      hex_color = hipatterns.gen_highlighter.hex_color(),
+    },
+  })
   local mapping = require("keymaps")
   local miniclue = require("mini.clue")
   local anchor = "SW" -- bottom-left
-  -- require("mini.hues").setup({ background = "#282c34", foreground = "#abb2bf", accent = "blue" })
   --stylua: ignore
   miniclue.setup({
     clues = {
@@ -28,15 +50,24 @@ function M.config()
       miniclue.gen_clues.g(),
       miniclue.gen_clues.registers(),
       miniclue.gen_clues.windows({ submode_resize = true }),
+      miniclue.gen_clues.z(),
     },
     triggers = {
+      { mode = 'n', keys = '<space>' }, -- space triggers
+      { mode = 'x', keys = '<space>' },
+      { mode = 'n', keys = '<Leader>' }, -- Leader triggers
+      { mode = 'x', keys = '<Leader>' },
+      { mode = 'n', keys = 's' }, -- Leader triggers
+      { mode = 'x', keys = 's' },
+      { mode = 'n', keys = [[\]] },      -- mini.basics
+      { mode = 'x', keys = [[\]] },      -- mini.basics
       { mode = 'n', keys = '[' },        -- mini.bracketed
       { mode = 'n', keys = ']' },
       { mode = 'x', keys = '[' },
       { mode = 'x', keys = ']' },
-      { mode = 'n', keys = 'g' },
+      { mode = 'i', keys = '<C-x>' },    -- Built-in completion
+      { mode = 'n', keys = 'g' },        -- `g` key
       { mode = 'x', keys = 'g' },
-      { mode = 'n', keys = 's' },        -- `s` key
       { mode = 'n', keys = "'" },        -- Marks
       { mode = 'n', keys = '`' },
       { mode = 'x', keys = "'" },
@@ -45,15 +76,9 @@ function M.config()
       { mode = 'x', keys = '"' },
       { mode = 'i', keys = '<C-r>' },
       { mode = 'c', keys = '<C-r>' },
-      { mode = 'i', keys = '<C-x>' },    -- Built-in completion
-      { mode = 'n', keys = '<space>' }, -- space triggers
-      { mode = 'x', keys = '<space>' },
-      { mode = 'n', keys = '<space>' }, -- space triggers
-      { mode = 'x', keys = '<space>' },
-      { mode = 'n', keys = '\\' }, -- space triggers
-      { mode = 'x', keys = '\\' },
-      { mode = 'n', keys = '<C-a>' },    -- Window commands
-      { mode = 'x', keys = '<C-a>' },    -- Window commands
+      { mode = 'n', keys = '<C-w>' },    -- Window commands
+      { mode = 'n', keys = 'z' },        -- `z` key
+      { mode = 'x', keys = 'z' },
     },
     window = {
       delay = 0,
@@ -62,26 +87,8 @@ function M.config()
         anchor = anchor,
         width = 'auto',
         row = 'auto',
-        col = 'auto' ,
-        -- col = vim.o.columns * 0.4,
-        -- row = vim.o.lines - 2,
+        col = 'auto',
       },
-    },
-  })
-
-  -- require("mini.completion").setup({})
-  --
-  -- vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
-  -- vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
-
-  require("mini.diff").setup({
-
-    view = {
-      style = "sign",
-      -- signs = { add = " ", change = " ", delete = "" },
-      signs = { add = "+", change = "~", delete = "-" },
-      -- signs = { add = "█", change = "█", delete = "█" },
-      priority = 100,
     },
   })
 
@@ -93,50 +100,13 @@ function M.config()
     },
   })
 
-  require("mini.operators").setup({
-    sort = {
-      prefix = "",
-      func = nil,
+  require("mini.notify").setup({
+    lsp_progress = {
+      enable = false,
     },
   })
+  vim.notify = require("mini.notify").make_notify()
 
-  -- require("mini.statusline").setup()
-
-  -- stylua: ignore end
-  require("mini.bracketed").setup({
-    buffer = { suffix = "", options = {} },
-    -- quickfix = { suffix = "", options = {} },
-  })
-
-  local map = vim.keymap.set
-  map("n", "<C-T>", "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
-  map("n", "<C-Y>", "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
-
-  -- replace with notification "folke/snacks.nvim",
-  -- require("mini.notify").setup({
-  --   lsp_progress = {
-  --     -- oh god please stop annoying me
-  --     enable = false,
-  --   },
-  --
-  --   window = {
-  --     -- https://github.com/echasnovski/mini.nvim/blob/a118a964c94543c06d8b1f2f7542535dd2e19d36/doc/mini-notify.txt#L186-L198
-  --     config = {
-  --       anchor = "SE",
-  --       col = vim.o.columns * 0.5,
-  --       row = vim.o.lines - 2,
-  --       -- width = math.floor(vim.o.columns * 0.6),
-  --       border = "single",
-  --     },
-  --     winblend = 10,
-  --   },
-  -- })
-  -- vim.notify = require("mini.notify").make_notify()
-
-  require("mini.splitjoin").setup({ mappings = { toggle = "gs" } })
-  require("mini.trailspace").setup({})
-  require("mini.move").setup({})
-  require("mini.extra").setup({})
   require("mini.surround").setup({
     custom_surroundings = {
       s = {

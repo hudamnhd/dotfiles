@@ -26,40 +26,6 @@ return {
       ["gz"] = { "actions.change_sort", mode = "n" },
       ["gx"] = { "actions.open_external", mode = "n" },
       ["T"] = { "actions.toggle_trash", mode = "n" },
-      ["gd"] = {
-        desc = "Toggle detail view",
-        callback = function()
-          local oil = require("oil")
-          local config = require("oil.config")
-          if #config.columns == 1 then
-            oil.set_columns({ "size", "permissions", "mtime", "icon" })
-          else
-            oil.set_columns({ "size" })
-          end
-        end,
-      },
-      ["gs"] = {
-        callback = function()
-          -- get the current directory
-          local oil = require("oil")
-          local prefills = { paths = oil.get_current_dir() }
-
-          local grug_far = require("grug-far")
-          -- instance check
-          if not grug_far.has_instance("explorer") then
-            grug_far.open({
-              instanceName = "explorer",
-              prefills = prefills,
-              staticTitle = "Find and Replace from Explorer",
-            })
-          else
-            grug_far.open_instance("explorer")
-            -- updating the prefills without clearing the search and other fields
-            grug_far.update_instance_prefills("explorer", prefills, false)
-          end
-        end,
-        desc = "oil: Search in directory",
-      },
       ["Y"] = {
         -- source: https://www.reddit.com/r/neovim/comments/1czp9zr/comment/l5hv900/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
         desc = "Copy filepath to system clipboard",
@@ -68,15 +34,6 @@ return {
           local copied = vim.fn.getreg(vim.v.register)
           vim.fn.setreg("+", copied)
           vim.notify("Copied to system clipboard:\n" .. copied, vim.log.levels.INFO, {})
-        end,
-      },
-      ["<Del>"] = {
-        desc = "delete filepath ",
-        callback = function()
-          require("oil.actions").copy_entry_path.callback()
-          local copied = vim.fn.getreg(vim.v.register)
-          local cmd = ":!rm -r " .. vim.fn.fnameescape(copied)
-          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, true, true), "n", true)
         end,
       },
     },

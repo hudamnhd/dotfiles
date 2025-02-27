@@ -1,4 +1,7 @@
-local function safeRequire(module)
+-- enable loader
+vim.loader.enable()
+
+local function safe_require(module)
   local success, errMsg = pcall(require, module)
   if not success then
     local msg = ("Error loading %s\n%s"):format(module, errMsg)
@@ -9,20 +12,17 @@ local function safeRequire(module)
 end
 
 -- disable treesitter
-safeRequire("lazyplug")
 -- vim.treesitter.stop()
 
--- enable loader
-vim.loader.enable()
-vim.env.NOTES_DIR = "/home/hudamnhd/Projects/notes"
+safe_require("lazyplug")
 
 -- Load configuration files
-safeRequire("mru")
-safeRequire("options")
-safeRequire("autocmd")
-safeRequire("keymaps")
-safeRequire("vscript")
-safeRequire("utils.buffers")
+safe_require("mru")
+safe_require("options")
+safe_require("autocmd")
+safe_require("keymaps")
+safe_require("vscript")
+safe_require("utils.buffers")
 
 -- Load default colorscheme
--- pcall(vim.cmd, [[colorscheme onedark]])
+vim.cmd.colorscheme("tokyonight")

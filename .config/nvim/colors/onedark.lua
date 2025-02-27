@@ -74,6 +74,21 @@ local colors = {
 }
 
 local themes = {
+  normal = function()
+    return {
+      red      = colors.red,
+      dark_red = colors.dark_red,
+      green    = colors.green,
+      yellow   = colors.yellow,
+      orange   = colors.orange,
+      blue     = colors.blue,
+      purple   = colors.purple,
+      cyan     = colors.cyan,
+      black    = colors.black,
+      white    = colors.white,
+    }
+  end,
+
   soft = function()
     return {
       red      = adjust_brightness(colors.red,      20),
@@ -120,7 +135,7 @@ local themes = {
   end,
 }
 
-local active_theme = themes.dark()
+local active_theme = themes.normal()
 
 local red            = active_theme.red
 local dark_red       = active_theme.dark_red
