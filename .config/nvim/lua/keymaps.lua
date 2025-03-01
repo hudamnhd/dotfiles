@@ -3,14 +3,14 @@ local M = {}
 
 local utils = require("utils")
 local k = utils.keymap
-local map, bind, feedkeys = k.map, k.bind, k.feedkeys
+local bind, feedkeys = k.bind, k.feedkeys
+local nm, tm, cm, vm, nvm = "n", "t", "c", { "v", "o", "x" }, { "n", "v", "o", "x" }
 
 M.leader_group_clues = {
   { mode = "n", keys = "<space>t", desc = "+Toggle and other" },
   { mode = "n", keys = "<space>b", desc = "+Bookmark" },
-  { mode = "n", keys = "<space>s", desc = "+SNACKS" },
   { mode = "n", keys = "<space>g", desc = "+LSP" },
-  { mode = "n", keys = "sq", desc = "+FZF" },
+  { mode = "n", keys = "sq", desc = "+Other" },
   { mode = "n", keys = "sf", desc = "+FZF" },
 }
 
@@ -38,7 +38,7 @@ end
 -- NOTE without copying to clipboard
 local blackhole_key = { "S", "D", "C", "d" }
 for _, key in ipairs(blackhole_key) do
-  bind("n", key, '"_' .. key, { desc = "blackhole" .. key })
+  bind(nm, key, '"_' .. key, { desc = "blackhole" .. key })
 end
 
 local function delete_line()
@@ -46,108 +46,104 @@ local function delete_line()
   return (empty_line and '"_dd' or "dd")
 end
 
+-- https://neovim.discourse.group/t/delete-all-but-current-buffer/3953/2
+local function bdall()
+  local bufs = vim.api.nvim_list_bufs()
+  local current_buf = vim.api.nvim_get_current_buf()
+  for _, i in ipairs(bufs) do
+    if i ~= current_buf then
+      vim.api.nvim_buf_delete(i, {})
+    end
+  end
+end
 
 -- stylua: ignore start
-map({
-  [{ "t" }] = {
-    { "<c-\\>", [[<C-\><C-n>]] },
-    { "<a-x>",  [[<C-\><C-n>:bd!<Cr>]] },
-    { "<a-w>",  [[<C-\><C-n><c-w>w]] },
-    { "<m-r>",  [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true } },
-  },
-  [{ "c" }] = {
-    { "<c-v>",     [[<C-R>"]], { desc = "paste cmd-mode", silent = false } },
-    { "<a-v>",     [[<C-R>+]], { desc = "paste cmd-mode", silent = false } },
-    { "<c-space>", [[.\{-}]],  { silent = false } },
-    { "<s-space>", [[\s\+]],   { silent = false } },
-    { "<F2>", 'getcmdtype() == ":" ? expand("%:p")  : ""',         { silent = false, expr = true } },
-  },
-  [{"v", "o", "x" }] = {
-    { "zq",        mc_select .. "``qz",                { desc = "mc start macro (foward)" } },
-    { "zQ",        mc_select:gsub("/", "?") .. "``qz", { desc = "mc start macro (backward)" } },
-    { "<c-0>",     mc_macro(mc_select),                { desc = "mc end or replay macro",  expr = true  } },
-    { "<space>tr", utils.translate.translate_vm,       { desc = "translate visual" } },
+bind(nm, "zQ",    [[#Nqz]],            { desc = "mc start macro (backward)" } )
+bind(nm, "zq",    [[*Nqz]],            { desc = "mc start macro (foward)" } )
+bind(nm, "<c-0>", mc_macro(),          { desc = "mc end or replay macro", expr = true } )
 
-    { "<c-f>", require("utils.search-replace").visual_charwise_selection, { desc = "replace visual" } },
-    { "<c-s>", [[:s/\v//g<left><left><left>]], { desc = "Search Replace Search", silent = false  } },
+bind(vm, "zq",    mc_select .. "``qz", { desc = "mc start macro (foward)" } )
+bind(vm, "zQ",    mc_select:gsub("/",  "?") .. "``qz",                    { desc = "mc start macro (backward)" } )
+bind(vm, "<c-0>", mc_macro(mc_select), { desc = "mc end or replay macro", expr = true  } )
 
-    { "q", [[iq]], { remap = true } },
-    { "Q", [[aq]], { remap = true } },
-    { "w", [[iw]], { remap = true } },
-    { "W", [[iW]], { remap = true } },
-    { "t", [[it]], { remap = true } },
-    { "T", [[at]], { remap = true } },
+bind(tm, "<c-\\>", [[<C-\><C-n>]] )
+bind(tm, "<a-x>",  [[<C-\><C-n>:bd!<Cr>]] )
+bind(tm, "<a-w>",  [[<C-\><C-n><c-w>w]] )
+bind(tm, "<m-r>",  [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true } )
 
-    { "<leader>n", [[:s/\d\+/number/g]],               { desc = "Number to type number", silent = false } },
-    { "<leader>s", [[:s/"[^"]*"/string/g]],            { desc = "String to type string", silent = false } },
-    { "<leader>c", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]], { desc = "Camel to snack",        silent = false } },
-    { "<leader>-", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc = "Rmv - and change to capitalize", silent = false } },
+bind(cm, "<c-v>", [[<C-R>"]], { desc = "paste cmd-mode", silent = false } )
+bind(cm, "<a-v>", [[<C-R>+]], { desc = "paste cmd-mode", silent = false } )
+bind(cm, "<F1>", [[\(.*\)<Left><Left>]], { silent = false })
+bind(cm, "<F2>", [[\<\><Left><Left>]],   { silent = false })
+bind(cm, "<F3>", [[.\{-}]],              { silent = false } ) --\s\+
+bind(cm, "<F4>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true } )
 
-    { "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true } },
-    { ".", [[:normal .<cr>]],             { desc = "Repeat last command for each line of a visual selection." }, },
+-- NOTE Lua expression
+bind(cm, "=",  [[getcmdtype() == ':' && getcmdline() == '' ? 'lua=' : '=']], { silent = false, expr = true })
 
-    { ">", [[>gv]] },
-    { "<", [[<gv]] },
-  },
-  [{ "n" }] = {
-    { "zq",    "*Nqz",     { desc = "mc start macro (foward)" } },
-    { "zQ",    "#Nqz",     { desc = "mc start macro (backward)" } },
-    { "<c-0>", mc_macro(), { desc = "mc end or replay macro",  expr = true } },
+bind(vm, "<c-f>", [[<cmd>lua require("utils.search-replace").visual_charwise_selection()<cr>]], { desc = "replace visual" } )
+bind(vm, "<c-s>", [[:s/\v//g<left><left><left>]],          { desc = "Search Replace", silent = false  } )
+bind(nm, "<c-f>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],     { desc = "Replace cword", silent = false } )
+bind(nm, "<c-s>", [[:'<,'>s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace cword", silent = false } )
+bind(nm, "<a-x>", [[<cmd>!chmod +x %<CR>]], { silent = false } )
 
-    { "<c-s>", [[:'<,'>s/\v<C-r><C-w>//g<left><left>]], { desc = "replace cword", silent = false } },
-    { "<c-f>", [[:%s/\v<C-r><C-w>//g<left><left>]], { desc = "replace cword", silent = false } },
+bind(vm, "<leader>n", [[:s/\d\+/number/g]],                              { desc = "Number to type number",          silent = false } )
+bind(vm, "<leader>s", [[:s/"[^"]*"/string/g]],                           { desc = "String to type string",          silent = false } )
+bind(vm, "<leader>c", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]],                { desc = "Camel to snack",                 silent = false } )
+bind(vm, "<leader>-", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc = "Rmv - and change to capitalize", silent = false } )
 
-    { "sm", "gmm",  { remap = true, desc = "MiniOperator clone line" } },
-    { "sw", "ysiw", { remap = true, desc = "MiniSurround add word" } },
+bind(vm, "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true } )
+bind(vm, ">", [[>gv]] )
+bind(vm, "<", [[<gv]] )
 
-    { "<C-T>", "<Cmd>lua MiniBracketed.buffer('backward')<CR>"},
-    { "<C-Y>", "<Cmd>lua MiniBracketed.buffer('forward')<CR>"},
-    { "<a-w>", [[<c-w>w]] },
-    { "<a-a>", require("plugins.fzf-lua.cmds").asynctasks },
+bind(nm, "!",     [[:<up><cr>]] )
+bind(nm, "<a-w>", [[<c-w>w]] )
+bind(nm, "<esc>", [[<Cmd>nohlsearch|diffupdate|echo<cr>]] )
 
-    {"sq", [[:lua require'menu'.bookmarks()<CR>]]},
+bind(nm, "<space>w", vim.cmd.write, { desc = "update" } )
+bind(nm, "<space>q", vim.cmd.bd, { desc = "bd" } )
+bind(nm, "<space>bw", vim.cmd.bw, { desc = "bw" } )
+bind(nm, "<space>bq", bdall, { desc = "bd all" } )
+bind(nm, "<space>bs", function()
+  vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true))
+end, { desc = "scratch" })
 
-    { "<a-w>",    [[<c-w>w]] },
-    { "!",        [[:<up><cr>]] },
-    { "J",        [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true } },
-    { "dd",       delete_line,                 { desc = "delete line", expr = true  } },
-    { "gn",       [[:normal n.<cr>]],          { desc = "Repeat the last edit on the next [count] matches." } },
-    { "<M-v>",    [[`[v`]],                    { desc = "visual select last yank/paste" } },
-    { "\\q",      [[q]],                       { desc = "remap q" } },
-    { "<space>k", [[<c-w>T]],                  { desc = "move splite" } },
-    { "<space>c", [[<c-w>c]],                  { desc = "close" } },
-    { "<space>v", [[<c-w>v]],                  { desc = "vsplite" } },
-    { "<space>w", vim.cmd.update,              { desc = "update" } },
+bind(nm, "J",   [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true } )
 
-    { "<space>tr", utils.translate.translate_nm,               { desc = "translate" } },
-    { "<space>ty", [[<cmd>Unite -vertical yankround<cr>]],     { desc = "YANKROUND" } },
-    { "<esc>",     [[<Cmd>nohlsearch|diffupdate|echo<cr>]],    { desc = "Nohl search" } },
+-- emlate some basic commands from `vim-abolish`
+bind(nm, "cl",  [[mzguiw`z]],       { desc = "󰬴 UPPERCASE to lowercase" } )
+bind(nm, "ct",  [[mzguiwgUl`z]],    { desc = "󰬴 Titlecase" } )
+bind(nm, "cu",  [[mzgUiw`z]],       { desc = "󰬴 lowercase to UPPERCASE" } )
+bind(nm, "dd",  delete_line,        { desc = "delete line", expr = true  } )
 
-    { "<c-d>", "<C-d>zz" },
-    { "<c-u>", "<C-u>zz" },
+-- NOE Keep matches center screen when cycling with n|N
+bind(nm, "sx", [[gxiw]], { remap = true, desc = "Exchange word" } )
+bind(nm, "sm", [[gmm]],  { remap = true, desc = "Clone line" } )
+bind(nm, "sw", [[ysiw]], { remap = true, desc = "Surround cword" } )
 
-    -- emulate some basic commands from `vim-abolish`
-    { "ct", "mzguiwgUl`z", { desc = "󰬴 Titlecase" } },
-    { "cu", "mzgUiw`z",    { desc = "󰬴 lowercase to UPPERCASE" } },
-    { "cl", "mzguiw`z",    { desc = "󰬴 UPPERCASE to lowercase" } },
+bind(nm, "sc", [[<c-w>c]], { desc = "close" } )
+bind(nm, "ss", [[<c-w>s]], { desc = "split" } )
+bind(nm, "sv", [[<c-w>v]], { desc = "vsplit" } )
 
-    -- NOTE Keep matches center screen when cycling with n|N
-    { "n", "nzz", { desc = "Fwd  search '/' or '?'" } },
-    { "N", "Nzz", { desc = "Back search '/' or '?'" } },
-  },
-  [{ "n", "v" }] = {
-    { "0",     [[:]] , { silent = false }},
-    { "c",     [["_c]] },
-    { "x",     [["_x]] },
-    { "<c-h>", [[^]] },
-    { "<c-l>", [[g_]] },
-    { "<c-z>", [[%]], { remap = true } },
 
-    { "<space>y", [["+y]],   { desc = "Yank to clipboard (primary)" } },
-    { "<space>P", [["+P]],   { desc = "Paste before from clipboard (primary)" } },
-    { "<space>p", [["+p]],   { desc = "Paste after from clipboard (primary)" } },
-  },
-}, {})
+bind(nvm, "0",     [[:]],   { silent = false })
+bind(nvm, "c",     [["_c]] )
+bind(nvm, "x",     [["_x]] )
+bind(nvm, "gy",    [["+y]], { desc = "Yank to clipboard (primary)" } )
+bind(nvm, "gp",    [["+p]], { desc = "Paste after from clipboard (primary)" } )
+bind(nvm, "<c-h>", [[^]] )
+bind(nvm, "<c-l>", [[g_]] )
+bind(nvm, "<c-z>", [[%]] )
+
+bind(vm, "<space>tr", [[<cmd>lua utils.translate.translate_vm()<cr>]],               { desc = "translate visual" } )
+bind(nm, "<space>tr", [[<cmd>lua utils.translate.translate_nm()<cr>]],               { desc = "translate normal" } )
+bind(nm, "<space>tc", [[<cmd>lua require("utils.helper").set_cwd()<cr>]],            { desc = "Set cwd" } )
+bind(nm, "<space>ty", [[<cmd>Unite -vertical yankround<cr>]],                        { desc = "YANKROUND" } )
+bind(nm, "<space>tu", [[<cmd>UndotreeToggle<cr>]],                                   { desc = "Toggle Undotree" } )
+bind(nm, "<space>td", [[<cmd>lua require("utils.helper").toggle_diff_buff()<cr>]],   { desc = "Toggle diff" } )
+bind(nm, "<space>to", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],        { desc = "Toggle overlay" } )
+bind(nm, "<space>th", [[<cmd>lua require("mini.hipatterns").toggle()<cr>]],          { desc = "Toggle Hipatterns" } )
+bind(nm, "<a-a>",     [[<cmd>lua require("plugins.fzf-lua.cmds").asynctasks()<cr>]], { desc = "Asynctasks" } )
 
 -- any jump over 5 modifies the jumplist
 -- so we can use <C-o> <C-i> to jump back and forth
@@ -218,44 +214,22 @@ local function cgn_action(type)
   end
 end
 
-bind("n", "<C-N>", cgn_action("n"), { desc = "cgn word" })
-bind("x", "<C-N>", cgn_action("v"), { desc = "cgn visual" })
+bind(nm, "<C-N>", cgn_action("n"), { desc = "cgn word" })
+bind(vm, "<C-N>", cgn_action("v"), { desc = "cgn visual" })
 
----Remove all trailing whitespaces within the current buffer
----Retain cursor position & last search content
-local function remove_trailing_whitespaces()
-  local pos = vim.api.nvim_win_get_cursor(0)
-  local last_search = vim.fn.getreg("/")
-  local hl_state = vim.v.hlsearch
-
-  vim.cmd(":%s/\\s\\+$//e")
-
-  vim.fn.setreg("/", last_search) -- restore last search
-  vim.api.nvim_win_set_cursor(0, pos) -- restore cursor position
-
-  if hl_state == 0 then
-    vim.cmd.nohlsearch() -- disable search highlighting again if it was disabled before
-  end
-end
-
-bind("n", "<F5>", remove_trailing_whitespaces, { desc = "remove trailing whitespaces" })
-
-bind("n", "<F3>", function ()
-  vim.cmd('tabedit')
-  vim.cmd('setlocal nonumber signcolumn=no')
-
-  -- Unset vim environment variables to be able to call `vim` without errors
-  -- Use custom `--git-dir` and `--work-tree` to be able to open inside
-  -- symlinked submodules
-  vim.fn.termopen('VIMRUNTIME= VIM= gitui', {
-    on_exit = function()
-      vim.cmd('silent! :checktime')
-      vim.cmd('silent! :bw')
-    end,
-  })
-  vim.cmd('startinsert')
-  vim.b.minipairs_disable = true
-end, { desc = "remove trailing whitespaces" })
+-- bind(nm, "<F3>", function ()
+--   vim.cmd('tabedit')
+--   vim.cmd('setlocal nonumber signcolumn=no')
+--   vim.fn.jobstart('gitui', {
+--     term = true,
+--     on_exit = function()
+--       vim.cmd('silent! :checktime')
+--       vim.cmd('silent! :bw')
+--     end,
+--   })
+--   vim.cmd('startinsert')
+--   vim.b.minipairs_disable = true
+-- end, { desc = "terminal gitui" })
 
 
 return M

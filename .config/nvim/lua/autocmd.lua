@@ -20,6 +20,17 @@ augroup("ReturnToLastEditPos", {
   },
 })
 
+-- TrailingWhitespace
+augroup("TrailingWhitespace", {
+  {
+    event = "BufWritePre",
+    opts = {
+      pattern = "*",
+      command = [[%s/\s\+$//e]],
+    },
+  },
+})
+
 -- Highlight yank
 augroup("HighlightYank", {
   {
@@ -27,7 +38,7 @@ augroup("HighlightYank", {
     opts = {
       pattern = "*",
       callback = function()
-        vim.highlight.on_yank({ higroup = "IncSearch", timeout = 300 })
+        vim.highlight.on_yank({ higroup = "IncSearch", timeout = 400 })
       end,
     },
   },
@@ -48,7 +59,7 @@ augroup("HelpOpenVert", {
   {
     event = "FileType",
     opts = {
-      pattern = "help,man,markdown,md",
+      pattern = "help,man",
       callback = function()
         local buftype = vim.bo.buftype
         if buftype == "help" or buftype == "nofile" then

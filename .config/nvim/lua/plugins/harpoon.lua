@@ -46,7 +46,7 @@ return {
         vim.cmd(cmd)
       end, { desc = "toggle_quick_menu harpoon" })
 
-      vim.keymap.set("n", "<space>h", function() harpoon:list():add() vim.notify("harpoon add")end, { desc = "mark harpoon" })
+      vim.keymap.set("n", "<space>a", function() harpoon:list():add() vim.notify("harpoon add")end, { desc = "mark harpoon" })
 
       -- vim.keymap.set("n", "[a", function() harpoon:list():prev() end)
       -- vim.keymap.set("n", "]a", function() harpoon:list():next() end)

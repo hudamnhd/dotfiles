@@ -3,55 +3,9 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
     dependencies = {
-      { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
-      {
-        "lewis6991/hover.nvim",
-        event = { "BufReadPost" },
-        config = function()
-          require("hover").setup({
-            init = function()
-              -- Require providers
-              require("hover.providers.lsp")
-              -- require('hover.providers.gh')
-              -- require('hover.providers.gh_user')
-              -- require('hover.providers.jira')
-              -- require('hover.providers.dap')
-              -- require('hover.providers.fold_preview')
-              -- require('hover.providers.diagnostic')
-              -- require('hover.providers.man')
-              -- require('hover.providers.dictionary')
-            end,
-            preview_opts = {
-              border = "single",
-            },
-            -- Whether the contents of a currently open hover window should be moved
-            -- to a :h preview-window when pressing the hover keymap.
-            preview_window = false,
-            title = true,
-            mouse_providers = {
-              "LSP",
-            },
-            mouse_delay = 1000,
-          })
-          -- Setup keymaps
-          local bind = require("utils.keymap").bind
-          bind("n", "K", require("hover").hover, { desc = "hover.nvim" })
-          bind("n", "go", require("hover").hover_select, { desc = "hover.nvim (select)" })
-          bind("n", "<a-[>", function()
-            require("hover").hover_switch("previous")
-          end, { desc = "hover.nvim (previous source)" })
-          bind("n", "<a-]>", function()
-            require("hover").hover_switch("next")
-          end, { desc = "hover.nvim (next source)" })
-
-          -- Mouse support
-          -- bind("n", "<MouseMove>", require("hover").hover_mouse, { desc = "hover.nvim (mouse)" })
-          -- vim.o.mousemoveevent = true
-        end,
-      },
+      "saghen/blink.cmp",
     },
     config = function()
-      -- local util = require("lspconfig.util")
       require("lspconfig").lua_ls.setup({})
       -- require("lspconfig").biome.setup({})
       -- require("lspconfig").dprint.setup({})
@@ -84,50 +38,15 @@ return {
         table.insert(sign_opt.text, def.text)
       end
 
-      -- Diag config
       vim.diagnostic.config({
-        float = { focus = false },
-        -- underline = true,
-        update_in_insert = false,
-        virtual_text = {
-          spacing = 4,
-          source = "always",
-          severity = {
-            min = vim.diagnostic.severity.HINT,
-          },
-          -- format = function(diagnostic)
-          -- if diagnostic.severity == vim.diagnostic.severity.ERROR then
-          --   return string.format('E: %s', diagnostic.message)
-          -- end
-          -- return ("%s"):format(diagnostic.message)
-          -- end,
-        },
         signs = sign_opt,
-        -- severity_sort = true,
-        -- float = {
-        --   show_header = false,
-        --   source = "always",
-        --   border = "rounded",
-        -- },
+        virtual_text = true,
       })
-
-      return {
-        toggle = function()
-          if not vim.g.diag_is_hidden then
-            require("utils.helper").info("Diagnostic virtual text is now hidden.")
-            vim.diagnostic.hide()
-          else
-            require("utils.helper").info("Diagnostic virtual text is now visible.")
-            vim.diagnostic.show()
-          end
-          vim.g.diag_is_hidden = not vim.g.diag_is_hidden
-        end,
-      }
     end,
   },
   {
     "pmizio/typescript-tools.nvim",
-    ft = { "typescript", "typescriptreact", "javascriptreact" },
+    ft = { "typescript", "typescriptreact" },
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     opts = {
       root_dir = function(fname)

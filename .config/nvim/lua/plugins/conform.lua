@@ -47,20 +47,6 @@ return {
       markdown = { "dprint" },
       ["_"] = { "trim_whitespace", "trim_newlines" },
     },
-    formatters = {
-      injected = {
-        options = {
-          lang_to_formatters = {
-            html = {},
-          },
-        },
-      },
-      -- Dealing with old version of prettierd that doesn't support range formatting
-      prettierd = {
-        ---@diagnostic disable-next-line: assign-type-mismatch
-        range_args = false,
-      },
-    },
     log_level = vim.log.levels.TRACE,
     format_after_save = function(bufnr)
       if vim.b[bufnr].disable_autoformat then

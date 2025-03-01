@@ -43,6 +43,14 @@ return {
       desc = "Gitui",
     },
     {
+      "<a-y>",
+      function()
+        toggleFloaterm("--name=yazi " .. win.full .. [[ yazi]])
+      end,
+      mode = { "n", "t" },
+      desc = "Yazi",
+    },
+    {
       "<F1>",
       function()
         toggleFloaterm("--name=bash " .. win.top .. " bash")

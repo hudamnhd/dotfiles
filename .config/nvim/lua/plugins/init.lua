@@ -4,24 +4,6 @@ return {
     keys = { { "<CR>", ":Partedit -opener vnew -filetype vimpe -prefix '>'<CR>", mode = { "x" } } },
   },
   {
-    "kassio/neoterm",
-    cmd = "T",
-    config = function()
-      -- Enable bracketed paste
-      vim.g.neoterm_bracketed_paste = 1
-      -- Don't add extra call to REPL when sending
-      vim.g.neoterm_direct_open_repl = 1
-      -- Open terminal to the right by default
-      vim.g.neoterm_default_mod = "vertical"
-      -- Go into insert mode when terminal is opened
-      vim.g.neoterm_autoinsert = 1
-      -- Scroll to recent command when it is executed
-      vim.g.neoterm_autoscroll = 1
-      -- Don't automap keys
-      pcall(vim.keymap.del, "n", ",tt")
-    end,
-  },
-  {
     "danymat/neogen",
     event = "BufReadPost",
     config = function()
@@ -48,7 +30,7 @@ return {
         })
         -- resize repl window and make it fixed height
         vim.cmd("resize 10 | setl winfixheight")
-      end, { desc = "neorepl" })
+      end, { desc = "(CMD) Neorepl" })
     end,
   },
   {
@@ -64,7 +46,7 @@ return {
   { "stefandtw/quickfix-reflector.vim", ft = "qf" },
   { "LeafCage/yankround.vim", event = "VeryLazy" },
   { "Shougo/unite.vim", event = "VeryLazy" },
-  { "wellle/targets.vim", event = "VeryLazy" },
+  -- { "wellle/targets.vim", event = "VeryLazy" },
   { "skywind3000/asynctasks.vim", event = "VeryLazy" },
   { "skywind3000/asyncrun.vim", event = "VeryLazy" },
   { "tpope/vim-eunuch", event = "VeryLazy" },

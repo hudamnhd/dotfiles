@@ -2,7 +2,7 @@ return {
   "saghen/blink.cmp",
   -- optional: provides snippets for the snippet source
   event = "InsertEnter *",
-  enabled = false,
+  enabled = true,
   dependencies = {
     "L3MON4D3/LuaSnip", -- for autocompletion
     -- "saadparwaiz1/cmp_luasnip", -- for autocompletion

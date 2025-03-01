@@ -144,10 +144,6 @@ function M.asynctasks()
       ["--no-multi"] = "",
       ["--nth"] = "1",
     },
-    winopts = {
-      height = 0.6,
-      width = 0.6,
-    },
   })
 end
 -- stylua: ignore end

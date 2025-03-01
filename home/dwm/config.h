@@ -62,25 +62,9 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]        = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *viacmd[]          = { "via", NULL };
 static const char *termcmd[]         = { "st", NULL };
-static const char *vivaldi[]         = { "vivaldi-stable", NULL };
-static const char *firefox[]         = { "firefox", NULL };
-static const char *filemanager[]     = { "pcmanfm", NULL };
-static const char *rofipowercmd[]    = { "rofi", "-show", "p", "-modi", "p:~/.local/bin/rofi-power-menu", "-me-select-entry", "", "-me-accept-entry", "MousePrimary", "-no-show-icons",  NULL };
-static const char *rofilauncher[]    = { "/home/hudamnhd/.local/bin/rofi-custom", NULL };
 static const char *pavucontrolcmd[]  = { "pavucontrol", NULL};
-static const char *rofiemoji[]       = { "/home/hudamnhd/.local/bin/rofi-emoji", NULL };
-static const char *rofiicon[]        = { "/home/hudamnhd/.local/bin/rofi-icon", NULL };
-static const char *terminal[]        = { "st", NULL };
-static const char *volumeup[]        = { "/home/hudamnhd/.dwm/scripts/vol-up.sh",  NULL };
-static const char *volumedown[]      = { "/home/hudamnhd/.dwm/scripts/vol-down.sh",  NULL };
-static const char *mute[]            = { "/home/hudamnhd/.dwm/scripts/vol-toggle.sh",  NULL };
-static const char *mocp[]            = { "/home/hudamnhd/.local/bin/mocp.sh", NULL};
-static const char *screenshotcmd[]   = { "/home/hudamnhd/.local/bin/screenshot", NULL};
-static const char *screenshot2cmd[]  = { "/home/hudamnhd/.local/bin/screenshot-full", NULL};
-static const char *screenrecordcmd[] = { "/home/hudamnhd/.local/bin/screenrecord", NULL};
-static const char *xkbswitchcmd[]    = { "/home/hudamnhd/.local/bin/xkb-switch.sh", NULL};
+static const char *rofilauncher[]    = { "/home/hudamnhd/.local/bin/rofi-custom", NULL };
 
 static int current_layout = 0;
 
@@ -94,30 +78,13 @@ void togglelayout(const Arg *arg) {
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ 0,                                  XK_Print,        spawn,          {.v = screenshot2cmd } },
-	{ MODKEY,                             XK_Print,        spawn,          {.v = screenshotcmd } },
-	{ MODKEY,                             XK_Delete,       spawn,          {.v = rofipowercmd } },
-	{ MODKEY,                             XK_F12,          spawn,          {.v = screenrecordcmd } },
-	{ MODKEY,                             XK_F11,          spawn,          {.v = xkbswitchcmd } },
-	{ MODKEY,                             XK_m,            spawn,          {.v = mocp } },
-	{ MODKEY,                             XK_s,            spawn,          {.v = rofilauncher } },
-	{ MODKEY,                             XK_p,            spawn,          {.v = viacmd } },
-	{ MODKEY|ShiftMask,                   XK_s,            spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,                   XK_e,            spawn,          {.v = rofiemoji } },
-	{ MODKEY|ShiftMask,                   XK_i,            spawn,          {.v = rofiicon } },
-	{ MODKEY,                             XK_t,            spawn,          SHCMD("tabbed -r 2 st -w '' -e")},
-	{ MODKEY|ShiftMask,                   XK_t,            spawn,          SHCMD("st -e tmux")},
-	{ MODKEY,                             XK_y,            spawn,          SHCMD("st -e bash -i -c 'yy; exec bash'") },
-	{ MODKEY,                             XK_x,            spawn,          {.v = terminal } },
-	{ MODKEY,                             XK_c,            spawn,          {.v = filemanager } },
-	{ MODKEY,                             XK_v,            spawn,          {.v = vivaldi } },
-	{ MODKEY,                             XK_b,            spawn,          {.v = firefox } },
+	// { MODKEY,                             XK_x,            spawn,          {.v = termcmd } },
+	// { MODKEY,                             XK_w,            togglelayout,   {0} },
 	{ MODKEY|ShiftMask,                   XK_b,            togglebar,      {0} },
 	{ MODKEY,                             XK_d,            focusstackvis,  {.i = +1 } },
 	{ MODKEY,                             XK_a,            focusstackvis,  {.i = -1 } },
 	{ MODKEY|ShiftMask,                   XK_d,            focusstackhid,  {.i = +1 } },
 	{ MODKEY|ShiftMask,                   XK_a,            focusstackhid,  {.i = -1 } },
-	{ MODKEY,                             XK_w,            togglelayout,   {0} },
 	{ MODKEY,                             XK_bracketright, incnmaster,     {.i = +1 } },
 	{ MODKEY,                             XK_bracketleft,  incnmaster,     {.i = -1 } },
 	{ MODKEY,                             XK_h,            setmfact,       {.f = -0.05} },
@@ -170,4 +137,77 @@ static const Button buttons[] = {
 	{ ClkTagBar,            0,		Button3,	toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,		Button1,	tag,            {0} },
 	{ ClkTagBar,            MODKEY,		Button3,	toggletag,      {0} },
+};
+
+
+void
+setlayoutex(const Arg *arg)
+{
+	setlayout(&((Arg) { .v = &layouts[arg->i] }));
+}
+
+void
+viewex(const Arg *arg)
+{
+	view(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+viewall(const Arg *arg)
+{
+	view(&((Arg){.ui = ~0}));
+}
+
+void
+toggleviewex(const Arg *arg)
+{
+	toggleview(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+tagex(const Arg *arg)
+{
+	tag(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+toggletagex(const Arg *arg)
+{
+	toggletag(&((Arg) { .ui = 1 << arg->ui }));
+}
+
+void
+tagall(const Arg *arg)
+{
+	tag(&((Arg){.ui = ~0}));
+}
+
+/* signal definitions */
+/* signum must be greater than 0 */
+/* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
+static Signal signals[] = {
+	/* signum           function */
+	{ "togglelayout",   togglelayout },
+	{ "focusstack",     focusstack },
+	{ "setmfact",       setmfact },
+	{ "togglebar",      togglebar },
+	{ "incnmaster",     incnmaster },
+	{ "togglefloating", togglefloating },
+	{ "focusmon",       focusmon },
+	{ "tagmon",         tagmon },
+	{ "zoom",           zoom },
+	{ "view",           view },
+	{ "viewall",        viewall },
+	{ "viewex",         viewex },
+	{ "toggleview",     view },
+	{ "toggleviewex",   toggleviewex },
+	{ "tag",            tag },
+	{ "tagall",         tagall },
+	{ "tagex",          tagex },
+	{ "toggletag",      tag },
+	{ "toggletagex",    toggletagex },
+	{ "killclient",     killclient },
+	{ "quit",           quit },
+	{ "setlayout",      setlayout },
+	{ "setlayoutex",    setlayoutex },
 };

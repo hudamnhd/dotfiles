@@ -1,0 +1,40 @@
+# desktop entry of dmenu
+# xev | grep -i keysym
+# get kysym with xev
+
+super + Escape
+	pkill -USR1 -x sxhkd;
+super + s ; {f,c,v}
+	{firefox,pcmanfm,vivaldi-stable}
+super + c
+	rofi-custom
+super + x
+	st
+super + t
+	tabbed -r 2 st -w ''
+super + s ; t
+	st -e tmux
+Print
+	~/.local/bin/screenshot-full
+super + p
+	via
+super + Print
+	~/.local/bin/screenshot
+super + Delete
+	rofi -show p -modi p:~/.local/bin/rofi-power-menu mouseprimary
+super + F12
+	~/.local/bin/screenrecord
+super + F11
+	~/.local/bin/xkb-switch.sh
+super + s ; m
+	~/.local/bin/mocp.sh
+super + s ; e
+	~/.local/bin/rofi-emoji
+super + s ; i
+	~/.local/bin/rofi-icon
+super + s ; y
+	st -e bash -i -c 'yy; exec bash'
+super + w ; {1-9}
+	dwmc tagex {0-8}
+super + e
+	dwmc togglelayout
