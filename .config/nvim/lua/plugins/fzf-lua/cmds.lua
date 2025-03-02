@@ -1,66 +1,4 @@
 local M = {}
-local api, fn, uv = vim.api, vim.fn, vim.loop
-
-function M.mru()
-  local current
-  if api.nvim_buf_get_option(0, "buftype") == "" then
-    current = uv.fs_realpath(api.nvim_buf_get_name(0))
-  end
-
-  local files_all = {}
-  local files_cwd = {}
-  local cwd = vim.fn.expand(vim.uv.cwd())
-  local show_all = false
-
-  local mru_files = require("mru").get()
-
-  for _, file in ipairs(mru_files) do
-    if file ~= current then
-      table.insert(files_all, file)
-    end
-  end
-
-  local function update_files_cwd()
-    files_cwd = {}
-    for _, file in ipairs(files_all) do
-      local file_absolute_path = vim.fn.fnamemodify(file, ":p")
-      if vim.fn.stridx(file_absolute_path, cwd) == 0 then
-        local relative_path = vim.fn.fnamemodify(file_absolute_path, ":.")
-        table.insert(files_cwd, relative_path)
-      end
-    end
-  end
-
-  update_files_cwd()
-
-  local prompt = "MRU"
-  prompt = prompt .. " CWD"
-
-  local function show_fzf(files)
-    require("fzf-lua").fzf_exec(files, {
-      actions = {
-        ["default"] = require("fzf-lua").actions.file_edit,
-        ["ctrl-h"] = function()
-          show_all = not show_all
-          if show_all then
-            prompt = "MRU ALL"
-            show_fzf(files_all)
-          else
-            prompt = "MRU CWD"
-            update_files_cwd()
-            show_fzf(files_cwd)
-          end
-        end,
-      },
-      fzf_opts = {
-        ["--multi"] = "",
-      },
-      prompt = prompt .. "> ",
-    })
-  end
-
-  show_fzf(files_cwd)
-end
 
 function M.show_bookmark_dir()
   local bookmark_file = os.getenv("HOME") .. "/.cdg_paths"
@@ -88,7 +26,7 @@ function M.show_bookmark_dir()
       ["--multi"] = "",
     },
     prompt = prompt .. "> ",
-    winopts = { height = 0.4, width = 0.75 },
+    winopts = { height = 0.4, width = 0.6 },
   })
 end
 
@@ -143,6 +81,10 @@ function M.asynctasks()
     fzf_opts = {
       ["--no-multi"] = "",
       ["--nth"] = "1",
+    },
+    winopts = {
+      height = 0.6,
+      width = 0.6,
     },
   })
 end

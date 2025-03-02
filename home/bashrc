@@ -300,24 +300,29 @@ export FZF_DEFAULT_OPTS="
 --ansi \
 --layout=reverse \
 --border=none \
---color=bg+:#3B3F5E \
---color=bg:#222436 \
---color=border:#589ed7 \
---color=fg:#c8d3f5 \
---color=gutter:#1e2030 \
---color=header:#ff966c \
---color=hl+:#65bcff \
---color=hl:#65bcff \
---color=info:#9599BC \
---color=marker:#ff007c \
---color=pointer:#ff007c \
---color=prompt:#65bcff \
---color=query:#c8d3f5:regular \
---color=scrollbar:#589ed7 \
---color=separator:#ff966c \
---color=spinner:#ff007c \
+--color=fg:#908caa,bg:#232136,hl:#ea9a97
+--color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
+--color=border:#44415a,header:#3e8fb0,gutter:#232136
+--color=spinner:#f6c177,info:#9ccfd8
+--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
 "
-
+# tokyonight
+# --color=bg+:#3B3F5E \
+# --color=bg:#222436 \
+# --color=border:#589ed7 \
+# --color=fg:#c8d3f5 \
+# --color=gutter:#1e2030 \
+# --color=header:#ff966c \
+# --color=hl+:#65bcff \
+# --color=hl:#65bcff \
+# --color=info:#9599BC \
+# --color=marker:#ff007c \
+# --color=pointer:#ff007c \
+# --color=prompt:#65bcff \
+# --color=query:#c8d3f5:regular \
+# --color=scrollbar:#589ed7 \
+# --color=separator:#ff966c \
+# --color=spinner:#ff007c \
 # nighfly
 # --color bg:#011627 \
 # --color bg+:#0e293f \

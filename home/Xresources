@@ -1,29 +1,64 @@
 ! author: arpinux <https://arpinux.org>
 ! ~/.Xresources configuration file
 !-----------------------------------------------------------------------
+! special
+*.foreground:   #e0def4
+*.background:   #232136
+*.cursorColor:  #e0def4
 
+! black
+*.color0:       #2a273f
+*.color8:       #908caa
+
+! red
+*.color1:       #eb6f92
+*.color9:       #eb6f92
+
+! green
+*.color2:       #f6c177
+*.color10:      #f6c177
+
+! yellow
+*.color3:       #ea9a97
+*.color11:      #ea9a97
+
+! blue
+*.color4:       #3e8fb0
+*.color12:      #3e8fb0
+
+! magenta
+*.color5:       #c4a7e7
+*.color13:      #c4a7e7
+
+! cyan
+*.color6:       #9ccfd8
+*.color14:      #9ccfd8
+
+! white
+*.color7:       #6e6a86
+*.color15:      #908caa
 ! TokyoNight colors for Xresources
 
-*background: #222436
-*foreground: #c8d3f5
-
-*color0: #1b1d2b
-*color1: #ff757f
-*color2: #c3e88d
-*color3: #ffc777
-*color4: #82aaff
-*color5: #c099ff
-*color6: #86e1fc
-*color7: #828bb8
-
-*color8: #9599BC
-*color9: #ff757f
-*color10: #c3e88d
-*color11: #ffc777
-*color12: #82aaff
-*color13: #c099ff
-*color14: #86e1fc
-*color15: #c8d3f5
+! *background: #222436
+! *foreground: #c8d3f5
+!
+! *color0: #1b1d2b
+! *color1: #ff757f
+! *color2: #c3e88d
+! *color3: #ffc777
+! *color4: #82aaff
+! *color5: #c099ff
+! *color6: #86e1fc
+! *color7: #828bb8
+!
+! *color8: #9599BC
+! *color9: #ff757f
+! *color10: #c3e88d
+! *color11: #ffc777
+! *color12: #82aaff
+! *color13: #c099ff
+! *color14: #86e1fc
+! *color15: #c8d3f5
 ! ! special
 ! *.foreground:   #2f3337
 ! *.background:   #f6f6f6

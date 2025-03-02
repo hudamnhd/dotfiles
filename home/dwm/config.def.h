@@ -1,21 +1,21 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 3;        /* border pixel of windows */
+static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "JetBrainsMono NF:style=Bold:size=12:antialias=true:autohint=true" };
-static const char dmenufont[]       = "JetBrainsMono NF:style=Bold:size=12:antialias=true:autohint=true";
-static const char col_gray1[]       = "#111111";
-static const char col_gray2[]       = "#7B7B7B";
-static const char col_gray3[]       = "#B4B4B4";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
+static const char *fonts[]          = { "JetBrainsMono NF:style=Bold:size=10:antialias=true:autohint=true" };
+static const char dmenufont[]       = "JetBrainsMono NF:style=Bold:size=10:antialias=true:autohint=true";
+static const char col_gray1[]       = "#232136";
+static const char col_gray2[]       = "#908caa";
+static const char col_gray3[]       = "#e0def4";
+static const char col_gray4[]       = "#faf4ed";
+static const char col_cyan[]        = "#286983";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_gray4 },
+	[SchemeSel]  = { col_gray4, col_cyan,  col_gray3 },
 	[SchemeHid]  = { col_gray2, col_gray1, col_cyan  },
 };
 
@@ -28,9 +28,9 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
-	{ "Pavucontrol",  NULL,       NULL,   0,       1,           -1 },
+	{ "Gimp",        NULL, NULL, 0,      1, -1 },
+	{ "Firefox",     NULL, NULL, 1 << 8, 0, -1 },
+	{ "Pavucontrol", NULL, NULL, 0,      1, -1 },
 };
 
 /* layout(s) */

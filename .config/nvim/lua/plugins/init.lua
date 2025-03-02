@@ -8,8 +8,8 @@ return {
     event = "BufReadPost",
     config = function()
       require("neogen").setup({})
-      local opts = { noremap = true, silent = true, desc = "Neogen generate" }
-      vim.api.nvim_set_keymap("n", "<space>tg", ":lua require('neogen').generate()<CR>", opts)
+      local opts = { noremap = true, silent = true, desc = "Toggle Neogen" }
+      vim.api.nvim_set_keymap("n", "<space>un", ":lua require('neogen').generate()<CR>", opts)
     end,
   },
   {

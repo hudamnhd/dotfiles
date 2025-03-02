@@ -13,7 +13,6 @@ function M.config()
   require("mini.icons").mock_nvim_web_devicons()
   require("mini.operators").setup()
   require("mini.align").setup()
-  require("mini.basics").setup()
   require("mini.indentscope").setup()
   require("mini.splitjoin").setup()
   require("mini.trailspace").setup()
@@ -22,6 +21,7 @@ function M.config()
   require("mini.extra").setup()
   require("mini.bracketed").setup()
   require("mini.diff").setup()
+  -- require("mini.basics").setup()
   -- require("mini.tabline").setup()
   -- require("mini.statusline").setup()
 
@@ -100,12 +100,12 @@ function M.config()
     },
   })
 
-  require("mini.notify").setup({
-    lsp_progress = {
-      enable = false,
-    },
-  })
-  vim.notify = require("mini.notify").make_notify()
+  -- require("mini.notify").setup({
+  --   lsp_progress = {
+  --     enable = false,
+  --   },
+  -- })
+  -- vim.notify = require("mini.notify").make_notify()
 
   require("mini.surround").setup({
     custom_surroundings = {

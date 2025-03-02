@@ -7,17 +7,15 @@ local bind, feedkeys = k.bind, k.feedkeys
 local nm, tm, cm, vm, nvm = "n", "t", "c", { "v", "o", "x" }, { "n", "v", "o", "x" }
 
 M.leader_group_clues = {
-  { mode = "n", keys = "<space>t", desc = "+Toggle and other" },
-  { mode = "n", keys = "<space>b", desc = "+Bookmark" },
-  { mode = "n", keys = "<space>g", desc = "+LSP" },
-  { mode = "n", keys = "sq", desc = "+Other" },
-  { mode = "n", keys = "sf", desc = "+FZF" },
+  { mode = "n", keys = "<space>u", desc = "+Toggle and other" },
+  { mode = "n", keys = "<space>b", desc = "+Buffer" },
+  { mode = "n", keys = "<space>p", desc = "+Pickers Snacks" },
 }
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- ~ multiple cursors (sort of) ~
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- see: http://www.kevinli.co/posts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript
+-- see: http://www.kevinli.co/p<space>pnosts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript
 local mc_select = [[y/\V\C<C-r>=escape(@", '/')<CR><CR>]]
 local function mc_macro(selection)
   selection = selection or ""
@@ -78,7 +76,6 @@ bind(cm, "<F2>", [[\<\><Left><Left>]],   { silent = false })
 bind(cm, "<F3>", [[.\{-}]],              { silent = false } ) --\s\+
 bind(cm, "<F4>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true } )
 
--- NOTE Lua expression
 bind(cm, "=",  [[getcmdtype() == ':' && getcmdline() == '' ? 'lua=' : '=']], { silent = false, expr = true })
 
 bind(vm, "<c-f>", [[<cmd>lua require("utils.search-replace").visual_charwise_selection()<cr>]], { desc = "replace visual" } )
@@ -104,27 +101,22 @@ bind(nm, "<space>w", vim.cmd.write, { desc = "update" } )
 bind(nm, "<space>q", vim.cmd.bd, { desc = "bd" } )
 bind(nm, "<space>bw", vim.cmd.bw, { desc = "bw" } )
 bind(nm, "<space>bq", bdall, { desc = "bd all" } )
-bind(nm, "<space>bs", function()
-  vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true))
-end, { desc = "scratch" })
+bind(nm, "<space>bs", function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end, { desc = "scratch" })
 
 bind(nm, "J",   [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true } )
 
 -- emlate some basic commands from `vim-abolish`
-bind(nm, "cl",  [[mzguiw`z]],       { desc = "󰬴 UPPERCASE to lowercase" } )
-bind(nm, "ct",  [[mzguiwgUl`z]],    { desc = "󰬴 Titlecase" } )
-bind(nm, "cu",  [[mzgUiw`z]],       { desc = "󰬴 lowercase to UPPERCASE" } )
-bind(nm, "dd",  delete_line,        { desc = "delete line", expr = true  } )
+bind(nm, "cl", [[mzguiw`z]],    { desc = "󰬴 UPPERCASE to lowercase" } )
+bind(nm, "ct", [[mzguiwgUl`z]], { desc = "󰬴 Titlecase" } )
+bind(nm, "cu", [[mzgUiw`z]],    { desc = "󰬴 lowercase to UPPERCASE" } )
+bind(nm, "dd", delete_line,     { desc = "delete line", expr = true  } )
 
--- NOE Keep matches center screen when cycling with n|N
-bind(nm, "sx", [[gxiw]], { remap = true, desc = "Exchange word" } )
-bind(nm, "sm", [[gmm]],  { remap = true, desc = "Clone line" } )
-bind(nm, "sw", [[ysiw]], { remap = true, desc = "Surround cword" } )
+bind(nm, "sx", [[gxiw]], { remap = true, desc = "(OPR) Exchange word" } )
+bind(nm, "sm", [[gmm]],  { remap = true, desc = "(OPR) Clone line" } )
+bind(nm, "sw", [[ysiw]], { remap = true, desc = "(OPR) Surround cword" } )
 
-bind(nm, "sc", [[<c-w>c]], { desc = "close" } )
-bind(nm, "ss", [[<c-w>s]], { desc = "split" } )
-bind(nm, "sv", [[<c-w>v]], { desc = "vsplit" } )
-
+bind(nm, "<space>c", [[<c-w>c]], { desc = "Close" } )
+bind(nm, "<space>v", [[<c-w>v]], { desc = "Vsplit" } )
 
 bind(nvm, "0",     [[:]],   { silent = false })
 bind(nvm, "c",     [["_c]] )
@@ -135,14 +127,14 @@ bind(nvm, "<c-h>", [[^]] )
 bind(nvm, "<c-l>", [[g_]] )
 bind(nvm, "<c-z>", [[%]] )
 
-bind(vm, "<space>tr", [[<cmd>lua utils.translate.translate_vm()<cr>]],               { desc = "translate visual" } )
-bind(nm, "<space>tr", [[<cmd>lua utils.translate.translate_nm()<cr>]],               { desc = "translate normal" } )
-bind(nm, "<space>tc", [[<cmd>lua require("utils.helper").set_cwd()<cr>]],            { desc = "Set cwd" } )
-bind(nm, "<space>ty", [[<cmd>Unite -vertical yankround<cr>]],                        { desc = "YANKROUND" } )
-bind(nm, "<space>tu", [[<cmd>UndotreeToggle<cr>]],                                   { desc = "Toggle Undotree" } )
-bind(nm, "<space>td", [[<cmd>lua require("utils.helper").toggle_diff_buff()<cr>]],   { desc = "Toggle diff" } )
-bind(nm, "<space>to", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],        { desc = "Toggle overlay" } )
-bind(nm, "<space>th", [[<cmd>lua require("mini.hipatterns").toggle()<cr>]],          { desc = "Toggle Hipatterns" } )
+bind(vm, "<space>ur", [[<cmd>lua utils.translate.translate_vm()<cr>]],               { desc = "Toggle translate visual" } )
+bind(nm, "<space>ur", [[<cmd>lua utils.translate.translate_nm()<cr>]],               { desc = "Toggle translate normal" } )
+bind(nm, "<space>uc", [[<cmd>lua require("utils.helper").set_cwd()<cr>]],            { desc = "Toggle Set cwd" } )
+bind(nm, "<space>uy", [[<cmd>Unite -vertical yankround<cr>]],                        { desc = "Toggle Yankround" } )
+bind(nm, "<space>uu", [[<cmd>UndotreeToggle<cr>]],                                   { desc = "Toggle Undotree" } )
+bind(nm, "<space>ud", [[<cmd>lua require("utils.helper").toggle_diff_buff()<cr>]],   { desc = "Toggle Diff" } )
+bind(nm, "<space>uo", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],        { desc = "Toggle Overlay" } )
+bind(nm, "<space>uh", [[<cmd>lua require("mini.hipatterns").toggle()<cr>]],          { desc = "Toggle Hipatterns" } )
 bind(nm, "<a-a>",     [[<cmd>lua require("plugins.fzf-lua.cmds").asynctasks()<cr>]], { desc = "Asynctasks" } )
 
 -- any jump over 5 modifies the jumplist

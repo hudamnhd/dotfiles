@@ -26,7 +26,7 @@
 #--theme="FzfxNvimKanagawa"
  # --theme="Catppuccin-mocha"
 # --theme="FzfxNvimDuskfox"
---theme="ansi"
+--theme="rose-pine-moon"
 
 # Show line numbers, Git modifications and file header (but no grid)
 --style="numbers,changes,header"

@@ -20,17 +20,6 @@ return {
         end
         -- for tokyonight
         highlights.LineNr = { fg = "#5D6293" }
-        -- highlights.TabLineIndexSel = { fg = c.bg, bg = c.blue, bold = true }
-        -- highlights.MiniStatuslineDevinfo = { fg = "#c8d3f5", bg = "#292C42" }
-        -- highlights.MiniStatuslineFilename = { fg = "#c8d3f5" }
-        -- highlights.MiniStatuslineFileinfo = { fg = "#c8d3f5", bg = "#292C42" }
-        -- highlights.MiniTablineCurrent = { fg = "#c8d3f5", bg = "#292C42" }
-        -- highlights.MiniTablineTabpagesection = { fg = "#c8d3f5", bg = "#292C42" }
-        -- highlights.MiniTablineModifiedCurrent = { fg = "#ffc777", bg = "#292C42" }
-        highlights.LeapMatch = { fg = "#c3e88d", bg = "#292C42" }
-        highlights.LeapLabel = { fg = "#292C42", bg = "#c3e88d" }
-        highlights.LeapBackdrop = { fg = "none", bg = "none" }
-        highlights.LeapLabelDimmed = { fg = "#4fd6be", bg = "#292C42" }
         highlights.TabLine = { fg = c.comment, bg = c.bg_statusline }
         highlights.TabLineSel = { fg = c.bg, bg = c.blue }
         highlights.TabLineModifiedSel = { fg = c.bg, bg = c.warning }
@@ -40,6 +29,44 @@ return {
         highlights.TabLineDividerSel = { fg = c.blue, bg = c.blue }
         highlights.TabLineDividerVisible = { fg = c.blue }
         highlights.TabLineDividerModifiedSel = { fg = c.warning, bg = c.warning }
+
+        -- palette = {
+        --   bg             = "#222436", -- generate from 950
+        --   bg_dark        = "#292C42", -- bg-900
+        --   bg_dark1       = "#292C42", -- bg-900
+        --   bg_highlight   = "#3B3F5E", -- bg-800
+        --   blue           = "#82aaff",
+        --   blue0          = "#3e68d7",
+        --   blue1          = "#65bcff",
+        --   blue2          = "#0db9d7",
+        --   blue5          = "#89ddff",
+        --   blue6          = "#b4f9f8",
+        --   blue7          = "#394b70",
+        --   comment        = "#7277A6", --bg-500
+        --   cyan           = "#86e1fc",
+        --   dark3          = "#545c7e",
+        --   dark5          = "#7277A6", --bg-500
+        --   fg             = "#c8d3f5",
+        --   fg_dark        = "#7277A6", --bg-600
+        --   fg_gutter      = "#7277A6", --bg-600
+        --   green          = "#c3e88d",
+        --   green1         = "#4fd6be",
+        --   green2         = "#41a6b5",
+        --   magenta        = "#c099ff",
+        --   magenta2       = "#ff007c",
+        --   orange         = "#ff966c",
+        --   purple         = "#fca7ea",
+        --   red            = "#ff757f",
+        --   red1           = "#c53b53",
+        --   teal           = "#4fd6be",
+        --   terminal_black = "#7277A6", --bg-500
+        --   yellow         = "#ffc777",
+        --   git            = {
+        --     add          = "#b8db87",
+        --     change       = "#7ca1f2",
+        --     delete       = "#e26a75",
+        --   },
+        -- }
       end,
     },
     config = true,
@@ -56,19 +83,100 @@ return {
         dim_inactive_windows = false,
         extend_background_behind_borders = true,
 
+        enable = {
+          terminal = true,
+          legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
+          migrations = true, -- Handle deprecated options automatically
+        },
+
+        styles = {
+          bold = true,
+          italic = false,
+          transparency = false,
+        },
+
+        groups = {
+          border = "muted",
+          link = "iris",
+          panel = "surface",
+
+          error = "love",
+          hint = "iris",
+          info = "foam",
+          note = "pine",
+          todo = "rose",
+          warn = "gold",
+
+          git_add = "foam",
+          git_change = "rose",
+          git_delete = "love",
+          git_dirty = "rose",
+          git_ignore = "muted",
+          git_merge = "iris",
+          git_rename = "pine",
+          git_stage = "iris",
+          git_text = "rose",
+          git_untracked = "subtle",
+
+          h1 = "iris",
+          h2 = "foam",
+          h3 = "rose",
+          h4 = "gold",
+          h5 = "pine",
+          h6 = "foam",
+        },
         palette = {
+          -- Override the builtin palette per variant
+          -- stylua: ignore start
           moon = {
-            pine = "#a5b4fc",
+            _nc            = "#1f1d30",
+            base           = "#232136",
+            surface        = "#232136",
+            overlay        = "#393552",
+            muted          = "#908caa",
+            subtle         = "#908caa",
+            text           = "#e0def4",
+            love           = "#eb6f92",
+            gold           = "#f6c177",
+            rose           = "#ea9a97",
+            pine           = "#82aaff",
+            foam           = "#9ccfd8",
+            iris           = "#c4a7e7",
+            leaf           = "#95b1ac",
+            highlight_low  = "#2a283e",
+            highlight_med  = "#44415a",
+            highlight_high = "#56526e",
+            none           = "NONE",
+            -- stylua: ignore end
           },
         },
 
+        -- NOTE: Highlight groups are extended (merged) by default. Disable this
+        -- per group via `inherit = false`
         highlight_groups = {
-          Visual = { bg = "#a5b4fc" },
+          -- Comment = { fg = "foam" },
+          -- StatusLine = { fg = "love", bg = "love", blend = 15 },
           -- VertSplit = { fg = "muted", bg = "muted" },
+          -- Visual = { fg = "base", bg = "text", inherit = false },
         },
+
+        before_highlight = function(group, highlight, palette)
+          -- Disable all undercurls
+          -- if highlight.undercurl then
+          --     highlight.undercurl = false
+          -- end
+          --
+          -- Change palette colour
+          -- if highlight.fg == palette.pine then
+          --     highlight.fg = palette.foam
+          -- end
+        end,
       })
 
-      -- vim.cmd("colorscheme rose-pine-moon")
+      vim.cmd("colorscheme rose-pine-moon")
+      -- vim.cmd("colorscheme rose-pine")
+      -- vim.cmd("colorscheme rose-pine-main")
+      -- vim.cmd("colorscheme rose-pine-dawn")
     end,
   },
   {

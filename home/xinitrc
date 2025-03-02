@@ -1,10 +1,11 @@
-case $( basename "$( tty )" ) in 
-    tty1) 
-        # Start WM 1 
+case $( basename "$( tty )" ) in
+    tty1)
+        # Start WM 1
+	 /home/hudamnhd/dotfiles/home/dwm/scripts/autostart.sh &
         exec dwm
-        ;; 
-    tty2) 
-        # Start WM 2 
+        ;;
+    tty2)
+        # Start WM 2
         exec i3
-        ;; 
-esac 
+        ;;
+esac
