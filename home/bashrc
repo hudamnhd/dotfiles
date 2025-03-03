@@ -5,10 +5,8 @@
 bind '"\e[A": history-search-backward'
 bind '"\e[B": history-search-forward'
 # base #################################################################
-export PATH="$HOME/.local/bin:$HOME/bin:/opt/nvim-linux-x86_64/bin:/opt/firefox:$DENO_INSTALL/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:$PATH"
+export PATH="$HOME/.local/bin:$HOME/bin:/opt/nvim-linux-x86_64/bin:/opt/firefox:$HOME/.deno/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:$PATH"
 
-# Direktori instalasi Deno
-export DENO_INSTALL="$HOME/.deno"
 # Variabel sistem utama
 export EDITOR="nvim"
 export PAGER="most"
@@ -16,7 +14,7 @@ export BROWSER="firefox"
 export ENV="$HOME/.bashrc"
 
 # Menyimpan semua ekspor dalam satu baris untuk efisiensi
-export PATH DENO_INSTALL EDITOR PAGER BROWSER ENV
+export PATH EDITOR PAGER BROWSER ENV
 
 # colors & char ########################################################
 # text normal colors
@@ -48,6 +46,8 @@ fi
 
 # alias ################################################################
 # ls & grep ------------------------------------------------------------
+
+alias mdp='mdpreview "$(pwd)" && echo "OPEN http://127.0.0.1:3000"'
 alias lf=lfrun
 alias ls='ls --color=auto'
 alias dir='dir --color=auto'
@@ -307,22 +307,11 @@ export FZF_DEFAULT_OPTS="
 --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
 "
 # tokyonight
-# --color=bg+:#3B3F5E \
-# --color=bg:#222436 \
-# --color=border:#589ed7 \
-# --color=fg:#c8d3f5 \
-# --color=gutter:#1e2030 \
-# --color=header:#ff966c \
-# --color=hl+:#65bcff \
-# --color=hl:#65bcff \
-# --color=info:#9599BC \
-# --color=marker:#ff007c \
-# --color=pointer:#ff007c \
-# --color=prompt:#65bcff \
-# --color=query:#c8d3f5:regular \
-# --color=scrollbar:#589ed7 \
-# --color=separator:#ff966c \
-# --color=spinner:#ff007c \
+#--color=fg:#908caa,bg:#232136,hl:#ea9a97
+#--color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
+#--color=border:#44415a,header:#3e8fb0,gutter:#232136
+#--color=spinner:#f6c177,info:#9ccfd8
+#--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
 # nighfly
 # --color bg:#011627 \
 # --color bg+:#0e293f \

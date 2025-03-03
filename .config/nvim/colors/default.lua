@@ -1,11 +1,4 @@
--- from https://github.com/Bekaboo/nvim/blob/master/lua/colors/default.lua
--- Name:         default
--- Description:  Improves default colorscheme
--- Author:       Bekaboo <kankefengjing@gmail.com>
--- Modified:     Huda <muhamadhuda519@gmail.com>
--- License:      GPL-3.0
--- Last Updated: Mon 20 Jan 2025 00:18:29 AM WIB
-
+-- stylua: ignore start
 vim.cmd.hi("clear")
 vim.g.colors_name = "default"
 
@@ -30,7 +23,6 @@ vim.g.colors_name = "default"
 -- #ffc0b9 (Light red)
 -- #fce094 (Light yellow)
 
--- stylua: ignore start
 -- vim.api.nvim_set_hl(0, 'Comment', { fg = 'NvimLightGrey4', ctermfg = 8 })
 -- vim.api.nvim_set_hl(0, 'LineNr', { fg = 'NvimLightGrey4', ctermfg = 8 })
 -- vim.api.nvim_set_hl(0, 'NonText', { fg = 'NvimDarkGrey4', ctermfg = 8 })

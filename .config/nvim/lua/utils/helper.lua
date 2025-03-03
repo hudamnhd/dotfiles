@@ -128,19 +128,17 @@ end
 -- type='l': loclist toggle (all windows)
 function M.toggle_qf(type)
   local windows = M.find_qf(type)
-  return function()
-    if #windows > 0 then
-      -- hide all visible windows
-      for _, win in ipairs(windows) do
-        vim.api.nvim_win_hide(win.winid)
-      end
+  if #windows > 0 then
+    -- hide all visible windows
+    for _, win in ipairs(windows) do
+      vim.api.nvim_win_hide(win.winid)
+    end
+  else
+    -- no windows are visible, attempt to open
+    if type == "l" then
+      M.open_loclist_all()
     else
-      -- no windows are visible, attempt to open
-      if type == "l" then
-        M.open_loclist_all()
-      else
-        M.open_qf()
-      end
+      M.open_qf()
     end
   end
 end

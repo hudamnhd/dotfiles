@@ -1,7 +1,6 @@
 case $( basename "$( tty )" ) in
     tty1)
         # Start WM 1
-	 /home/hudamnhd/dotfiles/home/dwm/scripts/autostart.sh &
         exec dwm
         ;;
     tty2)

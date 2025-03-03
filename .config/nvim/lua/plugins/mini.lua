@@ -2,7 +2,7 @@ local M = {
   "echasnovski/mini.nvim",
   version = "*",
   enabled = true,
-  -- priority = 1000,
+  priority = 1000,
   -- event = "VeryLazy",
   event = "VimEnter",
 }
@@ -20,10 +20,17 @@ function M.config()
   require("mini.move").setup()
   require("mini.extra").setup()
   require("mini.bracketed").setup()
-  require("mini.diff").setup()
-  -- require("mini.basics").setup()
+  require("mini.basics").setup()
   -- require("mini.tabline").setup()
   -- require("mini.statusline").setup()
+  -- vim.cmd.colorscheme("neovim_colors")
+  require("mini.diff").setup({
+
+    view = {
+      style = "sign",
+      signs = { add = "+", change = "~", delete = "-" },
+    },
+  })
 
   local hipatterns = require("mini.hipatterns")
   hipatterns.setup({
@@ -100,12 +107,12 @@ function M.config()
     },
   })
 
-  -- require("mini.notify").setup({
-  --   lsp_progress = {
-  --     enable = false,
-  --   },
-  -- })
-  -- vim.notify = require("mini.notify").make_notify()
+  require("mini.notify").setup({
+    lsp_progress = {
+      enable = false,
+    },
+  })
+  vim.notify = require("mini.notify").make_notify()
 
   require("mini.surround").setup({
     custom_surroundings = {

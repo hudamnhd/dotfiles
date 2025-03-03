@@ -7,51 +7,39 @@ return {
     "danymat/neogen",
     event = "BufReadPost",
     config = function()
-      require("neogen").setup({})
+      require("neogen").setup({
+        enabled = true,
+        languages = {
+          typescriptreact = {
+            template = {
+              annotation_convention = "tsdoc", -- for a full list of annotation_conventions, see supported-languages below,
+            },
+          },
+        },
+      })
       local opts = { noremap = true, silent = true, desc = "Toggle Neogen" }
-      vim.api.nvim_set_keymap("n", "<space>un", ":lua require('neogen').generate()<CR>", opts)
+      vim.api.nvim_set_keymap("n", "<space>n", ":lua require('neogen').generate()<CR>", opts)
     end,
   },
   {
-    "ii14/neorepl.nvim",
-    event = "VeryLazy",
-    config = function()
-      vim.keymap.set("n", "<space>0", function()
-        -- get current buffer and window
-        local buf = vim.api.nvim_get_current_buf()
-        local win = vim.api.nvim_get_current_win()
-        -- create a new split for the repl
-        vim.cmd("split")
-        -- spawn repl and set the context to our buffer
-        require("neorepl").new({
-          lang = "vim",
-          buffer = buf,
-          window = win,
-        })
-        -- resize repl window and make it fixed height
-        vim.cmd("resize 10 | setl winfixheight")
-      end, { desc = "(CMD) Neorepl" })
-    end,
-  },
-  {
-    "haya14busa/vim-edgemotion",
+    "Blovio/512-words",
     event = "BufReadPost",
     config = function()
-      vim.cmd([[
-    map <C-J> <Plug>(edgemotion-j)
-    map <C-K> <Plug>(edgemotion-k)
-    ]])
+      vim.keymap.set("n", "gW", function()
+        require("512-words").open()
+      end)
     end,
   },
+
   { "stefandtw/quickfix-reflector.vim", ft = "qf" },
   { "LeafCage/yankround.vim", event = "VeryLazy" },
   { "Shougo/unite.vim", event = "VeryLazy" },
-  -- { "wellle/targets.vim", event = "VeryLazy" },
-  { "skywind3000/asynctasks.vim", event = "VeryLazy" },
-  { "skywind3000/asyncrun.vim", event = "VeryLazy" },
   { "tpope/vim-eunuch", event = "VeryLazy" },
   { "tpope/vim-rsi", event = "VeryLazy" },
   { "tpope/vim-repeat", event = "VeryLazy" },
+  { "cohama/agit.vim", event = "BufReadPost" },
   { "tpope/vim-sleuth", event = "BufReadPost" },
   { "mbbill/undotree", event = "BufReadPost" },
+  -- replace with mini ai
+  -- { "wellle/targets.vim", event = "VeryLazy" },
 }

@@ -11,6 +11,41 @@ return {
         floats = "normal",
       },
       sidebars = { "qf", "help", "terminal" },
+      on_colors = function(colors)
+        colors.bg = "#222436"
+        colors.bg_float = "#222436"
+        colors.bg_popup = "#222436"
+        colors.bg_dark = "#292C42"
+        colors.bg_dark1 = "#292C42"
+        colors.bg_highlight = "#3B3F5E"
+        colors.bg_visual = "#3B3F5E"
+        colors.blue = "#82aaff"
+        colors.blue0 = "#3e68d7"
+        colors.blue1 = "#65bcff"
+        colors.blue2 = "#0db9d7"
+        colors.blue5 = "#89ddff"
+        colors.blue6 = "#b4f9f8"
+        colors.blue7 = "#394b70"
+        colors.comment = "#7277A6"
+        colors.cyan = "#86e1fc"
+        colors.dark3 = "#545c7e"
+        colors.dark5 = "#7277A6"
+        colors.fg = "#c8d3f5"
+        colors.fg_dark = "#7277A6"
+        colors.fg_gutter = "#7277A6"
+        colors.green = "#c3e88d"
+        colors.green1 = "#4fd6be"
+        colors.green2 = "#41a6b5"
+        colors.magenta = "#c099ff"
+        colors.magenta2 = "#ff007c"
+        colors.orange = "#ff966c"
+        colors.purple = "#fca7ea"
+        colors.red = "#ff757f"
+        colors.red1 = "#c53b53"
+        colors.teal = "#4fd6be"
+        colors.terminal_black = "#7277A6"
+        colors.yellow = "#ffc777"
+      end,
       on_highlights = function(highlights, c)
         for _, defn in pairs(highlights) do
           if defn.undercurl then
@@ -29,44 +64,6 @@ return {
         highlights.TabLineDividerSel = { fg = c.blue, bg = c.blue }
         highlights.TabLineDividerVisible = { fg = c.blue }
         highlights.TabLineDividerModifiedSel = { fg = c.warning, bg = c.warning }
-
-        -- palette = {
-        --   bg             = "#222436", -- generate from 950
-        --   bg_dark        = "#292C42", -- bg-900
-        --   bg_dark1       = "#292C42", -- bg-900
-        --   bg_highlight   = "#3B3F5E", -- bg-800
-        --   blue           = "#82aaff",
-        --   blue0          = "#3e68d7",
-        --   blue1          = "#65bcff",
-        --   blue2          = "#0db9d7",
-        --   blue5          = "#89ddff",
-        --   blue6          = "#b4f9f8",
-        --   blue7          = "#394b70",
-        --   comment        = "#7277A6", --bg-500
-        --   cyan           = "#86e1fc",
-        --   dark3          = "#545c7e",
-        --   dark5          = "#7277A6", --bg-500
-        --   fg             = "#c8d3f5",
-        --   fg_dark        = "#7277A6", --bg-600
-        --   fg_gutter      = "#7277A6", --bg-600
-        --   green          = "#c3e88d",
-        --   green1         = "#4fd6be",
-        --   green2         = "#41a6b5",
-        --   magenta        = "#c099ff",
-        --   magenta2       = "#ff007c",
-        --   orange         = "#ff966c",
-        --   purple         = "#fca7ea",
-        --   red            = "#ff757f",
-        --   red1           = "#c53b53",
-        --   teal           = "#4fd6be",
-        --   terminal_black = "#7277A6", --bg-500
-        --   yellow         = "#ffc777",
-        --   git            = {
-        --     add          = "#b8db87",
-        --     change       = "#7ca1f2",
-        --     delete       = "#e26a75",
-        --   },
-        -- }
       end,
     },
     config = true,
@@ -75,6 +72,7 @@ return {
     "rose-pine/neovim",
     name = "rose-pine",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    enabled = true, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       require("rose-pine").setup({
@@ -127,27 +125,8 @@ return {
         },
         palette = {
           -- Override the builtin palette per variant
-          -- stylua: ignore start
           moon = {
-            _nc            = "#1f1d30",
-            base           = "#232136",
-            surface        = "#232136",
-            overlay        = "#393552",
-            muted          = "#908caa",
-            subtle         = "#908caa",
-            text           = "#e0def4",
-            love           = "#eb6f92",
-            gold           = "#f6c177",
-            rose           = "#ea9a97",
-            pine           = "#82aaff",
-            foam           = "#9ccfd8",
-            iris           = "#c4a7e7",
-            leaf           = "#95b1ac",
-            highlight_low  = "#2a283e",
-            highlight_med  = "#44415a",
-            highlight_high = "#56526e",
-            none           = "NONE",
-            -- stylua: ignore end
+            pine = "#82aaff",
           },
         },
 
@@ -181,7 +160,6 @@ return {
   },
   {
     "bluz71/nvim-linefly",
-    lazy = true,
     enabled = true,
     event = "VimEnter",
     config = function()
@@ -203,7 +181,7 @@ return {
         with_session_status = true,
         with_attached_clients = true,
         with_macro_status = true,
-        with_search_count = false,
+        with_search_count = true,
         with_spell_status = false,
         with_indent_status = true,
       }

@@ -1,9 +1,4 @@
-vim.g.asyncrun_exit = "echo 'Success'"
-vim.g.asyncrun_open = 20
-vim.g.yankround_max_history = 50
-
 vim.cmd([[
-command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
 "autocmd BufRead,BufWritePre *.blade.php setlocal filetype=php
 "autocmd BufRead,BufWritePre * setlocal syntax=text

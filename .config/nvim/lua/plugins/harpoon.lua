@@ -35,7 +35,7 @@ return {
         return Path:new(buf_name):make_relative(root)
       end
 
-      vim.keymap.set("n", "<C-E>", function()
+      vim.keymap.set("n", "<C-->", function()
         local ui_opts = {
           ui_fallback_width = 7,
           ui_width_ratio = 0.7,

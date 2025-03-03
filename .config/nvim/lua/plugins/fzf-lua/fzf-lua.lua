@@ -36,7 +36,7 @@ end)
 local bind = require("utils.keymap").bind
 
 function fzf.mru()
-  require("fzf-lua").oldfiles({ cwd = vim.uv.cwd(), cwd_header = true, cwd_only = true })
+  require("plugins.fzf-lua.cmds").mru()
 end
 
 function fzf.list_paths()
@@ -66,31 +66,16 @@ bind("n", "sr", fzf.live_grep_resume, { desc = "(FZF) live_grep_resume" } )
 bind("n", "si", fzf.grep,             { desc = "(FZF) grep" } )
 bind("n", "sk", fzf.grep_cword,       { desc = "(FZF) grep_cword" } )
 bind("n", "sl", fzf.lgrep_curbuf,     { desc = "(FZF) live_grep_buffer" } )
-bind("n", "s/", fzf.blines,           { desc = "(FZF) blines" } )
-bind("n", "s'", fzf.registers,        { desc = "(FZF) registers" } )
-bind("n", "s ", fzf.resume,           { desc = "(FZF) resume" } )
+bind("n", "s`", fzf.resume,           { desc = "(FZF) resume" } )
 bind("n", "s0", fzf.command_history,  { desc = "(FZF) command_history" } ) -- remap : to 0 easy press
 bind("n", "sp", fzf.files,            { desc = "(FZF) files" } )
 bind("n", "sh", fzf.search_history,   { desc = "(FZF) search_history" } )
 bind("n", "so", fzf.mru,              { desc = "(FZF) oldfiles cwd" } )
-bind("n", "so", fzf.oldfiles,         { desc = "(FZF) oldfiles global" } )
 bind("n", "z=", fzf.spell_suggest,    { desc = "(FZF) spell_suggest" } )
-bind("n", "sb", fzf.buffers,          { desc = "(FZF) buffers" } )
+bind("n", "<c-b>", fzf.buffers,          { desc = "(FZF) buffers" } )
 
 --global
 local fzf_cmds = require("plugins.fzf-lua.cmds")
-local helper = utils.helper
-
-local show_toolbox_qlstack = fzf_cmds.create_show_toolbox("Toolbox Files", {
-  { execute = helper.toggle_qf("q"), name = "(TOGGLE) quickfix_list" },
-  { execute = helper.toggle_qf("l"), name = "(TOGGLE) loclist_list" },
-  { execute = fzf.loclist_stack,     name = "(FZF) loclist_stack" },
-  { execute = fzf.quickfix_stack,    name = "(FZF) quickfix_stack" },
-  { execute = fzf.loclist,           name = "(FZF) loclist" },
-  { execute = fzf.quickfix,          name = "(FZF) quickfix" },
-})
-
-bind("n", "<a-q>", show_toolbox_qlstack, { desc = "Files Command" } )
 
 local config_dir =  vim.fn.stdpath("config")
 
@@ -108,7 +93,7 @@ local show_toolbox_files = fzf_cmds.create_show_toolbox("Toolbox Files", {
   { execute = function() vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths") end, name = "Edit bookmark dir" },
 })
 
-bind("n", "<space>f", show_toolbox_files, { desc = "Files Command" } )
+bind("n", "<space>pq", show_toolbox_files, { desc = "Files Command" } )
 
 
 local commands = {

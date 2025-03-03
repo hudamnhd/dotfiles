@@ -9,7 +9,6 @@ local nm, tm, cm, vm, nvm = "n", "t", "c", { "v", "o", "x" }, { "n", "v", "o", "
 M.leader_group_clues = {
   { mode = "n", keys = "<space>u", desc = "+Toggle and other" },
   { mode = "n", keys = "<space>b", desc = "+Buffer" },
-  { mode = "n", keys = "<space>p", desc = "+Pickers Snacks" },
 }
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,12 +55,9 @@ local function bdall()
 end
 
 -- stylua: ignore start
-bind(nm, "zQ",    [[#Nqz]],            { desc = "mc start macro (backward)" } )
 bind(nm, "zq",    [[*Nqz]],            { desc = "mc start macro (foward)" } )
 bind(nm, "<c-0>", mc_macro(),          { desc = "mc end or replay macro", expr = true } )
-
 bind(vm, "zq",    mc_select .. "``qz", { desc = "mc start macro (foward)" } )
-bind(vm, "zQ",    mc_select:gsub("/",  "?") .. "``qz",                    { desc = "mc start macro (backward)" } )
 bind(vm, "<c-0>", mc_macro(mc_select), { desc = "mc end or replay macro", expr = true  } )
 
 bind(tm, "<c-\\>", [[<C-\><C-n>]] )
@@ -92,16 +88,18 @@ bind(vm, "<leader>-", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc 
 bind(vm, "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true } )
 bind(vm, ">", [[>gv]] )
 bind(vm, "<", [[<gv]] )
+bind(nm, ">", [[<cmd>lua require("utils.helper").toggle_qf("q")<cr>]] )
+bind(nm, "<", [[<cmd>lua require("utils.helper").toggle_qf("l")<cr>]] )
 
 bind(nm, "!",     [[:<up><cr>]] )
 bind(nm, "<a-w>", [[<c-w>w]] )
 bind(nm, "<esc>", [[<Cmd>nohlsearch|diffupdate|echo<cr>]] )
 
 bind(nm, "<space>w", vim.cmd.write, { desc = "update" } )
-bind(nm, "<space>q", vim.cmd.bd, { desc = "bd" } )
-bind(nm, "<space>bw", vim.cmd.bw, { desc = "bw" } )
-bind(nm, "<space>bq", bdall, { desc = "bd all" } )
-bind(nm, "<space>bs", function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end, { desc = "scratch" })
+bind(nm, "<space>q", vim.cmd.bd, { desc = "Buffer delete" } )
+bind(nm, "<space>bw", vim.cmd.bw, { desc = "Buffer wipeout" } )
+bind(nm, "<space>bq", bdall, { desc = "Buffer delete all" } )
+bind(nm, "<space>bs", function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end, { desc = "Buffer scratch" })
 
 bind(nm, "J",   [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true } )
 
@@ -127,45 +125,14 @@ bind(nvm, "<c-h>", [[^]] )
 bind(nvm, "<c-l>", [[g_]] )
 bind(nvm, "<c-z>", [[%]] )
 
-bind(vm, "<space>ur", [[<cmd>lua utils.translate.translate_vm()<cr>]],               { desc = "Toggle translate visual" } )
-bind(nm, "<space>ur", [[<cmd>lua utils.translate.translate_nm()<cr>]],               { desc = "Toggle translate normal" } )
+bind(vm, "<space>ur", [[<cmd>lua require("utils.translate").translate_vm()<cr>]],               { desc = "Toggle translate visual" } )
+bind(nm, "<space>ur", [[<cmd>lua require("utils.translate").translate_nm()<cr>]],               { desc = "Toggle translate normal" } )
 bind(nm, "<space>uc", [[<cmd>lua require("utils.helper").set_cwd()<cr>]],            { desc = "Toggle Set cwd" } )
 bind(nm, "<space>uy", [[<cmd>Unite -vertical yankround<cr>]],                        { desc = "Toggle Yankround" } )
 bind(nm, "<space>uu", [[<cmd>UndotreeToggle<cr>]],                                   { desc = "Toggle Undotree" } )
 bind(nm, "<space>ud", [[<cmd>lua require("utils.helper").toggle_diff_buff()<cr>]],   { desc = "Toggle Diff" } )
 bind(nm, "<space>uo", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],        { desc = "Toggle Overlay" } )
 bind(nm, "<space>uh", [[<cmd>lua require("mini.hipatterns").toggle()<cr>]],          { desc = "Toggle Hipatterns" } )
-bind(nm, "<a-a>",     [[<cmd>lua require("plugins.fzf-lua.cmds").asynctasks()<cr>]], { desc = "Asynctasks" } )
-
--- any jump over 5 modifies the jumplist
--- so we can use <C-o> <C-i> to jump back and forth
-for _, c in ipairs({
-  { "k", "Line up" },
-  { "j", "Line down" },
-}) do
-  bind(
-    "n",
-    c[1],
-    ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]),
-    { expr = true, desc = c[2] }
-  )
-end
-
--- move along visual lines, not numbered ones
--- without interferring with {count}<down|up>
-for _, m in ipairs({ "n", "v" }) do
-  for _, c in ipairs({
-    { "k", "k", "Visual line up" },
-    { "j", "j", "Visual line down" },
-  }) do
-    bind(
-      m,
-      c[1],
-      ([[v:count == 0 ? 'g%s' : '%s']]):format(c[2], c[2]),
-      { expr = true, desc = c[3] }
-    )
-  end
-end
 
 local delimiters = { ",", ";", "." }
 
@@ -206,22 +173,7 @@ local function cgn_action(type)
   end
 end
 
-bind(nm, "<C-N>", cgn_action("n"), { desc = "cgn word" })
-bind(vm, "<C-N>", cgn_action("v"), { desc = "cgn visual" })
-
--- bind(nm, "<F3>", function ()
---   vim.cmd('tabedit')
---   vim.cmd('setlocal nonumber signcolumn=no')
---   vim.fn.jobstart('gitui', {
---     term = true,
---     on_exit = function()
---       vim.cmd('silent! :checktime')
---       vim.cmd('silent! :bw')
---     end,
---   })
---   vim.cmd('startinsert')
---   vim.b.minipairs_disable = true
--- end, { desc = "terminal gitui" })
-
+bind(nm, "<c-n>", cgn_action("n"), { desc = "cgn word" })
+bind(vm, "<c-n>", cgn_action("v"), { desc = "cgn visual" })
 
 return M

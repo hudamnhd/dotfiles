@@ -6,10 +6,19 @@ return {
       "saghen/blink.cmp",
     },
     config = function()
-      require("lspconfig").lua_ls.setup({})
-      -- require("lspconfig").biome.setup({})
+      require("lspconfig").biome.setup({})
+      require("lspconfig").lua_ls.setup({
+        autostart = false,
+      })
       -- require("lspconfig").dprint.setup({})
-      -- require("lspconfig").denols.setup({})
+      -- require("lspconfig").denols.setup({
+      --   -- Add your configuration settings here
+      --   init_options = {
+      --     lint = false,
+      --     unstable = true,
+      --   },
+      --   root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc"),
+      -- })
 
       -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
       local sign_defs = {
@@ -49,6 +58,8 @@ return {
     ft = { "typescript", "typescriptreact" },
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     opts = {
+      autostart = false,
+
       root_dir = function(fname)
         local util = require("lspconfig.util")
         -- Disable tsserver on js files when a flow project is detected

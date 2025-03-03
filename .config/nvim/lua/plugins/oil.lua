@@ -2,6 +2,7 @@ vim.g.loaded_fzf_file_explorer = 1
 return {
   "stevearc/oil.nvim",
   event = "VeryLazy",
+  enabled = true,
   opts = {
     columns = {
       "size",
