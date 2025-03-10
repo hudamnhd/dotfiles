@@ -1,7 +1,15 @@
 return {
   {
+    "fenetikm/falcon",
+    lazy = false,
+    enabled = true,
+    priority = 1000,
+    config = function() end,
+  },
+  {
     "folke/tokyonight.nvim",
     lazy = false,
+    enabled = false,
     priority = 1000,
     opts = {
       style = "moon",
@@ -76,8 +84,8 @@ return {
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       require("rose-pine").setup({
-        variant = "moon", -- auto, main, moon, or dawn
-        dark_variant = "main", -- main, moon, or dawn
+        -- variant = "main", -- auto, main, moon, or dawn
+        -- dark_variant = "main", -- main, moon, or dawn
         dim_inactive_windows = false,
         extend_background_behind_borders = true,
 
@@ -124,9 +132,29 @@ return {
           h6 = "foam",
         },
         palette = {
-          -- Override the builtin palette per variant
-          moon = {
+          hc = {
+            _nc = "#292C42",
+            base = "#222436",
+            surface = "#222436",
+            overlay = "#222436",
+            muted = "#7277A6",
+            subtle = "#7277A6",
+            text = "#c8d3f5",
+            love = "#ff757f",
+            gold = "#ffc777",
+            rose = "#ff966c",
             pine = "#82aaff",
+            foam = "#4fd6be",
+            iris = "#c099ff",
+            leaf = "#c3e88d",
+            highlight_low = "#21202e",
+            highlight_med = "#403d52",
+            highlight_high = "#524f67",
+            none = "NONE",
+          },
+          moon = {
+            pine = "#6CB0CB", -- "#82aaff" , "#0db9d7",
+            muted = "#908caa",
           },
         },
 
@@ -136,20 +164,8 @@ return {
           -- Comment = { fg = "foam" },
           -- StatusLine = { fg = "love", bg = "love", blend = 15 },
           -- VertSplit = { fg = "muted", bg = "muted" },
-          -- Visual = { fg = "base", bg = "text", inherit = false },
+          Visual = { bg = "#44415a", inherit = false },
         },
-
-        before_highlight = function(group, highlight, palette)
-          -- Disable all undercurls
-          -- if highlight.undercurl then
-          --     highlight.undercurl = false
-          -- end
-          --
-          -- Change palette colour
-          -- if highlight.fg == palette.pine then
-          --     highlight.fg = palette.foam
-          -- end
-        end,
       })
 
       vim.cmd("colorscheme rose-pine-moon")

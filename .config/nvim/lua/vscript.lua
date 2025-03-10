@@ -20,6 +20,6 @@ augroup vimrc_autocmd
   " Defaults for text-like buffers.
   autocmd VimEnter,BufNew * autocmd InsertEnter <buffer=abuf> ++once if &filetype ==# '' | exe 'runtime! after/ftplugin/text.vim' | endif
 augroup END
-"map <C-q> :s/ASDF/\=line('.')-line("'<")"
+" map <C-q> :s/ASDF/\=line('.')-line("'<")"
 
 ]])

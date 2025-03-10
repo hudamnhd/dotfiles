@@ -97,7 +97,7 @@ alias getweb='wget -r -np --user-agent=Firefox -l5 -k -E '
 alias genpass='echo `< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12`'
 # bashmount
 alias bm='bashmount'
-alias vim='nvim'
+alias vim='nvim -u ~/.config/nvim/minimal.lua'
 # end of alias #########################################################
 
 # functions ############################################################
@@ -300,12 +300,13 @@ export FZF_DEFAULT_OPTS="
 --ansi \
 --layout=reverse \
 --border=none \
---color=fg:#908caa,bg:#232136,hl:#ea9a97
+--color=fg:#908caa,bg:#2a273f,hl:#ea9a97
 --color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
---color=border:#44415a,header:#3e8fb0,gutter:#232136
+--color=border:#44415a,header:#3e8fb0,gutter:#2a273f
 --color=spinner:#f6c177,info:#9ccfd8
 --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
 "
+
 # tokyonight
 #--color=fg:#908caa,bg:#232136,hl:#ea9a97
 #--color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97

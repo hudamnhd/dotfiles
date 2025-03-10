@@ -18,7 +18,17 @@ return {
         },
       })
       local opts = { noremap = true, silent = true, desc = "Toggle Neogen" }
-      vim.api.nvim_set_keymap("n", "<space>n", ":lua require('neogen').generate()<CR>", opts)
+      -- vim.api.nvim_set_keymap("n", "<space>n", ":lua require('neogen').generate()<CR>", opts)
+    end,
+  },
+  {
+    "haya14busa/vim-edgemotion",
+    event = "BufReadPost",
+    config = function()
+      vim.cmd([[
+      map <C-J> <Plug>(edgemotion-j)
+      map <C-K> <Plug>(edgemotion-k)
+    ]])
     end,
   },
   {
@@ -31,6 +41,13 @@ return {
     end,
   },
 
+  {
+    "pteroctopus/faster.nvim",
+    event = "BufReadPost",
+    init = function()
+      require("faster").setup()
+    end,
+  },
   { "stefandtw/quickfix-reflector.vim", ft = "qf" },
   { "LeafCage/yankround.vim", event = "VeryLazy" },
   { "Shougo/unite.vim", event = "VeryLazy" },
@@ -39,7 +56,6 @@ return {
   { "tpope/vim-repeat", event = "VeryLazy" },
   { "cohama/agit.vim", event = "BufReadPost" },
   { "tpope/vim-sleuth", event = "BufReadPost" },
+  { "RRethy/nvim-align", event = "BufReadPost" },
   { "mbbill/undotree", event = "BufReadPost" },
-  -- replace with mini ai
-  -- { "wellle/targets.vim", event = "VeryLazy" },
 }

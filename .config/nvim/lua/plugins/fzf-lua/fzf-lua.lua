@@ -19,7 +19,7 @@ function fzf.diagnostics_workspace(opts)
   }))
 end
 
-fzf.setup({ "borderless-full" })
+fzf.setup({ { "borderless-full", "hide" } })
 
 fzf.register_ui_select(function(o, items)
   local min_h, max_h = 0.15, 0.70
@@ -57,22 +57,22 @@ local file_name = month_number .. "-" .. month_name .. "-" .. year .. ".md"
 local file_path = "~/daily-logs/" .. year .. "/" .. file_name
 
 -- stylua: ignore start
-bind("i", "<c-k>", fzf.complete_path, { desc = "(FZF) complete_path" } ) -- remap <C-X><C-F>
-bind("i", "<c-l>", fzf.complete_line, { desc = "(FZF) complete_line" } ) -- remap <C-X><C-L>
-bind("n", "<c-p>", fzf.builtin,       { desc = "(FZF) builtin" } )
+bind("i", "<c-x><c-f>", fzf.complete_path, { desc = "Fzf 'complete_path'" } ) -- remap
+bind("i", "<c-x><c-l>", fzf.complete_line, { desc = "Fzf 'complete_line'" } ) -- remap
+bind("n", "<a-p>", fzf.builtin,       { desc = "Fzf 'builtin'" } )
+bind("n", "<c-b>", fzf.buffers,       { desc = "Fzf 'buffers'" } )
 
-bind("x", "sk", fzf.grep_visual,      { desc = "(FZF) grep_visual" } )
-bind("n", "sr", fzf.live_grep_resume, { desc = "(FZF) live_grep_resume" } )
-bind("n", "si", fzf.grep,             { desc = "(FZF) grep" } )
-bind("n", "sk", fzf.grep_cword,       { desc = "(FZF) grep_cword" } )
-bind("n", "sl", fzf.lgrep_curbuf,     { desc = "(FZF) live_grep_buffer" } )
-bind("n", "s`", fzf.resume,           { desc = "(FZF) resume" } )
-bind("n", "s0", fzf.command_history,  { desc = "(FZF) command_history" } ) -- remap : to 0 easy press
-bind("n", "sp", fzf.files,            { desc = "(FZF) files" } )
-bind("n", "sh", fzf.search_history,   { desc = "(FZF) search_history" } )
-bind("n", "so", fzf.mru,              { desc = "(FZF) oldfiles cwd" } )
-bind("n", "z=", fzf.spell_suggest,    { desc = "(FZF) spell_suggest" } )
-bind("n", "<c-b>", fzf.buffers,          { desc = "(FZF) buffers" } )
+bind("x", "sk", fzf.grep_visual,      { desc = "Fzf 'grep_visual'" } )
+bind("n", "sk", fzf.grep_cword,       { desc = "Fzf 'grep_cword'" } )
+bind("n", "sr", fzf.live_grep_resume, { desc = "Fzf 'live_grep_resume'" } )
+bind("n", "si", fzf.grep,             { desc = "Fzf 'grep'" } )
+bind("n", "sl", fzf.lgrep_curbuf,     { desc = "Fzf 'live_grep_buffer'" } )
+bind("n", "ss", fzf.resume,           { desc = "Fzf 'resume'" } )
+bind("n", "s0", fzf.command_history,  { desc = "Fzf 'command_history'" } ) -- remap : to 0 easy press
+bind("n", "sp", fzf.files,            { desc = "Fzf 'files'" } )
+bind("n", "sh", fzf.search_history,   { desc = "Fzf 'search_history'" } )
+bind("n", "so", fzf.mru,              { desc = "Fzf 'oldfiles cwd'" } )
+bind("n", "z=", fzf.spell_suggest,    { desc = "Fzf 'spell_suggest'" } )
 
 --global
 local fzf_cmds = require("plugins.fzf-lua.cmds")
@@ -80,26 +80,36 @@ local fzf_cmds = require("plugins.fzf-lua.cmds")
 local config_dir =  vim.fn.stdpath("config")
 
 local show_toolbox_files = fzf_cmds.create_show_toolbox("Toolbox Files", {
-  { execute = fzf.list_paths,                  name = "(FZF) PATH" },
-  { execute = files(vim.fn.expand(logs_path)), name = "(FZF) logs for current year" },
-  { execute = require("utils.helper").set_cwd, name = "(SET) Set cwd current dir" },
-  { execute = files("~/.config"),              name = "(FZF) CONFIG" },
-  { execute = files(config_dir),               name = "(FZF) VIMRC" },
-  { execute = files("~/vimwiki"),              name = "(FZF) Vimwiki" },
-  { execute = files("~/Projects/notes"),       name = "(FZF) NOTES_DIR" },
-  { execute = fzf_cmds.show_bookmark_dir,      name = "Show bookmark dir" },
+  { execute = fzf.list_paths,                  name = "Fzf 'PATH'" },
+  { execute = files(vim.fn.expand(logs_path)), name = "Fzf 'logs for current year'" },
+  { execute = files("~/.config"),              name = "Fzf 'Config'" },
+  { execute = files(config_dir),               name = "Fzf 'Vimrc'" },
+  { execute = files("~/vimwiki"),              name = "Fzf 'Vimwiki'" },
+  { execute = files("~/Projects/notes"),       name = "Fzf 'Notes_dir'" },
+  { execute = fzf_cmds.show_bookmark_dir,      name = "Fzf 'bookmark dir'" },
 
-  { execute = function() vim.cmd("e " .. vim.fn.expand(file_path)) end,          name = "(FZF) daily log file" },
+  { execute = function() vim.cmd("e " .. vim.fn.expand(file_path)) end,          name = "Fzf 'daily log file'" },
   { execute = function() vim.cmd.vsplit(os.getenv("HOME") .. "/.cdg_paths") end, name = "Edit bookmark dir" },
+  { execute = function() vim.cmd.ShowFile(config_dir .. "/cheatsheet.txt") end, name = "Cheatsheet Subtitute" },
 })
 
-bind("n", "<space>pq", show_toolbox_files, { desc = "Files Command" } )
+bind("n", "<space>pf", show_toolbox_files, { desc = "Files Command" } )
 
 
 local commands = {
-  { execute = fzf.diagnostics_document,  name = "(FZF) diagnostics_document" },
-  { execute = fzf.diagnostics_workspace, name = "(FZF) diagnostics_workspace" },
+  { execute = fzf.diagnostics_document,  name = "Fzf 'diagnostics_document'" },
+  { execute = fzf.diagnostics_workspace, name = "Fzf 'diagnostics_workspace'" },
 }
+
+
+local function is_typescript_tools_active()
+  for _, client in pairs(vim.lsp.get_clients()) do
+    if client.name == "typescript-tools" then
+      return true
+    end
+  end
+  return false
+end
 
 local lsp_attach = function()
 
@@ -108,17 +118,17 @@ local lsp_attach = function()
   -- Cek apakah filetype termasuk dalam daftar yang diinginkan
   local allowed_ft = { typescript = true, typescriptreact = true, javascriptreact = true }
 
-  if allowed_ft[ft] then
+if is_typescript_tools_active() then
     local extra_commands = {
-      { execute = vim.cmd.TSToolsOrganizeImports, name = "(TS) OrganizeImports" },
-      { execute = vim.cmd.TSToolsSortImports, name = "(TS) SortImports" },
-      { execute = vim.cmd.TSToolsRemoveUnusedImports, name = "(TS) RemoveUnusedImports" },
-      { execute = vim.cmd.TSToolsRemoveUnused, name = "(TS) RemoveUnused" },
-      { execute = vim.cmd.TSToolsAddMissingImports, name = "(TS) AddMissingImports" },
-      { execute = vim.cmd.TSToolsFixAll, name = "(TS) FixAll" },
-      { execute = vim.cmd.TSToolsGoToSourceDefinition, name = "(TS) GoToSourceDefinition" },
-      { execute = vim.cmd.TSToolsRenameFile, name = "(TS) RenameFile" },
-      { execute = vim.cmd.TSToolsFileReferences, name = "(TS) FileReferences" },
+      { execute = vim.cmd.TSToolsOrganizeImports, name      = "TS 'OrganizeImports'" },
+      { execute = vim.cmd.TSToolsSortImports, name          = "TS 'SortImports'" },
+      { execute = vim.cmd.TSToolsRemoveUnusedImports, name  = "TS 'RemoveUnusedImports'" },
+      { execute = vim.cmd.TSToolsRemoveUnused, name         = "TS 'RemoveUnused'" },
+      { execute = vim.cmd.TSToolsAddMissingImports, name    = "TS 'AddMissingImports'" },
+      { execute = vim.cmd.TSToolsFixAll, name               = "TS 'FixAll'" },
+      { execute = vim.cmd.TSToolsGoToSourceDefinition, name = "TS 'GoToSourceDefinition'" },
+      { execute = vim.cmd.TSToolsRenameFile, name           = "TS 'RenameFile'" },
+      { execute = vim.cmd.TSToolsFileReferences, name       = "TS 'FileReferences'" },
     }
 
     for _, cmd in ipairs(extra_commands) do
@@ -127,18 +137,18 @@ local lsp_attach = function()
   end
 
   local lsp_commands = {
-    { execute = fzf.lsp_document_symbols, name = "(FZF) lsp_document_symbols" },
-    { execute = fzf.lsp_live_workspace_symbols, name = "(FZF) lsp_live_workspace_symbols" },
-    { execute = fzf.lsp_definitions, name = "(FZF) lsp_definitions" },
-    { execute = fzf.lsp_definitions, name = "(FZF) lsp_definitions" },
-    { execute = fzf.lsp_typedefs, name = "(FZF) lsp_typedefs" },
-    { execute = fzf.lsp_implementations, name = "(FZF) lsp_implementations" },
-    { execute = fzf.lsp_incoming_calls, name = "(FZF) lsp_incoming_calls" },
-    { execute = fzf.lsp_outgoing_calls, name = "(FZF) lsp_outgoing_calls" },
-    { execute = fzf.lsp_references, name = "(FZF) lsp_references" },
-    { execute = fzf.lsp_finder, name = "(FZF) lsp_finder" },
-    { execute = fzf.lsp_code_actions, name = "(FZF) lsp_code_actions" },
-    { execute = vim.lsp.buf.rename, name = "(LSP) vim.lsp.buf.rename" },
+    { execute = fzf.lsp_document_symbols, name       = "Fzf 'lsp_document_symbols'" },
+    { execute = fzf.lsp_live_workspace_symbols, name = "Fzf 'lsp_live_workspace_symbols'" },
+    { execute = fzf.lsp_definitions, name            = "Fzf 'lsp_definitions'" },
+    { execute = fzf.lsp_definitions, name            = "Fzf 'lsp_definitions'" },
+    { execute = fzf.lsp_typedefs, name               = "Fzf 'lsp_typedefs'" },
+    { execute = fzf.lsp_implementations, name        = "Fzf 'lsp_implementations'" },
+    { execute = fzf.lsp_incoming_calls, name         = "Fzf 'lsp_incoming_calls'" },
+    { execute = fzf.lsp_outgoing_calls, name         = "Fzf 'lsp_outgoing_calls'" },
+    { execute = fzf.lsp_references, name             = "Fzf 'lsp_references'" },
+    { execute = fzf.lsp_finder, name                 = "Fzf 'lsp_finder'" },
+    { execute = fzf.lsp_code_actions, name           = "Fzf 'lsp_code_actions'" },
+    { execute = vim.lsp.buf.rename, name             = "Lsp 'vim.lsp.buf.rename'" },
   }
 
   for _, cmd in ipairs(lsp_commands) do

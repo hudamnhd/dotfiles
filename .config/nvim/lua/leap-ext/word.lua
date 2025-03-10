@@ -1,40 +1,40 @@
 local M = {}
 
-local core = require('leap-ext.core')
-local esc_key = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
+local core = require("leap-ext.core")
+local esc_key = vim.api.nvim_replace_termcodes("<Esc>", true, false, true)
 
 function M.start()
   local winid = vim.api.nvim_get_current_win()
-  require('leap').leap({
-    target_windows = {winid},
-    targets = M.get_targets
+  require("leap").leap({
+    target_windows = { winid },
+    targets = M.get_targets,
   })
 end
 
 function M.get_targets()
-  local prompt = ' '
-  local pos = vim.fn.getpos('.')
-  local cursor_pos = {pos[2], pos[3]}
+  local prompt = " "
+  local pos = vim.fn.getpos(".")
+  local cursor_pos = { pos[2], pos[3] }
 
   local max_column = (not vim.o.wrap) and vim.o.columns or -1
 
-  vim.api.nvim_echo({{prompt}}, false, {})
+  vim.api.nvim_echo({ { prompt } }, false, {})
   local ok, ch = pcall(vim.fn.getcharstr)
 
   if ok == false or ch == nil or ch == esc_key then
     return
   end
 
-  local char_pattern = ''
-  local camel_pattern = '[%l]'
-  local word_start = '[%s%p]+'
+  local char_pattern = ""
+  local camel_pattern = "[%l]"
+  local word_start = "[%s%p]+"
 
-  if ch:match('[a-z]') then
+  if ch:match("[a-z]") then
     local upper = ch:upper()
-    char_pattern = string.format('[%s%s]', ch, upper)
+    char_pattern = string.format("[%s%s]", ch, upper)
     camel_pattern = camel_pattern .. upper
     word_start = word_start .. char_pattern
-  elseif ch:match('[A-Z]') then
+  elseif ch:match("[A-Z]") then
     char_pattern = ch
     camel_pattern = camel_pattern .. ch
     word_start = word_start .. char_pattern
@@ -49,8 +49,8 @@ function M.get_targets()
   local rank = core.get_rank
 
   local targets = {}
-  local line = vim.fn.line('w0')
-  local last_line = vim.fn.line('w$')
+  local line = vim.fn.line("w0")
+  local last_line = vim.fn.line("w$")
 
   while line <= last_line do
     local step = {}
@@ -67,7 +67,7 @@ function M.get_targets()
       local first_match = str:sub(1, 1):find(char_pattern)
 
       if first_match then
-        step = {first_match}
+        step = { first_match }
       end
 
       core.join_pattern(str, word_start, max_column, step)
@@ -85,7 +85,7 @@ function M.get_targets()
         local same = match == cursor_pos[2] and line == cursor_pos[1]
         if not same then
           targets[#targets + 1] = {
-            pos = {line, match},
+            pos = { line, match },
             rank = rank(cursor_pos, line, match),
           }
         end
@@ -105,4 +105,3 @@ function M.get_targets()
 end
 
 return M
-

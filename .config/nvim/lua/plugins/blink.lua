@@ -1,7 +1,7 @@
 return {
   "saghen/blink.cmp",
   -- optional: provides snippets for the snippet source
-  event = "InsertEnter *",
+  event = { "InsertEnter" },
   enabled = true,
   dependencies = {
     "L3MON4D3/LuaSnip", -- for autocompletion
@@ -17,6 +17,10 @@ return {
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
   opts = {
+
+    cmdline = {
+      enabled = false,
+    },
     completion = {
       -- 'prefix' will fuzzy match on the text before the cursor
       -- 'full' will fuzzy match on the text before *and* after the cursor
@@ -28,15 +32,15 @@ return {
       accept = { auto_brackets = { enabled = false } },
 
       -- Don't select by default, auto insert on selection
-      -- list = { selection = { preselect = false, auto_insert = true } },
+      list = { selection = { preselect = false, auto_insert = true } },
       -- or set either per mode via a function
-      list = {
-        selection = {
-          preselect = function(ctx)
-            return ctx.mode ~= "cmdline"
-          end,
-        },
-      },
+      -- list = {
+      --   selection = {
+      --     preselect = function(ctx)
+      --       return ctx.mode ~= "cmdline"
+      --     end,
+      --   },
+      -- },
     },
     -- 'default' for mappings similar to built-in completion
     -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)

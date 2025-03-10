@@ -35,10 +35,10 @@ return {
         return Path:new(buf_name):make_relative(root)
       end
 
-      vim.keymap.set("n", "<C-->", function()
+      vim.keymap.set("n", "<a-`>", function()
         local ui_opts = {
-          ui_fallback_width = 7,
-          ui_width_ratio = 0.7,
+          ui_fallback_width = 5,
+          ui_width_ratio = 0.5,
         }
         local curr_file = normalize_path(vim.api.nvim_buf_get_name(0), vim.loop.cwd())
         harpoon.ui:toggle_quick_menu(harpoon:list(), ui_opts)
@@ -46,7 +46,7 @@ return {
         vim.cmd(cmd)
       end, { desc = "toggle_quick_menu harpoon" })
 
-      vim.keymap.set("n", "<space>a", function() harpoon:list():add() vim.notify("harpoon add")end, { desc = "mark harpoon" })
+      vim.keymap.set("n", "<space>a", function() harpoon:list():add() vim.notify("harpoon add")end, { desc = "Mark harpoon" })
 
       -- vim.keymap.set("n", "[a", function() harpoon:list():prev() end)
       -- vim.keymap.set("n", "]a", function() harpoon:list():next() end)

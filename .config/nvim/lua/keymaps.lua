@@ -4,11 +4,13 @@ local M = {}
 local utils = require("utils")
 local k = utils.keymap
 local bind, feedkeys = k.bind, k.feedkeys
-local nm, tm, cm, vm, nvm = "n", "t", "c", { "v", "o", "x" }, { "n", "v", "o", "x" }
+local nm, tm, cm, vm, nvm = "n", "t", "c", { "o", "x" }, { "n", "o", "x" }
 
 M.leader_group_clues = {
-  { mode = "n", keys = "<space>u", desc = "+Toggle and other" },
+  { mode = "n", keys = "st", desc = "+Toggle and other" },
   { mode = "n", keys = "<space>b", desc = "+Buffer" },
+  { mode = "n", keys = "<space>g", desc = "+Git and Debug" },
+  { mode = "n", keys = "<space>d", desc = "+Debugprint" },
 }
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,47 +45,42 @@ local function delete_line()
   return (empty_line and '"_dd' or "dd")
 end
 
--- https://neovim.discourse.group/t/delete-all-but-current-buffer/3953/2
-local function bdall()
-  local bufs = vim.api.nvim_list_bufs()
-  local current_buf = vim.api.nvim_get_current_buf()
-  for _, i in ipairs(bufs) do
-    if i ~= current_buf then
-      vim.api.nvim_buf_delete(i, {})
-    end
+local function split_sensibly()
+  if vim.api.nvim_win_get_width(0) > math.floor(vim.api.nvim_win_get_height(0) * 2.3) then
+    vim.cmd("vs")
+  else
+    vim.cmd("split")
   end
 end
 
 -- stylua: ignore start
 bind(nm, "zq",    [[*Nqz]],            { desc = "mc start macro (foward)" } )
 bind(nm, "<c-0>", mc_macro(),          { desc = "mc end or replay macro", expr = true } )
+
 bind(vm, "zq",    mc_select .. "``qz", { desc = "mc start macro (foward)" } )
 bind(vm, "<c-0>", mc_macro(mc_select), { desc = "mc end or replay macro", expr = true  } )
 
 bind(tm, "<c-\\>", [[<C-\><C-n>]] )
 bind(tm, "<a-x>",  [[<C-\><C-n>:bd!<Cr>]] )
 bind(tm, "<a-w>",  [[<C-\><C-n><c-w>w]] )
-bind(tm, "<m-r>",  [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true } )
+bind(tm, "<a-r>",  [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true } )
+bind(nm, "<a-x>",  [[<cmd>!chmod +x %<CR>]],                  { silent = false } )
 
-bind(cm, "<c-v>", [[<C-R>"]], { desc = "paste cmd-mode", silent = false } )
-bind(cm, "<a-v>", [[<C-R>+]], { desc = "paste cmd-mode", silent = false } )
+bind(cm, "<c-v>", [[<C-R>"]], { silent = false } )
+bind(cm, "<a-v>", [[<C-R>+]], { silent = false } )
+
 bind(cm, "<F1>", [[\(.*\)<Left><Left>]], { silent = false })
 bind(cm, "<F2>", [[\<\><Left><Left>]],   { silent = false })
 bind(cm, "<F3>", [[.\{-}]],              { silent = false } ) --\s\+
-bind(cm, "<F4>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true } )
+
+bind(cm, "<Insert>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true } )
 
 bind(cm, "=",  [[getcmdtype() == ':' && getcmdline() == '' ? 'lua=' : '=']], { silent = false, expr = true })
 
 bind(vm, "<c-f>", [[<cmd>lua require("utils.search-replace").visual_charwise_selection()<cr>]], { desc = "replace visual" } )
-bind(vm, "<c-s>", [[:s/\v//g<left><left><left>]],          { desc = "Search Replace", silent = false  } )
+bind(vm, "<c-s>", [[:s///g<left><left><left>]],          { desc = "Search Replace", silent = false  } )
 bind(nm, "<c-f>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],     { desc = "Replace cword", silent = false } )
 bind(nm, "<c-s>", [[:'<,'>s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace cword", silent = false } )
-bind(nm, "<a-x>", [[<cmd>!chmod +x %<CR>]], { silent = false } )
-
-bind(vm, "<leader>n", [[:s/\d\+/number/g]],                              { desc = "Number to type number",          silent = false } )
-bind(vm, "<leader>s", [[:s/"[^"]*"/string/g]],                           { desc = "String to type string",          silent = false } )
-bind(vm, "<leader>c", [[:s/\(\l\)\(\u\)/\1\_\l\2/g<CR>]],                { desc = "Camel to snack",                 silent = false } )
-bind(vm, "<leader>-", [[:s/\([a-zA-Z]\)\(-\)\([a-zA-Z]\)/\1\u\3/g<CR>]], { desc = "Rmv - and change to capitalize", silent = false } )
 
 bind(vm, "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true } )
 bind(vm, ">", [[>gv]] )
@@ -95,44 +92,41 @@ bind(nm, "!",     [[:<up><cr>]] )
 bind(nm, "<a-w>", [[<c-w>w]] )
 bind(nm, "<esc>", [[<Cmd>nohlsearch|diffupdate|echo<cr>]] )
 
-bind(nm, "<space>w", vim.cmd.write, { desc = "update" } )
-bind(nm, "<space>q", vim.cmd.bd, { desc = "Buffer delete" } )
-bind(nm, "<space>bw", vim.cmd.bw, { desc = "Buffer wipeout" } )
-bind(nm, "<space>bq", bdall, { desc = "Buffer delete all" } )
-bind(nm, "<space>bs", function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end, { desc = "Buffer scratch" })
+bind(nm, "<space>c", vim.cmd.close,  { desc = "Close" } )
+bind(nm, "<space>v", split_sensibly, { desc = "split" } )
+bind(nm, "<space>w", vim.cmd.write,  { desc = "Write" } )
 
-bind(nm, "J",   [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true } )
+bind(nm, "J", [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true } )
 
--- emlate some basic commands from `vim-abolish`
-bind(nm, "cl", [[mzguiw`z]],    { desc = "󰬴 UPPERCASE to lowercase" } )
-bind(nm, "ct", [[mzguiwgUl`z]], { desc = "󰬴 Titlecase" } )
-bind(nm, "cu", [[mzgUiw`z]],    { desc = "󰬴 lowercase to UPPERCASE" } )
+bind(nm, "cl", [[mzguiw`z]],    { desc = "UPPERCASE to lowercase" } )
+bind(nm, "ct", [[mzguiwgUl`z]], { desc = "Titlecase" } )
+bind(nm, "cu", [[mzgUiw`z]],    { desc = "lowercase to UPPERCASE" } )
 bind(nm, "dd", delete_line,     { desc = "delete line", expr = true  } )
 
-bind(nm, "sx", [[gxiw]], { remap = true, desc = "(OPR) Exchange word" } )
-bind(nm, "sm", [[gmm]],  { remap = true, desc = "(OPR) Clone line" } )
-bind(nm, "sw", [[ysiw]], { remap = true, desc = "(OPR) Surround cword" } )
+bind(nm, "sx", [[gxiw]], { remap = true, desc = "Opr 'Exchange word'" } )
+bind(nm, "sm", [[gmm]],  { remap = true, desc = "Opr 'Clone line'" } )
+bind(nm, "sw", [[ysiw]], { remap = true, desc = "Opr 'Surround word'" } )
 
-bind(nm, "<space>c", [[<c-w>c]], { desc = "Close" } )
-bind(nm, "<space>v", [[<c-w>v]], { desc = "Vsplit" } )
-
-bind(nvm, "0",     [[:]],   { silent = false })
-bind(nvm, "c",     [["_c]] )
-bind(nvm, "x",     [["_x]] )
-bind(nvm, "gy",    [["+y]], { desc = "Yank to clipboard (primary)" } )
-bind(nvm, "gp",    [["+p]], { desc = "Paste after from clipboard (primary)" } )
-bind(nvm, "<c-h>", [[^]] )
-bind(nvm, "<c-l>", [[g_]] )
+bind(nvm, "0",  [[:]],   { silent = false })
+bind(nvm, "c",  [["_c]] )
+bind(nvm, "x",  [["_x]] )
+bind(nvm, "gy", [["+y]], { desc = "Yank to clipboard (primary)" } )
+bind(nvm, "gp", [["+p]], { desc = "Paste after from clipboard (primary)" } )
 bind(nvm, "<c-z>", [[%]] )
+bind(nvm, "<c-l>", [[g_]] )
+bind(nvm, "<c-h>", [[^]] )
 
-bind(vm, "<space>ur", [[<cmd>lua require("utils.translate").translate_vm()<cr>]],               { desc = "Toggle translate visual" } )
-bind(nm, "<space>ur", [[<cmd>lua require("utils.translate").translate_nm()<cr>]],               { desc = "Toggle translate normal" } )
-bind(nm, "<space>uc", [[<cmd>lua require("utils.helper").set_cwd()<cr>]],            { desc = "Toggle Set cwd" } )
-bind(nm, "<space>uy", [[<cmd>Unite -vertical yankround<cr>]],                        { desc = "Toggle Yankround" } )
-bind(nm, "<space>uu", [[<cmd>UndotreeToggle<cr>]],                                   { desc = "Toggle Undotree" } )
-bind(nm, "<space>ud", [[<cmd>lua require("utils.helper").toggle_diff_buff()<cr>]],   { desc = "Toggle Diff" } )
-bind(nm, "<space>uo", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],        { desc = "Toggle Overlay" } )
-bind(nm, "<space>uh", [[<cmd>lua require("mini.hipatterns").toggle()<cr>]],          { desc = "Toggle Hipatterns" } )
+bind(nm, "std", [[<cmd>lua require("utils.helper").toggle_diff_buff()<cr>]], { desc = "Toggle 'Diff'" } )
+bind(nm, "sth", [[<cmd>lua require("mini.hipatterns").toggle()<cr>]],        { desc = "Toggle 'Hipatterns'" } )
+bind(nm, "sto", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],      { desc = "Toggle 'Overlay'" } )
+
+bind(nm, "<space>t", [[<cmd>lua require("utils.translate").translate_nm()<cr>]],  { desc = "Toggle 'translate normal'" } )
+bind(vm, "<space>t", [[<cmd>lua require("utils.translate").translate_vm()<cr>]],  { desc = "Toggle 'translate visual'" } )
+
+bind(nm, "<space>%", [[<cmd>lua require("utils.helper").set_cwd()<cr>]],          { desc = "Toggle 'Set cwd'" } )
+bind(nm, "<space>u", [[<cmd>UndotreeToggle<cr>]],                                 { desc = "Toggle 'Undotree'" } )
+bind(nm, "<space>y", [[<cmd>Unite -vertical yankround<cr>]],                      { desc = "Toggle 'Yankround'" } )
+
 
 local delimiters = { ",", ";", "." }
 

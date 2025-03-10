@@ -9,21 +9,44 @@ local M = {
 
 function M.config()
   require("mini.icons").setup()
-  require("mini.ai").setup()
   require("mini.icons").mock_nvim_web_devicons()
   require("mini.operators").setup()
   require("mini.align").setup()
-  require("mini.indentscope").setup()
   require("mini.splitjoin").setup()
-  require("mini.trailspace").setup()
   require("mini.comment").setup()
-  require("mini.move").setup()
   require("mini.extra").setup()
   require("mini.bracketed").setup()
   require("mini.basics").setup()
+
   -- require("mini.tabline").setup()
   -- require("mini.statusline").setup()
   -- vim.cmd.colorscheme("neovim_colors")
+  require("mini.ai").setup()
+
+  vim.keymap.set({ "o", "x" }, "q", [[iq]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "Q", [[aq]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "w", [[iw]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "W", [[iW]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "t", [[it]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "T", [[at]], { remap = true })
+
+  require("mini.move").setup({
+    mappings = {
+      left = "",
+      right = "",
+      down = "<s-j>",
+      up = "<s-k>",
+
+      line_left = "",
+      line_right = "",
+      line_down = "",
+      line_up = "",
+    },
+
+    options = {
+      reindent_linewise = false,
+    },
+  })
   require("mini.diff").setup({
 
     view = {
