@@ -26,7 +26,7 @@ frame_color = "#585b5f"
 highlight = "#3daee9, #3daee9"
 
 # Text
-font = FiraSans 10
+font = FiraSans 13
 markup = full
 format = "<small>%a</small>\n<big><b>%s</b></big>\n%b"
 alignment = left

@@ -5,7 +5,7 @@
 bind '"\e[A": history-search-backward'
 bind '"\e[B": history-search-forward'
 # base #################################################################
-export PATH="$HOME/.local/bin:$HOME/bin:/opt/nvim-linux-x86_64/bin:/opt/firefox:$HOME/.deno/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:$PATH"
+export PATH="$HOME/go/bin:$HOME/.local/bin:$HOME/bin:/opt/nvim-linux-x86_64/bin:/opt/firefox:$HOME/.deno/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:$PATH"
 
 # Variabel sistem utama
 export EDITOR="nvim"
@@ -48,6 +48,7 @@ fi
 # ls & grep ------------------------------------------------------------
 
 alias mdp='mdpreview "$(pwd)" && echo "OPEN http://127.0.0.1:3000"'
+alias tms='~/.config/chadwm/scripts/timer.sh start'
 alias lf=lfrun
 alias ls='ls --color=auto'
 alias dir='dir --color=auto'
@@ -300,13 +301,19 @@ export FZF_DEFAULT_OPTS="
 --ansi \
 --layout=reverse \
 --border=none \
---color=fg:#908caa,bg:#2a273f,hl:#ea9a97
---color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
---color=border:#44415a,header:#3e8fb0,gutter:#2a273f
---color=spinner:#f6c177,info:#9ccfd8
---color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
+--color=fg:#9b9ea4,bg:#14161b,hl:#8cf8f7
+--color=fg+:#e0e2ea,bg+:#4f5258,hl+:#8cf8f7
+--color=border:#2c2e33,header:#a6dbff,gutter:#2a273f
+--color=spinner:#fce094,info:#8cf8f7
+--color=pointer:#ffcaff,marker:#ffc0b9,prompt:#9b9ea4
 "
 
+# rosepine
+# --color=fg:#908caa,bg:#2a273f,hl:#ea9a97
+# --color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
+# --color=border:#44415a,header:#3e8fb0,gutter:#2a273f
+# --color=spinner:#f6c177,info:#9ccfd8
+# --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
 # tokyonight
 #--color=fg:#908caa,bg:#232136,hl:#ea9a97
 #--color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97

@@ -30,6 +30,10 @@ function M.config()
   vim.keymap.set({ "o", "x" }, "t", [[it]], { remap = true })
   vim.keymap.set({ "o", "x" }, "T", [[at]], { remap = true })
 
+  vim.keymap.set("n", "sx", [[gxiw]], { remap = true, desc = "Opr 'Exchange word'" })
+  vim.keymap.set("n", "sm", [[gmm]], { remap = true, desc = "Opr 'Clone line'" })
+  vim.keymap.set("n", "sw", [[ysiw]], { remap = true, desc = "Opr 'Surround word'" })
+
   require("mini.move").setup({
     mappings = {
       left = "",

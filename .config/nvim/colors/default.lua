@@ -23,12 +23,13 @@ vim.g.colors_name = "default"
 -- #ffc0b9 (Light red)
 -- #fce094 (Light yellow)
 
--- vim.api.nvim_set_hl(0, 'Comment', { fg = 'NvimLightGrey4', ctermfg = 8 })
--- vim.api.nvim_set_hl(0, 'LineNr', { fg = 'NvimLightGrey4', ctermfg = 8 })
--- vim.api.nvim_set_hl(0, 'NonText', { fg = 'NvimDarkGrey4', ctermfg = 8 })
--- vim.api.nvim_set_hl(0, 'FloatTitle', { link = 'FloatBorder' })
--- vim.api.nvim_set_hl(0, 'NormalFloat', { link = 'Pmenu' })
--- vim.api.nvim_set_hl(0, 'StatusLineNC', { bg = 'NvimDarkGrey3' })
+vim.api.nvim_set_hl(0, 'Comment', { fg = 'NvimLightGrey4', ctermfg = 8 })
+vim.api.nvim_set_hl(0, 'DirvishSuffix', { fg = 'NvimLightGrey4', ctermfg = 8 })
+vim.api.nvim_set_hl(0, 'LineNr', { fg = 'NvimLightGrey4', ctermfg = 8 })
+vim.api.nvim_set_hl(0, 'NonText', { fg = 'NvimDarkGrey4', ctermfg = 8 })
+vim.api.nvim_set_hl(0, 'FloatTitle', { link = 'FloatBorder' })
+vim.api.nvim_set_hl(0, 'NormalFloat', { link = 'Pmenu' })
+vim.api.nvim_set_hl(0, 'StatusLineNC', { bg = 'NvimDarkGrey3' })
 
 vim.api.nvim_set_hl(0, 'MatchParen', { reverse = true })
 

@@ -53,6 +53,7 @@ local function split_sensibly()
   end
 end
 
+-- BASIC
 -- stylua: ignore start
 bind(nm, "zq",    [[*Nqz]],            { desc = "mc start macro (foward)" } )
 bind(nm, "<c-0>", mc_macro(),          { desc = "mc end or replay macro", expr = true } )
@@ -60,12 +61,12 @@ bind(nm, "<c-0>", mc_macro(),          { desc = "mc end or replay macro", expr =
 bind(vm, "zq",    mc_select .. "``qz", { desc = "mc start macro (foward)" } )
 bind(vm, "<c-0>", mc_macro(mc_select), { desc = "mc end or replay macro", expr = true  } )
 
-bind(tm, "<c-\\>", [[<C-\><C-n>]] )
-bind(tm, "<a-x>",  [[<C-\><C-n>:bd!<Cr>]] )
-bind(tm, "<a-w>",  [[<C-\><C-n><c-w>w]] )
-bind(tm, "<a-r>",  [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true } )
-bind(nm, "<a-x>",  [[<cmd>!chmod +x %<CR>]],                  { silent = false } )
+bind(tm, [[<c-\>]], [[<C-\><C-n>]] )
+bind(tm, [[<a-x>]], [[<C-\><C-n>:bd!<Cr>]] )
+bind(tm, [[<a-w>]], [[<C-\><C-n><c-w>w]] )
+bind(tm, [[<a-r>]], [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true } )
 
+bind(cm, "<c-x>", [[!chmod +x <c-r>%]], { silent = false } )
 bind(cm, "<c-v>", [[<C-R>"]], { silent = false } )
 bind(cm, "<a-v>", [[<C-R>+]], { silent = false } )
 
@@ -103,19 +104,19 @@ bind(nm, "ct", [[mzguiwgUl`z]], { desc = "Titlecase" } )
 bind(nm, "cu", [[mzgUiw`z]],    { desc = "lowercase to UPPERCASE" } )
 bind(nm, "dd", delete_line,     { desc = "delete line", expr = true  } )
 
-bind(nm, "sx", [[gxiw]], { remap = true, desc = "Opr 'Exchange word'" } )
-bind(nm, "sm", [[gmm]],  { remap = true, desc = "Opr 'Clone line'" } )
-bind(nm, "sw", [[ysiw]], { remap = true, desc = "Opr 'Surround word'" } )
+bind(nvm, "0", ":", { silent = false })
 
-bind(nvm, "0",  [[:]],   { silent = false })
-bind(nvm, "c",  [["_c]] )
-bind(nvm, "x",  [["_x]] )
+bind(nvm, "c", [["_c]] )
+bind(nvm, "x", [["_x]] )
+
 bind(nvm, "gy", [["+y]], { desc = "Yank to clipboard (primary)" } )
 bind(nvm, "gp", [["+p]], { desc = "Paste after from clipboard (primary)" } )
+
 bind(nvm, "<c-z>", [[%]] )
 bind(nvm, "<c-l>", [[g_]] )
 bind(nvm, "<c-h>", [[^]] )
 
+-- PLUGIN
 bind(nm, "std", [[<cmd>lua require("utils.helper").toggle_diff_buff()<cr>]], { desc = "Toggle 'Diff'" } )
 bind(nm, "sth", [[<cmd>lua require("mini.hipatterns").toggle()<cr>]],        { desc = "Toggle 'Hipatterns'" } )
 bind(nm, "sto", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],      { desc = "Toggle 'Overlay'" } )
@@ -123,9 +124,9 @@ bind(nm, "sto", [[<cmd>lua require("mini.diff").toggle_overlay()<cr>]],      { d
 bind(nm, "<space>t", [[<cmd>lua require("utils.translate").translate_nm()<cr>]],  { desc = "Toggle 'translate normal'" } )
 bind(vm, "<space>t", [[<cmd>lua require("utils.translate").translate_vm()<cr>]],  { desc = "Toggle 'translate visual'" } )
 
-bind(nm, "<space>%", [[<cmd>lua require("utils.helper").set_cwd()<cr>]],          { desc = "Toggle 'Set cwd'" } )
-bind(nm, "<space>u", [[<cmd>UndotreeToggle<cr>]],                                 { desc = "Toggle 'Undotree'" } )
-bind(nm, "<space>y", [[<cmd>Unite -vertical yankround<cr>]],                      { desc = "Toggle 'Yankround'" } )
+bind(nm, "<space>%", [[<cmd>lua require("utils.helper").set_cwd()<cr>]], { desc = "Toggle 'Set cwd'" } )
+bind(nm, "<space>u", [[<cmd>UndotreeToggle<cr>]],                        { desc = "Toggle 'Undotree'" } )
+bind(nm, "<space>y", [[<cmd>Unite -vertical yankround<cr>]],             { desc = "Toggle 'Yankround'" } )
 
 
 local delimiters = { ",", ";", "." }

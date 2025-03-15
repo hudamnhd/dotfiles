@@ -1,179 +1,190 @@
 ! author: arpinux <https://arpinux.org>
 ! ~/.Xresources configuration file
 !-----------------------------------------------------------------------
-! special
-*.foreground:   #e0def4
-*.background:   #232136
-*.cursorColor:  #e0def4
+
+
+*.foreground:   #e0e2ea
+*.background:   #14161b
+*.cursorColor:  #e0e2ea
 
 ! black
-*.color0:       #2a273f
-*.color8:       #908caa
+*.color0:       #14161b
+*.color8:       #9b9ea4
 
 ! red
-*.color1:       #eb6f92
-*.color9:       #eb6f92
+*.color1:       #ffc0b9
+*.color9:       #ffc0b9
 
 ! green
-*.color2:       #f6c177
-*.color10:      #f6c177
+*.color2:       #b3f6c0
+*.color10:      #b3f6c0
 
 ! yellow
-*.color3:       #ea9a97
-*.color11:      #ea9a97
+*.color3:       #fce094
+*.color11:      #fce094
 
 ! blue
-*.color4:       #6CB0CB
-*.color12:      #6CB0CB
+*.color4:       #a6dbff
+*.color12:      #a6dbff
 
 ! magenta
-*.color5:       #c4a7e7
-*.color13:      #c4a7e7
+*.color5:       #ffcaff
+*.color13:      #ffcaff
 
 ! cyan
-*.color6:       #9ccfd8
-*.color14:      #9ccfd8
+*.color6:       #8cf8f7
+*.color14:      #8cf8f7
 
 ! white
-*.color7:       #6e6a86
-*.color15:      #908caa
-! TokyoNight colors for Xresources
-
-! *background: #222436
-! *foreground: #c8d3f5
-!
-! *color0: #1b1d2b
-! *color1: #ff757f
-! *color2: #c3e88d
-! *color3: #ffc777
-! *color4: #82aaff
-! *color5: #c099ff
-! *color6: #86e1fc
-! *color7: #828bb8
-!
-! *color8: #9599BC
-! *color9: #ff757f
-! *color10: #c3e88d
-! *color11: #ffc777
-! *color12: #82aaff
-! *color13: #c099ff
-! *color14: #86e1fc
-! *color15: #c8d3f5
-! ! special
-! *.foreground:   #2f3337
-! *.background:   #f6f6f6
-! *.cursorColor:  #2f3337
-!
-! ! black
-! *.color0:       #f6f6f6
-! *.color8:       #656e77
-!
-! ! red
-! *.color1:       #c02d2e
-! *.color9:       #c02d2e
-!
-! ! green
-! *.color2:       #54790d
-! *.color10:      #54790d
-!
-! ! yellow
-! *.color3:       #b75501
-! *.color11:      #b75501
-!
-! ! blue
-! *.color4:       #015692
-! *.color12:      #015692
-!
-! ! magenta
-! *.color5:       #803378
-! *.color13:      #803378
-!
-! ! cyan
-! *.color6:       #2f6f44
-! *.color14:      #2f6f44
-!
-! ! white
-! *.color7:       #2f3337
-! *.color15:      #2f3337
-
-! *background: #eef1f8
-! *foreground: #07080d
-! *color0: #eef1f8
-! *color1: #4f0006
-! *color2: #004e20
-! *color3: #644e00
-! *color4: #00466b
-! *color5: #40003d
-! *color6: #006c6d
-! *color7: #07080d
-! *color8: #eef1f8
-! *color9: #4f0006
-! *color10: #004e20
-! *color11: #644e00
-! *color12: #00466b
-! *color13: #40003d
-! *color14: #006c6d
-! *color15: #07080d
+*.color7:       #e0e2ea
+*.color15:      #4f5258
 
 
-! *background: #011627
-! *foreground: #bdc1c6
-!
-! *color0: #1d3b53
-! *color1: #fc514e
-! *color2: #a1cd5e
-! *color3: #e3d18a
-! *color4: #82aaff
-! *color5: #c792ea
-! *color6: #7fdbca
-! *color7: #a1aab8
-!
-! *color8: #7c8f8f
-! *color9: #ff5874
-! *color10: #21c7a8
-! *color11: #ecc48d
-! *color12: #82aaff
-! *color13: #ae81ff
-! *color14: #7fdbca
-! *color15: #d6deeb
-!! special
-!*.foreground:   #d6deeb
-!*.background:   #011627
-!*.cursorColor:  #d6deeb
-!
-!! black
-!*.color0:       #011627
-!*.color8:       #575656
-!
-!! red
-!*.color1:       #ef5350
-!*.color9:       #ef5350
-!
-!! green
-!*.color2:       #22da6e
-!*.color10:      #22da6e
-!
-!! yellow
-!*.color3:       #addb67
-!*.color11:      #ffeb95
-!
-!! blue
-!*.color4:       #82aaff
-!*.color12:      #82aaff
-!
-!! magenta
-!*.color5:       #c792ea
-!*.color13:      #c792ea
-!
-!! cyan
-!*.color6:       #21c7a8
-!*.color14:      #7fdbca
-!
-!! white
-!*.color7:       #ffffff
-!*.color15:      #ffffff
+! Font
+St.font:            FiraCode Nerd Font:style=Medium:pixelsize=17:antialias=true:autohint=true
 
-st.font:          FiraCode Nerd Font:style=Medium:pixelsize=17:antialias=true:autohint=true
+! Fallback fonts (max 8)
+St.font_fallback1:  JetBrainsMono Nerd Font:style=Medium:size=10:antialias=true:autohint=true
+St.font_fallback2:  Symbola:size=13.5:antialias=true:autohint=true
+
+! Default columns and rows numbers
+St.cols:            80
+St.rows:            24
+
+! Borders in pixels
+St.borderpx:        2
+
+! Borders as a percentage of the cell width. If greater than zero, overrides borderpx
+St.borderperc:      0
+
+! Allow resizing the window to any pixel size: 0 = off, 1 = on
+St.anysize:         1
+
+! Background opacity
+St.alpha:           0.93
+St.alphaUnfocused:  0.9
+
+! Colors
+St.foreground:      gray90
+St.background:      black
+St.bgUnfocused:     black
+St.cursorColor:     #cccccc
+St.reverseCursor:   #555555
+St.visualbellcolor: gray90
+St.color0:       #14161b
+St.color1:       #ffc0b9
+St.color2:       #b3f6c0
+St.color3:       #fce094
+St.color4:       #a6dbff
+St.color5:       #ffcaff
+St.color6:       #8cf8f7
+St.color7:       #e0e2ea
+St.color8:       #9b9ea4
+St.color9:       #ffc0b9
+St.color10:      #b3f6c0
+St.color11:      #fce094
+St.color12:      #a6dbff
+St.color13:      #ffcaff
+St.color14:      #8cf8f7
+St.color15:      #4f5258
+
+! Foreground and background color of search results
+St.highlightfg:     15
+St.highlightbg:     160
+
+! Foreground and background color of flash label
+St.flashlabelfg: 15
+St.flashlabelbg: 4
+St.flashtextfg:  8
+St.flashtextbg:  0
+
+! Foreground and background color of the hyperlink hint
+St.hyperlinkhintfg: 0
+St.hyperlinkhintbg: 258
+
+! Foreground and background colors for keyboard selection mode bars
+St.kbselectfg: 0
+St.kbselectbg: 258
+
+! Dynamic cursor color:
+! 0 = the cursor color is fixed (default st behavior)
+! 1 = the cursor uses reverse colors based on the colors of the text cell
+St.dynamic_cursor_color: 0
+
+! Default style of cursor
+St.cursorstyle:     2
+
+! Controls the blinking of the cursor
+St.cursorblinking:  1
+
+! Specifies how fast the blinking cursor blinks
+St.cursorblinktimeout: 800
+
+! Kerning / character bounding-box multipliers
+St.cwscale:         1.0
+St.chscale:         1.0
+
+! Vertically center lines in the space available: 0 = off, 1 = on
+St.vertcenter:      0
+
+! Boxdraw settings see. config.def.h
+St.boxdraw:         0
+St.boxdraw_bold:    0
+St.boxdraw_braille: 0
+St.boxdraw_extra:   1
+St.boxdraw_branch:  1
+St.boxdraw_branch_thickness: 0
+
+! Hide the X cursor whenever a key is pressed: 0 = off, 1 = on
+St.hidecursor:      0
+
+! Ligatures: 0 = off, 1 = on
+St.ligatures:       0
+
+! Command that is executed when a URL or hyperlink is clicked
+St.url_opener: xdg-open
+
+! List of URL protocols to search for when detecting a URL under the mouse
+St.url_protocols: https:\/\/,http:\/\/,file:\/,ftp:\/\/,mailto:,vscode:\/\/
+
+! Undercurl style: 0 = none, 2 = spiky, 3 = capped
+St.undercurl_style: 2
+
+! Adds 1 pixel of thickness for every undercurl_thickness_threshold pixels of font size
+St.undercurl_thickness_threshold:   28
+
+! Extra thickness for spiky and capped waves: 0 = off, 1 = on
+St.undercurl_extra_thickness:       0
+
+! Y-offset of undercurl
+St.undercurl_yoffset:               0
+
+! Scaling factor for undercurl height
+St.undercurl_height_scale:          1.0
+
+! Misc settings
+St.termname:                st-256color
+St.shell:                   /bin/sh
+St.minlatency:              2.0
+St.maxlatency:              33.0
+St.su_timeout:              200
+St.blinktimeout:            800
+St.doubleclicktimeout:      300
+St.tripleclicktimeout:      600
+St.bellvolume:              0
+St.visualbellstyle:         0
+St.visualbellduration:      100
+St.visualbellanimfps:       60
+St.tabspaces:               8
+St.cursorthickness:         2
+St.disable_bold:            0
+St.disable_italic:          0
+St.bold_is_not_bright:      1
+St.hyperlinkstyle:          1
+St.showhyperlinkhint:       1
+St.disablehyperlinks:       0
+St.autoscrolltimeout:       200
+St.autoscrollacceleration:  1.0
 
 ! sxiv -----------------------------------------------------------------
 sxiv.background:    #2E3440

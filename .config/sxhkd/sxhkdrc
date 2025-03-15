@@ -32,5 +32,7 @@ super + s ; e
 	~/.local/bin/rofi-emoji
 super + s ; i
 	~/.local/bin/rofi-icon
+super + s ; s
+	~/.config/chadwm/scripts/timer.sh start
 super + s ; y
 	st -e bash -i -c 'yy; exec bash'

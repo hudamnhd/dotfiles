@@ -34,15 +34,16 @@ font:
     # Font name
     # family: iosevka-normal
     # family: JetBrainsMono Nerd Font
-    family: Fira Code Nerd Font
-    # family: Iosevka Nerd Font
+    family: Fira Code
+    # family: IosevkaTerm Nerd Font
     # Font face
-    style: Regular
+    style: Medium
 
   # Bold font face
   bold:
-    family: Fira Code Nerd Font
+    # family: Fira Code Nerd Font
     # family: JetBrainsMonoNL Font
+    family: Fira Code
     style: Semibold
 
   # Italic font face
@@ -57,7 +58,7 @@ font:
   # for your font
 
   # Font size
-  size: 14
+  size: 12.5
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing
@@ -110,45 +111,45 @@ key_bindings:
   - { key: Key6, mods: Control, chars: "\x1e" }
 colors:
   primary:
-    background: "0x232136"
-    foreground: "0xe0def4"
+    background: "#14161b"
+    foreground: "#e0e2ea"
   cursor:
-    text: "0xe0def4"
-    cursor: "0x56526e"
+    text: "#14161b"
+    cursor: "#e0e2ea"
   vi_mode_cursor:
-    text: "0xe0def4"
-    cursor: "0x56526e"
+    text: "#14161b"
+    cursor: "#e0e2ea"
   line_indicator:
     foreground: None
     background: None
   selection:
-    text: "0xe0def4"
-    background: "0x44415a"
+    text: "#14161b"
+    background: "#9b9ea4"
   normal:
-    black: "0x393552"
-    red: "0xeb6f92"
-    green: "0x3e8fb0"
-    yellow: "0xf6c177"
-    blue: "0x9ccfd8"
-    magenta: "0xc4a7e7"
-    cyan: "0xea9a97"
-    white: "0xe0def4"
+    black: "#14161b"
+    red: "#ffc0b9"
+    green: "#b3f6c0"
+    yellow: "#fce094"
+    blue: "#a6dbff"
+    magenta: "#ffcaff"
+    cyan: "#8cf8f7"
+    white: "#e0e2ea"
   bright:
-    black: "0x6e6a86"
-    red: "0xeb6f92"
-    green: "0x3e8fb0"
-    yellow: "0xf6c177"
-    blue: "0x9ccfd8"
-    magenta: "0xc4a7e7"
-    cyan: "0xea9a97"
-    white: "0xe0def4"
+    black: "#9b9ea4"
+    red: "#ffc0b9"
+    green: "#b3f6c0"
+    yellow: "#fce094"
+    blue: "#a6dbff"
+    magenta: "#ffcaff"
+    cyan: "#8cf8f7"
+    white: "#4f5258"
   hints:
     start:
-      foreground: "#908caa"
-      background: "#2a273f"
+      foreground: "#9b9ea4"
+      background: "#14161b"
     end:
-      foreground: "#6e6a86"
-      background: "#2a273f"
+      foreground: "#4f5258"
+      background: "#14161b"
 
 # # TokyoNight Alacritty Colors
 # colors:

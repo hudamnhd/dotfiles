@@ -1,21 +1,11 @@
 * {
-    bg-col:  #232136;
-    bg-col-light: #44415a;
-    border-col: #44415a;
-    selected-col: #44415a;
-    blue: #9ccfd8;
-    fg-col: #908caa;
-    fg-col2: #e0def4;
-    grey: #6e6a86;
+    bg-col:  #222436;
+    bg-col-light: #3B3F5E;
+    border-col: #3B3F5E;
+    selected-col: #3B3F5E;
+    blue: #c8d3f5;
+    fg-col: #9599BC;
+    fg-col2: #E5EAFA;
+    grey: #7277A6;
     // width: 800;
 }
-	// bg: #232136;
-	// cur: #2a273f;
-	// fgd: #e0def4;
-	// cmt: #6e6a86;
-	// cya: #9ccfd8;
-	// grn: #3e8fb0;
-	// ora: #ea9a97;
-	// pur: #c4a7e7;
-	// red: #eb6f92;
-	// yel: #f6c177;

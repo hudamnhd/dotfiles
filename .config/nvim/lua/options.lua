@@ -17,8 +17,8 @@ local env = vim.env
 o.title            = true                         -- Change title of window to filename
 o.inccommand       = "split" -- for live subtitute
 o.termguicolors    = true    -- enable 24bit colors
--- o.timeoutlen       = 650
-o.updatetime       = 50     -- decrease update time
+o.timeoutlen       = 650
+o.updatetime       = 250     -- decrease update time
 o.fileformat       = "unix"  -- <nl> for EOL
 o.fileencoding     = "utf-8"
 o.matchpairs       = { "(:)", "{:}", "[:]", "<:>" }
@@ -30,7 +30,7 @@ o.scrolloff        = 3                            -- min number of lines to keep
 o.sidescrolloff    = 5                            -- min number of cols to keep between cursor and screen edge
 o.textwidth        = 99                           -- max inserted text width for paste operations
 o.number           = true                         -- show absolute line no. at the cursor pos
-o.relativenumber   = false                        -- otherwise, show relative numbers in the ruler
+o.relativenumber   = true                         -- otherwise, show relative numbers in the ruler
 o.cursorline       = true                         -- Show a line where the current cursor is
 o.signcolumn       = "yes:1"                      -- Show sign column as first column
 
@@ -129,7 +129,7 @@ g.markdown_fenced_languages = {
 }
 
 -- NOTE disable default keybind
-local disabled = { "s", "m", "c", "q", "Q", "<c-z>", "<space>" }
+local disabled = { "s", "c", "<c-z>", "<space>" }
 
 for _, key in ipairs(disabled) do
   vim.keymap.set("", key, "<Nop>")

@@ -12,4 +12,4 @@ require("mru")
 require("utils.buffers")
 
 -- Load default colorscheme
--- vim.cmd.colorscheme("default")
+vim.cmd.colorscheme("default")

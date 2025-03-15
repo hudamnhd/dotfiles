@@ -1,6 +1,6 @@
 configuration{
-    kb-row-up:                 "Control+k,Control+p";
-    kb-row-down:               "Control+j,Control+n";
+    kb-row-up:                 "Control+k,Control+p,Up";
+    kb-row-down:               "Control+j,Control+n,Down";
     kb-accept-entry:           "Control+m,Return";
     kb-remove-to-eol:          "Control+Shift+e";
     kb-remove-char-back:       "BackSpace";
@@ -12,7 +12,7 @@ configuration{
     location:                  0;
     disable-history:           false;
     hide-scrollbar:            true;
-    sidebar-mode:              true;
+    sidebar-mode:              false;
     modi:                      "run,drun";
     display-drun:              " Apps";
     display-run:               " Run";
@@ -25,7 +25,7 @@ configuration{
     application-fallback-icon: "application-x-addon";
 }
 
-@theme "rosepine"
+@theme "green"
 
 element-text, element-icon , mode-switcher {
     background-color: inherit;
@@ -71,7 +71,7 @@ entry {
 listview {
     margin: 6px 0px 0px 0px ;
     background-color: @bg-col;
-    columns: 1;
+    columns: 2;
     lines: 10;
 }
 

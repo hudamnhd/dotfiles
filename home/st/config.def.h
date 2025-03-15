@@ -5,7 +5,8 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "FiraCode Nerd Font:style=Medium:pixelsize=15:antialias=true:autohint=true";
+static char *font = "FiraCode Nerd Font:style=Medium:pixelsize=17:antialias=true:autohint=true";
+
 /* Spare fonts */
 static char *font2[] = {
 /*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
