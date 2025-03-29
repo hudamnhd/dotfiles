@@ -65,28 +65,29 @@ St.alpha:           0.93
 St.alphaUnfocused:  0.9
 
 ! Colors
-St.foreground:      gray90
-St.background:      black
+St.foreground:      #dee3e9
+St.background:      #13171b
 St.bgUnfocused:     black
-St.cursorColor:     #cccccc
-St.reverseCursor:   #555555
+St.cursorColor:     #dee3e9
+St.reverseCursor:   #13171b
 St.visualbellcolor: gray90
-St.color0:       #14161b
-St.color1:       #ffc0b9
-St.color2:       #b3f6c0
-St.color3:       #fce094
-St.color4:       #a6dbff
-St.color5:       #ffcaff
-St.color6:       #8cf8f7
-St.color7:       #e0e2ea
-St.color8:       #9b9ea4
-St.color9:       #ffc0b9
-St.color10:      #b3f6c0
-St.color11:      #fce094
-St.color12:      #a6dbff
-St.color13:      #ffcaff
-St.color14:      #8cf8f7
-St.color15:      #4f5258
+St.color0:       #13171b
+St.color1:       #ffaea6
+St.color2:       #94ffad
+St.color3:       #ffdd79
+St.color4:       #91d3ff
+St.color5:       #ffb9ff
+St.color6:       #51ffff
+St.color7:       #dee3e9
+
+St.color8:       #999fa4
+St.color9:       #ffaea6
+St.color10:      #94ffad
+St.color11:      #ffdd79
+St.color12:      #91d3ff
+St.color13:      #ffb9ff
+St.color14:      #51ffff
+St.color15:      #4e5257
 
 ! Foreground and background color of search results
 St.highlightfg:     15

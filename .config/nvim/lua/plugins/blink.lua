@@ -19,7 +19,7 @@ return {
   opts = {
 
     cmdline = {
-      enabled = false,
+      enabled = true,
     },
     completion = {
       -- 'prefix' will fuzzy match on the text before the cursor
@@ -32,7 +32,7 @@ return {
       accept = { auto_brackets = { enabled = false } },
 
       -- Don't select by default, auto insert on selection
-      list = { selection = { preselect = false, auto_insert = true } },
+      list = { selection = { preselect = true, auto_insert = true } },
       -- or set either per mode via a function
       -- list = {
       --   selection = {

@@ -1,6 +1,15 @@
 return {
-  { "nvzone/volt", event = "VeryLazy" },
-  { "nvzone/timerly", cmd = "TimerlyToggle" },
+  -- lazy.nvim
+  {
+    "m4xshen/hardtime.nvim",
+    event = "BufReadPost",
+    opts = {},
+  },
+  {
+    "kshenoy/vim-signature",
+    event = "BufReadPost",
+    opts = {},
+  },
   {
     "thinca/vim-partedit",
     keys = { { "<CR>", ":Partedit -opener vnew -filetype vimpe -prefix '>'<CR>", mode = { "x" } } },
@@ -20,7 +29,7 @@ return {
         },
       })
       local opts = { noremap = true, silent = true, desc = "Toggle Neogen" }
-      -- vim.api.nvim_set_keymap("n", "<space>n", ":lua require('neogen').generate()<CR>", opts)
+      vim.api.nvim_set_keymap("n", "<a-n>", ":lua require('neogen').generate()<CR>", opts)
     end,
   },
   {

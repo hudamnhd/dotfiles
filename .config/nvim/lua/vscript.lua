@@ -2,7 +2,7 @@ vim.cmd([[
 
 "autocmd BufRead,BufWritePre *.blade.php setlocal filetype=php
 "autocmd BufRead,BufWritePre * setlocal syntax=text
-
+highlight! link SignatureMarkText WarningMsg
 cnoremap <expr> / (mode() =~# "[vV\<C-v>]" && getcmdtype() =~ '[/?]' && getcmdline() == '') ? "\<C-c>\<Esc>/\\%V" : '/'
 
 " niceblock

@@ -15,6 +15,7 @@ local env = vim.env
 -- o.clipboard     = 'unnamedplus'
 
 o.title            = true                         -- Change title of window to filename
+-- o.background            = "light"                         -- Change title of window to filename
 o.inccommand       = "split" -- for live subtitute
 o.termguicolors    = true    -- enable 24bit colors
 o.timeoutlen       = 650
@@ -32,7 +33,7 @@ o.textwidth        = 99                           -- max inserted text width for
 o.number           = true                         -- show absolute line no. at the cursor pos
 o.relativenumber   = true                         -- otherwise, show relative numbers in the ruler
 o.cursorline       = true                         -- Show a line where the current cursor is
-o.signcolumn       = "yes:1"                      -- Show sign column as first column
+o.signcolumn       = "yes:2"                      -- Show sign column as first column
 
 -- o.cursorlineopt = "number"
 -- g._colorcolumn  = 0        -- global var, mark column 100

@@ -1,68 +1,64 @@
 return {
   "stevearc/conform.nvim",
-  event = { "BufWritePre" },
-  cmd = { "ConformInfo" },
-  keys = {
-    {
-      "gqq",
-      function()
-        require("conform").format({ async = true }, function(err)
-          if not err then
-            local mode = vim.api.nvim_get_mode().mode
-            if vim.startswith(string.lower(mode), "v") then
-              vim.api.nvim_feedkeys(
-                vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
-                "n",
-                true
-              )
-            end
-          end
-        end)
-      end,
-      mode = "",
-      desc = "Format buffer",
-    },
-  },
-  ---@module "conform"
-  ---@type conform.setupOpts
-  opts = {
-    default_format_opts = {
-      lsp_format = "fallback",
-    },
-    formatters_by_ft = {
-      haskell = { "stylish-haskell" },
-      sh = { "shfmt" },
-      javascript = { "biome" },
-      typescript = { "dprint" },
-      javascriptreact = { "dprint" },
-      typescriptreact = { "dprint" },
-      css = { "biome" },
-      html = { "biome" },
-      json = { "biome" },
-      json5 = { "biome" },
-      jsonc = { "biome" },
-      yaml = { "dprint" },
-      -- markdown        = { "dprint" },
-      lua = { "stylua" },
-      markdown = { "dprint" },
-      ["_"] = { "trim_whitespace", "trim_newlines" },
-    },
-    log_level = vim.log.levels.TRACE,
-    format_after_save = function(bufnr)
-      if vim.b[bufnr].disable_autoformat then
-        return
-      end
-      return { timeout_ms = 5000, lsp_format = "fallback" }
-    end,
-  },
-  init = function()
-    vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+  event = "BufReadPost",
+  config = function()
+    require("conform").setup({
+      formatters_by_ft = {
+        haskell = { "stylish-haskell" },
+        sh = { "shfmt" },
+        javascript = { "biome" },
+        typescript = { "dprint" },
+        javascriptreact = { "dprint" },
+        typescriptreact = { "dprint" },
+        css = { "biome" },
+        html = { "biome" },
+        json = { "biome" },
+        json5 = { "biome" },
+        jsonc = { "biome" },
+        yaml = { "dprint" },
+        markdown = { "biome ", "dprint" },
+        lua = { "stylua" },
+        markdown = { "dprint" },
+        ["_"] = { "trim_whitespace", "trim_newlines" },
+      },
+    })
   end,
-  config = function(_, opts)
-    if vim.g.started_by_firenvim then
-      opts.format_on_save = false
-      opts.format_after_save = false
+  _set_gq_keymap = function(e)
+    -- priortize LSP formatting as `gq`
+    local lsp_has_formatting = false
+    local lsp_clients = require("utils.helper").lsp_get_clients({ bufnr = e.buf })
+    local lsp_keymap_set = function(m, c)
+      vim.keymap.set(m, "gq", function()
+        vim.lsp.buf.format({ async = true, bufnr = e.buf })
+      end, {
+        silent = true,
+        buffer = e.buf,
+        desc = string.format("format document [LSP:%s]", c.name),
+      })
     end
-    require("conform").setup(opts)
+    vim.tbl_map(function(c)
+      if c:supports_method("textDocument/rangeFormatting", { bufnr = e.buf }) then
+        lsp_keymap_set("x", c)
+        lsp_has_formatting = true
+      end
+      if c:supports_method("textDocument/formatting", { bufnr = e.buf }) then
+        lsp_keymap_set("n", c)
+        lsp_has_formatting = true
+      end
+    end, lsp_clients)
+    -- check conform.nvim for formatters:
+    --   (1) if we have no LSP formatter map as `gq`
+    --   (2) if LSP formatter exists, map as `gQ`
+    local ok, conform = pcall(require, "conform")
+    local formatters = ok and conform.list_formatters(e.buf) or {}
+    if #formatters > 0 then
+      vim.keymap.set("n", lsp_has_formatting and "gQ" or "gq", function()
+        require("conform").format({ async = true, buffer = e.buf, lsp_fallback = false })
+      end, {
+        silent = true,
+        buffer = e.buf,
+        desc = string.format("format document [%s]", formatters[1].name),
+      })
+    end
   end,
 }

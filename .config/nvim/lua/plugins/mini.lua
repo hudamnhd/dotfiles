@@ -8,7 +8,15 @@ local M = {
 }
 
 function M.config()
-  require("mini.icons").setup()
+  require('mini.icons').setup({
+    use_file_extension = function(ext, _)
+      local suf3, suf4 = ext:sub(-3), ext:sub(-4)
+      return suf3 ~= 'scm' and suf3 ~= 'txt' and suf3 ~= 'yml' and suf4 ~= 'json' and suf4 ~= 'yaml'
+    end,
+  })
+  local MiniIcons = require('mini.icons')
+  MiniIcons.mock_nvim_web_devicons()
+  -- MiniIcons.tweak_lsp_kind()
   require("mini.icons").mock_nvim_web_devicons()
   require("mini.operators").setup()
   require("mini.align").setup()
@@ -33,6 +41,47 @@ function M.config()
   vim.keymap.set("n", "sx", [[gxiw]], { remap = true, desc = "Opr 'Exchange word'" })
   vim.keymap.set("n", "sm", [[gmm]], { remap = true, desc = "Opr 'Clone line'" })
   vim.keymap.set("n", "sw", [[ysiw]], { remap = true, desc = "Opr 'Surround word'" })
+
+  -- local process_items = function(items, base)
+  --   -- Don't show 'Text' suggestions
+  --   items = vim.tbl_filter(function(x) return x.kind ~= 1 end, items)
+  --   return require('mini.completion').default_process_items(items, base)
+  -- end
+  -- require('mini.completion').setup({
+  --   lsp_completion = {
+  --     source_func = 'omnifunc',
+  --     auto_setup = false,
+  --     process_items = process_items,
+  --   },
+  --   window = {
+  --     info = { border = 'double' },
+  --     signature = { border = 'double' },
+  --   },
+  -- })
+  -- if vim.fn.has('nvim-0.11') == 1 then
+  --   vim.opt.completeopt:append('fuzzy') -- Use fuzzy matching for built-in completion
+  -- end
+  --
+  -- vim.keymap.set('i', '<Tab>', [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
+  -- vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
+  --
+  -- local snippets, config_path = require('mini.snippets'), vim.fn.stdpath('config')
+  --
+  -- local lang_patterns = { tex = { 'latex.json' }, plaintex = { 'latex.json' } }
+  -- local load_if_minitest_buf = function(context)
+  --   local buf_name = vim.api.nvim_buf_get_name(context.buf_id)
+  --   local is_test_buf = vim.fn.fnamemodify(buf_name, ':t'):find('^test_.+%.lua$') ~= nil
+  --   if not is_test_buf then return {} end
+  --   return MiniSnippets.read_file(config_path .. '/snippets/mini-test.json')
+  -- end
+  --
+  -- snippets.setup({
+  --   snippets = {
+  --     snippets.gen_loader.from_file(config_path .. '/snippets/global.json'),
+  --     snippets.gen_loader.from_lang({ lang_patterns = lang_patterns }),
+  --     load_if_minitest_buf,
+  --   },
+  -- })
 
   require("mini.move").setup({
     mappings = {
@@ -87,11 +136,11 @@ function M.config()
       miniclue.gen_clues.z(),
     },
     triggers = {
-      { mode = 'n', keys = '<space>' }, -- space triggers
+      { mode = 'n', keys = '<space>' },  -- space triggers
       { mode = 'x', keys = '<space>' },
       { mode = 'n', keys = '<Leader>' }, -- Leader triggers
       { mode = 'x', keys = '<Leader>' },
-      { mode = 'n', keys = 's' }, -- Leader triggers
+      { mode = 'n', keys = 's' },        -- Leader triggers
       { mode = 'x', keys = 's' },
       { mode = 'n', keys = [[\]] },      -- mini.basics
       { mode = 'x', keys = [[\]] },      -- mini.basics
@@ -99,19 +148,19 @@ function M.config()
       { mode = 'n', keys = ']' },
       { mode = 'x', keys = '[' },
       { mode = 'x', keys = ']' },
-      { mode = 'i', keys = '<C-x>' },    -- Built-in completion
-      { mode = 'n', keys = 'g' },        -- `g` key
+      { mode = 'i', keys = '<C-x>' }, -- Built-in completion
+      { mode = 'n', keys = 'g' },     -- `g` key
       { mode = 'x', keys = 'g' },
-      { mode = 'n', keys = "'" },        -- Marks
+      { mode = 'n', keys = "'" },     -- Marks
       { mode = 'n', keys = '`' },
       { mode = 'x', keys = "'" },
       { mode = 'x', keys = '`' },
-      { mode = 'n', keys = '"' },        -- Registers
+      { mode = 'n', keys = '"' }, -- Registers
       { mode = 'x', keys = '"' },
       { mode = 'i', keys = '<C-r>' },
       { mode = 'c', keys = '<C-r>' },
-      { mode = 'n', keys = '<C-w>' },    -- Window commands
-      { mode = 'n', keys = 'z' },        -- `z` key
+      { mode = 'n', keys = '<C-w>' }, -- Window commands
+      { mode = 'n', keys = 'z' },     -- `z` key
       { mode = 'x', keys = 'z' },
     },
     window = {
@@ -165,7 +214,7 @@ function M.config()
       delete = "ds",
       find = "",
       find_left = "",
-      highlight = "", -- hijack 'gs' (sleep) for highlight
+      highlight = "",      -- hijack 'gs' (sleep) for highlight
       replace = "cs",
       update_n_lines = "", -- bind for updating 'config.n_lines'
     },
@@ -173,7 +222,8 @@ function M.config()
 
   -- Remap adding surrounding to Visual mode selection
   --stylua: ignore
-  vim.keymap.set("x", "s", [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true, desc = "MiniSurround add visual" })
+  vim.keymap.set("x", "s", [[:<C-u>lua MiniSurround.add('visual')<CR>]],
+    { silent = true, desc = "MiniSurround add visual" })
 
   -- unmap config generated `ys` mapping, prevents visual mode yank delay
   if vim.keymap then

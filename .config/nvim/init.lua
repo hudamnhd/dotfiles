@@ -1,4 +1,8 @@
 -- enable loader
+
+-- Load default colorscheme
+vim.cmd.colorscheme("custom")
+
 vim.loader.enable()
 -- disable treesitter
 -- vim.treesitter.stop()
@@ -10,6 +14,3 @@ require("autocmd")
 require("keymaps")
 require("mru")
 require("utils.buffers")
-
--- Load default colorscheme
-vim.cmd.colorscheme("default")

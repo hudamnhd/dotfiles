@@ -38,18 +38,18 @@ return {
         pcall(vim.api.nvim_win_set_cursor, 0, { cur[1], cur[2] - 1 })
       end
     end)
-    -- vim.keymap.set({ "i", "s" }, "<C-l>", function()
-    --   if luasnip.expand_or_jumpable() then
-    --     luasnip.expand_or_jump()
-    --   elseif luasnip.get_active_snip() then
-    --     luasnip.jump(1)
-    --   elseif vim.snippet.active() then
-    --     vim.snippet.jump(1)
-    --   else
-    --     local cur = vim.api.nvim_win_get_cursor(0)
-    --     pcall(vim.api.nvim_win_set_cursor, 0, { cur[1], cur[2] + 1 })
-    --   end
-    -- end)
+    vim.keymap.set({ "i", "s" }, "<C-l>", function()
+      if luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      elseif luasnip.get_active_snip() then
+        luasnip.jump(1)
+      elseif vim.snippet.active() then
+        vim.snippet.jump(1)
+      else
+        local cur = vim.api.nvim_win_get_cursor(0)
+        pcall(vim.api.nvim_win_set_cursor, 0, { cur[1], cur[2] + 1 })
+      end
+    end)
 
     vim.keymap.set({ "i", "s" }, "<Tab>", function()
       if luasnip.expand_or_jumpable() then
@@ -81,20 +81,12 @@ return {
 
           -- SELECT all text inside the snippet.
           if not no_move then
-            vim.api.nvim_feedkeys(
-              vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
-              "n",
-              true
-            )
+            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
             local pos_begin, pos_end = snip.mark:pos_begin_end()
             util.normal_move_on(pos_begin)
             vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("v", true, false, true), "n", true)
             util.normal_move_before(pos_end)
-            vim.api.nvim_feedkeys(
-              vim.api.nvim_replace_termcodes("o<C-G>", true, false, true),
-              "n",
-              true
-            )
+            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("o<C-G>", true, false, true), "n", true)
           end
         end
         function snippet:jump_into(dir, no_move)
@@ -139,10 +131,7 @@ return {
         end
         local ok, err = pcall(require, mod)
         if not ok then
-          vim.notify(
-            string.format("Error loading snippet module '%s': %s", k, err),
-            vim.log.levels.ERROR
-          )
+          vim.notify(string.format("Error loading snippet module '%s': %s", k, err), vim.log.levels.ERROR)
         end
       end
     end

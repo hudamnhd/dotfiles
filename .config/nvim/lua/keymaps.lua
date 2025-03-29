@@ -94,6 +94,7 @@ bind(nm, "<a-w>", [[<c-w>w]] )
 bind(nm, "<esc>", [[<Cmd>nohlsearch|diffupdate|echo<cr>]] )
 
 bind(nm, "<space>c", vim.cmd.close,  { desc = "Close" } )
+bind(nm, "<space>o", vim.cmd.only,  { desc = "Only" } )
 bind(nm, "<space>v", split_sensibly, { desc = "split" } )
 bind(nm, "<space>w", vim.cmd.write,  { desc = "Write" } )
 
@@ -171,4 +172,30 @@ end
 bind(nm, "<c-n>", cgn_action("n"), { desc = "cgn word" })
 bind(vm, "<c-n>", cgn_action("v"), { desc = "cgn visual" })
 
+local function special_up()
+  local cursorline = vim.fn.line('.')
+  local first_visible = vim.fn.line('w0')
+  local travel = math.floor(vim.api.nvim_win_get_height(0) / 2)
+
+  if (cursorline - travel) < first_visible then
+    vim.cmd("execute \"normal! " .. travel .. "\\<C-y>\"")
+  else
+    vim.cmd("execute \"normal! " .. travel .. "\\k\"")
+  end
+end
+
+local function special_down()
+  local cursorline = vim.fn.line('.')
+  local last_visible = vim.fn.line('w$')
+  local travel = math.floor(vim.api.nvim_win_get_height(0) / 2)
+
+  if (cursorline + travel) > last_visible and last_visible < vim.fn.line('$') then
+    vim.cmd("execute \"normal! " .. travel .. "\\<C-e>\"")
+  elseif cursorline < last_visible then
+    vim.cmd("execute \"normal! " .. travel .. "\\j\"")
+  end
+end
+
+vim.keymap.set({ 'n', 'x' }, '<c-u>', function() special_up() end)
+vim.keymap.set({ 'n', 'x' }, '<c-d>', function() special_down() end)
 return M

@@ -6,10 +6,13 @@ return {
       "saghen/blink.cmp",
     },
     config = function()
+      local custom_on_attach = function(client, buf_id)
+        -- Set up 'mini.completion' LSP part of completion
+        vim.bo[buf_id].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp'
+        -- Mappings are created globally with `<Leader>l` prefix (for simplicity)
+      end
       require("lspconfig").biome.setup({})
-      require("lspconfig").lua_ls.setup({
-        autostart = false,
-      })
+      require("lspconfig").lua_ls.setup({})
       -- require("lspconfig").dprint.setup({})
       -- require("lspconfig").denols.setup({
       --   -- Add your configuration settings here
@@ -67,7 +70,7 @@ return {
           return nil
         end
         local ts_root = util.root_pattern("tsconfig.json")(fname)
-          or util.root_pattern("package.json", "jsconfig.json", ".git")(fname)
+            or util.root_pattern("package.json", "jsconfig.json", ".git")(fname)
         if ts_root then
           return ts_root
         end

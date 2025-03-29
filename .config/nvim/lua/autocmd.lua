@@ -71,6 +71,21 @@ augroup("HelpOpenVert", {
   },
 })
 
+augroup("gQFormatter", {
+  {
+    event = { "FileType", "LspAttach" },
+    opts = {
+      callback = function(e)
+        -- execlude vim-fugitive
+        if vim.bo.filetype == "fugitive" or e.file:match("^fugitive:") then
+          return
+        end
+        require("plugins.conform")._set_gq_keymap(e)
+      end,
+    },
+  },
+})
+
 local function show_file_in_floating_window(file_path)
   -- Cek apakah file ada
   local file = io.open(file_path, "r")

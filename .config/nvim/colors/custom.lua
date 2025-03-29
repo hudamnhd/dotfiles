@@ -46,12 +46,12 @@ local colors = require("mini.colors")
 -- Initially value for level 2 was taken from #14790 (as lightness of #1e1e1e).
 -- Levels 1 and 2 are adjusted according to request in #26369.
 -- Others are the result of experiments to have passable contrast ratios.
-local l = { 10, 15, 25, 35 }
+local l = { 5, 10, 20, 35 }
 
 -- REFERENCE CHROMA VALUES
 -- Chosen experimentally. Darker colors usually need higher chroma to appear
 -- visibly different (combined with proper gamut clipping)
-local c = { grey = 1, light = 10, dark = 15 }
+local c = { grey = 1, light = 15, dark = 15 }
 
 -- REFERENCE HUE VALUES
 -- - Grey is used for UI background and foreground. It is not exactly an
@@ -76,7 +76,7 @@ local h = {
 }
 
 -- WHETHER TO OPEN A BUFFER WITH DATA
-local show_data_buffer = true
+local show_data_buffer = false
 
 -- WHETHER TO APPLY CURRENT COLOR SCHEME
 local apply_colorscheme = true
@@ -106,8 +106,7 @@ local palette_dark = {
 
 --stylua: ignore
 local palette_light = {
-  -- grey1   = convert(100 - l[1], c.grey, h.grey),
-  grey1   = convert(98, c.grey, h.grey),
+  grey1   = convert(100 - l[1], c.grey, h.grey),
   grey2   = convert(100 - l[2], c.grey, h.grey),   -- Normal fg
   grey3   = convert(100 - l[3], c.grey, h.grey),
   grey4   = convert(100 - l[4], c.grey, h.grey),   -- Comment
@@ -323,7 +322,7 @@ end
 
 local enable_colorscheme = function()
   vim.cmd("hi clear")
-  vim.g.colors_name = "neovim_colors"
+  vim.g.colors_name = "custom_colors"
 
   -- In 'background=dark' dark colors are used for background and light - for
   -- foreground. In 'background=light' they reverse.
@@ -364,7 +363,7 @@ local enable_colorscheme = function()
   hi('Folded',               { fg=fg.grey4,  bg=bg.grey3 })
   hi('IncSearch',            { link='CurSearch' })
   hi('lCursor',              { fg=bg.grey2,  bg=fg.grey2 })
-  hi('LineNr',               { fg=bg.grey4,  bg=nil })
+  hi('LineNr',               { fg=fg.grey4,  bg=nil })
   hi('LineNrAbove',          { link='LineNr' })
   hi('LineNrBelow',          { link='LineNr' })
   hi('MatchParen',           { fg=nil,       bg=bg.grey4, bold=true })
@@ -580,24 +579,24 @@ local enable_colorscheme = function()
   hi('@lsp.type.typeParameter', { link='TypeDef' })
   hi('@lsp.type.variable',      { link='@variable' }) -- links to tree-sitter group to reduce overload
 
-  -- Terminal colors (not ideal)
-  vim.g.terminal_color_0  = bg.grey2
-  vim.g.terminal_color_1  = fg.red
-  vim.g.terminal_color_2  = fg.green
-  vim.g.terminal_color_3  = fg.yellow
-  vim.g.terminal_color_4  = fg.blue
-  vim.g.terminal_color_5  = fg.magenta
-  vim.g.terminal_color_6  = fg.cyan
-  vim.g.terminal_color_7  = fg.grey2
-  vim.g.terminal_color_8  = bg.grey2
-  vim.g.terminal_color_9  = fg.red
-  vim.g.terminal_color_10 = fg.green
-  vim.g.terminal_color_11 = fg.yellow
-  vim.g.terminal_color_12 = fg.blue
-  vim.g.terminal_color_13 = fg.magenta
-  vim.g.terminal_color_14 = fg.cyan
-  vim.g.terminal_color_15 = fg.grey2
-  --stylua: ignore end
+  -- -- Terminal colors (not ideal)
+  -- vim.g.terminal_color_0  = bg.grey2
+  -- vim.g.terminal_color_1  = fg.red
+  -- vim.g.terminal_color_2  = fg.green
+  -- vim.g.terminal_color_3  = fg.yellow
+  -- vim.g.terminal_color_4  = fg.blue
+  -- vim.g.terminal_color_5  = fg.magenta
+  -- vim.g.terminal_color_6  = fg.cyan
+  -- vim.g.terminal_color_7  = fg.grey2
+  -- vim.g.terminal_color_8  = bg.grey2
+  -- vim.g.terminal_color_9  = fg.red
+  -- vim.g.terminal_color_10 = fg.green
+  -- vim.g.terminal_color_11 = fg.yellow
+  -- vim.g.terminal_color_12 = fg.blue
+  -- vim.g.terminal_color_13 = fg.magenta
+  -- vim.g.terminal_color_14 = fg.cyan
+  -- vim.g.terminal_color_15 = fg.grey2
+  -- --stylua: ignore end
 end
 
 -- Comment this to not enable color scheme

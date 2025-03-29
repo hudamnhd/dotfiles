@@ -19,23 +19,16 @@ function fzf.diagnostics_workspace(opts)
   }))
 end
 
-vim.g.fzf_colors = {
-  ["fg"] = { "fg", "Normal" },
-  ["bg"] = { "bg", "Normal" },
-  ["bg+"] = { "bg", "Visual" },
-  ["hl"] = { "fg", "Identifier" },
-  ["hl+"] = { "fg", "Identifier" },
-  ["gutter"] = { "bg", "Normal" },
-  ["info"] = { "fg", "Comment" },
-  ["border"] = { "fg", "LineNr" },
-  ["prompt"] = { "fg", "Function" },
-  ["pointer"] = { "fg", "Exception" },
-  ["marker"] = { "fg", "WarningMsg" },
-  ["spinner"] = { "fg", "WarningMsg" },
-  ["header"] = { "fg", "Comment" },
-}
-
-fzf.setup({ { "borderless-full", "hide" } })
+fzf.setup({
+  { "borderless-full", "hide" },
+  -- for neovim custom color
+  fzf_colors = {
+    bg = { "bg", "PmenuSbar" },
+    ["bg+"] = { "bg", "Visual" },
+    ["fg+"] = { "fg", "Normal" },
+    gutter = { "bg", "PmenuSbar" },
+  },
+})
 
 fzf.register_ui_select(function(o, items)
   local min_h, max_h = 0.15, 0.70
@@ -109,7 +102,7 @@ local show_toolbox_files = fzf_cmds.create_show_toolbox("Toolbox Files", {
   { execute = function() vim.cmd.ShowFile(config_dir .. "/cheatsheet.txt") end, name = "Cheatsheet Subtitute" },
 })
 
-bind("n", "<space>i", show_toolbox_files, { desc = "Files Command" } )
+bind("n", "<space>e", show_toolbox_files, { desc = "Files Command" } )
 
 
 local commands = {
