@@ -25,7 +25,7 @@ bind(nm, "!", [[:<up><cr>]])
 bind(nm, "<a-w>", [[<c-w>w]])
 
 bind(nm, "<space>c", vim.cmd.close, { desc = "split" })
-bind(nm, "<space>s", vim.cmd.vsplit, { desc = "split" })
+bind(nm, "<space>v", vim.cmd.vsplit, { desc = "split" })
 bind(nm, "<space>w", vim.cmd.write, { desc = "Write" })
 
 bind(nm, "J", [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true })
