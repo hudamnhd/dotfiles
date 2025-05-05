@@ -1,0 +1,97 @@
+{
+  "Print string": {
+    "prefix": "ps",
+    "body": ["print(string.format(\"$1\", $2))"]
+  },
+  "function": {
+    "prefix": "f",
+    "body": ["function($1)", "  $0", "end"]
+  },
+  "local": {
+    "prefix": "l",
+    "body": ["local $0"]
+  },
+  "require": {
+    "prefix": "r",
+    "body": ["require(\"$1\")"]
+  },
+  "documentation class": {
+    "prefix": ["cls", "dc"],
+    "body": ["---@class (exact) $1", "---@field $2"]
+  },
+  "documentation function": {
+    "prefix": "df",
+    "body": ["---$1", "---@param $1", "---@return $2"]
+  },
+  "vim.log.levels": {
+    "prefix": "vll",
+    "body": ["vim.log.levels.$0"]
+  },
+  "string.format": {
+    "prefix": "sf",
+    "body": ["string.format(\"${1:$TM_SELECTED_TEXT}\", $2)"]
+  },
+  "vim.inspect": {
+    "prefix": "vi",
+    "body": ["vim.inspect(${1:$TM_SELECTED_TEXT})"]
+  },
+  "vim.api.nvim_": {
+    "prefix": "nv",
+    "body": ["vim.api.nvim_"]
+  },
+  "for ipairs": {
+    "prefix": "fori",
+    "body": [
+      "for ${1:i},${2:v} in ipairs($3) do",
+      "  ${0:$TM_SELECTED_TEXT}",
+      "end"
+    ]
+  },
+  "for pairs": {
+    "prefix": "forp",
+    "body": [
+      "for ${1:k},${2:v} in pairs($3) do",
+      "  ${0:$TM_SELECTED_TEXT}",
+      "end"
+    ]
+  },
+  "if": {
+    "prefix": "if",
+    "body": ["if $1 then", "  ${0:$TM_SELECTED_TEXT}", "end"]
+  },
+  "if-else": {
+    "prefix": "ife",
+    "body": ["if $1 then", "  ${1:$TM_SELECTED_TEXT}", "else", "  $0", "end"]
+  },
+  "treesitter parse": {
+    "prefix": "tsp",
+    "body": [
+      "local parser = vim.treesitter.get_parser(${1:bufnr}, \"$2\")",
+      "local root = parser:parse()[1]:root()"
+    ]
+  },
+  "treesitter iter query": {
+    "prefix": "tsq",
+    "body": [
+      "for id, node, metadata, match in ${1:query}:iter_captures(${2:root}, ${3:bufnr}) do",
+      "  $0",
+      "end"
+    ]
+  },
+  "profile.log_start": {
+    "prefix": "pls",
+    "body": ["profile.log_start($1)"]
+  },
+  "profile.log_end": {
+    "prefix": "ple",
+    "body": ["profile.log_end($1)"]
+  },
+  "profile.log": {
+    "prefix": "pl",
+    "body": [
+      "profile.log_start($1)",
+      "$TM_SELECTED_TEXT",
+      "profile.log_end($1)"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "contributes": {
+    "snippets": [
+      {
+        "language": [
+          "global",
+          "all"
+        ],
+        "path": "snippets/global.json"
+      },
+      {
+        "language": "lua",
+        "path": "snippets/lua.json"
+      },
+      {
+        "language": "markdown",
+        "path": "snippets/markdown.code-snippets"
+      },
+      {
+        "language": "python",
+        "path": "snippets/python.json"
+      },
+      {
+        "language": "typescript",
+        "path": "snippets/typescript.json"
+      }
+    ]
+  }
+}

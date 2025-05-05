@@ -90,10 +90,16 @@ return {
       'saghen/blink.cmp',
       event = "InsertEnter *",
       version = '1.*',
+      dependencies = {
+          "L3MON4D3/LuaSnip",
+          config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
+          end,
+        },
       ---@module 'blink.cmp'
       ---@type blink.cmp.Config
       opts = {
-        keymap = { preset = 'default' },
+        keymap = { preset = 'super-tab' },
 
         appearance = {
           nerd_font_variant = 'mono'
