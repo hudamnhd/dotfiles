@@ -82,4 +82,14 @@ bind(vm, "<c-f>", [[:%s///g<left><left><left>]], { desc = "Search Replace", sile
 
 bind(nm, "<space>q", [[:bd<cr>]], { desc = "buffer delete" })
 
-return M
+bind({'', 't', 'i'}, '<F5>', function()
+  local direction = 'bottom'
+  local size
+  if vim.o.lines < 19 then
+    direction = 'right'
+    size = 0.4
+  end
+
+  require('terminal').toggle({direction = direction, size = size})
+end)
+
