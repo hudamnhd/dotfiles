@@ -6,7 +6,6 @@ local M = {
 }
 
 function M.config()
-  require('mini.starter').setup()
   require('mini.icons').setup()
   require('mini.icons').mock_nvim_web_devicons()
   require("mini.operators").setup()
@@ -63,7 +62,7 @@ function M.config()
       { mode = 'x', keys = 's' },
       { mode = 'n', keys = [[\]] },
       { mode = 'x', keys = [[\]] },
-      { mode = 'n', keys = '[' }, 
+      { mode = 'n', keys = '[' },
       { mode = 'n', keys = ']' },
       { mode = 'x', keys = '[' },
       { mode = 'x', keys = ']' },
