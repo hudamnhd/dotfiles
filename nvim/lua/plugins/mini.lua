@@ -15,8 +15,40 @@ function M.config()
   require("mini.bracketed").setup()
   require("mini.basics").setup()
   require("mini.ai").setup()
-  require("mini.move").setup()
-  require("mini.pairs").setup()
+
+  vim.keymap.set({ "o", "x" }, "q", [[iq]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "Q", [[aq]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "w", [[iw]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "W", [[iW]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "t", [[it]], { remap = true })
+  vim.keymap.set({ "o", "x" }, "T", [[at]], { remap = true })
+
+  vim.keymap.set("n", "sx", [[gxiw]], { remap = true, desc = "Opr 'Exchange word'" })
+  vim.keymap.set("n", "sm", [[gmm]], { remap = true, desc = "Opr 'Clone line'" })
+  vim.keymap.set("n", "sw", [[ysiw]], { remap = true, desc = "Opr 'Surround word'" })
+
+  require("mini.align").setup(
+    {
+      mappings = {
+        start = 'sga',
+        start_with_preview = 'sgA',
+      },
+    }
+  )
+
+  require("mini.move").setup({
+    options = {
+      reindent_linewise = false,
+    },
+  })
+
+  require("mini.pairs").setup({
+    modes = { insert = true, command = false, terminal = false },
+    mappings = {
+      ["<"] = { action = "open", pair = "<>", neigh_pattern = "[^\\]." },
+      [">"] = { action = "close", pair = "<>", neigh_pattern = "[^\\]." },
+    },
+  })
 
   require("mini.diff").setup({
     view = {
@@ -103,7 +135,50 @@ function M.config()
 
   vim.notify = require("mini.notify").make_notify()
 
-  require("mini.surround").setup()
+  require("mini.surround").setup({
+    custom_surroundings = {
+      s = {
+        input = { "%[%[().-()%]%]" },
+        output = { left = "[[", right = "]]" },
+      },
+      j = {
+        input = { "%{%/%*().-()%*%/%}" },
+        output = { left = "{/*", right = "*/}" },
+      },
+      B = {
+        input = { "%{%{%-%-().-()%-%-%}%}" },
+        output = { left = "{{--", right = "--}}" },
+      },
+      h = {
+        input = { "%<%!%-%-().-()%-%-%>" },
+        output = { left = "<!--", right = "-->" },
+      },
+    },
+    mappings = {
+      add = "ys",
+      delete = "ds",
+      find = "",
+      find_left = "",
+      highlight = "",
+      replace = "cs",
+      update_n_lines = "",
+    },
+  })
+
+  -- Remap adding surrounding to Visual mode selection
+  --stylua: ignore
+  vim.keymap.set("x", "s", [[:<C-u>lua MiniSurround.add('visual')<CR>]],
+    { silent = true, desc = "MiniSurround add visual" })
+
+  -- unmap config generated `ys` mapping, prevents visual mode yank delay
+  if vim.keymap then
+    vim.keymap.del("x", "ys")
+  else
+    vim.cmd("xunmap ys")
+  end
+
+  -- Make special mapping for "add surrounding for line"
+  vim.keymap.set("n", "yss", "ys_", { remap = true })
 
 
   local mini_statusline = require('mini.statusline')
