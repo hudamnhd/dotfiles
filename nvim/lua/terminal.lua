@@ -105,8 +105,6 @@ function s.split_cmd(args)
 end
 
 
-
-
 local augroup = vim.api.nvim_create_augroup('offworld_term', {clear = true})
 local autocmd = vim.api.nvim_create_autocmd
 local command = vim.api.nvim_create_user_command
