@@ -200,6 +200,7 @@ static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
+static void togglelayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
@@ -228,12 +229,14 @@ static void updatewmhints(Client *c);
 static void view(const Arg *arg);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
+static void winview(const Arg* arg);
 static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 
 /* variables */
+static int current_layout = 0;
 static const char broken[] = "broken";
 static char stext[256];
 static int screen;
@@ -1520,6 +1523,17 @@ setlayout(const Arg *arg)
 		drawbar(selmon);
 }
 
+void togglelayout(const Arg *arg) {
+    if (current_layout == 0)
+        setlayout(&(const Arg){.v = &layouts[2]});
+    else
+        setlayout(&(const Arg){.v = &layouts[0]});
+
+    current_layout = 1 - current_layout;  // toggle antara 0 dan 1
+
+    arrange(selmon);
+}
+
 /* arg > 1.0 will set mfact absolutely */
 void
 setmfact(const Arg *arg)
@@ -2059,6 +2073,13 @@ view(const Arg *arg)
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
 	focus(NULL);
 	arrange(selmon);
+
+	// Otomatis set layout ke layouts[3] jika view(~0) dipanggil
+	if (arg->ui == ~0) {
+		Arg layoutArg;
+		layoutArg.v = &layouts[3];
+		setlayout(&layoutArg);
+	}
 }
 
 Client *
@@ -2089,6 +2110,32 @@ wintomon(Window w)
 	if ((c = wintoclient(w)))
 		return c->mon;
 	return selmon;
+}
+
+/* Selects for the view of the focused window. The list of tags */
+/* to be displayed is matched to the focused window tag list. */
+void
+winview(const Arg* arg){
+	Window win, win_r, win_p, *win_c;
+	unsigned nc;
+	int unused;
+	Client* c;
+	Arg a;
+
+	if (!XGetInputFocus(dpy, &win, &unused)) return;
+	while(XQueryTree(dpy, win, &win_r, &win_p, &win_c, &nc)
+	      && win_p != win_r) win = win_p;
+
+	if (!(c = wintoclient(win))) return;
+
+	a.ui = c->tags;
+	view(&a);
+	// Kembalikan layout ke default (index 0)
+
+	if (current_layout == 0)
+		setlayout(&(const Arg){.v = &layouts[0]});
+	else
+		setlayout(&(const Arg){.v = &layouts[2]});
 }
 
 /* There's no way to check accesses to destroyed windows, thus those cases are
