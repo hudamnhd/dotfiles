@@ -1,4 +1,4 @@
-local o = vim.opt
+local o          = vim.opt
 
 o.title          = true -- Change title of window to filename
 o.synmaxcol      = 200  -- for `syntax`
@@ -26,7 +26,7 @@ o.foldmethod     = "indent"
 o.foldenable     = true
 o.foldlevel      = 99
 
-o.guicursor = {
+o.guicursor      = {
   "n-v-c-sm:block-Cursor", -- Use 'Cursor' highlight for normal, visual, and command modes
   "i-ci-ve:ver25-lCursor", -- Use 'lCursor' highlight for insert and visual-exclusive modes
   "r-cr:hor20-CursorIM",   -- Use 'CursorIM' for replace mode

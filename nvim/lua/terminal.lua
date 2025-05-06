@@ -27,7 +27,7 @@ function s.create_terminal(opts)
   local direction = opts.direction or defaults.direction
   local size = opts.size or defaults.size
 
-  s.make_split({direction = direction, size = size})
+  s.make_split({ direction = direction, size = size })
   vim.cmd('terminal')
 end
 
@@ -41,7 +41,7 @@ function M.show_terminal(opts)
     return
   end
 
-  s.make_split({direction = direction, size = size})
+  s.make_split({ direction = direction, size = size })
   vim.api.nvim_win_set_buf(0, M.state.buffer)
   M.state.opened = true
 end
@@ -104,8 +104,7 @@ function s.split_cmd(args)
   ))
 end
 
-
-local augroup = vim.api.nvim_create_augroup('offworld_term', {clear = true})
+local augroup = vim.api.nvim_create_augroup('offworld_term', { clear = true })
 local autocmd = vim.api.nvim_create_autocmd
 local command = vim.api.nvim_create_user_command
 
@@ -146,10 +145,10 @@ autocmd('TermClose', {
     end
 
     if vim.v.event.status == 0
-      and vim.api.nvim_buf_is_valid(state.buffer)
+        and vim.api.nvim_buf_is_valid(state.buffer)
     then
       pcall(vim.api.nvim_win_close, vim.fn.bufwinid(state.buffer), true)
-      pcall(vim.api.nvim_buf_delete, state.buffer, {force = true})
+      pcall(vim.api.nvim_buf_delete, state.buffer, { force = true })
     end
 
     state.buffer = nil
@@ -159,4 +158,3 @@ autocmd('TermClose', {
 
 
 return M
-

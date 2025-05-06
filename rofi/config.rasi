@@ -5,7 +5,7 @@ configuration{
     kb-remove-to-eol:          "Control+Shift+e";
     kb-remove-char-back:       "BackSpace";
     lines:                     1;
-    font:                      "AtkynsonMono Nerd Font 14";
+    font:                      "FiraCode Nerd Font 15";
     show-icons:                false;
     terminal:                  "st";
     drun-display-format:       "{icon} {name}";

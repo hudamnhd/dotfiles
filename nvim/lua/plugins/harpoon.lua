@@ -46,11 +46,14 @@ return {
         vim.cmd(cmd)
       end, { desc = "toggle_quick_menu harpoon" })
 
-      vim.keymap.set("n", "<space>a", function() harpoon:list():add() vim.notify("harpoon add")end, { desc = "Mark harpoon" })
+      vim.keymap.set("n", "<space>a", function()
+        harpoon:list():add()
+        vim.notify("harpoon add")
+      end, { desc = "Mark harpoon" })
 
       local keys = '12345'
       for i = 1, #keys do
-        local key = keys:sub(i,i)
+        local key = keys:sub(i, i)
         local key_combination = string.format('<a-%s>', key)
         vim.keymap.set('n', key_combination, function() harpoon:list():select(i) end, { desc = "Goto harpoon " .. i })
       end

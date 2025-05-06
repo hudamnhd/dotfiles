@@ -11,4 +11,3 @@ return {
   { "RRethy/nvim-align",                event = "BufReadPost" },
   { "mbbill/undotree",                  event = "BufReadPost" },
 }
-
