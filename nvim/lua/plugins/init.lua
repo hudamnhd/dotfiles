@@ -1,7 +1,6 @@
 return {
   { "stefandtw/quickfix-reflector.vim", ft = "qf" },
   { "tpope/vim-fugitive",               event = "VeryLazy" },
-  { "tpope/vim-fugitive",               event = "VeryLazy" },
   { "tpope/vim-eunuch",                 event = "VeryLazy" },
   { "tpope/vim-rsi",                    event = "VeryLazy" },
   { "tpope/vim-repeat",                 event = "VeryLazy" },

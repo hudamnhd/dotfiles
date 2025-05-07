@@ -44,7 +44,6 @@ bind(nm, "<a-w>", [[<c-w>w]])
 bind(nm, "<space>c", vim.cmd.close, { desc = "split" })
 bind(nm, "<space>v", vim.cmd.vsplit, { desc = "split" })
 bind(nm, "<space>w", vim.cmd.write, { desc = "Write" })
-bind(nm, "<space>-", vim.cmd.Git, { desc = "Git" })
 
 bind(nm, "J", [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true })
 
@@ -66,5 +65,10 @@ bind(nvm, "<c-z>", [[%]])
 bind(nvm, "<c-l>", [[g_]])
 bind(nvm, "<c-h>", [[^]])
 
-vim.api.nvim_set_keymap("n", "<space>gc", ":split | terminal commitgen<CR>", { noremap = true, silent = true })
+-- Git
+bind(nm, "<c-Space>", [[<cmd>vert Git<cr>]], { desc = "Git" })
+bind(nm, "<space>ga", vim.cmd.Gwrite, { desc = "Git add" })
+bind(nm, "<space>gr", vim.cmd.Gread, { desc = "Git reset" })
+bind(nm, "<space>gd", vim.cmd.Gvdiffsplit, { desc = "Git diff" })
+bind(nm, '<space>go', [[<Cmd>lua MiniDiff.toggle_overlay()<CR>]], { desc = 'Toggle overlay' })
 
