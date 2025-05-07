@@ -203,5 +203,38 @@ return {
 		end
 
 		vim.keymap.set("n", "so", fzf.mru, { desc = "Fzf 'mru'" })
+
+		local bookmark_file = os.getenv("HOME") .. "/.cdg_paths"
+
+		function fzf.bookmark_dir()
+			local prompt = "DIR"
+			prompt = prompt .. " CWD"
+
+			require("fzf-lua").fzf_exec("cat " .. bookmark_file, {
+				actions = {
+					["default"] = function(selected)
+						vim.cmd("F " .. selected[1])
+					end,
+					["alt-c"] = function(selected)
+						vim.cmd("cd " .. selected[1])
+						notify.info("cwd change to: " .. selected[1])
+					end,
+				},
+				fzf_opts = {
+					["--multi"] = "",
+				},
+				prompt = prompt .. "> ",
+				winopts = { height = 0.4, width = 0.6 },
+			})
+		end
+
+		local bookmark = toolbox("Bookmark", {
+			{ execute = function() fzf.files({ cwd = "~/dot" }) end,                  name = "Fzf 'dotfiles'" },
+			{ execute = function() fzf.files({ cwd = vim.fn.stdpath("config") }) end, name = "Fzf 'nvimrc'" },
+			{ execute = function() vim.cmd.vsplit(bookmark_file) end,                 name = "Edit bookmark dir" },
+			{ execute = fzf.bookmark_dir,                                             name = "Show bookmark dir" },
+		})
+
+		bind("n", "<space><space>", bookmark, { desc = "Bookmark" })
 	end,
 }
