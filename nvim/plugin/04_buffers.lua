@@ -54,7 +54,7 @@ function M.delete(force)
     end
   end
 
-  A.nvim_buf_delete(cur_buf, { force = true })
+  A.nvim_buf_delete(cur_buf, { force = true, unload = true })
 
   notify(("#%s deleted"):format(cur_buf))
 end
@@ -84,3 +84,7 @@ bind("n", "<space>bq", M.only, { desc = "buffer delete all" })
 bind("n", "<space>bw", M.delsafe, { desc = "buffer delete save win" })
 bind("n", "<space>q", M.delete, { desc = "buffer delete close win" })
 
+bind('n', '<c-g><c-t>', "<Cmd>lua MiniBracketed.buffer('first')<CR>")
+bind('n', '<c-g><c-y>', "<Cmd>lua MiniBracketed.buffer('last')<CR>")
+bind('n', '<c-t>', "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
+bind('n', '<c-y>', "<Cmd>lua MiniBracketed.buffer('forward')<CR>")

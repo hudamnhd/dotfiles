@@ -279,6 +279,16 @@ local enable_colorscheme = function()
   hi('MiniStatuslineModeVisual', { fg = c.black1, bg = c.magenta })
   hi('MiniStatuslineModeReplace', { fg = c.black1, bg = c.yellow })
   hi('MiniStatuslineModeCommand', { fg = c.black1, bg = c.red })
+
+  hi('MiniTablineFill', { link = 'Comment' })
+  hi('MiniTablineHidden', { link = 'Comment' })
+  hi('MiniTablineCurrent', { fg = c.black1, bg = c.grey1 })
+  hi('MiniTablineVisible', { fg = c.black1, bg = c.grey1 })
+  hi('MiniTablineModifiedHidden', { fg = c.black1, bg = c.red })
+  hi('MiniTablineTabpagesection', { fg = c.black1, bg = c.cyan })
+  hi('MiniTablineModifiedCurrent', { fg = c.black1, bg = c.blue })
+  hi('MiniTablineModifiedVisible', { fg = c.black1, bg = c.magenta })
+
   --stylua: ignore end
 end
 

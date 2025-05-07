@@ -15,6 +15,7 @@ function M.config()
   require("mini.bracketed").setup()
   require("mini.basics").setup()
   require("mini.ai").setup()
+  require("mini.tabline").setup()
 
   vim.keymap.set({ "o", "x" }, "q", [[iq]], { remap = true })
   vim.keymap.set({ "o", "x" }, "Q", [[aq]], { remap = true })
