@@ -16,8 +16,7 @@ vim.opt.runtimepath:prepend(lazypath)
 
 local ok, lazy = pcall(require, "lazy")
 if not ok then
-  require("utils").error("Error downloading lazy.nvim")
-  return
+  notify.err("Error downloading lazy.nvim")
 end
 
 lazy.setup("plugins", {
