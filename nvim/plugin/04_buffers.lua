@@ -54,7 +54,7 @@ function M.delete(force)
     end
   end
 
-  A.nvim_buf_delete(cur_buf, { force = true, unload = true })
+  A.nvim_buf_delete(cur_buf, { force = true })
 
   notify(("#%s deleted"):format(cur_buf))
 end
