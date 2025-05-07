@@ -1,6 +1,29 @@
+-- vim mode
 local nm, tm, cm, vm, nvm = "n", "t", "c", { "o", "x" }, { "n", "o", "x" }
 
+-- disable key
+local nop_key = { "s", "c", "<c-z>", "<space>" }
+
+for _, key in ipairs(nop_key) do
+  bind("", key, "<Nop>")
+end
+
+-- without copying to clipboard (blackhole)
+local bh_key = { "S", "D", "C", "d" }
+
+for _, key in ipairs(bh_key) do
+  bind(nm, key, '"_' .. key)
+end
+
+-- safe delete line
+local function del_line()
+  local empty_line = vim.api.nvim_get_current_line():match("^%s*$")
+  return (empty_line and '"_dd' or "dd")
+end
+
 -- BASIC KEYMAP
+bind(nm, "dd", del_line, { desc = "delete line", expr = true })
+
 bind(tm, [[<c-\>]], [[<C-\><C-n>]])
 bind(tm, [[<a-x>]], [[<C-\><C-n>:bd!<Cr>]])
 bind(tm, [[<a-w>]], [[<C-\><C-n><c-w>w]])
@@ -44,3 +67,4 @@ bind(nvm, "<c-l>", [[g_]])
 bind(nvm, "<c-h>", [[^]])
 
 vim.api.nvim_set_keymap("n", "<space>gc", ":split | terminal commitgen<CR>", { noremap = true, silent = true })
+
