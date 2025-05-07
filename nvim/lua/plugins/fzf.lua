@@ -64,5 +64,80 @@ return {
 			complete = "dir",
 			desc = "Fuzzy find files.",
 		})
+
+
+		local commands = {
+			{ execute = fzf.diagnostics_document,  name = "Fzf 'diagnostics_document'" },
+			{ execute = fzf.diagnostics_workspace, name = "Fzf 'diagnostics_workspace'" },
+		}
+
+
+		local function is_typescript_tools_active()
+			for _, client in pairs(vim.lsp.get_clients()) do
+				if client.name == "typescript-tools" then
+					return true
+				end
+			end
+			return false
+		end
+
+		local lsp_attach = function()
+
+			if is_typescript_tools_active() then
+				local extra_commands = {
+					{ execute = vim.cmd.TSToolsOrganizeImports,      name = "TS 'OrganizeImports'" },
+					{ execute = vim.cmd.TSToolsSortImports,          name = "TS 'SortImports'" },
+					{ execute = vim.cmd.TSToolsRemoveUnusedImports,  name = "TS 'RemoveUnusedImports'" },
+					{ execute = vim.cmd.TSToolsRemoveUnused,         name = "TS 'RemoveUnused'" },
+					{ execute = vim.cmd.TSToolsAddMissingImports,    name = "TS 'AddMissingImports'" },
+					{ execute = vim.cmd.TSToolsFixAll,               name = "TS 'FixAll'" },
+					{ execute = vim.cmd.TSToolsGoToSourceDefinition, name = "TS 'GoToSourceDefinition'" },
+					{ execute = vim.cmd.TSToolsRenameFile,           name = "TS 'RenameFile'" },
+					{ execute = vim.cmd.TSToolsFileReferences,       name = "TS 'FileReferences'" },
+				}
+
+				for _, cmd in ipairs(extra_commands) do
+					table.insert(commands, cmd)
+				end
+			end
+
+			local lsp_commands = {
+				{ execute = fzf.lsp_document_symbols,       name = "Fzf 'lsp_document_symbols'" },
+				{ execute = fzf.lsp_live_workspace_symbols, name = "Fzf 'lsp_live_workspace_symbols'" },
+				{ execute = fzf.lsp_definitions,            name = "Fzf 'lsp_definitions'" },
+				{ execute = fzf.lsp_definitions,            name = "Fzf 'lsp_definitions'" },
+				{ execute = fzf.lsp_typedefs,               name = "Fzf 'lsp_typedefs'" },
+				{ execute = fzf.lsp_implementations,        name = "Fzf 'lsp_implementations'" },
+				{ execute = fzf.lsp_incoming_calls,         name = "Fzf 'lsp_incoming_calls'" },
+				{ execute = fzf.lsp_outgoing_calls,         name = "Fzf 'lsp_outgoing_calls'" },
+				{ execute = fzf.lsp_references,             name = "Fzf 'lsp_references'" },
+				{ execute = fzf.lsp_finder,                 name = "Fzf 'lsp_finder'" },
+				{ execute = fzf.lsp_code_actions,           name = "Fzf 'lsp_code_actions'" },
+				{ execute = vim.lsp.buf.rename,             name = "Lsp 'vim.lsp.buf.rename'" },
+			}
+
+			for _, cmd in ipairs(lsp_commands) do
+				table.insert(commands, cmd)
+			end
+
+			local function reverse_table(t)
+				local reversed = {}
+				for i = #t, 1, -1 do
+					table.insert(reversed, t[i])
+				end
+				return reversed
+			end
+
+			commands = reverse_table(commands)
+			local show_toolbox_lsp = toolbox("Toolbox Files", commands)
+
+			bind("n", "<space>l", show_toolbox_lsp, { desc = "LSP Command" })
+		end
+
+		-- stylua: ignore end
+		vim.api.nvim_create_autocmd("LspAttach", {
+			group = vim.api.nvim_create_augroup("FzfLuaLspAttachGroup", { clear = true }),
+			callback = lsp_attach,
+		})
 	end,
 }
