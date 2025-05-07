@@ -1,80 +1,80 @@
--- vim mode
-local nm, tm, cm, vm, nvm = "n", "t", "c", { "o", "x" }, { "n", "o", "x" }
 local nvo = "" -- NOTE: mode "" represents "nvo"
 
 -- disable key
 local nop_key = { "s", "c", "<c-z>", "<space>" }
 
 for _, key in ipairs(nop_key) do
-  bind("", key, "<Nop>")
+  bind(nvo, key, "<Nop>")
 end
 
 -- without copying to clipboard (blackhole)
 local bh_key = { "S", "D", "C", "d" }
 
 for _, key in ipairs(bh_key) do
-  bind(nm, key, '"_' .. key)
+  bind("n", key, '"_' .. key)
 end
 
--- safe delete line
+-- Safe delete line
 local function del_line()
   local empty_line = vim.api.nvim_get_current_line():match("^%s*$")
   return (empty_line and '"_dd' or "dd")
 end
 
--- BASIC KEYMAP
-bind(nm, "dd", del_line, { desc = "delete line", expr = true })
+bind("n", "dd", del_line, { desc = "delete line", expr = true })
 
-bind(tm, [[<c-\>]], [[<C-\><C-n>]])
-bind(tm, [[<a-x>]], [[<C-\><C-n>:bd!<Cr>]])
-bind(tm, [[<a-w>]], [[<C-\><C-n><c-w>w]])
-bind(tm, [[<a-r>]], [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
+bind("n", "J", [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true })
 
-bind(cm, "<c-v>", [[<C-R>"]], { silent = false })
-bind(cm, "<a-v>", [[<C-R>+]], { silent = false })
+bind("n", "cl", [[mzguiw`z]], { desc = "UPPERCASE to lowercase" })
+bind("n", "ct", [[mzguiwgUl`z]], { desc = "Titlecase" })
+bind("n", "cu", [[mzgUiw`z]], { desc = "lowercase to UPPERCASE" })
 
-bind(cm, "<F1>", [[\(.*\)<Left><Left>]], { silent = false })
-bind(cm, "<F4>", 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true })
+bind("x", "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true })
 
-bind(vm, ">", [[>gv]])
-bind(vm, "<", [[<gv]])
+-- Remap (Easy to reach)
+bind("c", [[<F1>]], [[\(.*\)<Left><Left>]], { silent = false })
+bind("c", [[<F4>]], 'getcmdtype() == ":" ? expand("%:p")  : ""', { silent = false, expr = true })
+bind("c", [[<c-v>]], [[<C-R>"]], { silent = false })
+bind("c", [[<a-v>]], [[<C-R>+]], { silent = false })
+bind("t", [[<c-\>]], [[<C-\><C-n>]])
+bind("t", [[<a-x>]], [[<C-\><C-n>:bd!<Cr>]])
+bind("t", [[<a-r>]], [['<C-\><C-N>"'.nr2char(getchar()).'pi']], { expr = true })
+bind("t", [[<a-w>]], [[<C-\><C-n><c-w>w]])
+bind("n", [[<a-w>]], [[<c-w>w]])
 
-bind(nm, "!", [[:<up><cr>]])
-bind(nm, "<a-w>", [[<c-w>w]])
+bind("n", [[!]], [[:<up><cr>]])
+bind("x", [[>]], [[>gv]])
+bind("x", [[<]], [[<gv]])
+bind(nvo, [[0]], [[:]], { silent = false })
 
-bind(nm, "<space>c", vim.cmd.close, { desc = "split" })
-bind(nm, "<space>v", vim.cmd.vsplit, { desc = "split" })
-bind(nm, "<space>w", vim.cmd.write, { desc = "Write" })
+bind(nvo, [[<c-z>]], [[%]])
+bind(nvo, [[<c-l>]], [[g_]])
+bind(nvo, [[<c-h>]], [[^]])
 
-bind(nm, "J", [['mz' . v:count1 . 'J`z']], { desc = "Join", expr = true })
+bind("n", [[<space>c]], vim.cmd.close, { desc = "Close" })
+bind("n", [[<space>v]], vim.cmd.vsplit, { desc = "Vsplit" })
+bind("n", [[<space>w]], vim.cmd.write, { desc = "Write" })
 
-bind(nm, "cl", [[mzguiw`z]], { desc = "UPPERCASE to lowercase" })
-bind(nm, "ct", [[mzguiwgUl`z]], { desc = "Titlecase" })
-bind(nm, "cu", [[mzgUiw`z]], { desc = "lowercase to UPPERCASE" })
+bind(nvo, "<space>y", [["+y]], { desc = "Yank to clipboard (primary)" })
+bind(nvo, "<space>p", [["+p]], { desc = "Paste after from clipboard (primary)" })
 
-bind(nvm, "0", ":", { silent = false })
+-- Blackhole
+bind(nvo, "c", [["_c]])
+bind(nvo, "x", [["_x]])
 
-bind(nvm, "c", [["_c]])
-bind(nvm, "x", [["_x]])
 -- Edgemotion
 bind(nvo, '<c-j>', '<Plug>(edgemotion-j)', {})
 bind(nvo, '<c-k>', '<Plug>(edgemotion-k)', {})
 
-bind(nvm, "<space>y", [["+y]], { desc = "Yank to clipboard (primary)" })
-bind(nvm, "<space>p", [["+p]], { desc = "Paste after from clipboard (primary)" })
-
-bind(vm, "p", [['pgv"' . v:register . 'y']], { desc = "paste without replacing register", expr = true })
-
-bind(nvm, "<c-z>", [[%]])
-bind(nvm, "<c-l>", [[g_]])
-bind(nvm, "<c-h>", [[^]])
+-- EasyAlign
+bind('n', 'ga', '<Plug>(EasyAlign)', { desc = "EasyAlign" })
+bind('x', 'ga', '<Plug>(EasyAlign)', { desc = "EasyAlign" })
 
 -- Git
-bind(nm, "<c-Space>", [[<cmd>vert Git<cr>]], { desc = "Git" })
-bind(nm, "<space>ga", vim.cmd.Gwrite, { desc = "Git add" })
-bind(nm, "<space>gr", vim.cmd.Gread, { desc = "Git reset" })
-bind(nm, "<space>gd", vim.cmd.Gvdiffsplit, { desc = "Git diff" })
-bind(nm, '<space>go', [[<Cmd>lua MiniDiff.toggle_overlay()<CR>]], { desc = 'Toggle overlay' })
+bind("n", "<c-Space>", [[<cmd>vert Git<cr>]], { desc = "Git" })
+bind("n", "<space>ga", [[<cmd>Gwrite<cr>]], { desc = "Git add" })
+bind("n", "<space>gr", [[<cmd>Gread<cr>]], { desc = "Git reset" })
+bind("n", "<space>gd", [[<cmd>Gvdiffsplit<cr>]], { desc = "Git diff" })
+bind("n", '<space>go', [[<Cmd>lua MiniDiff.toggle_overlay()<CR>]], { desc = 'Toggle overlay' })
 
 local delimiters = { ",", ";", "." }
 
