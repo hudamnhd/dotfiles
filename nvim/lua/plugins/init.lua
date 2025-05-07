@@ -9,4 +9,5 @@ return {
   { "tpope/vim-sleuth",                 event = "BufReadPost" },
   { "RRethy/nvim-align",                event = "BufReadPost" },
   { "mbbill/undotree",                  event = "BufReadPost" },
+  { "haya14busa/vim-edgemotion",        event = "BufReadPost" },
 }

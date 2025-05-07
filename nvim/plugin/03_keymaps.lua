@@ -1,5 +1,6 @@
 -- vim mode
 local nm, tm, cm, vm, nvm = "n", "t", "c", { "o", "x" }, { "n", "o", "x" }
+local nvo = "" -- NOTE: mode "" represents "nvo"
 
 -- disable key
 local nop_key = { "s", "c", "<c-z>", "<space>" }
@@ -55,6 +56,9 @@ bind(nvm, "0", ":", { silent = false })
 
 bind(nvm, "c", [["_c]])
 bind(nvm, "x", [["_x]])
+-- Edgemotion
+bind(nvo, '<c-j>', '<Plug>(edgemotion-j)', {})
+bind(nvo, '<c-k>', '<Plug>(edgemotion-k)', {})
 
 bind(nvm, "<space>y", [["+y]], { desc = "Yank to clipboard (primary)" })
 bind(nvm, "<space>p", [["+p]], { desc = "Paste after from clipboard (primary)" })
@@ -93,4 +97,3 @@ for _, key in ipairs(delimiters) do
   local desc_combination = string.format("add '%s' to end of line", key)
   bind("n", key_combination, modify_line_end_delimiter(key), { desc = desc_combination })
 end
-
