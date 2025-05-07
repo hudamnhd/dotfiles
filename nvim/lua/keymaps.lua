@@ -135,14 +135,3 @@ end, { nargs = "?" })
 vim.keymap.set("n", "<F4>", ":Zenmode<CR>")
 
 vim.api.nvim_set_keymap("n", "<space>gc", ":split | terminal commitgen<CR>", { noremap = true, silent = true })
-
-bind({ '', 't', 'i' }, '<F5>', function()
-  local direction = 'bottom'
-  local size
-  if vim.o.lines < 19 then
-    direction = 'right'
-    size = 0.4
-  end
-
-  require('terminal').toggle({ direction = direction, size = size })
-end)
