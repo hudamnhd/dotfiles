@@ -54,7 +54,6 @@ return {
 		vim.keymap.set("n", "s0", fzf.command_history, { desc = "Fzf 'command_history'" }) -- remap : to 0 easy press
 		vim.keymap.set("n", "sp", fzf.files, { desc = "Fzf 'files'" })
 		vim.keymap.set("n", "sh", fzf.search_history, { desc = "Fzf 'search_history'" })
-		vim.keymap.set("n", "so", fzf.oldfiles, { desc = "Fzf 'oldfiles cwd'" })
 		vim.keymap.set("n", "z=", fzf.spell_suggest, { desc = "Fzf 'spell_suggest'" })
 
 		vim.api.nvim_create_user_command("F", function(info)
@@ -64,7 +63,6 @@ return {
 			complete = "dir",
 			desc = "Fuzzy find files.",
 		})
-
 
 		local commands = {
 			{ execute = fzf.diagnostics_document,  name = "Fzf 'diagnostics_document'" },
@@ -82,7 +80,6 @@ return {
 		end
 
 		local lsp_attach = function()
-
 			if is_typescript_tools_active() then
 				local extra_commands = {
 					{ execute = vim.cmd.TSToolsOrganizeImports,      name = "TS 'OrganizeImports'" },
@@ -139,5 +136,72 @@ return {
 			group = vim.api.nvim_create_augroup("FzfLuaLspAttachGroup", { clear = true }),
 			callback = lsp_attach,
 		})
+
+
+		local api, uv = vim.api, vim.loop
+
+		function fzf.mru()
+			local current
+			if api.nvim_get_option_value("buftype", { buf = 0 }) == "" then
+				current = uv.fs_realpath(api.nvim_buf_get_name(0))
+			end
+
+			local files_all = {}
+			local files_cwd = {}
+			local cwd = vim.fn.expand(vim.uv.cwd())
+			local show_all = false
+
+			local mru_files = require("mru").get()
+
+			for _, file in ipairs(mru_files) do
+				if file ~= current then
+					table.insert(files_all, file)
+				end
+			end
+
+			local function update_files_cwd()
+				files_cwd = {}
+				for _, file in ipairs(files_all) do
+					local file_absolute_path = vim.fn.fnamemodify(file, ":p")
+					if vim.fn.stridx(file_absolute_path, cwd) == 0 then
+						local relative_path = vim.fn.fnamemodify(file_absolute_path, ":.")
+						table.insert(files_cwd, relative_path)
+					end
+				end
+			end
+
+			update_files_cwd()
+
+			local prompt = "MRU"
+			prompt = prompt .. " CWD"
+
+			local function show_fzf(files)
+				require("fzf-lua").fzf_exec(files, {
+					actions = {
+						["default"] = require("fzf-lua").actions.file_edit,
+						["ctrl-h"] = function()
+							show_all = not show_all
+							if show_all then
+								prompt = "MRU ALL"
+								show_fzf(files_all)
+							else
+								prompt = "MRU CWD"
+								update_files_cwd()
+								show_fzf(files_cwd)
+							end
+						end,
+					},
+					fzf_opts = {
+
+						["--multi"] = "",
+					},
+					prompt = prompt .. "> ",
+				})
+			end
+
+			show_fzf(files_cwd)
+		end
+
+		vim.keymap.set("n", "so", fzf.mru, { desc = "Fzf 'mru'" })
 	end,
 }
