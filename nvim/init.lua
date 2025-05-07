@@ -1,17 +1,7 @@
-local config_files = {
-  "options",
-  "commands",
-  "keymaps",
-  "lazyplug",
-  "substitute",
-}
+vim.api.nvim_create_augroup('user_cmds', { clear = true })
 
-for _, file in pairs(config_files) do
+vim.cmd.colorscheme("custom")
 
-  local success = pcall(require, file)
-  if not success then
-    vim.notify("Failed to load a config file " .. file)
-    break
-  end
+require("misc")
 
-end
+require("lazyplug")
