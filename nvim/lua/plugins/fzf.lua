@@ -26,7 +26,77 @@ return {
 				["header"] = { "fg", "Comment" },
 				["gutter"] = "-1",
 			},
-		})
+		-- taken from: https://github.com/Bekaboo/dot/blob/b4f02b7a821a7f43c1175b0588987dd9f94d3efb/.config/nvim/lua/configs/fzf-lua.lua#L528
+			winopts = {
+				backdrop = 100,
+				split = [[
+					let tabpage_win_list = nvim_tabpage_list_wins(0) |
+					\ call v:lua._G.win.saveheights(tabpage_win_list) |
+					\ call v:lua._G.win.saveviews(tabpage_win_list) |
+					\ unlet tabpage_win_list |
+					\ let g:_fzf_vim_lines = &lines |
+					\ let g:_fzf_leave_win = win_getid(winnr()) |
+					\ let g:_fzf_splitkeep = &splitkeep | let &splitkeep = "topline" |
+					\ let g:_fzf_cmdheight = &cmdheight | let &cmdheight = 0 |
+					\ let g:_fzf_laststatus = &laststatus | let &laststatus = 0 |
+					\ botright 10new |
+					\ exe 'resize' .
+					  \ (12 + g:_fzf_cmdheight + (g:_fzf_laststatus ? 1 : 0)) |
+					\ let w:winbar_no_attach = v:true |
+					\ setlocal bt=nofile bh=wipe nobl noswf wfh
+				    ]],
+				on_create = function()
+					vim.keymap.set(
+						't',
+						'<C-r>',
+						[['<C-\><C-N>"' . nr2char(getchar()) . 'pi']],
+						{
+							expr = true,
+							buffer = true,
+							desc = 'Insert contents in a register',
+						}
+					)
+				end,
+				on_close = function()
+					---@param name string
+					---@return nil
+					local function _restore_global_opt(name)
+						local backup_name = '_fzf_' .. name
+						local backup = vim.g[backup_name]
+						if backup ~= nil and vim.go[name] ~= backup then
+							vim.go[name] = backup
+							vim.g[backup_name] = nil
+						end
+					end
+
+					_restore_global_opt('splitkeep')
+					_restore_global_opt('cmdheight')
+					_restore_global_opt('laststatus')
+
+					if
+						vim.g._fzf_leave_win
+						and vim.api.nvim_win_is_valid(vim.g._fzf_leave_win)
+						and vim.api.nvim_get_current_win() ~= vim.g._fzf_leave_win
+					then
+						vim.api.nvim_set_current_win(vim.g._fzf_leave_win)
+					end
+					vim.g._fzf_leave_win = nil
+
+					if vim.go.lines == vim.g._fzf_vim_lines then
+						win.restheights()
+					end
+					vim.g._fzf_vim_lines = nil
+					win.clearheights()
+					win.restviews()
+					win.clearviews()
+				end,
+				preview = {
+					hidden = 'hidden',
+					layout = 'horizontal',
+				},
+			},
+		}
+		)
 
 		fzf.register_ui_select(function(o, items)
 			local min_h, max_h = 0.15, 0.70
