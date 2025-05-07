@@ -49,37 +49,6 @@ bind(nvm, "<c-z>", [[%]])
 bind(nvm, "<c-l>", [[g_]])
 bind(nvm, "<c-h>", [[^]])
 
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~ multiple cursors (sort of) ~
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- see: http://www.kevinli.co/p<space>pnosts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript
-local mc_select = [[y/\V\C<C-r>=escape(@", '/')<CR><CR>]]
-local function mc_macro(selection)
-  selection = selection or ""
-
-  return function()
-    if vim.fn.reg_recording() == "z" then
-      return "q"
-    end
-
-    if vim.fn.getreg("z") ~= "" then
-      return "n@z"
-    end
-
-    return selection .. "*Nqz"
-  end
-end
-
-
-bind(nm, "zq", [[*Nqz]], { desc = "mc start macro (foward)" })
-bind(nm, "<c-0>", mc_macro(), { desc = "mc end or replay macro", expr = true })
-bind(vm, "zq", mc_select .. "``qz", { desc = "mc start macro (foward)" })
-bind(vm, "<c-0>", mc_macro(mc_select), { desc = "mc end or replay macro", expr = true })
-bind(nm, "<c-f>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace cword", silent = false })
-bind(nm, "<c-s>", [[:'<,'>s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace cword", silent = false })
-bind(vm, "<c-s>", [[:s///g<left><left><left>]], { desc = "Search Replace", silent = false })
-bind(vm, "<c-f>", [[:%s///g<left><left><left>]], { desc = "Search Replace", silent = false })
-
 bind(nm, "<space>q", [[:bd<cr>]], { desc = "buffer delete" })
 
 local M = {}

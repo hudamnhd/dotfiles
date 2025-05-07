@@ -3,6 +3,7 @@ local config_files = {
   "commands",
   "keymaps",
   "lazyplug",
+  "substitute",
 }
 
 for _, file in pairs(config_files) do
