@@ -12,9 +12,6 @@
       "before_each",
       "after_each"
     ],
-    "neededFileStatus": {
-      "codestyle-check": "Any"
-    }
   },
   "workspace": {
     "library": ["lua", "$VIMRUNTIME/lua", "${3rd}/luv/library"],
