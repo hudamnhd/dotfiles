@@ -23,6 +23,10 @@
       {
         "language": "typescript",
         "path": "snippets/typescript.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "snippets/typescript.json"
       }
     ]
   }

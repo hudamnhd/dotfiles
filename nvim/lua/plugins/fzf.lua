@@ -306,5 +306,59 @@ return {
 		})
 
 		bind("n", "<space><space>", bookmark, { desc = "Bookmark" })
+
+
+		local luasnip = require("luasnip")
+		local fzf_lua = require("fzf-lua")
+
+		-- taken from : https://gist.github.com/fira42073/c5bc8d4d1f60dc73722acbbf8ab55cb4
+		local function search_snippets()
+			-- Get available snippets
+			local snippets = luasnip.available()
+
+			-- Flatten the snippets table and prepare entries for fzf-lua
+			local entries = {}
+			for category, snippet_list in pairs(snippets) do
+				if type(snippet_list) == "table" then
+					for _, snippet in ipairs(snippet_list) do
+						local description = snippet.description[1] or "" -- Extract the first description if available
+						local entry = string.format("%s - %s (%s) : %s", snippet.trigger, snippet.name, category,
+							description)
+						table.insert(entries, entry)
+					end
+				end
+			end
+
+			-- Use fzf-lua to search through snippets
+			fzf_lua.fzf_exec(entries, {
+				prompt = "Select Snippet> ",
+				actions = {
+					["default"] = function(selected)
+						if #selected > 0 then
+							-- Extract the trigger from the selected entry
+							local trigger = selected[1]:match("^(.-)%s+-")
+							-- Insert the trigger into the current buffer and go into insert mode
+							vim.api.nvim_put({ trigger }, "c", true, true)
+							if luasnip.expandable() then
+								vim.cmd("startinsert")
+								luasnip.expand()
+								vim.cmd("stopinsert")
+							else
+								notify.warn(
+									"Snippet '"
+									.. trigger
+									.. "'"
+									.. "was selected, but LuaSnip.expandable() returned false"
+								)
+							end
+							-- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>i", true, true, true), "n", true)
+						end
+					end,
+				},
+			})
+		end
+
+		vim.keymap.set("n", "sn", search_snippets, { desc = "FZF search snippets" })
 	end,
 }
+
