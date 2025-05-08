@@ -192,24 +192,6 @@ function M.config()
   vim.notify = require("mini.notify").make_notify()
 
   require("mini.surround").setup({
-    custom_surroundings = {
-      s = {
-        input = { "%[%[().-()%]%]" },
-        output = { left = "[[", right = "]]" },
-      },
-      j = {
-        input = { "%{%/%*().-()%*%/%}" },
-        output = { left = "{/*", right = "*/}" },
-      },
-      B = {
-        input = { "%{%{%-%-().-()%-%-%}%}" },
-        output = { left = "{{--", right = "--}}" },
-      },
-      h = {
-        input = { "%<%!%-%-().-()%-%-%>" },
-        output = { left = "<!--", right = "-->" },
-      },
-    },
     mappings = {
       add = "ys",
       delete = "ds",
