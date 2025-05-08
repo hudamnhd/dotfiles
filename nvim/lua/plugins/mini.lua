@@ -21,6 +21,9 @@ function M.config()
   require("mini.bufremove").setup()
   require("mini.git").setup()
 
+  bind('n', '<space>q', '<Cmd>lua MiniBufremove.delete()<CR>', { desc = 'Delete' })
+  bind('n', '<space>x', '<Cmd>lua MiniBufremove.wipeout()<CR>', { desc = 'Wipeout' })
+
   local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
   bind('n', '<space>gw', '<Cmd>Git add %<CR>',                           { desc = 'Stage current file' })
   bind('n', '<space>gp', '<Cmd>Git push<CR>',                            { desc = 'Push' })
@@ -85,8 +88,8 @@ function M.config()
   require("mini.align").setup(
     {
       mappings = {
-        start = 'sga',
-        start_with_preview = 'sgA',
+        start = 'gl',
+        start_with_preview = 'gL',
       },
     }
   )

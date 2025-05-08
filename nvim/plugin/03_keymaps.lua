@@ -69,13 +69,6 @@ bind(nvo, '<c-k>', '<Plug>(edgemotion-k)', {})
 bind('n', 'ga', '<Plug>(EasyAlign)', { desc = "EasyAlign" })
 bind('x', 'ga', '<Plug>(EasyAlign)', { desc = "EasyAlign" })
 
--- Git
-bind("n", "<c-Space>", [[<cmd>vert Git<cr>]], { desc = "Git" })
-bind("n", "<space>ga", [[<cmd>Gwrite<cr>]], { desc = "Git add" })
-bind("n", "<space>gr", [[<cmd>Gread<cr>]], { desc = "Git reset" })
-bind("n", "<space>gd", [[<cmd>Gvdiffsplit<cr>]], { desc = "Git diff" })
-bind("n", '<space>go', [[<Cmd>lua MiniDiff.toggle_overlay()<CR>]], { desc = 'Toggle overlay' })
-
 local delimiters = { ",", ";", "." }
 
 local function modify_line_end_delimiter(character)
