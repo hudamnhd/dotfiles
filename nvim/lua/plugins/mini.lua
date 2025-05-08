@@ -8,6 +8,7 @@ local M = {
 function M.config()
   require('mini.icons').setup()
   require('mini.icons').mock_nvim_web_devicons()
+  require('mini.icons').tweak_lsp_kind()
   require("mini.operators").setup()
   require("mini.splitjoin").setup()
   require("mini.comment").setup()
@@ -19,7 +20,49 @@ function M.config()
   require("mini.tabline").setup()
   require("mini.bufremove").setup()
 
+  local process_items = function(items, base)
+    -- Don't show 'Text' suggestions
+    items = vim.tbl_filter(function(x) return x.kind ~= 1 end, items)
+    return require('mini.completion').default_process_items(items, base)
+  end
+  -- See :help MiniCompletion.config
+  require('mini.completion').setup({
+    lsp_completion = { source_func = 'omnifunc', auto_setup = false, process_items = process_items },
+  })
 
+  -- Set up LSP part of completion
+  local on_attach = function(args) vim.bo[args.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp' end
+  vim.api.nvim_create_autocmd('LspAttach', { callback = on_attach })
+
+  local imap_expr = function(lhs, rhs)
+    vim.keymap.set('i', lhs, rhs, { expr = true })
+  end
+  imap_expr('<Tab>', [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
+  imap_expr('<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
+
+  local keycode = vim.keycode or function(x)
+    return vim.api.nvim_replace_termcodes(x, true, true, true)
+  end
+  local keys = {
+    ['cr']        = keycode('<CR>'),
+    ['ctrl-y']    = keycode('<C-y>'),
+    ['ctrl-y_cr'] = keycode('<C-y><CR>'),
+  }
+
+  _G.cr_action = function()
+    if vim.fn.pumvisible() ~= 0 then
+      -- If popup is visible, confirm selected item or add new line otherwise
+      local item_selected = vim.fn.complete_info()['selected'] ~= -1
+      return item_selected and keys['ctrl-y'] or keys['ctrl-y_cr']
+    else
+      -- If popup is not visible, use plain `<CR>`. You might want to customize
+      -- according to other plugins. For example, to use 'mini.pairs', replace
+      -- next line with `return require('mini.pairs').cr()`
+      return keys['cr']
+    end
+  end
+
+  vim.keymap.set('i', '<CR>', 'v:lua._G.cr_action()', { expr = true })
 
   require("mini.align").setup(
     {
@@ -120,13 +163,14 @@ function M.config()
   })
 
 
-  -- See :help MiniNotify.config
-  require("mini.notify").setup({
-    lsp_progress = {
-      enable = false,
-    },
-  })
+  local predicate = function(notif)
+    -- Only show LSP progress notifications
+    return notif.msg:find('Diagnosing') == nil and notif.msg:find('semantic tokens') == nil
+  end
+  local custom_sort = function(notif_arr) return require("mini.notify").default_sort(vim.tbl_filter(predicate, notif_arr)) end
 
+  -- See :help MiniNotify.config
+  require('mini.notify').setup({ content = { sort = custom_sort } })
   vim.notify = require("mini.notify").make_notify()
 
   require("mini.surround").setup({
