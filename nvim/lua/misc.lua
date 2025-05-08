@@ -181,3 +181,19 @@ _G.win.restviews = M.rest(function(_, view) vim.fn.winrestview(view) end, views)
 _G.win.saveheights = M.save(vim.api.nvim_win_get_height, heights)
 _G.win.restheights = M.rest(M.win_safe_set_height, heights)
 -- stylua: ignore end
+
+_G.open_gitui = function()
+  vim.cmd('tabedit')
+  vim.cmd('setlocal nonumber signcolumn=no')
+
+  vim.fn.jobstart("gitui", {
+    term = true,
+    on_exit = function()
+      vim.cmd("silent! checktime")
+      vim.cmd("silent! bw")
+    end,
+  })
+
+  vim.cmd("startinsert")
+  vim.b.minipairs_disable = true
+end
