@@ -1,62 +1,7 @@
 local M = {}
-local A = vim.api
 
 local notify = function(msg)
   vim.notify("Buffers: " .. msg, vim.log.levels.WARN)
-end
-
-local function option(buf, name)
-  return A.nvim_get_option_value(name, { buf = buf })
-end
-
-local function scratch(win)
-  local buf = A.nvim_create_buf(false, true)
-  A.nvim_win_set_buf(win, buf)
-end
-
----Remove buffer with save window split and close
-function M.delete(force)
-  -- Default: force = true
-  if force == nil then
-    force = true
-  end
-
-  local cur_buf = A.nvim_get_current_buf()
-
-  if not option(cur_buf, "buflisted") then
-    return
-  end
-
-  if not A.nvim_buf_is_loaded(cur_buf) then
-    return notify(("Invalid buffer - %s"):format(cur_buf))
-  end
-
-  if not force and option(cur_buf, "modified") then
-    return notify("Current buffer is modified. Please save it before delete!")
-  end
-
-  if not force then
-    for _, win in ipairs(A.nvim_list_wins()) do
-      if A.nvim_win_is_valid(win) and A.nvim_win_get_buf(win) == cur_buf then
-        A.nvim_set_current_win(win)
-
-        local alt_buf = vim.fn.bufnr("#")
-        if alt_buf > 0 and A.nvim_buf_is_loaded(alt_buf) then
-          A.nvim_set_current_buf(alt_buf)
-        else
-          pcall(vim.cmd, "bprevious")
-        end
-
-        if A.nvim_get_current_buf() == cur_buf then
-          scratch(win)
-        end
-      end
-    end
-  end
-
-  A.nvim_buf_delete(cur_buf, { force = true })
-
-  notify(("#%s deleted"):format(cur_buf))
 end
 
 ---Remove all buffers except the current one
@@ -76,15 +21,16 @@ function M.only()
   notify(("%s deleted, %s modified"):format(deleted, modified))
 end
 
-function M.delsafe()
-  M.delete(false)
-end
-
-bind("n", "<space>bq", M.only, { desc = "buffer delete all" })
-bind("n", "<space>bw", M.delsafe, { desc = "buffer delete save win" })
-bind("n", "<space>q", M.delete, { desc = "buffer delete close win" })
+M.scratch = function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end
 
 bind('n', '<c-g><c-t>', "<Cmd>lua MiniBracketed.buffer('first')<CR>")
 bind('n', '<c-g><c-y>', "<Cmd>lua MiniBracketed.buffer('last')<CR>")
 bind('n', '<c-t>', "<Cmd>lua MiniBracketed.buffer('backward')<CR>")
 bind('n', '<c-y>', "<Cmd>lua MiniBracketed.buffer('forward')<CR>")
+
+bind("n", "<space>bq", M.only, { desc = "buffer delete all" })
+bind("n", "<space>bs", M.scratch, { desc = "buffer delete all" })
+bind('n', '<space>bd', '<Cmd>lua MiniBufremove.delete()<CR>', { desc = 'Delete' })
+bind('n', '<space>bD', '<Cmd>lua MiniBufremove.delete(0, true)<CR>', { desc = 'Delete!' })
+bind('n', '<space>bw', '<Cmd>lua MiniBufremove.wipeout()<CR>', { desc = 'Wipeout' })
+bind('n', '<space>bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', { desc = 'Wipeout!' })
