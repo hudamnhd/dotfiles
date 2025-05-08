@@ -19,16 +19,7 @@ function M.config()
   require("mini.tabline").setup()
   require("mini.bufremove").setup()
 
-  vim.keymap.set({ "o", "x" }, "q", [[iq]], { remap = true })
-  vim.keymap.set({ "o", "x" }, "Q", [[aq]], { remap = true })
-  vim.keymap.set({ "o", "x" }, "w", [[iw]], { remap = true })
-  vim.keymap.set({ "o", "x" }, "W", [[iW]], { remap = true })
-  vim.keymap.set({ "o", "x" }, "t", [[it]], { remap = true })
-  vim.keymap.set({ "o", "x" }, "T", [[at]], { remap = true })
 
-  vim.keymap.set("n", "sx", [[gxiw]], { remap = true, desc = "Opr 'Exchange word'" })
-  vim.keymap.set("n", "sm", [[gmm]], { remap = true, desc = "Opr 'Clone line'" })
-  vim.keymap.set("n", "sw", [[ysiw]], { remap = true, desc = "Opr 'Surround word'" })
 
   require("mini.align").setup(
     {
