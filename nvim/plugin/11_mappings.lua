@@ -44,15 +44,7 @@ map.n({
   ['S'] = [[ysiw]],
 }, { remap = true })
 
--- Transform case
 map.n({
-  ['cl'] = [[mzguiw`z]],
-  ['ct'] = [[mzguiwgUl`z]],
-  ['cu'] = [[mzgUiw`z]],
-})
-
-map.n({
-  ['<a-x>'] = [[!bd]],
   ['<a-n>'] = [[!Scratch]],
   ['<space>x'] = [[!lua MiniBufremove.delete()]],
   ['<space>X'] = [[!lua MiniBufremove.wipeout()]],
@@ -71,15 +63,7 @@ map.c({
 
 map.t({
   ['<c-\\>'] = [[<C-\><C-n>]],
-  ['<a-x>'] = [[!bd!]],
   ['<a-r>'] = [['<C-\><C-N>"'.nr2char(getchar()).'pi']],
-})
-
-map.nvo({
-  ['<c-z>'] = [[%]],
-  ['0'] = [[~:]],
-  ['c'] = [["_c]],
-  ['x'] = [["_x]],
 })
 
 map.i({

@@ -1,34 +1,51 @@
+-------------------------------------------------------------------------------
+-- Main Config ================================================================
+-------------------------------------------------------------------------------
 local H = {
   Config = {
-    keymaps      = {
-      leader_key       = "\\",
-      basic            = true,
-      toggle_options   = true,
-      multiple_cursors = true,
-      substitute       = true,
-      window           = true,
-      readline         = true,
-      disabled         = { "q", "s", "c", "<c-z>", "<space>" }, -- disable these entirely
-      blackhole        = { "<s-s>", "<s-d>", "<s-c>", "d" },    -- map to "_ delete
-      delimiter        = {
-        prefix = "d",                                           -- ✂️ Line Delimiter Shortcuts
-        keys   = { ",", ";", "." },
+    leader_key = '\\',
+
+    -- Feature
+    features = {
+      options        = true,
+      grep           = true,
+      toggle_options = true,
+      zenmode        = true,
+      quickfix       = true,
+      netrw          = false,
+
+      autocommands   = {
+        basic    = true,
+        bigfile  = true,
+        autosave = true,
+        terminal = true,
+      },
+
+      keymaps        = {
+        basic         = true,
+        multi_cursors = true,
+        autoclose     = false,
+        substitute    = true,
+        window        = true,
+        readline      = true,
       },
     },
-    options      = true,
-    autocommands = {
-      basic    = true,
-      bigfile  = true,
-      autosave = true,
-      terminal = true,
+
+    -- Non-feature config
+    keymaps = {
+      disabled  = { 'q', 's', '<c-z>', '<space>' },        -- disable these entirely
+      blackhole = { 'c', 'x', '<s-s>', '<s-d>', '<s-c>' }, -- map to '_ delete
+      delimiter = { prefix = 'd', keys = { ',', ';', '.' },
+      },
     },
-    grep         = true,
   },
 }
 
 local C = H.Config
+-------------------------------------------------------------------------------
 -- Options ====================================================================
---stylua: ignore start
+-------------------------------------------------------------------------------
+
 local options = function()
   local o, opt    = vim.o, vim.opt
 
@@ -101,12 +118,14 @@ local options = function()
   local border_chars = 'vert:│,horiz:─,horizdown:┬,horizup:┴,verthoriz:┼,vertleft:┤,vertright:├'
   vim.opt.fillchars:append(border_chars)
 end
---stylua: ignore end
 
--- Mappings ===================================================================
+-------------------------------------------------------------------------------
+-- Keymaps ====================================================================
+-------------------------------------------------------------------------------
 
---  Keymaps Multiple Cursors =========================================================
-local multiple_cursors = function()
+-- ( Keymaps: Multiple Cursors )
+-------------------------------------------------------------------------------
+local multi_cursors = function()
   -- see: http://www.kevinli.co/p<space>pnosts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript
   local mc_select = [[y/\V\C<C-r>=escape(@", '/')<CR><CR>]]
   local function mc_macro(selection)
@@ -131,7 +150,8 @@ local multiple_cursors = function()
   H.map.x("<F8>", mc_macro(mc_select), { desc = "mc end or replay macro", expr = true })
 end
 
---  Keymaps Subtitute =========================================================
+-- ( Keymaps: Subtitute )
+-------------------------------------------------------------------------------
 local substitute = function()
   local function left(count)
     return string.rep("<left>", count)
@@ -161,7 +181,8 @@ local substitute = function()
   H.map.n('<bs>', '*N"_cgn', { desc = 'cgn' })
 end
 
---  Keymaps Basic =============================================================
+-- ( Keymaps: Basic )
+-------------------------------------------------------------------------------
 local basic_keymaps = function()
   -- Disable key
   H.safe_for_each(C.keymaps.disabled, function(key)
@@ -170,7 +191,7 @@ local basic_keymaps = function()
 
   -- Blackhole key (delete without save to register)
   H.safe_for_each(C.keymaps.blackhole, function(key)
-    H.map.n(key, '"_' .. key)
+    H.map.nvo(key, '"_' .. key)
   end)
 
   -- delimiters
@@ -187,14 +208,46 @@ local basic_keymaps = function()
     ["dd"] = smart_dd,
     ["J"]  = [['mz' . v:count1 . 'J`z']],
   }, { expr = true })
-
   H.map.nvo({
+    ['0'] = [[~:]],
     ['<C-H>'] = [[^]],
     ['<C-L>'] = [[g_]],
-  })
+    ['<C-Z>'] = [[%]],
+  }, { remap = true })
   H.map.x({
     ['>'] = [[>gv]],
     ['<'] = [[<gv]],
+    -- Move selected lines up/down in visual mode
+    ['K'] = [[:move '<-2<CR>gv=gv]],
+    ['J'] = [[:move '>+1<CR>gv=gv]],
+  })
+  H.map.x({
+    ['I'] = function() return vim.fn.mode():match('[vV]') and '<C-v>^o^I' or 'I' end,
+    ['A'] = function() return vim.fn.mode():match('[vV]') and '<C-v>1o$A' or 'A' end,
+  }, { expr = true })
+
+  -- Buffer
+  H.map.n({
+    ['<a-x>'] = [[!bd]],
+    ['<a-X>'] = [[!bw]],
+  })
+  H.map.t({
+    ['<a-x>'] = [[!bw]],
+  })
+
+  -- Transform case
+  H.map.n({
+    ['cl'] = [[mzguiw`z]],
+    ['ct'] = [[mzguiwgUl`z]],
+    ['cu'] = [[mzgUiw`z]],
+  })
+
+  -- Keep matches center screen when cycling with n|N
+  H.map.n({
+    ['n'] = [[nzzzv]],
+    ['N'] = [[nzzzv]],
+    ['<C-d>'] = [[<C-d>zz]],
+    ['<C-u>'] = [[<C-u>zz]],
   })
 
   -- Move by visible lines
@@ -210,16 +263,16 @@ local basic_keymaps = function()
   }, { desc = 'Newline without insert mode' })
 
   -- NOTE: Adding `redraw` helps with `cmdheight=0` if buffer is not modified
-  -- H.map.n('<space>w', '<Cmd>silent! update | redraw<CR>', { desc = 'Save' })
+  H.map.n('<space>w', '<Cmd>silent! update | redraw<CR>', { desc = 'Save' })
 
   -- Copy/paste with system clipboard
   H.map.n({
-    ['gy'] = [["+y]],
-    ['gp'] = [["+p]],
+    ['<space>y'] = [["+y]],
+    ['<space>p'] = [["+p]],
   })
   H.map.x({
-    ['gy'] = [["+y]],
-    ['gp'] = [["+P]], -- Paste in Visual with `P` to not copy selected text (`:h v_P`)
+    ['<space>y'] = [["+y]],
+    ['<space>p'] = [["+P]], -- Paste in Visual with `P` to not copy selected text (`:h v_P`)
   })
 
   H.map.x('p', 'P', { desc = 'Paste in Visual with `P` to not copy selected text' })
@@ -232,40 +285,43 @@ local basic_keymaps = function()
   H.map.x('g/', '<esc>/\\%V', { silent = false, desc = 'Search inside visual selection' })
 end
 
+-- ( Keymaps Autoclose )
+-------------------------------------------------------------------------------
+local autoclose = function()
+  H.map.i({
+    ['('] = '()',
+    ['"'] = '""',
+    ["'"] = "''",
+    ['{'] = '{}',
+    ['['] = '[]',
+    ['/*'] = '/**/'
+  })
+end
 
---  Keymaps Window =============================================================
--- Window navigation
+-- ( Keymaps Window )
+-------------------------------------------------------------------------------
 local window = function()
+  -- Window navigation
   H.map.n({
     ['<a-w>'] = [[<C-w>w]],
-    -- ['<C-H>'] = [[<C-w>h]],
-    -- ['<C-J>'] = [[<C-w>j]],
-    -- ['<C-K>'] = [[<C-w>k]],
-    -- ['<C-L>'] = [[<C-w>l]],
   })
 
   H.map.t({
     ['<a-w>'] = [[<C-\><C-n><C-w>w]],
-    -- ['<C-H>'] = [[<C-\><C-n><C-w>h]],
-    -- ['<C-J>'] = [[<C-\><C-n><C-w>j]],
-    -- ['<C-K>'] = [[<C-\><C-n><C-w>k]],
-    -- ['<C-L>'] = [[<C-\><C-n><C-w>l]],
   })
 
-  -- Window resize (respecting `v:count`)
-  H.map.n('<C-Left>', '"<Cmd>vertical resize -" . v:count1 . "<CR>"',
-    { expr = true, replace_keycodes = false, desc = 'Decrease window width' })
-  H.map.n('<C-Down>', '"<Cmd>resize -"          . v:count1 . "<CR>"',
-    { expr = true, replace_keycodes = false, desc = 'Decrease window height' })
-  H.map.n('<C-Up>', '"<Cmd>resize +"          . v:count1 . "<CR>"',
-    { expr = true, replace_keycodes = false, desc = 'Increase window height' })
-  H.map.n('<C-Right>', '"<Cmd>vertical resize +" . v:count1 . "<CR>"',
-    { expr = true, replace_keycodes = false, desc = 'Increase window width' })
+  -- Window resize
+  H.map.n({
+    ['<C-Up>'] = '<C-w>+',
+    ['<C-Down>'] = '<C-w>-',
+    ['<C-Left>'] = '<C-w><',
+    ['<C-Right>'] = '<C-w>>'
+  })
 end
 
---  Keymaps Readline ==========================================================
+-- ( Keymaps Readline )
+-------------------------------------------------------------------------------
 local readline = function()
-  -- Readline style
   H.map.i('<C-A>', '<C-O>^')
   H.map.c('<C-A>', '<Home>', { silent = false })
 
@@ -332,9 +388,81 @@ local readline = function()
   end, { expr = true, silent = false })
 end
 
---  Keymaps Toggle Options =====================================================
+-------------------------------------------------------------------------------
+-- Quickfix ===================================================================
+-------------------------------------------------------------------------------
+local quickfix = function()
+  local find_qf = function(type)
+    local wininfo = vim.fn.getwininfo()
+    local win_tbl = {}
+    for _, win in pairs(wininfo) do
+      local found = false
+      if type == 'l' and win['loclist'] == 1 then found = true end
+      -- loclist window has 'quickfix' set, eliminate those
+      if type == 'q' and win['quickfix'] == 1 and win['loclist'] == 0 then found = true end
+      if found then table.insert(win_tbl, { winid = win['winid'], bufnr = win['bufnr'] }) end
+    end
+    return win_tbl
+  end
+
+  -- open quickfix if not empty
+  local open_qf = function()
+    local qf_name = 'quickfix'
+    local qf_empty = function() return vim.tbl_isempty(vim.fn.getqflist()) end
+    if not qf_empty() then
+      vim.cmd('copen')
+      vim.cmd('wincmd J')
+    else
+      print(string.format('%s is empty.', qf_name))
+    end
+  end
+
+  -- enum all non-qf windows and open
+  -- loclist on all windows where not empty
+  local open_loclist_all = function()
+    local wininfo = vim.fn.getwininfo()
+    local qf_name = 'loclist'
+    local qf_empty = function(winnr) return vim.tbl_isempty(vim.fn.getloclist(winnr)) end
+    for _, win in pairs(wininfo) do
+      if win['quickfix'] == 0 then
+        if not qf_empty(win['winnr']) then
+          -- switch active window before ':lopen'
+          vim.api.nvim_set_current_win(win['winid'])
+          vim.cmd('lopen')
+        else
+          print(string.format('%s is empty.', qf_name))
+        end
+      end
+    end
+  end
+
+  -- toggle quickfix/loclist on/off
+  -- type='*': qf toggle and send to bottom
+  -- type='l': loclist toggle (all windows)
+  H.toggle_qf = function(type)
+    local windows = find_qf(type)
+    if #windows > 0 then
+      -- hide all visible windows
+      for _, win in ipairs(windows) do
+        vim.api.nvim_win_hide(win.winid)
+      end
+    else
+      -- no windows are visible, attempt to open
+      if type == 'l' then
+        open_loclist_all()
+      else
+        open_qf()
+      end
+    end
+  end
+
+  H.map.n('<space>q', function() H.toggle_qf('q') end, { desc = 'Toggle QF' })
+  H.map.n('<space>Q', function() H.toggle_qf('l') end, { desc = 'Toggle LL' })
+end
+-------------------------------------------------------------------------------
+-- Toggle Options =============================================================
+-------------------------------------------------------------------------------
 local toggle_options = function()
-  -- Toggle
   local toggle_options = {
     "cursorline",
     "cursorcolumn",
@@ -363,7 +491,9 @@ local toggle_options = function()
   H.map.n('<space>ut', show_toggle_menu, { desc = "Toggle UI option" })
 end
 
+-------------------------------------------------------------------------------
 -- Autocommands ================================================================
+-------------------------------------------------------------------------------
 local autocmd = vim.api.nvim_create_autocmd
 local groupid = vim.api.nvim_create_augroup
 
@@ -378,9 +508,10 @@ local function augroup(group, ...)
   end
 end
 
---  Autocommands Basic ========================================================
+-- ( Autocommands Basic )
+-------------------------------------------------------------------------------
 local autocommands = function()
-  augroup('SplitHelp', {
+  augroup('HelpOpenVert', {
     'Filetype',
     {
       pattern = { 'help', 'man' },
@@ -427,7 +558,8 @@ local autocommands = function()
   })
 end
 
---  Autocommand Terminal ======================================================
+-- ( Autocommand Terminal )
+-------------------------------------------------------------------------------
 local terminal = function()
   augroup('TerminalMode', {
     'TermOpen',
@@ -443,7 +575,8 @@ local terminal = function()
   })
 end
 
---  Autocommand Bigfile ======================================================
+--  ( Autocommand Bigfile )
+-------------------------------------------------------------------------------
 local bigfile = function()
   augroup('Bigfile', {
     'BufReadPre',
@@ -506,7 +639,8 @@ local bigfile = function()
   })
 end
 
---  Autocommand Autosave ======================================================
+-- ( Autocommand Autosave )
+-------------------------------------------------------------------------------
 local autosave = function()
   augroup('Autosave', {
     { 'BufLeave', 'WinLeave', 'FocusLost' },
@@ -526,8 +660,48 @@ local autosave = function()
   })
 end
 
--- UserCommands =======================================================================
+-------------------------------------------------------------------------------
+-- Netrw ======================================================================
+-------------------------------------------------------------------------------
+local netrw = function()
+  local function netrw_mapping()
+    local bufmap = function(lhs, rhs)
+      local opts = { buffer = true, remap = true, nowait = true }
+      vim.keymap.set('n', lhs, rhs, opts)
+    end
 
+    -- close window
+    bufmap('q', ':bd<cr>')
+
+    -- Go back in history
+    bufmap('H', 'u')
+
+    -- Go up a directory
+    bufmap('h', '-^')
+
+    -- Open file/directory
+    bufmap('l', '<cr>')
+
+    -- Toggle dotfiles
+    bufmap('.', 'gh')
+  end
+
+  augroup('NetrwMap', {
+    { 'FileType' },
+    {
+      pattern = 'netrw',
+      desc = 'Keybindings for netrw',
+      callback = netrw_mapping
+    },
+  })
+
+  vim.keymap.set('n', '-', vim.cmd.Ex, {})
+end
+-------------------------------------------------------------------------------
+-- Usercommands ================================================================
+-------------------------------------------------------------------------------
+
+-- Remove all buffers except the current one.
 vim.api.nvim_create_user_command("BuffClean", function()
   local cur = vim.api.nvim_get_current_buf()
 
@@ -546,33 +720,99 @@ end, {
   desc = "Remove all buffers except the current one.",
 })
 
+-- Create scratch buffer.
 vim.api.nvim_create_user_command("Scratch", function()
   vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true))
 end, {
   desc = "New scratch buffer",
 })
 
-vim.api.nvim_create_user_command("BTerm", function()
+-- Open terminal in split with root directory.
+vim.api.nvim_create_user_command("T", function()
+  vim.cmd("belowright new")
+  vim.fn.jobstart(vim.o.shell, {
+    term = true,
+  })
+end, {
+  desc = "Open terminal in split with root directory",
+})
+
+-- Open terminal in split with buffer's directory.
+vim.api.nvim_create_user_command("BT", function()
   local term_dir = vim.fn.expand("%:p:h")
   vim.cmd("belowright new")
   vim.fn.jobstart(vim.o.shell, {
     cwd = term_dir,
     term = true,
-    on_exit = function()
-      vim.cmd('silent! bw')
-    end,
   })
 end, {
   desc = "Open terminal in split with buffer's directory",
 })
 
+-------------------------------------------------------------------------------
+-- Zenmode ====================================================================
+-------------------------------------------------------------------------------
+local zenmode = function()
+  local z = {}
+
+  local function set_zen_options(enable)
+    vim.o.signcolumn    = enable and "no" or "yes"
+    vim.opt_local.spell = not enable
+    vim.o.wrap          = enable
+    vim.o.rnu           = not enable
+    vim.o.nu            = not enable
+    vim.o.cmdheight     = enable and 0 or 1
+    vim.o.laststatus    = enable and 0 or 2
+  end
+
+  local function create_window(width, direction)
+    vim.api.nvim_command("vsp")
+    vim.api.nvim_command("wincmd " .. direction)
+    pcall(vim.cmd, "buffer " .. z.buf)
+    vim.api.nvim_win_set_width(0, width)
+
+    vim.wo.winfixwidth = true
+    vim.wo.cursorline  = false
+    vim.wo.winfixbuf   = true
+    vim.o.numberwidth  = 1
+  end
+
+  function z.zenmode(c)
+    if z.buf == nil then
+      z.buf = vim.api.nvim_create_buf(false, false)
+      set_zen_options(true)
+
+      local width = 54 --default width
+      if #c.fargs == 1 then
+        width = tonumber(c.fargs[1])
+      end
+
+      local cur_win = vim.fn.win_getid()
+      create_window(width, "H")
+      create_window(width, "L")
+      vim.api.nvim_set_current_win(cur_win)
+    else
+      vim.api.nvim_buf_delete(z.buf, { force = true })
+      z.buf = nil
+      set_zen_options(false)
+    end
+  end
+
+  vim.api.nvim_create_user_command("Zenmode", function(c)
+    z.zenmode(c)
+  end, { nargs = "?" })
+end
+
+-------------------------------------------------------------------------------
 -- Grep =======================================================================
+-------------------------------------------------------------------------------
 
 local grep = function()
   if vim.fn.executable('rg') == 1 then
     vim.o.grepprg = 'rg --vimgrep --no-heading --smart-case --hidden'
     vim.o.grepformat = '%f:%l:%c:%m'
   end
+
   -- Use ':Grep' or ':LGrep' to grep into quickfix|loclist
   -- without output or jumping to first match
   -- Use ':Grep <pattern> %' to search only current file
@@ -589,7 +829,14 @@ local grep = function()
   })
 end
 
--- Utils ============================================================================
+-------------------------------------------------------------------------------
+-- Helper =====================================================================
+-------------------------------------------------------------------------------
+
+local function is_enabled(flag)
+  return flag == nil or flag == true
+end
+
 H.safe_for_each = function(list, fn)
   if type(list) == "table" and #list > 0 then
     for _, v in ipairs(list) do fn(v) end
@@ -610,6 +857,7 @@ H.modify_line_end_delimiter = function(character)
   end
 end
 
+-- Get visual selection text.
 -- taken from: https://github.com/ibhagwan/nvim-lua/blob/f772c7b41ac4da6208d8ae233e1c471397833d64/lua/utils.lua#L96
 H.get_visual_selection = function(nl_literal)
   local _, csrow, cscol, cerow, cecol
@@ -659,6 +907,7 @@ H.double_escape = function(str)
   return vim.fn.escape(vim.fn.escape(str, escape_characters), escape_characters)
 end
 
+-- Helper substitute visual mode
 H.visual_charwise_selection = function()
   local visual_selection = H.get_visual_selection()
 
@@ -667,18 +916,25 @@ H.visual_charwise_selection = function()
     return
   end
 
-  local backspace_keypresses = string.rep("<backspace>", 5)
-  local left_keypresses = string.rep("<Left>", 2)
-  local bs = vim.api.nvim_replace_termcodes(backspace_keypresses, true, false, true)
-  local lf = vim.api.nvim_replace_termcodes(left_keypresses, true, false, true)
-  local pt = H.double_escape(visual_selection)
+  local backspace_keypresses = string.rep("\\<backspace>", 5)
+  local left_keypresses = string.rep("\\<Left>", 2)
 
-  vim.api.nvim_feedkeys(':' .. bs .. '%s/' .. pt .. '/' .. pt .. '/g' .. lf, 'n',
-    false)
+  vim.cmd(
+    ':call feedkeys(":'
+    .. backspace_keypresses
+    .. "%s/"
+    .. H.double_escape(visual_selection)
+    .. "/"
+    .. H.double_escape(visual_selection)
+    .. "/"
+    .. "g"
+    .. left_keypresses
+    .. '")'
+  )
 end
 
--- Keymap Wrapper ============================================================================
-
+-- ( Keymaps Helper )
+-------------------------------------------------------------------------------
 local function normalize_mode(mode)
   -- Daftar mode multi-karakter yang sah
   local valid_composite_modes = {
@@ -789,28 +1045,35 @@ H.map = setmetatable({}, {
 
 _G.map = H.map
 
--- Config ============================================================================
+-------------------------------------------------------------------------------
+-- Feature Execution =================================================================
+-------------------------------------------------------------------------------
 
-local features = {
-  { C.options,                  options },
-  { C.grep,                     grep },
-
-  -- autocommands
-  { C.autocommands.basic,       autocommands },
-  { C.autocommands.terminal,    terminal },
-  { C.autocommands.autosave,    autosave },
-  { C.autocommands.bigfile,     bigfile },
-
-  -- keymaps
-  { C.keymaps.basic,            basic_keymaps },
-  { C.keymaps.multiple_cursors, multiple_cursors },
-  { C.keymaps.substitute,       substitute },
-  { C.keymaps.toggle_options,   toggle_options },
-  { C.keymaps.window,           window },
-  { C.keymaps.readline,         readline },
+local F = {
+  options                   = options,
+  grep                      = grep,
+  toggle_options            = toggle_options,
+  zenmode                   = zenmode,
+  quickfix                  = quickfix,
+  netrw                     = netrw,
+  ["autocommands.basic"]    = autocommands,
+  ["autocommands.terminal"] = terminal,
+  ["autocommands.autosave"] = autosave,
+  ["autocommands.bigfile"]  = bigfile,
+  ["keymaps.basic"]         = basic_keymaps,
+  ["keymaps.autoclose"]     = autoclose,
+  ["keymaps.multi_cursors"] = multi_cursors,
+  ["keymaps.substitute"]    = substitute,
+  ["keymaps.window"]        = window,
+  ["keymaps.readline"]      = readline,
 }
 
-for _, pair in ipairs(features) do
-  local flag, fn = unpack(pair)
-  if flag then fn() end
+for name, fn in pairs(F) do
+  -- Akses nested table dengan split key (mis. "autocommands.basic")
+  local parts = vim.split(name, ".", { plain = true })
+  local config = H.Config.features
+  for _, key in ipairs(parts) do
+    config = config and config[key]
+  end
+  if is_enabled(config) then fn() end
 end
