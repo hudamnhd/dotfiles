@@ -1,5 +1,7 @@
+vim.api.nvim_create_augroup('Formatter', { clear = true })
+
 vim.api.nvim_create_autocmd({ "FileType", "LspAttach" }, {
-	group = "user_cmds",
+	group = "Formatter",
 	callback = function(e)
 		-- execlude vim-fugitive
 		if vim.bo.filetype == "fugitive" or e.file:match("^fugitive:") then

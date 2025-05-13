@@ -120,7 +120,7 @@ api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
   end,
 })
 
-return {
+_G.MRU = {
   get = function()
     sync()
     -- clean up deleted files here

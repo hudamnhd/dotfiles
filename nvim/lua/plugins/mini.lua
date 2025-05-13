@@ -14,32 +14,9 @@ function M.config()
   require("mini.comment").setup()
   require("mini.extra").setup()
   require("mini.bracketed").setup()
-  require("mini.basics").setup()
   require("mini.ai").setup()
-  require("mini.tabline").setup()
-  require("mini.tabline").setup()
+  require("mini.statusline").setup()
   require("mini.bufremove").setup()
-  require("mini.git").setup()
-
-  bind('n', '<space>q', '<Cmd>lua MiniBufremove.delete()<CR>', { desc = 'Delete' })
-  bind('n', '<space>x', '<Cmd>lua MiniBufremove.wipeout()<CR>', { desc = 'Wipeout' })
-
-  local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
-  bind('n', '<space>gw', '<Cmd>Git add %<CR>',                           { desc = 'Stage current file' })
-  bind('n', '<space>gp', '<Cmd>Git push<CR>',                            { desc = 'Push' })
-  bind('n', '<space>gf', '<Cmd>Git pull<CR>',                            { desc = 'Pull' })
-  bind('n', '<space>ga', '<Cmd>Git diff --cached<CR>',                   { desc = 'Added diff' })
-  bind('n', '<space>gA', '<Cmd>Git diff --cached -- %<CR>',              { desc = 'Added diff buffer' })
-  bind('n', '<space>gc', '<Cmd>Git commit<CR>',                          { desc = 'Commit' })
-  bind('n', '<space>gC', '<Cmd>Git commit --amend<CR>',                  { desc = 'Commit amend' })
-  bind('n', '<space>gd', '<Cmd>Git diff<CR>',                            { desc = 'Diff' })
-  bind('n', '<space>gD', '<Cmd>Git diff -- %<CR>',                       { desc = 'Diff buffer' })
-  bind('n', '<space>gg', '<Cmd>lua _G.open_gitui()<CR>',                 { desc = 'Git tab' })
-  bind('n', '<space>gl', '<Cmd>' .. git_log_cmd .. '<CR>',               { desc = 'Log' })
-  bind('n', '<space>gL', '<Cmd>' .. git_log_cmd .. ' --follow -- %<CR>', { desc = 'Log buffer' })
-  bind('n', '<space>go', '<Cmd>lua MiniDiff.toggle_overlay()<CR>',       { desc = 'Toggle overlay' })
-  bind('n', '<space>gs', '<Cmd>lua MiniGit.show_at_cursor()<CR>',        { desc = 'Show at cursor' })
-  bind('x', '<space>gs', '<Cmd>lua MiniGit.show_at_cursor()<CR>',        { desc = 'Show at selection' })
 
   require("mini.align").setup(
     {
@@ -92,6 +69,7 @@ function M.config()
   -- See :help MiniClue.config
   miniclue.setup({
     clues = {
+      Config.leader_group_clues,
       miniclue.gen_clues.builtin_completion(),
       miniclue.gen_clues.marks(),
       miniclue.gen_clues.g(),
@@ -179,34 +157,6 @@ function M.config()
   vim.keymap.set("n", "yss", "ys_", { remap = true })
 
 
-  local mini_statusline = require('mini.statusline')
-
-  local function statusline()
-    local mode, mode_hl = mini_statusline.section_mode({ trunc_width = 120 })
-    local diagnostics = mini_statusline.section_diagnostics({ trunc_width = 75 })
-    local lsp = mini_statusline.section_lsp({ icon = 'LSP', trunc_width = 75 })
-    local filename = mini_statusline.section_filename({ trunc_width = 140 })
-    local percent = '%2p%%'
-    local location = '%3l:%-2c'
-
-    return mini_statusline.combine_groups({
-      { hl = mode_hl,                 strings = { mode } },
-      { hl = 'MiniStatuslineDevinfo', strings = { diagnostics, lsp } },
-      '%<', -- Mark general truncate point
-      { hl = 'MiniStatuslineFilename', strings = { filename } },
-      '%=', -- End left alignment
-      { hl = 'MiniStatuslineFilename', strings = { '%{&filetype}' } },
-      { hl = 'MiniStatuslineFileinfo', strings = { percent } },
-      { hl = mode_hl,                  strings = { location } },
-    })
-  end
-
-  -- See :help MiniStatusline.config
-  mini_statusline.setup({
-    content = { active = statusline },
-
-    set_vim_settings = false,
-  })
 end
 
 return M

@@ -26,7 +26,7 @@ end
 local win = {
   full = "--width=0.95 --height=0.95",
   split = "--wintype=split --position=vsplit",
-  top = "--height=0.5 --wintype=split --position=botright",
+  top = "--height=0.3 --wintype=split --position=botright",
 }
 
 return {

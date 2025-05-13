@@ -220,7 +220,7 @@ return {
         sources = {
           {
             name = "buffer",
-            keyword_length = 4,
+            keyword_length = 2,
             options = {
               get_bufnrs = function()
                 local bufs = {}

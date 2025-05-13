@@ -47,5 +47,3 @@ end
 vim.api.nvim_create_user_command("Zenmode", function(c)
   M.zenmode(c)
 end, { nargs = "?" })
-
-vim.keymap.set("n", "<F4>", ":Zenmode<CR>")
