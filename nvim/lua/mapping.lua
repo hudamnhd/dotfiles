@@ -48,8 +48,6 @@ map.n({
   ['<a-n>'] = [[!Scratch]],
   ['<space>x'] = [[!lua MiniBufremove.delete()]],
   ['<space>X'] = [[!lua MiniBufremove.wipeout()]],
-  ['<space>q'] = [[!lua Config.toggle_qf('q')]],
-  ['<space>Q'] = [[!lua Config.toggle_qf('l')]],
   ['<space>%'] = [[!lua Config.set_cwd()]],
   ['<space>$'] = [[!lua MiniSessions.select()]],
   ['<space>-'] = [[!lua Config.insert_section()]],
