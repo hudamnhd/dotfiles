@@ -7,7 +7,6 @@ return {
 		local fzf = require("fzf-lua")
 		local actions = require("fzf-lua.actions")
 		local core = require("fzf-lua.core")
-		local path = require("fzf-lua.path")
 		local config = require("fzf-lua.config")
 
 		local _mt_cmd_wrapper = core.mt_cmd_wrapper
@@ -107,11 +106,20 @@ return {
 
 		fzf.register_ui_select()
 
+		vim.api.nvim_create_user_command('F', function(info) fzf.files({ cwd = info.fargs[1] }) end, {
+			nargs = '?',
+			complete = 'dir',
+			desc = 'Fuzzy find files.',
+		})
+
+
+		-------------------------------------------------------------------------------
+		-- FzfLua Luasnip =============================================================
+		-------------------------------------------------------------------------------
 		local luasnip = require("luasnip")
-		local fzf_lua = require("fzf-lua")
 
 		-- taken from : https://gist.github.com/fira42073/c5bc8d4d1f60dc73722acbbf8ab55cb4
-		function fzf.snippets()
+		function fzf.luansnip()
 			-- Get available snippets
 			local snippets = luasnip.available()
 
@@ -129,7 +137,7 @@ return {
 			end
 
 			-- Use fzf-lua to search through snippets
-			fzf_lua.fzf_exec(entries, {
+			fzf.fzf_exec(entries, {
 				prompt = "Select Snippet> ",
 				actions = {
 					["default"] = function(selected)
@@ -157,12 +165,9 @@ return {
 			})
 		end
 
-		vim.api.nvim_create_user_command('F', function(info) fzf.files({ cwd = info.fargs[1] }) end, {
-			nargs = '?',
-			complete = 'dir',
-			desc = 'Fuzzy find files.',
-		})
-
+		-------------------------------------------------------------------------------
+		-- FzfLua Lsp Cmd =============================================================
+		-------------------------------------------------------------------------------
 		local function transform_label(str)
 			-- Match group helper
 			local function match_and_format(pattern, label)
@@ -261,13 +266,14 @@ return {
 			end
 		end
 
-
-		-- stylua: ignore end
 		vim.api.nvim_create_autocmd('LspAttach', {
 			group = vim.api.nvim_create_augroup('FzfLuaLspAttachGroup', { clear = true }),
 			callback = lsp_attach,
 		})
 
+		-------------------------------------------------------------------------------
+		-- FzfLua MRU =============================================================
+		-------------------------------------------------------------------------------
 		local api, uv = vim.api, vim.loop
 
 		function fzf.mru()
@@ -329,7 +335,11 @@ return {
 			show_fzf(files_cwd)
 		end
 
+		-------------------------------------------------------------------------------
+		-- FzfLua Bookmark =============================================================
+		-------------------------------------------------------------------------------
 		local cdg_paths = os.getenv("HOME") .. "/.cdg_paths"
+
 		function fzf.bookmark_dir()
 			local prompt = 'DIR'
 			prompt = prompt .. ' CWD'
@@ -349,6 +359,7 @@ return {
 
 		local bookmark_cmds = {
 			"FzfLua.files({ cwd = '~/dot' })",
+			"FzfLua.files({ cwd = '~/projects' })",
 			"FzfLua.files({ cwd = '~/.config/nvim' })",
 			"vim.cmd.vsplit(cdg_paths)",
 			"FzfLua.bookmark_dir()",
@@ -363,6 +374,80 @@ return {
 					vim.cmd(string.format("lua %s", choice))
 				end
 			end)
+		end
+
+		-------------------------------------------------------------------------------
+		-- FzfLua Snippet =============================================================
+		-------------------------------------------------------------------------------
+		local H = {}
+		H._snippet_cache = {}
+
+		H.load_snippets_file = function(path)
+			if vim.fn.filereadable(path) ~= 1 then return nil end
+			local content = vim.fn.readfile(path)
+			local data = table.concat(content, "\n")
+			local ok, decoded = pcall(vim.json.decode, data)
+			if ok then return decoded end
+			return nil
+		end
+
+		H.load_snippets = function(ft)
+			local dir = vim.fs.joinpath(vim.fn.stdpath("config"), "snippets")
+
+			local global = H.load_snippets_file(vim.fs.joinpath(dir, "global.json")) or {}
+			local local_ = H.load_snippets_file(vim.fs.joinpath(dir, ("%s.json"):format(ft))) or {}
+
+			return vim.tbl_extend("force", global, local_)
+		end
+
+		H.fzf_use_snippets = function(ft, snippets)
+			local entries, snippet_lookup = {}, {}
+
+			for name, info in pairs(snippets) do
+				local prefix = type(info.prefix) == "table" and table.concat(info.prefix, ", ") or info.prefix
+				local label = string.format("%s  [%s]", name, prefix)
+				table.insert(entries, label)
+
+				local single_prefix = type(info.prefix) == "table" and info.prefix[1] or info.prefix
+				snippet_lookup[label] = vim.tbl_extend("force", info, { name = name, prefix = single_prefix })
+			end
+
+			fzf.fzf_exec(entries, {
+				prompt = "Select Snippet> ",
+				actions = {
+					["default"] = function(selected)
+						local choice = selected[1]
+						local snippet = snippet_lookup[choice]
+						if snippet then
+							local body = type(snippet.body) == "table"
+									and table.concat(snippet.body, "\n")
+									or snippet.body
+							vim.snippet.expand(body)
+							vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>i", true, true, true), "n", true)
+						else
+							vim.notify("Snippet not found", vim.log.levels.WARN)
+						end
+					end
+				}
+			})
+		end
+
+		function fzf.snippets()
+			local ft = vim.bo.filetype
+
+			if H._snippet_cache[ft] then
+				return H.fzf_use_snippets(ft, H._snippet_cache[ft])
+			end
+
+			local snippets = H.load_snippets(ft)
+
+			if not snippets or vim.tbl_isempty(snippets) then
+				vim.notify("No snippets found for filetype: " .. ft, vim.log.levels.INFO)
+				return
+			end
+
+			H._snippet_cache[ft] = snippets
+			H.fzf_use_snippets(ft, snippets)
 		end
 	end,
 }
