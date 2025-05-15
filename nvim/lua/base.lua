@@ -1,3 +1,4 @@
+--stylua: ignore start
 -------------------------------------------------------------------------------
 -- Main Config ================================================================
 -------------------------------------------------------------------------------
@@ -14,14 +15,14 @@ local H = {
       quickfix       = true,
       netrw          = false,
 
-      autocommands   = {
+      autocommands = {
         basic    = true,
         bigfile  = true,
         autosave = true,
         terminal = true,
       },
 
-      keymaps        = {
+      keymaps = {
         basic         = true,
         multi_cursors = true,
         autoclose     = false,
@@ -33,10 +34,9 @@ local H = {
 
     -- Non-feature config
     keymaps = {
-      disabled  = { 'q', 's', '<c-z>', '<space>' },        -- disable these entirely
+      disabled  = { 'q', 's', '<c-z>', '<space>' }, -- disable these entirely
       blackhole = { 'c', 'x', '<s-s>', '<s-d>', '<s-c>' }, -- map to '_ delete
-      delimiter = { prefix = 'd', keys = { ',', ';', '.' },
-      },
+      delimiter = { prefix = 'd', keys = { ',', ';', '.' } },
     },
   },
 }
@@ -47,20 +47,20 @@ local C = H.Config
 -------------------------------------------------------------------------------
 
 local options = function()
-  local o, opt    = vim.o, vim.opt
+  local o, opt = vim.o, vim.opt
 
   -- Leader key
-  vim.g.mapleader = C.keymaps.leader_key
+  vim.g.mapleader  = C.keymaps.leader_key
 
   -- General
-  o.undofile      = true -- Enable persistent undo (see also `:h undodir`)
-  o.undodir       = os.getenv('HOME') .. '/.vim/undodir'
+  o.undofile       = true    -- Enable persistent undo (see also `:h undodir`)
+  o.undodir        = os.getenv('HOME') .. '/.vim/undodir'
 
-  o.swapfile      = false
-  o.backup        = false
-  o.writebackup   = false
+  o.swapfile       = false
+  o.backup         = false
+  o.writebackup    = false
 
-  o.mouse         = 'a' -- Enable mouse for all available modes
+  o.mouse          = 'a'     -- Enable mouse for all available modes
 
   -- Enable all filetype plugins
   vim.cmd('filetype plugin indent on')
@@ -83,34 +83,33 @@ local options = function()
   o.fillchars      = 'eob: ' -- Don't show `~` outside of buffer
 
   -- Editing
-  o.ignorecase     = true -- Ignore case when searching (use `\C` to force not doing that)
-  o.incsearch      = true -- Show search results while typing
-  o.infercase      = true -- Infer letter cases for a richer built-in keyword completion
-  o.smartcase      = true -- Don't ignore case when searching if pattern has upper case
-  o.smartindent    = true -- Make indenting smart
+  o.ignorecase     = true    -- Ignore case when searching (use `\C` to force not doing that)
+  o.incsearch      = true    -- Show search results while typing
+  o.infercase      = true    -- Infer letter cases for a richer built-in keyword completion
+  o.smartcase      = true    -- Don't ignore case when searching if pattern has upper case
+  o.smartindent    = true    -- Make indenting smart
 
+  o.tabstop        = 2       -- Tab indentation levels every two columns
+  o.softtabstop    = 2       -- Tab indentation when mixing tabs & spaces
+  o.shiftwidth     = 2       -- Indent/outdent by two columns
+  o.shiftround     = true    -- Always indent/outdent to nearest tabstop
+  o.expandtab      = true    -- Convert all tabs that are typed into spaces
 
-  o.tabstop       = 2 -- Tab indentation levels every two columns
-  o.softtabstop   = 2 -- Tab indentation when mixing tabs & spaces
-  o.shiftwidth    = 2 -- Indent/outdent by two columns
-  o.shiftround    = true -- Always indent/outdent to nearest tabstop
-  o.expandtab     = true -- Convert all tabs that are typed into spaces
-
-  o.completeopt   = 'menuone,noinsert,noselect' -- Customize completions
-  o.virtualedit   = 'block' -- Allow going past the end of line in visual block mode
-  o.formatoptions = 'qjl1' -- Don't autoformat comments
-  o.inccommand    = 'split' -- Shows the effects of |:substitute|
+  o.virtualedit    = 'block' -- Allow going past the end of line in visual block mode
+  o.formatoptions  = 'qjl1'  -- Don't autoformat comments
+  o.inccommand     = 'split' -- Shows the effects of |:substitute|
 
   opt.shortmess:append('Wc') -- Reduce command line messages
 
-  o.termguicolors = true -- Enable gui colors
-  o.confirm       = true
-  o.pumblend      = 10 -- Make builtin completion menus slightly transparent
-  o.pumheight     = 10 -- Make popup menu smaller
-  o.winblend      = 10 -- Make floating windows slightly transparent
+  o.completeopt    = 'menuone,noinsert,noselect' -- Customize completions
+  o.termguicolors  = true    -- Enable gui colors
+  o.confirm        = true    -- Enaple prompt confirmation
+  o.pumblend       = 10      -- Make builtin completion menus slightly transparent
+  o.pumheight      = 10      -- Make popup menu smaller
+  o.winblend       = 10      -- Make floating windows slightly transparent
 
-  o.listchars     = 'tab:> ,extends:…,precedes:…,nbsp:␣' -- Define which helper symbols to show
-  o.list          = true -- Show some helper symbols
+  o.list           = true    -- Show some helper symbols
+  o.listchars      = 'tab:> ,extends:…,precedes:…,nbsp:␣' -- Define which helper symbols to show
 
   -- Enable syntax highlighting if it wasn't already (as it is time consuming)
   if vim.fn.exists('syntax_on') ~= 1 then vim.cmd([[syntax enable]]) end
@@ -129,49 +128,45 @@ local multi_cursors = function()
   -- see: http://www.kevinli.co/p<space>pnosts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript
   local mc_select = [[y/\V\C<C-r>=escape(@", '/')<CR><CR>]]
   local function mc_macro(selection)
-    selection = selection or ""
+    selection = selection or ''
 
     return function()
-      if vim.fn.reg_recording() == "z" then
-        return "q"
-      end
+      if vim.fn.reg_recording() == 'z' then return 'q' end
 
-      if vim.fn.getreg("z") ~= "" then
-        return "n@z"
-      end
+      if vim.fn.getreg('z') ~= '' then return 'n@z' end
 
-      return selection .. "*Nqz"
+      return selection .. '*Nqz'
     end
   end
 
-  H.map.n("<F7>", [[*Nqz]], { desc = "mc start macro (foward)" })
-  H.map.n("<F8>", mc_macro(), { desc = "mc end or replay macro", expr = true })
-  H.map.x("<F7>", mc_select .. "``qz", { desc = "mc start macro (foward)" })
-  H.map.x("<F8>", mc_macro(mc_select), { desc = "mc end or replay macro", expr = true })
+  H.map.n('<F7>', [[*Nqz]],            { desc = 'mc start macro (foward)' })
+  H.map.n('<F8>', mc_macro(),          { desc = 'mc end or replay macro', expr = true })
+  H.map.x('<F7>', mc_select .. '``qz', { desc = 'mc start macro (foward)' })
+  H.map.x('<F8>', mc_macro(mc_select), { desc = 'mc end or replay macro', expr = true })
 end
 
 -- ( Keymaps: Subtitute )
 -------------------------------------------------------------------------------
 local substitute = function()
-  local function left(count)
-    return string.rep("<left>", count)
-  end
+  local function left(count) return string.rep('<left>', count) end
 
   local pattern = {
     selection = H.visual_charwise_selection,
-    cword = ':%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI' .. left(3),
-    cWord = ':%s/\\V<C-r><C-a>/<C-r><C-a>/gI' .. left(3),
-    buffer = ':%s///gI' .. left(4),
-    visual = ':s///gI' .. left(4),
+    cword     = ':%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI' .. left(3),
+    vcword    = ":'<,'>s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI" .. left(3),
+    cWord     = ':%s/\\V<C-r><C-a>/<C-r><C-a>/gI' .. left(3),
+    buffer    = ':%s/\\v//gI' .. left(4),
+    visual    = ':s/\\v//gI' .. left(4),
   }
   -- Search replace
-  H.map.x('<C-G><C-F>', pattern.selection, { desc = 'search and replace selection' })
 
-  H.map.n('<C-G><C-F>', pattern.cword, { silent = false, desc = 'search and replace word' })
-  H.map.n('<C-G><C-A>', pattern.cWord, { silent = false, desc = 'search and replace Word' })
+  H.map.n('<C-G><C-F>', pattern.cword,     { silent = false, desc = ':%s/<cword>/<cword>/gI' })
+  H.map.n('<C-G><C-A>', pattern.cWord,     { silent = false, desc = ':%s/<cWORD>/<cWORD>/gI' })
+  H.map.n('<C-G><C-S>', pattern.buffer,    { silent = false, desc = ':%s/\\v../../gI' })
 
-  H.map.n('<C-G><C-S>', pattern.buffer, { silent = false, desc = 'search and replace buffer' })
-  H.map.x('<C-G><C-S>', pattern.visual, { silent = false, desc = 'search and replace visual' })
+  H.map.n('<C-G><C-B>', pattern.vcword,    { silent = false, desc = ":'<, '>s/<cword>/<cword>/gI" })
+  H.map.x('<C-G><C-S>', pattern.visual,    { silent = false, desc = ':s/\\v ../../gI' })
+  H.map.x('<C-G><C-F>', pattern.selection, { silent = false, desc = ':%s/<selection>/<selection>/gI' })
 
   -- Global Search Replace Quickfix
   -- * `:cdo` = "run every line in Quickfix"  | :cdo %s/foo/bar/g  | update
@@ -185,28 +180,23 @@ end
 -------------------------------------------------------------------------------
 local basic_keymaps = function()
   -- Disable key
-  H.safe_for_each(C.keymaps.disabled, function(key)
-    H.map.nvo(key, '<Nop>')
-  end)
+  H.safe_for_each(C.keymaps.disabled, function(key) H.map.nvo(key, '<Nop>') end)
 
   -- Blackhole key (delete without save to register)
-  H.safe_for_each(C.keymaps.blackhole, function(key)
-    H.map.nvo(key, '"_' .. key)
-  end)
+  H.safe_for_each(C.keymaps.blackhole, function(key) H.map.nvo(key, '"_' .. key) end)
 
   -- delimiters
-  H.safe_for_each(C.keymaps.delimiter.keys, function(key)
-    H.map.n(C.keymaps.delimiter.prefix .. key, H.modify_line_end_delimiter(key))
-  end)
+  H.safe_for_each(
+    C.keymaps.delimiter.keys,
+    function(key) H.map.n(C.keymaps.delimiter.prefix .. key, H.modify_line_end_delimiter(key)) end
+  )
 
-  local smart_dd = function()
-    return (vim.api.nvim_get_current_line():match("^%s*$") and '"_dd' or "dd")
-  end
+  local smart_dd = function() return (vim.api.nvim_get_current_line():match('^%s*$') and '"_dd' or 'dd') end
 
   -- Very helpful
   H.map.n({
-    ["dd"] = smart_dd,
-    ["J"]  = [['mz' . v:count1 . 'J`z']],
+    ['dd'] = smart_dd,
+    ['J'] = [['mz' . v:count1 . 'J`z']],
   }, { expr = true })
   H.map.nvo({
     ['0'] = [[~:]],
@@ -218,8 +208,8 @@ local basic_keymaps = function()
     ['>'] = [[>gv]],
     ['<'] = [[<gv]],
     -- Move selected lines up/down in visual mode
-    ['K'] = [[:move '<-2<CR>gv=gv]],
-    ['J'] = [[:move '>+1<CR>gv=gv]],
+    -- ['K'] = [[:move '<-2<CR>gv=gv]],
+    -- ['J'] = [[:move '>+1<CR>gv=gv]],
   })
   H.map.x({
     ['I'] = function() return vim.fn.mode():match('[vV]') and '<C-v>^o^I' or 'I' end,
@@ -278,8 +268,11 @@ local basic_keymaps = function()
   H.map.x('p', 'P', { desc = 'Paste in Visual with `P` to not copy selected text' })
 
   -- Reselect latest changed, put, or yanked text
-  H.map.n('gV', '"`[" . strpart(getregtype(), 0, 1) . "`]"',
-    { expr = true, replace_keycodes = false, desc = 'Visually select changed text' })
+  H.map.n(
+    'gV',
+    '"`[" . strpart(getregtype(), 0, 1) . "`]"',
+    { expr = true, replace_keycodes = false, desc = 'Visually select changed text' }
+  )
 
   -- Search inside visual selection
   H.map.x('g/', '<esc>/\\%V', { silent = false, desc = 'Search inside visual selection' })
@@ -294,7 +287,7 @@ local autoclose = function()
     ["'"] = "''",
     ['{'] = '{}',
     ['['] = '[]',
-    ['/*'] = '/**/'
+    ['/*'] = '/**/',
   })
 end
 
@@ -315,7 +308,7 @@ local window = function()
     ['<C-Up>'] = '<C-w>+',
     ['<C-Down>'] = '<C-w>-',
     ['<C-Left>'] = '<C-w><',
-    ['<C-Right>'] = '<C-w>>'
+    ['<C-Right>'] = '<C-w>>',
   })
 end
 
@@ -464,31 +457,29 @@ end
 -------------------------------------------------------------------------------
 local toggle_options = function()
   local toggle_options = {
-    "cursorline",
-    "cursorcolumn",
-    "hlsearch",
-    "ignorecase",
-    "list",
-    "number",
-    "relativenumber",
-    "spell",
-    "wrap",
+    'cursorline',
+    'cursorcolumn',
+    'hlsearch',
+    'ignorecase',
+    'list',
+    'number',
+    'relativenumber',
+    'spell',
+    'wrap',
   }
 
-  local function toggle_option(option)
-    vim.cmd(string.format("setlocal %s! %s?", option, option))
-  end
+  local function toggle_option(option) vim.cmd(string.format('setlocal %s! %s?', option, option)) end
 
   local function show_toggle_menu()
     vim.ui.select(toggle_options, {
-      prompt = "Toggle option:",
+      prompt = 'Toggle option:',
       format_item = function(item) return "Toggle '" .. item .. "'" end,
     }, function(choice)
       if choice then toggle_option(choice) end
     end)
   end
 
-  H.map.n('<space>ut', show_toggle_menu, { desc = "Toggle UI option" })
+  H.map.n('<space>ut', show_toggle_menu, { desc = 'Toggle UI option' })
 end
 
 -------------------------------------------------------------------------------
@@ -496,7 +487,6 @@ end
 -------------------------------------------------------------------------------
 local autocmd = vim.api.nvim_create_autocmd
 local groupid = vim.api.nvim_create_augroup
-
 ---@param group string
 ---@vararg { [1]: string|string[], [2]: vim.api.keyset.create_autocmd }
 ---@return nil
@@ -508,10 +498,14 @@ local function augroup(group, ...)
   end
 end
 
+-- ( Set Global Variable Augroup )
+-------------------------------------------------------------------------------
+_G.augroup = augroup
+
 -- ( Autocommands Basic )
 -------------------------------------------------------------------------------
 local autocommands = function()
-  augroup('HelpOpenVert', {
+  augroup('UserBufferBehavior', {
     'Filetype',
     {
       pattern = { 'help', 'man' },
@@ -523,9 +517,7 @@ local autocommands = function()
         end
       end,
     },
-  })
-
-  augroup('YankHighlight', {
+  }, {
     'TextYankPost',
     {
       desc = 'Highlight the selection on yank.',
@@ -536,24 +528,19 @@ local autocommands = function()
         })
       end,
     },
-  })
-
-  augroup('LastPosJmp', {
+  }, {
     'BufReadPost',
     {
-      pattern = "*",
-      command =
-      [[if line("'\"") > 0 && line("'\"") <= line("$") && expand('%:t') != 'COMMIT_EDITMSG' | exe "normal! g`\"" | endif]],
-      desc = "Return to last edit position when opening files",
+      pattern = '*',
+      command = [[if line("'\"") > 0 && line("'\"") <= line("$") && expand('%:t') != 'COMMIT_EDITMSG' | exe "normal! g`\"" | endif]],
+      desc = 'Return to last edit position when opening files.',
     },
-  })
-
-  augroup('RemoveWitespace', {
+  }, {
     'BufWritePre',
     {
-      pattern = "*",
+      pattern = '*',
       command = [[%s/\s\+$//e]],
-      desc = "Remove whitespace",
+      desc = 'Delete Trailing Whitespace.',
     },
   })
 end
@@ -567,8 +554,8 @@ local terminal = function()
       pattern = 'term://*',
       callback = vim.schedule_wrap(function(data)
         -- Try to start terminal mode only if target terminal is current
-        if not (vim.api.nvim_get_current_buf() == data.buf and vim.bo.buftype == 'terminal') then return end
-        vim.cmd('startinsert')
+        -- if not (vim.api.nvim_get_current_buf() == data.buf and vim.bo.buftype == 'terminal') then return end
+        -- vim.cmd('startinsert')
       end),
       desc = 'Start terminal mode ',
     },
@@ -589,7 +576,7 @@ local bigfile = function()
         local buf = info.buf
         vim.b[buf].bigfile = true
 
-        vim.notify("Big file detected: disabling Treesitter, LSP, and heavy options", vim.log.levels.WARN)
+        vim.notify('Big file detected: disabling Treesitter, LSP, and heavy options', vim.log.levels.WARN)
 
         -- Disable expensive options
         vim.api.nvim_buf_call(buf, function()
@@ -597,7 +584,7 @@ local bigfile = function()
           vim.opt_local.swapfile = false
           vim.opt_local.undofile = false
           vim.opt_local.breakindent = false
-          vim.opt_local.foldmethod = "manual"
+          vim.opt_local.foldmethod = 'manual'
         end)
 
         -- Disable Treesitter highlight if active
@@ -613,10 +600,7 @@ local bigfile = function()
         function ts.get_parser(b, ...)
           b = b == 0 and vim.api.nvim_get_current_buf() or b
           if b == buf then
-            return ts._create_parser(
-              vim.api.nvim_create_buf(false, true),
-              ts.language.get_lang(vim.bo.ft) or vim.bo.ft
-            )
+            return ts._create_parser(vim.api.nvim_create_buf(false, true), ts.language.get_lang(vim.bo.ft) or vim.bo.ft)
           end
           return ts_parser(b, ...)
         end
@@ -642,16 +626,14 @@ end
 -- ( Autocommand Autosave )
 -------------------------------------------------------------------------------
 local autosave = function()
-  augroup('Autosave', {
+  augroup('UserBufferBehaviorAutoSave', {
     { 'BufLeave', 'WinLeave', 'FocusLost' },
     {
       nested = true,
       desc = 'Autosave on focus change.',
       callback = function(info)
         -- Don't auto-save non-file buffers
-        if (vim.uv.fs_stat(info.file) or {}).type ~= 'file' then
-          return
-        end
+        if (vim.uv.fs_stat(info.file) or {}).type ~= 'file' then return end
         vim.cmd.update({
           mods = { emsg_silent = true },
         })
@@ -691,7 +673,7 @@ local netrw = function()
     {
       pattern = 'netrw',
       desc = 'Keybindings for netrw',
-      callback = netrw_mapping
+      callback = netrw_mapping,
     },
   })
 
@@ -702,45 +684,47 @@ end
 -------------------------------------------------------------------------------
 
 -- Remove all buffers except the current one.
-vim.api.nvim_create_user_command("BuffClean", function()
+vim.api.nvim_create_user_command('BuffClean', function()
   local cur = vim.api.nvim_get_current_buf()
 
   local deleted, modified = 0, 0
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_get_option_value("modified", { buf = buf }) then
+    if vim.api.nvim_get_option_value('modified', { buf = buf }) then
       modified = modified + 1
-    elseif buf ~= cur and vim.api.nvim_get_option_value("modifiable", { buf = buf }) then
+    elseif buf ~= cur and vim.api.nvim_get_option_value('modifiable', { buf = buf }) then
       vim.api.nvim_buf_delete(buf, { force = true })
       deleted = deleted + 1
     end
   end
 
-  vim.notify(("%s deleted, %s modified"):format(deleted, modified), vim.log.levels.WARN, {})
+  vim.notify(('%s deleted, %s modified'):format(deleted, modified), vim.log.levels.WARN, {})
 end, {
-  desc = "Remove all buffers except the current one.",
+  desc = 'Remove all buffers except the current one.',
 })
 
 -- Create scratch buffer.
-vim.api.nvim_create_user_command("Scratch", function()
-  vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true))
-end, {
-  desc = "New scratch buffer",
-})
+vim.api.nvim_create_user_command(
+  'Scratch',
+  function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end,
+  {
+    desc = 'New scratch buffer',
+  }
+)
 
 -- Open terminal in split with root directory.
-vim.api.nvim_create_user_command("T", function()
-  vim.cmd("belowright new")
+vim.api.nvim_create_user_command('T', function()
+  vim.cmd('belowright new')
   vim.fn.jobstart(vim.o.shell, {
     term = true,
   })
 end, {
-  desc = "Open terminal in split with root directory",
+  desc = 'Open terminal in split with root directory',
 })
 
 -- Open terminal in split with buffer's directory.
-vim.api.nvim_create_user_command("BT", function()
-  local term_dir = vim.fn.expand("%:p:h")
-  vim.cmd("belowright new")
+vim.api.nvim_create_user_command('BT', function()
+  local term_dir = vim.fn.expand('%:p:h')
+  vim.cmd('belowright new')
   vim.fn.jobstart(vim.o.shell, {
     cwd = term_dir,
     term = true,
@@ -756,25 +740,25 @@ local zenmode = function()
   local z = {}
 
   local function set_zen_options(enable)
-    vim.o.signcolumn    = enable and "no" or "yes"
+    vim.o.signcolumn = enable and 'no' or 'yes'
     vim.opt_local.spell = not enable
-    vim.o.wrap          = enable
-    vim.o.rnu           = not enable
-    vim.o.nu            = not enable
-    vim.o.cmdheight     = enable and 0 or 1
-    vim.o.laststatus    = enable and 0 or 2
+    vim.o.wrap = enable
+    vim.o.rnu = not enable
+    vim.o.nu = not enable
+    vim.o.cmdheight = enable and 0 or 1
+    vim.o.laststatus = enable and 0 or 2
   end
 
   local function create_window(width, direction)
-    vim.api.nvim_command("vsp")
-    vim.api.nvim_command("wincmd " .. direction)
-    pcall(vim.cmd, "buffer " .. z.buf)
+    vim.api.nvim_command('vsp')
+    vim.api.nvim_command('wincmd ' .. direction)
+    pcall(vim.cmd, 'buffer ' .. z.buf)
     vim.api.nvim_win_set_width(0, width)
 
     vim.wo.winfixwidth = true
-    vim.wo.cursorline  = false
-    vim.wo.winfixbuf   = true
-    vim.o.numberwidth  = 1
+    vim.wo.cursorline = false
+    vim.wo.winfixbuf = true
+    vim.o.numberwidth = 1
   end
 
   function z.zenmode(c)
@@ -783,13 +767,11 @@ local zenmode = function()
       set_zen_options(true)
 
       local width = 54 --default width
-      if #c.fargs == 1 then
-        width = tonumber(c.fargs[1])
-      end
+      if #c.fargs == 1 then width = tonumber(c.fargs[1]) end
 
       local cur_win = vim.fn.win_getid()
-      create_window(width, "H")
-      create_window(width, "L")
+      create_window(width, 'H')
+      create_window(width, 'L')
       vim.api.nvim_set_current_win(cur_win)
     else
       vim.api.nvim_buf_delete(z.buf, { force = true })
@@ -798,9 +780,7 @@ local zenmode = function()
     end
   end
 
-  vim.api.nvim_create_user_command("Zenmode", function(c)
-    z.zenmode(c)
-  end, { nargs = "?" })
+  vim.api.nvim_create_user_command('Zenmode', function(c) z.zenmode(c) end, { nargs = '?' })
 end
 
 -------------------------------------------------------------------------------
@@ -833,13 +813,13 @@ end
 -- Helper =====================================================================
 -------------------------------------------------------------------------------
 
-local function is_enabled(flag)
-  return flag == nil or flag == true
-end
+local function is_enabled(flag) return flag == nil or flag == true end
 
 H.safe_for_each = function(list, fn)
-  if type(list) == "table" and #list > 0 then
-    for _, v in ipairs(list) do fn(v) end
+  if type(list) == 'table' and #list > 0 then
+    for _, v in ipairs(list) do
+      fn(v)
+    end
   end
 end
 
@@ -863,10 +843,10 @@ H.get_visual_selection = function(nl_literal)
   local _, csrow, cscol, cerow, cecol
   local mode = vim.fn.mode()
 
-  if mode == "v" or mode == "V" or mode == "" then
-    _, csrow, cscol, _ = unpack(vim.fn.getpos("."))
-    _, cerow, cecol, _ = unpack(vim.fn.getpos("v"))
-    if mode == "V" then
+  if mode == 'v' or mode == 'V' or mode == '' then
+    _, csrow, cscol, _ = unpack(vim.fn.getpos('.'))
+    _, cerow, cecol, _ = unpack(vim.fn.getpos('v'))
+    if mode == 'V' then
       cscol, cecol = 0, 999
     end
   else
@@ -885,51 +865,45 @@ H.get_visual_selection = function(nl_literal)
   local lines = vim.fn.getline(csrow, cerow)
   local n = #lines
 
-  if n <= 0 then
-    return ""
-  end
+  if n <= 0 then return '' end
 
-  if n > 1 then
-    return nil
-  end
+  if n > 1 then return nil end
 
   lines[n] = string.sub(lines[n], 1, cecol)
   lines[1] = string.sub(lines[1], cscol)
 
-  return table.concat(lines, nl_literal and "\\n" or "\n")
+  return table.concat(lines, nl_literal and '\\n' or '\n')
 end
 
 -- FIXME: how to handle <>'s, etc.
 local escape_characters = '"\\/.*$^~[]'
 
 -- double escaping is required due to interpretation by feedkeys and then search/replace
-H.double_escape = function(str)
-  return vim.fn.escape(vim.fn.escape(str, escape_characters), escape_characters)
-end
+H.double_escape = function(str) return vim.fn.escape(vim.fn.escape(str, escape_characters), escape_characters) end
 
 -- Helper substitute visual mode
 H.visual_charwise_selection = function()
   local visual_selection = H.get_visual_selection()
 
   if visual_selection == nil then
-    print("search-replace does not support visual-blockwise selections")
+    print('search-replace does not support visual-blockwise selections')
     return
   end
 
-  local backspace_keypresses = string.rep("\\<backspace>", 5)
-  local left_keypresses = string.rep("\\<Left>", 2)
+  local backspace_keypresses = string.rep('\\<backspace>', 5)
+  local left_keypresses = string.rep('\\<Left>', 2)
 
   vim.cmd(
     ':call feedkeys(":'
-    .. backspace_keypresses
-    .. "%s/"
-    .. H.double_escape(visual_selection)
-    .. "/"
-    .. H.double_escape(visual_selection)
-    .. "/"
-    .. "g"
-    .. left_keypresses
-    .. '")'
+      .. backspace_keypresses
+      .. '%s/'
+      .. H.double_escape(visual_selection)
+      .. '/'
+      .. H.double_escape(visual_selection)
+      .. '/'
+      .. 'g'
+      .. left_keypresses
+      .. '")'
   )
 end
 
@@ -945,9 +919,7 @@ local function normalize_mode(mode)
   }
 
   if type(mode) == 'string' then
-    if #mode == 1 or valid_composite_modes[mode] then
-      return mode
-    end
+    if #mode == 1 or valid_composite_modes[mode] then return mode end
 
     local modes = {}
     for i = 1, #mode do
@@ -1050,30 +1022,31 @@ _G.map = H.map
 -------------------------------------------------------------------------------
 
 local F = {
-  options                   = options,
-  grep                      = grep,
-  toggle_options            = toggle_options,
-  zenmode                   = zenmode,
-  quickfix                  = quickfix,
-  netrw                     = netrw,
-  ["autocommands.basic"]    = autocommands,
-  ["autocommands.terminal"] = terminal,
-  ["autocommands.autosave"] = autosave,
-  ["autocommands.bigfile"]  = bigfile,
-  ["keymaps.basic"]         = basic_keymaps,
-  ["keymaps.autoclose"]     = autoclose,
-  ["keymaps.multi_cursors"] = multi_cursors,
-  ["keymaps.substitute"]    = substitute,
-  ["keymaps.window"]        = window,
-  ["keymaps.readline"]      = readline,
+  options        = options,
+  grep           = grep,
+  toggle_options = toggle_options,
+  zenmode        = zenmode,
+  quickfix       = quickfix,
+  netrw          = netrw,
+  ['autocommands.basic']    = autocommands,
+  ['autocommands.terminal'] = terminal,
+  ['autocommands.autosave'] = autosave,
+  ['autocommands.bigfile']  = bigfile,
+  ['keymaps.basic']         = basic_keymaps,
+  ['keymaps.autoclose']     = autoclose,
+  ['keymaps.multi_cursors'] = multi_cursors,
+  ['keymaps.substitute']    = substitute,
+  ['keymaps.window']        = window,
+  ['keymaps.readline']      = readline,
 }
 
 for name, fn in pairs(F) do
   -- Akses nested table dengan split key (mis. "autocommands.basic")
-  local parts = vim.split(name, ".", { plain = true })
+  local parts = vim.split(name, '.', { plain = true })
   local config = H.Config.features
   for _, key in ipairs(parts) do
     config = config and config[key]
   end
   if is_enabled(config) then fn() end
 end
+--stylua: ignore end

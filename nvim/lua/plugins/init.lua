@@ -8,5 +8,4 @@ return {
   { "mbbill/undotree",                  event = "BufReadPost" },
   { "haya14busa/vim-edgemotion",        event = "BufReadPost" },
   { "junegunn/gv.vim",                  event = "BufReadPost" },
-  { "tpope/vim-fugitive",               event = "VeryLazy" },
 }

@@ -1,70 +1,63 @@
 local M = {
-  "echasnovski/mini.nvim",
-  version = "*",
+  'echasnovski/mini.nvim',
+  version = '*',
   enabled = true,
-  event = "VimEnter",
+  event = 'VimEnter',
 }
 
 function M.config()
   require('mini.icons').setup()
   require('mini.icons').mock_nvim_web_devicons()
   require('mini.icons').tweak_lsp_kind()
-  require("mini.operators").setup()
-  require("mini.splitjoin").setup()
-  require("mini.comment").setup()
-  require("mini.extra").setup()
-  require("mini.bracketed").setup()
-  require("mini.ai").setup()
-  require("mini.statusline").setup()
-  require("mini.bufremove").setup()
+  require('mini.operators').setup()
+  require('mini.splitjoin').setup()
+  require('mini.comment').setup()
+  require('mini.extra').setup()
+  require('mini.bracketed').setup()
+  require('mini.ai').setup()
+  require('mini.statusline').setup()
+  require('mini.bufremove').setup()
 
-  require("mini.align").setup(
-    {
-      mappings = {
-        start = 'gl',
-        start_with_preview = 'gL',
-      },
-    }
-  )
+  require('mini.align').setup()
 
-  require("mini.move").setup({
+  require('mini.move').setup({
     options = {
       reindent_linewise = false,
     },
   })
 
-  require("mini.pairs").setup({
+  require('mini.pairs').setup({
     modes = { insert = true, command = false, terminal = false },
     mappings = {
-      ["<"] = { action = "open", pair = "<>", neigh_pattern = "[^\\]." },
-      [">"] = { action = "close", pair = "<>", neigh_pattern = "[^\\]." },
+      ['<'] = { action = 'open', pair = '<>', neigh_pattern = '[^\\].' },
+      ['>'] = { action = 'close', pair = '<>', neigh_pattern = '[^\\].' },
     },
   })
 
-  require("mini.diff").setup({
+  require('mini.diff').setup({
     view = {
-      style = "sign",
-      signs = { add = "+", change = "~", delete = "-" },
+      style = 'sign',
+      signs = { add = '+', change = '~', delete = '-' },
     },
   })
 
-  local hipatterns = require("mini.hipatterns")
+  local hipatterns = require('mini.hipatterns')
 
   -- See :help MiniHipatterns.config
   hipatterns.setup({
     highlighters = {
       -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
-      fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-      hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
-      todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
-      note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+      fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+      hack = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+      todo = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+      note = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
 
       -- Highlight hex color strings (`#rrggbb`) using that color
       hex_color = hipatterns.gen_highlighter.hex_color(),
     },
   })
 
-  local miniclue = require("mini.clue")
+  local miniclue = require('mini.clue')
 
   -- See :help MiniClue.config
   miniclue.setup({
@@ -117,27 +110,28 @@ function M.config()
     },
   })
 
-
   local predicate = function(notif)
     -- Only show LSP progress notifications
     return notif.msg:find('Diagnosing') == nil and notif.msg:find('semantic tokens') == nil
   end
-  local custom_sort = function(notif_arr) return require("mini.notify").default_sort(vim.tbl_filter(predicate, notif_arr)) end
+  local custom_sort = function(notif_arr)
+    return require('mini.notify').default_sort(vim.tbl_filter(predicate, notif_arr))
+  end
 
   -- See :help MiniNotify.config
   require('mini.notify').setup({ content = { sort = custom_sort } })
 
-  vim.notify = require("mini.notify").make_notify()
+  vim.notify = require('mini.notify').make_notify()
 
-  require("mini.surround").setup({
+  require('mini.surround').setup({
     mappings = {
-      add = "ys",
-      delete = "ds",
-      find = "",
-      find_left = "",
-      highlight = "",
-      replace = "cs",
-      update_n_lines = "",
+      add = 'ys',
+      delete = 'ds',
+      find = '',
+      find_left = '',
+      highlight = '',
+      replace = 'cs',
+      update_n_lines = '',
     },
   })
 
@@ -148,15 +142,13 @@ function M.config()
 
   -- unmap config generated `ys` mapping, prevents visual mode yank delay
   if vim.keymap then
-    vim.keymap.del("x", "ys")
+    vim.keymap.del('x', 'ys')
   else
-    vim.cmd("xunmap ys")
+    vim.cmd('xunmap ys')
   end
 
   -- Make special mapping for "add surrounding for line"
-  vim.keymap.set("n", "yss", "ys_", { remap = true })
-
-
+  vim.keymap.set('n', 'yss', 'ys_', { remap = true })
 end
 
 return M

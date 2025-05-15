@@ -1,6 +1,6 @@
 _G.Config.leader_group_clues = {
   { mode = 'n', keys = '<Space>g', desc = '+Git' },
-  { mode = 'n', keys = 's',        desc = '+Fzf' },
+  { mode = 'n', keys = 's', desc = '+Fzf' },
 }
 
 map.ca({
@@ -34,8 +34,8 @@ map.nvo('<c-j>', '<Plug>(edgemotion-j)', {})
 map.nvo('<c-k>', '<Plug>(edgemotion-k)', {})
 
 -- EasyAlign
-map.n('ga', '<Plug>(EasyAlign)', { desc = "EasyAlign" })
-map.x('ga', '<Plug>(EasyAlign)', { desc = "EasyAlign" })
+map.n('gl', '<Plug>(EasyAlign)', { desc = 'EasyAlign' })
+map.x('gl', '<Plug>(EasyAlign)', { desc = 'EasyAlign' })
 
 -- MiniOperator , MiniSurround
 map.n({
@@ -57,7 +57,7 @@ map.c({
   ['<F1>'] = [[\(.*\)<Left><Left>]],
   ['<c-v>'] = [[<C-R>"]],
   ['<a-v>'] = [[<C-R>+]],
-})
+}, { silent = false })
 
 map.t({
   ['<c-\\>'] = [[<C-\><C-n>]],
@@ -112,10 +112,7 @@ map.n('yd', function()
   local diags = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
   local n_diags = #diags
   if n_diags == 0 then
-    vim.notify(
-      '[LSP] no diagnostics found in current line',
-      vim.log.levels.WARN
-    )
+    vim.notify('[LSP] no diagnostics found in current line', vim.log.levels.WARN)
     return
   end
 
@@ -128,17 +125,12 @@ map.n('yd', function()
   if n_diags == 1 then
     local msg = diags[1].message
     _yank(msg)
-    vim.notify(
-      string.format([[[LSP] yanked diagnostic message '%s']], msg),
-      vim.log.levels.INFO
-    )
+    vim.notify(string.format([[[LSP] yanked diagnostic message '%s']], msg), vim.log.levels.INFO)
     return
   end
 
   vim.ui.select(
-    vim.tbl_map(function(d)
-      return d.message
-    end, diags),
+    vim.tbl_map(function(d) return d.message end, diags),
     { prompt = 'Select diagnostic message to yank: ' },
     _yank
   )
