@@ -24,5 +24,8 @@
     "weakUnionCheck": true,
     "castNumberToInteger": true
   },
-  "telemetry.enable": false
+  "telemetry.enable": false,
+    "diagnostics.disable": [
+        "redefined-local"
+    ]
 }
