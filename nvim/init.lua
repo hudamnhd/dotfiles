@@ -1,8 +1,7 @@
 _G.Config = {}
 
-vim.cmd.colorscheme("custom")
+require('base')
+require('mapping')
+require('lazyplug')
 
-require("base")
-require("mapping")
-require("lazyplug")
-
+vim.cmd.colorscheme('neovim_colors')
