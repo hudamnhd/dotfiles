@@ -1,13 +1,45 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPost" },
-    dependencies = {
-      "saghen/blink.cmp",
-    },
+    ft = { "lua", "typescriptreact", "typescript" },
     config = function()
-      require("lspconfig").lua_ls.setup({})
+      vim.lsp.log.set_level(vim.log.levels.INFO)
 
+      vim.lsp.config("lua_ls", {
+        on_init = function(client)
+          if client.workspace_folders then
+            local path = client.workspace_folders[1].name
+            if
+                path ~= vim.fn.stdpath("config")
+                and (
+                  vim.loop.fs_stat(path .. "/.luarc.json")
+                  or vim.loop.fs_stat(path .. "/.luarc.jsonc")
+                )
+            then
+              return
+            end
+          end
+
+          client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+            runtime = {
+              version = "LuaJIT",
+            },
+            workspace = {
+              checkThirdParty = false,
+              library = {
+                vim.env.VIMRUNTIME,
+              },
+            },
+          })
+        end,
+        settings = {
+          Lua = {},
+        },
+      })
+
+      vim.lsp.enable({
+        "lua_ls",
+      })
       -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
       local sign_defs = {
         {
@@ -36,8 +68,14 @@ return {
       end
 
       vim.diagnostic.config({
-        signs = sign_opt,
-        virtual_text = true,
+        -- Define how diagnostic entries should be shown
+        signs = { priority = 9999, severity = { min = 'WARN', max = 'ERROR' } },
+        underline = { severity = { min = 'HINT', max = 'ERROR' } },
+        virtual_lines = false,
+        virtual_text = { current_line = true, severity = { min = 'ERROR', max = 'ERROR' } },
+
+        -- Don't update diagnostics when typing
+        update_in_insert = false,
       })
     end,
   },
