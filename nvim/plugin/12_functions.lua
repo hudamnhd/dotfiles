@@ -1,3 +1,6 @@
+-- Create listed scratch buffer and focus on it
+Config.new_scratch_buffer = function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end
+
 -- Insert section
 Config.insert_section = function(symbol, total_width)
   symbol = symbol or '='
@@ -23,7 +26,7 @@ Config.git_root = function(cwd, noerr)
   end
   local output = vim.fn.systemlist(cmd)
   if vim.v.shell_error ~= 0 then
-    if not noerr then vim.notify(unpack(output), vim.log.levels.INFO, {}) end
+    if not noerr then M.info(unpack(output)) end
     return nil
   end
   return output[1]
@@ -49,9 +52,7 @@ do
   ---@return string
   function Config.T(s)
     assert(type(s) == 'string', 'expected string')
-    if not cache[s] then
-      cache[s] = vim.api.nvim_replace_termcodes(s, true, false, true)
-    end
+    if not cache[s] then cache[s] = vim.api.nvim_replace_termcodes(s, true, false, true) end
     return cache[s]
   end
 end
