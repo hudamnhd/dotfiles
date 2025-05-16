@@ -114,11 +114,10 @@ later(function()
   add('nvimdev/guard-collection')
   local ft = require('guard.filetype')
   ft('lua'):fmt('stylua')
-  ft(
-      'javascript, markdown, css, typescript, javascriptreact, typescriptreact, scss, html, json, json5, jsonc, yaml, astro'
-    )
+  ft('javascript, markdown, css, typescript, javascriptreact, typescriptreact, scss, html,  yaml, astro')
     :fmt('dprint')
     :fmt('biome')
+  ft('json, json5, jsonc'):fmt('biome')
 end)
 
 -- Filetype: oil ==============================================================

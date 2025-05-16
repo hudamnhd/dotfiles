@@ -3,7 +3,23 @@ local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 add({ name = 'mini.nvim', checkout = 'HEAD' })
 
 -- Step one ===================================================================
-now(function() vim.cmd('colorscheme custom') end)
+now(function() vim.cmd('colorscheme neovim_colors') end)
+
+now(
+  function()
+    require('mini.basics').setup({
+      options = {
+        basic = false,
+      },
+      mappings = {
+        basic = false,
+      },
+      autocommands = {
+        basic = false,
+      },
+    })
+  end
+)
 
 now(function()
   require('mini.icons').setup({
@@ -31,7 +47,7 @@ end)
 now(function()
   require('mini.sessions').setup({
     autowrite = true,
-  })()
+  })
 end)
 now(function() require('mini.starter').setup() end)
 now(function() require('mini.tabline').setup() end)
@@ -55,6 +71,10 @@ later(function()
     spotter = jump2d.gen_pattern_spotter('[^%s%p]+'),
     view = { dim = true, n_steps_ahead = 2 },
   })
+
+  -- vim.api.nvim_set_hl(0, 'MiniJump2dSpot', { reverse = true })
+  vim.api.nvim_set_hl(0, 'MiniJump2dSpot', { link = 'PMenuSel' })
+  --
 end)
 
 later(
@@ -154,4 +174,55 @@ later(function()
 
   -- Make special mapping for "add surrounding for line"
   vim.keymap.set('n', 'yss', 'ys_', { remap = true })
+end)
+
+later(function()
+  local miniclue = require('mini.clue')
+  --stylua: ignore
+  miniclue.setup({
+    clues = {
+      Config.leader_group_clues,
+      miniclue.gen_clues.builtin_completion(),
+      miniclue.gen_clues.g(),
+      miniclue.gen_clues.marks(),
+      miniclue.gen_clues.registers(),
+      miniclue.gen_clues.windows({ submode_resize = true }),
+      miniclue.gen_clues.z(),
+    },
+    triggers = {
+      { mode = 'n', keys = 's' }, -- Leader triggers
+      { mode = 'x', keys = 's' }, -- Leader triggers
+      { mode = 'n', keys = '<Leader>' }, -- Leader triggers
+      { mode = 'x', keys = '<Leader>' },
+      { mode = 'n', keys = [[\]] },      -- mini.basics
+      { mode = 'n', keys = '[' },        -- mini.bracketed
+      { mode = 'n', keys = ']' },
+      { mode = 'x', keys = '[' },
+      { mode = 'x', keys = ']' },
+      { mode = 'i', keys = '<C-x>' },    -- Built-in completion
+      { mode = 'n', keys = 'g' },        -- `g` key
+      { mode = 'x', keys = 'g' },
+      { mode = 'n', keys = "'" },        -- Marks
+      { mode = 'n', keys = '`' },
+      { mode = 'x', keys = "'" },
+      { mode = 'x', keys = '`' },
+      { mode = 'n', keys = '"' },        -- Registers
+      { mode = 'x', keys = '"' },
+      { mode = 'i', keys = '<C-r>' },
+      { mode = 'c', keys = '<C-r>' },
+      { mode = 'n', keys = '<C-w>' },    -- Window commands
+      { mode = 'n', keys = 'z' },        -- `z` key
+      { mode = 'x', keys = 'z' },
+    },
+    window = {
+      delay = 0,
+      config = {
+        border = 'single',
+        anchor = 'SW',
+        width = 'auto',
+        row = 'auto',
+        col = 'auto',
+      },
+    },
+  })
 end)

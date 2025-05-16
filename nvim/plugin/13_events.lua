@@ -12,7 +12,17 @@ local function augroup(group, ...)
 end
 
 augroup('UserBufferBehavior', {
-
+  'TermOpen',
+  {
+    pattern = 'term://*',
+    callback = vim.schedule_wrap(function(data)
+      -- Try to start terminal mode only if target terminal is current
+      if not (vim.api.nvim_get_current_buf() == data.buf and vim.bo.buftype == 'terminal') then return end
+      vim.cmd('startinsert')
+    end),
+    desc = 'Start terminal mode ',
+  },
+}, {
   'Filetype',
   {
     pattern = { 'help', 'man' },

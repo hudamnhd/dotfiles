@@ -1,3 +1,8 @@
+_G.Config.leader_group_clues = {
+  { mode = 'n', keys = '<Leader>s', desc = '+Sessions' },
+  { mode = 'n', keys = '<Leader>s', desc = '+Sessions' },
+  { mode = 'n', keys = '<Leader>g', desc = '+Git' },
+}
 -------------------------------------------------------------------------------
 -- Helper =====================================================================
 -------------------------------------------------------------------------------
@@ -12,6 +17,7 @@ local H = {
 -- Create a smart keymap wrapper using metatables
 local keymap = {}
 
+local function rmv_cmd(str) return str:gsub('<cmd>(.-)<cr>', '%1') end
 -- Valid vim modes
 local valid_modes = { n = true, i = true, v = true, x = true, s = true, o = true, c = true, t = true }
 
@@ -58,12 +64,14 @@ local mt = {
       -- Create and cache a function for this mode combination
       local mode_fn = function(lhs, rhs, opts)
         opts = opts or { silent = true }
+
         local mapset = vim.keymap.set
 
         if type(lhs) == 'table' then
           opts = rhs or { silent = true }
           -- Handle table of mappings
           for key, action in pairs(lhs) do
+            opts = vim.tbl_extend('force', (type(action) == 'string' and { desc = rmv_cmd(action) } or {}), rhs or {})
             mapset(modes, key, action, opts)
           end
         else
@@ -96,7 +104,7 @@ local mt = {
 local map = setmetatable(keymap, mt)
 
 -- Helper function for command mappings
-local cmd = function(command) return '<cmd>' .. command .. '<CR>' end
+local cmd = function(command) return '<cmd>' .. command .. '<cr>' end
 
 -- Get visual selection text.
 -- taken from: https://github.com/ibhagwan/nvim-lua/blob/f772c7b41ac4da6208d8ae233e1c471397833d64/lua/utils.lua#L96
@@ -182,7 +190,7 @@ H.modify_line_end_delimiter = function(character)
     local last_char = line:sub(-1)
     if last_char == character then
       vim.api.nvim_set_current_line(line:sub(1, #line - 1))
-    elseif vim.tbl_contains(C.keymaps.delimiter.keys, last_char) then
+    elseif vim.tbl_contains(H.keymaps.delimiter.keys, last_char) then
       vim.api.nvim_set_current_line(line:sub(1, #line - 1) .. character)
     else
       vim.api.nvim_set_current_line(line .. character)
@@ -294,15 +302,16 @@ map.t({
 
 -- Buffer
 map.n({
-  ['<a-x>'] = cmd('bd'),
-  ['<a-X>'] = cmd('bw'),
+  ['<space>`'] = cmd('Scrath'),
+  ['<space>Z'] = cmd('BuffClean'),
+  ['<space>q'] = cmd('bd'),
+  ['<space>Q'] = cmd('bw'),
+  ['<space>c'] = cmd('lua MiniBufremove.delete()'),
+  ['<space>C'] = cmd('lua MiniBufremove.wipeout()'),
   ['<s-h>'] = cmd("lua MiniBracketed.buffer('backward')"),
   ['<s-l>'] = cmd("lua MiniBracketed.buffer('forward')"),
   ['<c-s-h>'] = cmd("lua MiniBracketed.buffer('first')"),
   ['<c-s-l>'] = cmd("lua MiniBracketed.buffer('last')"),
-})
-map.t({
-  ['<a-x>'] = cmd('bw!'),
 })
 
 -- Transform case
@@ -510,36 +519,8 @@ H.toggle_qf = function(type)
   end
 end
 
-map.n('<space>q', function() H.toggle_qf('q') end, { desc = 'Toggle QF' })
-map.n('<space>Q', function() H.toggle_qf('l') end, { desc = 'Toggle LL' })
-
--------------------------------------------------------------------------------
--- Toggle Options =============================================================
--------------------------------------------------------------------------------
-local toggle_options = {
-  'cursorline',
-  'cursorcolumn',
-  'hlsearch',
-  'ignorecase',
-  'list',
-  'number',
-  'relativenumber',
-  'spell',
-  'wrap',
-}
-
-local function toggle_option(option) vim.cmd(string.format('setlocal %s! %s?', option, option)) end
-
-local function show_toggle_menu()
-  vim.ui.select(toggle_options, {
-    prompt = 'Toggle option:',
-    format_item = function(item) return "Toggle '" .. item .. "'" end,
-  }, function(choice)
-    if choice then toggle_option(choice) end
-  end)
-end
-
-map.n('<space>t', show_toggle_menu, { desc = 'Toggle UI option' })
+map.n('<F5>', function() H.toggle_qf('q') end, { desc = 'Toggle QF' })
+map.n('<F6>', function() H.toggle_qf('l') end, { desc = 'Toggle LL' })
 
 -- ( MiniAi, MiniOperator , MiniSurround )
 -------------------------------------------------------------------------------
@@ -560,9 +541,6 @@ map.n({
 -- ( Other )
 -------------------------------------------------------------------------------
 map.n({
-  ['<space>`'] = function() vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true)) end,
-  ['<space>x'] = cmd('lua MiniBufremove.delete()'),
-  ['<space>X'] = cmd('lua MiniBufremove.wipeout()'),
   ['<space>%'] = cmd('lua Config.set_cwd()'),
   ['<space>-'] = cmd('lua Config.insert_section()'),
 })
@@ -585,6 +563,7 @@ map('n', '<space>sf', function()
   vim.cmd('wa')
   require('mini.sessions').select()
 end, { desc = 'Load Session' })
+
 -- ( Keymaps: Oil )
 -------------------------------------------------------------------------------
 map.n({
@@ -633,11 +612,6 @@ map.n({
   ['<Space>gL'] = cmd('Git log --oneline --graph'),
 })
 
-map.n({
-  ['<F4>'] = cmd('Zenmode'),
-  ['<F5>'] = cmd('vert Git'),
-})
-
 map.tn('<F3>', function()
   vim.cmd('tabedit')
   vim.cmd('setlocal nonumber signcolumn=no')
@@ -652,3 +626,22 @@ map.tn('<F3>', function()
 
   vim.cmd('startinsert')
 end)
+map.tn('<a-g>', function()
+  vim.cmd('vnew')
+  vim.cmd('setlocal nonumber signcolumn=no')
+
+  vim.fn.jobstart('glow -s ~/.config/nvim/styles/custom.json', {
+    term = true,
+    on_exit = function()
+      vim.cmd('silent! checktime')
+      vim.cmd('silent! bw')
+    end,
+  })
+
+  vim.cmd('startinsert')
+end)
+
+map.n({
+  ['<F4>'] = cmd('Zenmode'),
+  ['<F5>'] = cmd('vert Git'),
+})

@@ -76,12 +76,6 @@ if vim.fn.has('nvim-0.11') == 1 then
 end
 vim.o.complete     = '.,w,b,kspell' -- Use spell check and don't use tags for completion
 
--- Spelling ===================================================================
-vim.o.spelllang    = 'en,id'       -- Define spelling dictionaries
-vim.o.spelloptions = 'camel'          -- Treat parts of camelCase words as seprate words
-
-vim.o.dictionary = vim.fn.stdpath('config') .. '/misc/dict/english.txt' -- Use specific dictionaries
-
 -- Folds ======================================================================
 vim.o.foldmethod  = 'indent' -- Set 'indent' folding method
 vim.o.foldlevel   = 1        -- Display all folds except top ones
