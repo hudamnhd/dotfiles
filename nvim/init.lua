@@ -9,6 +9,7 @@ if not vim.loop.fs_stat(mini_path) then
 end
 
 -- Set up 'mini.deps' immediately to have its `now()` and `later()` helpers
+require('native').setup()
 require('mini.deps').setup()
 
 -- Define main config table to be able to use it in scripts

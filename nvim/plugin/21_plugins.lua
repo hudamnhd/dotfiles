@@ -6,15 +6,16 @@ now_if_args(function()
   add({
     source = 'nvim-treesitter/nvim-treesitter',
     checkout = 'master',
-    hooks = { post_checkout = function() vim.cmd('TSUpdate') end },
+    hooks = {
+      post_checkout = function() vim.cmd('TSUpdate') end,
+    },
   })
   add('nvim-treesitter/nvim-treesitter-textobjects')
 
   --stylua: ignore
   local ensure_installed = {
-    -- 'bash',       'c',     'cpp',   'css',  'html',
-    -- 'javascript', 'json',  'julia', 'php',  'python',
-    -- 'r',          'regex', 'rst',   'rust', 'toml', 'tsx', 'yaml',
+    'bash',       'c',     'cpp',   'css',  'html',
+    'javascript', 'json',   'php',  'regex', 'toml', 'tsx', 'yaml',
   }
 
   require('nvim-treesitter.configs').setup({
@@ -31,6 +32,67 @@ now_if_args(function()
   ts_query_set('lua', 'injections', '')
 end)
 
+-- Harpoon ====================================================================
+later(function()
+  add({
+    source = 'ThePrimeagen/harpoon',
+    checkout = 'harpoon2',
+  })
+  add('nvim-lua/plenary.nvim')
+  later(function()
+    local harpoon = require('harpoon')
+    local extensions = require('harpoon.extensions')
+
+    -- REQUIRED
+    harpoon:setup({
+      settings = {
+        save_on_toggle = true,
+        sync_on_ui_close = true,
+        key = function() return vim.loop.cwd() end,
+      },
+    })
+
+    harpoon:extend(extensions.builtins.navigate_with_number())
+
+      -- stylua: ignore start
+      harpoon:extend({
+        UI_CREATE = function(cx)
+          vim.keymap.set("n", "l", function()
+            harpoon.ui:select_menu_item({ edit = true })
+          end, { buffer = cx.bufnr })
+        end,
+      })
+
+      local Path = require("plenary.path")
+      local function normalize_path(buf_name, root)
+        return Path:new(buf_name):make_relative(root)
+      end
+
+      vim.keymap.set("n", "<space>i", function()
+        local ui_opts = {
+          ui_fallback_width = 5,
+          ui_width_ratio = 0.5,
+        }
+        local curr_file = normalize_path(vim.api.nvim_buf_get_name(0), vim.loop.cwd())
+        harpoon.ui:toggle_quick_menu(harpoon:list(), ui_opts)
+        local cmd = string.format("call search('%s')", curr_file)
+        vim.cmd(cmd)
+      end, { desc = "toggle_quick_menu harpoon" })
+
+      vim.keymap.set("n", "<space>a", function()
+        harpoon:list():add()
+        vim.notify("harpoon add")
+      end, { desc = "Mark harpoon" })
+
+      local keys = '12345'
+      for i = 1, #keys do
+        local key = keys:sub(i, i)
+        local key_combination = string.format('<a-%s>', key)
+        vim.keymap.set('n', key_combination, function() harpoon:list():select(i) end, { desc = "Goto harpoon " .. i })
+      end
+  end)
+end)
+
 -- Lsp configurations =========================================================
 later(function()
   -- Enable LSP only on Neovim>=0.11 as it introduced `vim.lsp.config`
@@ -43,18 +105,27 @@ later(function()
     'lua_ls',
     'ts_ls',
   })
-end)
 
--- Filetype: csv ==============================================================
-later(function()
-  vim.g.disable_rainbow_csv_autodetect = true
-  add('mechatroner/rainbow_csv')
+  -- Diagnostics ============================================================================
+  local diagnostic_opts = {
+    -- Define how diagnostic entries should be shown
+    signs = { priority = 9999, severity = { min = 'WARN', max = 'ERROR' } },
+    underline = { severity = { min = 'HINT', max = 'ERROR' } },
+    virtual_lines = false,
+    virtual_text = { current_line = true, severity = { min = 'ERROR', max = 'ERROR' } },
+
+    -- Don't update diagnostics when typing
+    update_in_insert = false,
+  }
+
+  later(function() vim.diagnostic.config(diagnostic_opts) end)
 end)
 
 -- Helper ==============================================================
 
 -- Edit text in the quickfix win
-later(function() add('stefandtw/quickfix-reflector.vim') end)
+-- later(function() add('stefandtw/quickfix-reflector.vim') end)
+later(function() add('thinca/vim-qfreplace') end)
 
 -- Completion/formatting/linter ===================================================================
 later(function()
@@ -176,13 +247,25 @@ later(function()
   fzf.setup({
     'max-perf',
     winopts = {
-      fullscreen = false,
+      width = 0.90,
       preview = {
-        wrap = false,
         vertical = 'up:45%', -- up|down:size
         layout = 'vertical',
+        border = 'solid',
+        scrollbar = 'float',
+        scrolloff = '-1',
+        title_pos = 'center',
       },
     },
+    hls = {
+      title = 'IncSearch',
+      border = 'PmenuSbar',
+      preview_title = 'IncSearch',
+      preview_border = 'PmenuSbar',
+      scrollfloat_e = '',
+      scrollfloat_f = 'PmenuSel',
+    },
+    grep = { rg_glob = true },
     lsp = { symbols = { symbol_style = 3 } },
   })
 
@@ -596,4 +679,64 @@ later(function()
       end,
     },
   })
+end)
+
+now(function()
+  add({ source = 'rose-pine/neovim', name = 'rose-pine' })
+
+  require('rose-pine').setup({
+    styles = {
+      italic = false,
+      transparency = true,
+    },
+  })
+
+  vim.cmd('colorscheme rose-pine-moon')
+end)
+
+later(function()
+  add('voldikss/vim-floaterm')
+
+  vim.g.floaterm_title = 'TERM($1|$2)'
+  vim.g.floaterm_opener = 'edit'
+
+  local function get_bufnr_from_name(name)
+    local buflist = vim.fn['floaterm#buflist#gather']()
+    for _, bufnr in ipairs(buflist) do
+      local bufname = vim.fn.getbufvar(bufnr, 'floaterm_name')
+      if bufname == name then return bufnr end
+    end
+    return -1
+  end
+
+  local function t(args)
+    local name = args:match('--name=([^%s]+)')
+    local bufnr = get_bufnr_from_name(name)
+
+    if bufnr == -1 then
+      vim.cmd('FloatermNew ' .. args)
+    else
+      vim.cmd('FloatermToggle ' .. name)
+    end
+  end
+
+  local win = {
+    full = '--width=0.95 --height=0.95',
+    split = '--wintype=split --position=vsplit',
+    top = '--height=0.3 --wintype=split --position=botright',
+  }
+  local c = {
+    buffer = '--name=buffer --cwd=<buffer> --disposable ' .. win.split .. ' bash',
+    gitui = '--name=gitui ' .. win.full .. [[ export GIT_EDITOR=floaterm; gitui]],
+    bash = '--name=bash ' .. win.top .. ' bash',
+    yazi = '--name=yazi ' .. win.full .. [[ yazi]],
+  }
+
+  --stylua: ignore start
+  vim.keymap.set({ 'n', 't' }, '<F1>',  function() t(c.bash) end,   { desc = 'Bash' })
+  vim.keymap.set({ 'n', 't' }, '<F2>',  function() t(c.buffer) end, { desc = 'Buffer cwd' })
+  vim.keymap.set({ 'n', 't' }, '<F3>',  function() t(c.gitui) end,  { desc = 'Gitui' })
+  vim.keymap.set({ 'n', 't' }, '<a-e>', function() t(c.yazi) end,   { desc = 'Yazi' })
+  vim.keymap.set({ 'n', 't' }, '<a-x>', vim.cmd.FloatermKill,       { desc = 'FloatermKill' })
+  --stylua: ignore end
 end)

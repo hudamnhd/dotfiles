@@ -3,7 +3,6 @@ local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 add({ name = 'mini.nvim', checkout = 'HEAD' })
 
 -- Step one ===================================================================
-now(function() vim.cmd('colorscheme neovim_colors') end)
 
 now(
   function()
@@ -32,17 +31,17 @@ now(function()
   later(MiniIcons.tweak_lsp_kind)
 end)
 
-now(function()
-  local predicate = function(notif)
-    if not (notif.data.source == 'lsp_progress' and notif.data.client_name == 'lua_ls') then return true end
-    -- Filter out some LSP progress notifications from 'lua_ls'
-    return notif.msg:find('Diagnosing') == nil and notif.msg:find('semantic tokens') == nil
-  end
-  local custom_sort = function(notif_arr) return MiniNotify.default_sort(vim.tbl_filter(predicate, notif_arr)) end
-
-  require('mini.notify').setup({ content = { sort = custom_sort } })
-  vim.notify = MiniNotify.make_notify()
-end)
+-- now(function()
+--   local predicate = function(notif)
+--     if not (notif.data.source == 'lsp_progress' and notif.data.client_name == 'lua_ls') then return true end
+--     -- Filter out some LSP progress notifications from 'lua_ls'
+--     return notif.msg:find('Diagnosing') == nil and notif.msg:find('semantic tokens') == nil
+--   end
+--   local custom_sort = function(notif_arr) return MiniNotify.default_sort(vim.tbl_filter(predicate, notif_arr)) end
+--
+--   require('mini.notify').setup({ content = { sort = custom_sort } })
+--   vim.notify = MiniNotify.make_notify()
+-- end)
 
 now(function()
   require('mini.sessions').setup({
@@ -54,6 +53,7 @@ now(function() require('mini.tabline').setup() end)
 now(function() require('mini.statusline').setup() end)
 
 -- Step two ===================================================================
+later(function() require('mini.colors').setup() end)
 later(function() require('mini.trailspace').setup() end)
 later(function() require('mini.align').setup() end)
 later(function() require('mini.extra').setup() end)
