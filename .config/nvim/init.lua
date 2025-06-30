@@ -150,6 +150,7 @@ local define_keymaps = function(actions)
     -- Terminal
     { '<A-r>',  actions.insert_register_term, { mode = 't', expr = true } },
     { '<C-\\>', actions.exit_terminal_mode,   { mode = 't' } },
+    { '<C-t>',  actions.toggle_floating_term, { mode = 'nt' } },
 
     -- Command-line
     { '<F1>',  actions.regex_capture_all,        { mode = 'c', silent = false } },
@@ -252,6 +253,9 @@ local load_keymaps = function()
         -- qf/ll
         toggle_quickfix = function() M.toggle_qf('q') end,
         toggle_loclist = function() M.toggle_qf('l') end,
+
+        -- term
+        toggle_floating_term = M.toggle_floating_term,
       }
 
       define_keymaps(actions)
@@ -1291,6 +1295,63 @@ function M.toggle_qf(type)
       end
     end
   end
+end
+
+
+-- Minimal multi-instance floating terminal in Neovim
+-- Toggle terminal with <count><C-t>, e.g.:
+--    <C-t>    → toggle terminal #1
+--    2<C-t>   → toggle terminal #2
+local terms = {}
+
+local function float_cfg()
+  return {
+    relative = 'editor',
+    width = math.floor(vim.o.columns * 0.8),
+    height = math.floor(vim.o.lines * 0.8),
+    row = math.floor(vim.o.lines * 0.1),
+    col = math.floor(vim.o.columns * 0.1),
+    style = 'minimal',
+    border = 'rounded',
+  }
+end
+
+function M.toggle_floating_term()
+  local count = vim.v.count
+  if count == 0 then count = 1 end
+
+  -- create state if not exists
+  terms[count] = terms[count] or { buf = nil, win = nil, was_insert = true }
+
+  local state = terms[count]
+  local buf, win = state.buf, state.win
+
+  -- validate
+  buf = (buf and vim.api.nvim_buf_is_valid(buf)) and buf or nil
+  win = (win and vim.api.nvim_win_is_valid(win)) and win or nil
+  state.buf, state.win = buf, win
+
+  if not buf and not win then
+    -- new terminal
+    vim.cmd('split | terminal')
+    buf = vim.api.nvim_get_current_buf()
+    vim.api.nvim_win_close(vim.api.nvim_get_current_win(), true)
+    win = vim.api.nvim_open_win(buf, true, float_cfg())
+    state.buf = buf
+    state.win = win
+  elseif not win and buf then
+    -- reopen
+    win = vim.api.nvim_open_win(buf, true, float_cfg())
+    state.win = win
+  elseif win then
+    -- close
+    state.was_insert = vim.api.nvim_get_mode().mode == 't'
+    vim.api.nvim_win_close(win, true)
+    state.win = nil
+    return
+  end
+
+  if state.was_insert then vim.cmd('startinsert') end
 end
 
 -- taken from: https://github.com/rebelot/dotfiles/blob/0b7e3b4f5063173f38d69a757ab03a8d9323af2e/nvim/lua/utilities.lua#L3
