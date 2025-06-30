@@ -5,8 +5,8 @@ static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "JetBrainsMono Nerd Font Mono:size=10" };
-static const char dmenufont[]       = "JetBrainsMono Nerd Font Mono:size=10";
+static const char *fonts[]          = { "JetBrainsMono Nerd Font Mono:size=10:style=Medium" };
+static const char dmenufont[]       = "JetBrainsMono Nerd Font Mono:size=10:style=Medium";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -61,11 +61,12 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
+static const char *pavucmd[]  = { "pavucontrol", NULL};
 
 static const Key keys[] = {
 	/* modifier                           key              function        argument */
 	{ MODKEY,                             XK_p,            spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,                   XK_Return,       spawn,          {.v = termcmd } },
+	{ MODKEY,                             XK_x,            spawn,          {.v = termcmd } },
 	{ MODKEY,                             XK_b,            togglebar,      {0} },
 	{ MODKEY,                             XK_a,            focusstack,     {.i = +1 } },
 	{ MODKEY,                             XK_i,            focusstack,     {.i = -1 } },
@@ -104,10 +105,13 @@ static const Key keys[] = {
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static const Button buttons[] = {
 	/* click                event mask      button          function        argument */
-	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
-	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
+	{ ClkLtSymbol,          0,              Button1,        togglelayout,   {0} },
+	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[3]} },
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
+	{ ClkStatusText,        0,              Button3,        spawn,          {.v = pavucmd } },
+	{ ClkWinTitle,          0,              Button3,        zoom,           {0} },
+	{ ClkWinTitle,          0,              Button4,        focusstack,     {.i = +1 } },
+	{ ClkWinTitle,          0,              Button5,        focusstack,     {.i = -1 } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
