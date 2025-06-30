@@ -168,18 +168,16 @@ local define_keymaps = function(actions)
     -- Help
     { '<Leader>vh', actions.help_index, { desc = 'Vim help index' } },
     { '<Leader>vw', actions.help_cWORD, { desc = 'Vim help cWORD' } },
+
+    -- Help
+    { '<Leader>vh', actions.help_index, { desc = 'Vim help index' } },
+    { '<Leader>vw', actions.help_cWORD, { desc = 'Vim help cWORD' } },
+
+    -- Quickfix List/Location List
+    { '<leader>xq', actions.toggle_quickfix, { desc = 'Quickfix List' } },
+    { '<leader>xl', actions.toggle_loclist,  { desc = 'Location List'  } },
   })
 
-  -- taken from: https://github.com/LazyVim/LazyVim/blob/25abbf546d564dc484cf903804661ba12de45507/lua/lazyvim/config/keymaps.lua#L97
-  vim.keymap.set('n', '<Leader>xl', function()
-    local success, err = pcall(vim.fn.getloclist(0, { winid = 0 }).winid ~= 0 and vim.cmd.lclose or vim.cmd.lopen)
-    if not success and err then vim.notify(err, vim.log.levels.ERROR) end
-  end, { desc = 'Location List' })
-
-  vim.keymap.set('n', '<Leader>xq', function()
-    local success, err = pcall(vim.fn.getqflist({ winid = 0 }).winid ~= 0 and vim.cmd.cclose or vim.cmd.copen)
-    if not success and err then vim.notify(err, vim.log.levels.ERROR) end
-  end, { desc = 'Quickfix List' })
 end
 
 -- Setup Keymaps on UIEnter Event
@@ -209,14 +207,14 @@ local load_keymaps = function()
         search_prev_normal = "'nN'[v:searchforward].'zv'",
 
         -- Buffer
-        buffer_delete = vim.cmd.bd,
+        buffer_delete = '<cmd>bd<cr>',
 
         -- System
         help_index = ':help index<cr>',
         help_cWORD = ':help <C-r><C-a><cr>',
         keywordprg = '<cmd>norm! K<cr>',
-        show_messages = vim.cmd.messages,
-        save_file = vim.cmd.write,
+        show_messages = '<cmd>messages<cr>',
+        save_file = '<cmd>write<cr>',
 
         -- Indent
         indent_left = '<gv',
@@ -250,6 +248,10 @@ local load_keymaps = function()
         to_lowercase = 'mzguiw`z',
         to_titlecase = 'mzguiwgUl`z',
         to_uppercase = 'mzgUiw`z',
+
+        -- qf/ll
+        toggle_quickfix = function() M.toggle_qf('q') end,
+        toggle_loclist = function() M.toggle_qf('l') end,
       }
 
       define_keymaps(actions)
@@ -1247,6 +1249,50 @@ function M.keymaps(keymaps, global_opts)
   end
 end
 
+function M.toggle_qf(type)
+  local wininfo = vim.fn.getwininfo()
+  local windows = {}
+  -- collect matching windows
+  for _, win in ipairs(wininfo) do
+    if type == 'l' and win.loclist == 1 then
+      table.insert(windows, win.winid)
+    elseif type == 'q' and win.quickfix == 1 and win.loclist == 0 then
+      table.insert(windows, win.winid)
+    end
+  end
+
+  if #windows > 0 then
+    -- if any qf/loclist windows are open, close them
+    for _, winid in ipairs(windows) do
+      vim.api.nvim_win_hide(winid)
+    end
+  else
+    if type == 'l' then
+      -- open all non-empty loclists
+      for _, win in ipairs(wininfo) do
+        if win.quickfix == 0 then
+          if not vim.tbl_isempty(vim.fn.getloclist(win.winnr)) then
+            vim.api.nvim_set_current_win(win.winid)
+            vim.cmd('lopen')
+            vim.cmd('wincmd J')
+          else
+            print('loclist is empty.')
+          end
+          return
+        end
+      end
+    else
+      -- open quickfix if not empty
+      if not vim.tbl_isempty(vim.fn.getqflist()) then
+        vim.cmd('copen')
+        vim.cmd('wincmd J')
+      else
+        print('quickfix is empty.')
+      end
+    end
+  end
+end
+
 -- taken from: https://github.com/rebelot/dotfiles/blob/0b7e3b4f5063173f38d69a757ab03a8d9323af2e/nvim/lua/utilities.lua#L3
 function M.visual_selection_range()
   local _, csrow, cscol, _ = unpack(vim.fn.getpos("'<"))
@@ -1265,7 +1311,6 @@ function _G.get_visual_selection(escape)
   local text = vim.api.nvim_buf_get_text(0, sr, sc, er, ec, {})
   if #text == 1 then return escape ~= false and vim.fn.escape(text[1], escape_characters) or text[1] end
 end
-
 
 --- Register plugins or configs.
 --- @param plugins table[] List of plugin spec or config tables
