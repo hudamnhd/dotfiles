@@ -2,3 +2,8 @@
 .config/st/st
 .config/st/st.o
 .config/st/x.o
+.config/tabbed/config.h
+.config/tabbed/tabbed
+.config/tabbed/tabbed.o
+.config/tabbed/xembed
+.config/tabbed/xembed.o
