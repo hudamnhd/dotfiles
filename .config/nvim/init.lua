@@ -28,11 +28,6 @@ local load_options = function()
   vim.o.list = true
   vim.o.laststatus = 3
   vim.opt.listchars = { tab = '▏ ', trail = '·', extends = '»', precedes = '«' }
-  vim.opt.guicursor = {
-    'n-v-c-sm:block-Cursor', -- Use 'Cursor' highlight for normal, visual, and command modes
-    'i-ci-ve:ver25-lCursor', -- Use 'lCursor' highlight for insert and visual-exclusive modes
-    'r-cr:hor20-CursorIM', -- Use 'CursorIM' for replace mode
-  }
 
   -- Editing
   vim.o.mouse = '' -- disable the mouse
@@ -52,6 +47,11 @@ local load_options = function()
   vim.o.tabstop = 2 -- Tab indentation levels every two columns
   vim.o.shiftwidth = 0 -- Use `tabstop` value for auto-indent
   vim.o.shiftround = true -- Always indent/outdent to nearest tabstop
+
+  -- Update times and timeouts.
+  vim.o.updatetime = 300
+  vim.o.timeoutlen = 500
+  vim.o.ttimeoutlen = 10
 
   -- Search
   vim.o.hlsearch = false
@@ -79,8 +79,12 @@ end
 vim.g.mapleader = vim.keycode('<space>')
 vim.g.maplocalleader = vim.keycode('<space>')
 
-local disabled_keys = { 'q', 's', '<C-z>', '<Space>' }
-local blackhole_keys = { 'c', 'x', 'S', 'D', 'C' }
+-- Swap ; :
+vim.keymap.set('', ';', ':', { noremap = true })
+vim.keymap.set('', ':', ';', { noremap = true })
+
+local disabled_keys = { 's', 'q', 'X', '<C-z>', '<Space>' }
+local blackhole_keys = { 'c', 'd' }
 local undo_break_chars = { ',', ';', '.' }
 local delimiter_chars = { ',', ';', '.' }
 
@@ -93,7 +97,9 @@ local define_keymaps = function(actions)
   for _, char in ipairs(blackhole_keys) do
     M.map('nv', char, '"_' .. char)
   end
-  -- add undo break point See :help i_CTRL-G_u
+  -- keep x in visual mode for cut
+  M.map('n', 'x', '"_x')
+
   for _, char in ipairs(undo_break_chars) do
     M.map('i', char, char .. '<C-g>u')
   end
@@ -101,19 +107,18 @@ local define_keymaps = function(actions)
   --stylua: ignore
   M.keymaps({
     -- Insert / Change / Delete
-    { 'i',  actions.smart_insert,      { expr = true } },
-    { 'dd', actions.smart_delete_line, { expr = true } },
-    { 'd.', actions.delete_with_repeat },
-    { 'c.', actions.change_with_repeat },
-    { 'cl', actions.to_lowercase },
-    { 'ct', actions.to_titlecase },
-    { 'cu', actions.to_uppercase },
+    { 'i',     actions.smart_insert, { expr = true } },
+    { 'cl',    actions.to_lowercase },
+    { 'ct',    actions.to_titlecase },
+    { 'cu',    actions.to_uppercase },
+    { 'd<Bs>', actions.delete_with_repeat },
+    { 'c<Bs>', actions.change_with_repeat },
 
     -- Search & Substitute
-    { 'n',      actions.search_next_normal,     { expr = true } },
-    { 'N',      actions.search_prev_normal,     { expr = true } },
-    { 'g<C-s>', actions.substitute_last_search, { silent = false, desc = 'Substitute last search' } },
-    { 'g<C-w>', actions.substitute_cword,       { silent = false, desc = 'Substitute cword' } },
+    { 'n',      actions.search_next_normal, { expr = true } },
+    { 'N',      actions.search_prev_normal, { expr = true } },
+    { 'g<C-s>', actions.substitute_search,  { silent = false, desc = 'Substitute latest search' } },
+    { 'g<C-w>', actions.substitute_cword,   { silent = false, desc = 'Substitute cword' } },
 
     -- Paste & Yank
     { 'p',      actions.paste_keep_register,  { mode = 'x',  expr = true } },
@@ -125,8 +130,8 @@ local define_keymaps = function(actions)
     { 'J', actions.join_with_keep_cursor, { mode = 'nx', expr = true } },
     { 'k', actions.move_line_up,          { mode = 'nx', expr = true } },
     { 'j', actions.move_line_down,        { mode = 'nx', expr = true } },
-    { '<', actions.indent_left,           { mode = 'x' } },
-    { '>', actions.indent_right,          { mode = 'x' } },
+    { '<', actions.indent_left,           { mode = 'v' } },
+    { '>', actions.indent_right,          { mode = 'v' } },
     { 'I', actions.nice_block_I,          { mode = 'v',  expr = true } },
     { 'A', actions.nice_block_A,          { mode = 'v',  expr = true } },
 
@@ -135,41 +140,38 @@ local define_keymaps = function(actions)
     { '<C-h>', actions.goto_line_start, { mode = 'nv' } },
     { '<C-l>', actions.goto_line_end,   { mode = 'nv' } },
 
-    -- Resize & Rotate
-    { '<C-Up>',    actions.resize_up },
-    { '<C-Down>',  actions.resize_down },
-    { '<C-Left>',  actions.resize_left },
-    { '<C-Right>', actions.resize_right },
-    { '<A-w>',     actions.rotate_view_normal },
+    --  Rotate
+    { '<A-w>', actions.rotate_view_normal },
+    { '<A-w>', actions.rotate_view_terminal, { mode = 't' } },
 
     -- Terminal
-    { '<A-w>',  actions.rotate_view_terminal, { mode = 't' } },
     { '<A-r>',  actions.insert_register_term, { mode = 't', expr = true } },
     { '<C-\\>', actions.exit_terminal_mode,   { mode = 't' } },
 
     -- Command-line
-    { '0',     actions.command_mode,             { silent = false } },
     { '<F1>',  actions.regex_capture_all,        { mode = 'c', silent = false } },
     { '<F2>',  actions.regex_fuzzy_match,        { mode = 'c', silent = false } },
     { '<C-v>', actions.paste_register_default,   { mode = 'c', silent = false } },
     { '<A-v>', actions.paste_register_clipboard, { mode = 'c', silent = false } },
 
     -- Leader
-    { '<Leader>vh', actions.help_index,    { desc = 'Vim help index' } },
-    { '<Leader>vk', actions.help_cword,    { desc = 'Vim help Word' } },
     { '<Leader>q',  actions.buffer_delete, { desc = 'Buffer delete' } },
     { '<Leader>m',  actions.show_messages, { desc = 'Show messages' } },
     { '<Leader>K',  actions.keywordprg,    { desc = 'Keywordprg' } },
     { '<Leader>w',  actions.save_file,     { desc = 'Save File' } },
+
+    -- Help
+    { '<Leader>vh', actions.help_index, { desc = 'Vim help index' } },
+    { '<Leader>vw', actions.help_cWORD, { desc = 'Vim help cWORD' } },
   })
 
   -- taken from: https://github.com/LazyVim/LazyVim/blob/25abbf546d564dc484cf903804661ba12de45507/lua/lazyvim/config/keymaps.lua#L97
-  vim.keymap.set('n', '<leader>xl', function()
+  vim.keymap.set('n', '<Leader>xl', function()
     local success, err = pcall(vim.fn.getloclist(0, { winid = 0 }).winid ~= 0 and vim.cmd.lclose or vim.cmd.lopen)
     if not success and err then vim.notify(err, vim.log.levels.ERROR) end
   end, { desc = 'Location List' })
 
-  vim.keymap.set('n', '<leader>xq', function()
+  vim.keymap.set('n', '<Leader>xq', function()
     local success, err = pcall(vim.fn.getqflist({ winid = 0 }).winid ~= 0 and vim.cmd.cclose or vim.cmd.copen)
     if not success and err then vim.notify(err, vim.log.levels.ERROR) end
   end, { desc = 'Quickfix List' })
@@ -202,25 +204,18 @@ local load_keymaps = function()
         search_prev_normal = "'nN'[v:searchforward].'zv'",
 
         -- Buffer
-        buffer_delete = '<cmd>bd<cr>',
+        buffer_delete = vim.cmd.bd,
 
         -- System
         help_index = ':help index<cr>',
-        help_cword = ':help <C-r><C-a><cr>',
-        command_mode = ':',
-        show_messages = '<cmd>messages<cr>',
+        help_cWORD = ':help <C-r><C-a><cr>',
         keywordprg = '<cmd>norm! K<cr>',
-        save_file = '<cmd>write<cr>',
+        show_messages = vim.cmd.messages,
+        save_file = vim.cmd.write,
 
         -- Indent
         indent_left = '<gv',
         indent_right = '>gv',
-
-        -- Resize
-        resize_up = '<cmd>resize +2<cr>',
-        resize_down = '<cmd>resize -2<cr>',
-        resize_left = '<cmd>vertical resize -2<cr>',
-        resize_right = '<cmd>vertical resize +2<cr>',
 
         -- Register
         paste_keep_register = function() return 'pgv"' .. vim.v.register .. 'y' end,
@@ -241,7 +236,7 @@ local load_keymaps = function()
 
         -- Yank Visual Select
         select_last_yank = '`[v`]',
-        substitute_last_search = ':%s///gI<left><left><left>',
+        substitute_search = ':%s///gI<left><left><left>',
         substitute_cword = [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
 
         -- case
@@ -446,7 +441,9 @@ function M.plugins()
           -- Text editing
           { module = 'mini.align' }, -- See :help MiniAlign-examples
           { module = 'mini.comment' },
-          { module = 'mini.operators' },
+          { module = 'mini.operators', opts = {
+            sort = { prefix = 'gz' },
+          } },
           {
             module = 'mini.ai',
             config = function()
@@ -470,6 +467,7 @@ function M.plugins()
           },
           {
             module = 'mini.surround',
+            setup = false,
             config = function()
               --See :help MiniSurround-vim-surround-config
               require('mini.surround').setup({
@@ -497,7 +495,7 @@ function M.plugins()
             end,
           },
           { module = 'mini.move', opts = { options = { reindent_linewise = false } } },
-          { module = 'mini.splitjoin', opts = { mappings = { toggle = 'gJ' } } },
+          { module = 'mini.splitjoin', opts = { mappings = { toggle = 'gj' } } },
 
           -- General workflow
           { module = 'mini.bracketed' },
@@ -526,12 +524,11 @@ function M.plugins()
           latest put region............... `[Y` `[y` `]y` `]Y` .... |MiniBracketed.yank()|
           --]]
           { module = 'mini.extra' },
-          { module = 'mini.jump' },
           {
-            module = 'mini.jump2d',
+            module = 'mini.jump',
             opts = {
               mappings = {
-                start_jumping = '<Leader>j',
+                repeat_jump = ':',
               },
             },
           },
@@ -576,16 +573,19 @@ function M.plugins()
             module = 'mini.files',
             opts = { options = { permanent_delete = false } },
             config = function()
-              M.map(
-                'n',
-                '<Leader>fe',
-                function() require('mini.files').open(vim.api.nvim_buf_get_name(0)) end,
-                { desc = 'Explorer' }
-              )
+              M.map('n', '<Leader>e', function()
+                local file = vim.api.nvim_buf_get_name(0)
+                if vim.fn.filereadable(file) == 1 then
+                  require('mini.files').open(file)
+                else
+                  require('mini.files').open()
+                end
+              end, { desc = 'Explorer' })
             end,
           },
           {
             module = 'mini.diff',
+            -- See :help MiniDiff.config
             opts = {
               view = {
                 style = 'sign',
@@ -595,57 +595,81 @@ function M.plugins()
           },
           {
             module = 'mini.clue',
-            -- taken from: https://github.com/echasnovski/nvim/blob/5f170054662940d5e2f8badbe816996a8ec744dd/plugin/20_mini.lua#L176
-            opts = {
-              clues = {
-                {
-                  { keys = '<Leader>l', desc = '+Lsp Actions' },
-                  { keys = '<Leader>g', desc = '+Git' },
-                  { keys = '<Leader>b', desc = '+Buffer' },
-                  { keys = '<Leader>f', desc = '+Find' },
-                },
-                require('mini.clue').gen_clues.builtin_completion(),
-                require('mini.clue').gen_clues.g(),
-                require('mini.clue').gen_clues.marks(),
-                require('mini.clue').gen_clues.registers(),
-                require('mini.clue').gen_clues.windows({ submode_resize = true }),
-                require('mini.clue').gen_clues.z(),
-              },
-              triggers = {
-                { mode = 'n', keys = '<Leader>' }, -- Leader triggers
-                { mode = 'x', keys = '<Leader>' },
-                { mode = 'n', keys = [[\]] }, -- mini.basics
-                { mode = 'n', keys = '[' }, -- mini.bracketed
-                { mode = 'n', keys = ']' },
-                { mode = 'x', keys = '[' },
-                { mode = 'x', keys = ']' },
-                { mode = 'i', keys = '<C-x>' }, -- Built-in completion
-                { mode = 'n', keys = 'g' }, -- `g` key
-                { mode = 'x', keys = 'g' },
-                { mode = 'n', keys = "'" }, -- Marks
-                { mode = 'n', keys = '`' },
-                { mode = 'x', keys = "'" },
-                { mode = 'x', keys = '`' },
-                { mode = 'n', keys = '"' }, -- Registers
-                { mode = 'x', keys = '"' },
-                { mode = 'i', keys = '<C-r>' },
-                { mode = 'c', keys = '<C-r>' },
-                { mode = 'n', keys = '<C-w>' }, -- Window commands
-                { mode = 'n', keys = 'z' }, -- `z` key
-                { mode = 'x', keys = 'z' },
-              },
+            setup = false,
+            config = function()
+              local miniclue = require('mini.clue')
 
-              window = {
-                -- delay = 0,
-                config = {
-                  border = 'single',
-                  anchor = 'SW',
-                  width = 'auto',
-                  row = 'auto',
-                  col = 'auto',
+              -- Some builtin keymaps that I don't use and that I don't want mini.clue to show.
+              for _, lhs in ipairs({ '[%', ']%', 'g%' }) do
+                vim.keymap.del('n', lhs)
+              end
+
+              miniclue.setup({
+                triggers = {
+                  -- Builtins.
+                  { mode = 'n', keys = 'g' },
+                  { mode = 'x', keys = 'g' },
+                  { mode = 'n', keys = '`' },
+                  { mode = 'x', keys = '`' },
+                  { mode = 'n', keys = '"' },
+                  { mode = 'x', keys = '"' },
+                  { mode = 'i', keys = '<C-r>' },
+                  { mode = 'c', keys = '<C-r>' },
+                  { mode = 'n', keys = '<C-w>' },
+                  { mode = 'i', keys = '<C-x>' },
+                  { mode = 'n', keys = 'z' },
+                  -- Leader triggers.
+                  { mode = 'n', keys = '<Leader>' },
+                  { mode = 'x', keys = '<Leader>' },
+                  -- Moving between stuff.
+                  { mode = 'n', keys = '[' },
+                  { mode = 'n', keys = ']' },
                 },
-              },
-            },
+                clues = {
+                  -- Leader/movement groups.
+                  { mode = 'n', keys = '<Leader>z', desc = '+Session' },
+                  { mode = 'n', keys = '<Leader>s', desc = '+Search' },
+                  { mode = 'n', keys = '<Leader>v', desc = '+Vim' },
+                  { mode = 'n', keys = '<Leader>b', desc = '+Buffers' },
+                  { mode = 'n', keys = '<Leader>g', desc = '+Git' },
+                  { mode = 'n', keys = '<Leader>c', desc = '+Code' },
+                  { mode = 'n', keys = '<Leader>x', desc = '+Loclist/Quickfix' },
+                  { mode = 'n', keys = '[', desc = '+prev' },
+                  { mode = 'n', keys = ']', desc = '+next' },
+                  -- Builtins.
+                  miniclue.gen_clues.builtin_completion(),
+                  miniclue.gen_clues.g(),
+                  miniclue.gen_clues.marks(),
+                  miniclue.gen_clues.registers(),
+                  miniclue.gen_clues.windows(),
+                  miniclue.gen_clues.z(),
+                },
+
+                window = {
+                  delay = 0,
+                  scroll_down = '<C-d>',
+                  scroll_up = '<C-u>',
+                  config = function(bufnr)
+                    local max_width = 0
+                    for _, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)) do
+                      max_width = math.max(max_width, vim.fn.strchars(line))
+                    end
+
+                    -- Keep some right padding.
+                    max_width = max_width + 2
+
+                    return {
+                      anchor = 'SW',
+
+                      row = 'auto',
+                      col = 'auto',
+                      -- Dynamic width capped at 70.
+                      width = math.min(70, max_width),
+                    }
+                  end,
+                },
+              })
+            end,
           },
 
           -- Appearance
@@ -716,7 +740,9 @@ function M.plugins()
           },
           {
             module = 'mini.trailspace',
-            config = function() M.map('n', '<Leader>tt', require('mini.trailspace').trim, { desc = 'Trim trailspace' }) end,
+            config = function()
+              M.map('n', '<Leader>ct', require('mini.trailspace').trim, { desc = 'Code Trim trailspace' })
+            end,
           },
           {
             module = 'mini.hipatterns',
@@ -734,7 +760,7 @@ function M.plugins()
                   hex_color = hipatterns.gen_highlighter.hex_color(),
                 },
               })
-              M.map('n', '<Leader>th', hipatterns.toggle, { desc = "'Toggle' hipatterns" })
+              M.map('n', '<Leader>cc', hipatterns.toggle, { desc = 'Code Colorizer' })
             end,
           },
         }, 'config')
@@ -769,9 +795,9 @@ function M.plugins()
             end,
             suffix = function(diag)
               if not diag then return '' end
-              local codeOrSource = (tostring(diag.code or diag.source or ''))
-              if codeOrSource == '' then return '' end
-              return (' [%s]'):format(codeOrSource:gsub('%.$', ''))
+              local content = (tostring(diag.code or diag.source or ''))
+              if content == '' then return '' end
+              return (' [%s]'):format(content:gsub('%.$', ''))
             end,
           },
           float = {
@@ -788,32 +814,25 @@ function M.plugins()
               return msg
             end,
           },
+
+          update_in_insert = false,
         })
 
         vim.api.nvim_create_autocmd('LspAttach', {
           callback = function()
             local ok, fzf = pcall(require, 'fzf-lua')
 
-            --stylua: ignore
-            if not ok then
-              M.keymaps({
-                { '<Leader>la', vim.lsp.buf.code_action, { desc = "'Lsp' Code action" } },
-                { '<Leader>lr', vim.lsp.buf.references,  { desc = "'Lsp' References" } },
-                { '<Leader>ld', vim.lsp.buf.definition,  { desc = "'Lsp' Definition" } },
-              })
-            else
-              M.keymaps({
-                { '<Leader>la', fzf.lsp_code_actions,    { desc = "'Lsp' Code action" } },
-                { '<Leader>lr', fzf.lsp_references,      { desc = "'Lsp' References" } },
-                { '<Leader>ld', fzf.lsp_definitions,     { desc = "'Lsp' Definition" } },
-                { '<Leader>lD', fzf.lsp_declarations,    { desc = "'Lsp' Declarations" } },
-                { '<Leader>li', fzf.lsp_implementations, { desc = "'Lsp' Declarations" } },
-              })
-            end
+            if not ok then return end
 
+            --stylua: ignore
             M.keymaps({
-              { '<Leader>lf', vim.lsp.buf.format, { desc = "'Lsp' Format" } },
-              { '<Leader>lR', vim.lsp.buf.rename, { desc = "'Lsp' Rename" } },
+              { '<Leader>la', fzf.lsp_code_actions,    { desc = "Code action" } },
+              { '<Leader>lr', fzf.lsp_references,      { desc = "References" } },
+              { '<Leader>ld', fzf.lsp_definitions,     { desc = "Definition" } },
+              { '<Leader>lD', fzf.lsp_declarations,    { desc = "Declarations" } },
+              { '<Leader>li', fzf.lsp_implementations, { desc = "Implementation" } },
+              { '<Leader>lf', vim.lsp.buf.format,      { desc = "Format" } },
+              { '<Leader>lR', vim.lsp.buf.rename,      { desc = "Rename" } },
             })
 
             -- Copy the current line and all diagnostics on that line to system clipboard
@@ -922,7 +941,10 @@ function M.plugins()
         'max-perf',
         winopts = {
           -- fullscreen = true, -- start fullscreen?
-          split = string.format('botright %dnew | setlocal bt=nofile bh=wipe nobl noswf wfh', vim.o.lines),
+          split = string.format(
+            'botright %dnew | setlocal bt=nofile bh=wipe nobl noswf wfh',
+            math.floor(vim.o.lines / 3)
+          ),
           on_create = function()
             vim.o.cmdheight = 0
             vim.o.laststatus = 0
@@ -932,25 +954,21 @@ function M.plugins()
             vim.o.laststatus = 3
           end,
           preview = {
-            hidden = false,
-            layout = 'vertical',
-            vertical = 'up:70%',
+            hidden = true,
+            -- layout = 'vertical',
+            -- vertical = 'up:70%',
           },
         },
         keymap = {
+          builtin = {
+            true,
+            ['<C-_>'] = 'toggle-preview',
+          },
           fzf = {
-            ['ctrl-z'] = 'abort',
-            ['ctrl-f'] = 'half-page-down',
-            ['ctrl-b'] = 'half-page-up',
-            ['ctrl-a'] = 'beginning-of-line',
-            ['ctrl-e'] = 'end-of-line',
-            ['alt-a'] = 'toggle-all',
-            ['alt-g'] = 'first',
-            ['alt-G'] = 'last',
-            ['page-down'] = 'preview-page-down',
-            ['page-up'] = 'preview-page-up',
+            true,
             ['ctrl-d'] = 'preview-down',
             ['ctrl-u'] = 'preview-up',
+            ['ctrl-/'] = 'toggle-preview',
           },
         },
       },
@@ -977,26 +995,39 @@ function M.plugins()
           desc = 'Fzf find files.',
         })
 
-        -- See :help fzf-lua-commands
+        local search = {
+          config = function() fzf.files({ cwd = vim.fn.stdpath('config') }) end,
+          blines = function() fzf.blines({ start = 'cursor' }) end,
+          bcword = function() fzf.blines({ query = vim.fn.expand('<cword>') }) end,
+        }
+
         --stylua: ignore
         M.keymaps({
-          {'z=',         fzf.spell_suggest, { desc = "'Fzf' spell suggest" } },
 
-          {'<c-x><c-f>', fzf.complete_path, { desc = "'Fzf' complete_path", mode ='i' } },
-          {'<c-x><c-l>', fzf.complete_line, { desc = "'Fzf' complete_line", mode ='i' } },
+          { '<c-x><c-f>', fzf.complete_path, { desc = "Search Complete Path", mode = 'i' } },
+          { '<c-x><c-l>', fzf.complete_line, { desc = "Search Complete Line", mode = 'i' } },
 
-          {'<Leader>fg', fzf.grep_visual, { desc = "'Fzf' grep_visual", mode = 'v' } },
-          {'<Leader>fg', fzf.grep_cword,  { desc = "'Fzf' grep_cword" } },
-          {'<Leader>fi', fzf.grep,        { desc = "'Fzf' grep_input" } },
-          {'<Leader>f/', fzf.blines,      { desc = "'Fzf' blines" } },
-          {'<Leader>fb', fzf.buffers,     { desc = "'Fzf' blines" } },
-          {'<Leader>fp', fzf.files,       { desc = "'Fzf' files" } },
-          {'<Leader>ff', fzf.git_files,   { desc = "'Fzf' files" } },
-          {'<Leader>fo', fzf.oldfiles,    { desc = "'Fzf' oldfiles" } },
+          { '<Leader>sh', fzf.help_tags,     { desc = 'Search Help' } },
+          { '<Leader>sk', fzf.keymaps,       { desc = 'Search Keymaps' } },
+          { '<Leader>sc', fzf.git_commits,   { desc = 'Search Commits' } },
+          { '<Leader>sp', fzf.git_files,     { desc = 'Search Git Files' } },
+          { '<Leader>sn', search.config,     { desc = 'Search Neovim files' } },
 
-          {'<Leader>fd', fzf.diagnostics_document,  { desc = "'Fzf' diagnostics document" } },
-          {'<Leader>fD', fzf.diagnostics_workspace, { desc = "'Fzf' diagnostics workspace" } },
+          { 'sd', fzf.diagnostics_workspace, { desc = 'Search Diagnostics workspace' } },
 
+          { 'ss', fzf.resume,        { desc = 'Search Resume' } },
+          { 'sp', fzf.files,         { desc = 'Search Project Files' } },
+          { 'sg', fzf.grep_visual,   { desc = 'Search by Grep Visual', mode = 'v' } },
+          { 'sg', fzf.grep_cword,    { desc = 'Search by Grep Cword' } },
+          { 'si', fzf.grep,          { desc = 'Search by Grep Input' } },
+          { 'sb', fzf.buffers,       { desc = 'Search Buffers' } },
+          { 'so', fzf.oldfiles,      { desc = 'Search Oldfiles' } },
+          { 'z=', fzf.spell_suggest, { desc = "Search Spell Suggest" } },
+
+          { 'sk', fzf.builtin,       { desc = 'Search Fzf Builtin' } },
+
+          { 's8', search.bcword,     { desc = 'Search Buffer cword' } },
+          { 'sl', search.blines,     { desc = 'Search Buffer lines' } },
         })
       end,
     },
@@ -1007,7 +1038,7 @@ function M.plugins()
       config = function()
         -- See :help fugitive-commands
         local git = {
-          status = 'Git',
+          git = 'vert Git',
           write = 'Gwrite',
           read = 'Gread',
           vdiff = 'Gvdiffsplit',
@@ -1016,24 +1047,33 @@ function M.plugins()
           push = 'Git push',
           pull = 'Git pull',
           pull_rebase = 'Git pull --rebase',
-          log_buffer = 'Git log --oneline --follow -- %',
-          log_project = 'Git log --oneline --graph',
+          log_buffer = 'Git log --stat %',
+          log_project = 'Git log --stat -n 100',
         }
 
         for k, v in pairs(git) do
           git[k] = '<cmd>' .. v .. '<cr>'
         end
 
+        local fzf = require('fzf-lua')
         --stylua: ignore
         M.keymaps({
-          { '<Leader>gs', git.status,      { desc = 'Git Status' } },
-          { '<Leader>gw', git.write,       { desc = 'Git add current file' } },
-          { '<Leader>gr', git.read,        { desc = 'Git read' } },
-          { '<Leader>gv', git.vdiff,       { desc = 'Git diff vsplit' } },
-          { '<Leader>gd', git.diff,        { desc = 'Git diff split' } },
-          { '<Leader>gb', git.blame,       { desc = 'Git blame' } },
-          { '<Leader>gl', git.log_buffer,  { desc = 'Git log current file' } },
-          { '<Leader>gL', git.log_project, { desc = 'Git log project' } },
+          { '<Leader>gg', git.git,         { desc = 'Git' } },
+          { '<Leader>gw', git.write,       { desc = 'Git write (stage)' } },
+          { '<Leader>gr', git.read,        { desc = 'Git read (reset)' } },
+          { '<Leader>gv', git.vdiff,       { desc = 'Git diff (buffer)' } },
+          { '<Leader>gl', git.log_buffer,  { desc = 'Git log (buffer)' } },
+          { '<Leader>gL', git.log_project, { desc = 'Git log (project)' } },
+        })
+
+        --stylua: ignore
+        M.keymaps({
+          { '<Leader>gb', fzf.git_blame,    { desc = 'Git Blame' } },
+          { '<Leader>gB', fzf.git_branches, { desc = 'Git Branches' } },
+          { '<Leader>gc', fzf.git_bcommits, { desc = 'Git Log' } },
+          { '<Leader>gC', fzf.git_commits,  { desc = 'Git Log' } },
+          { '<Leader>gs', fzf.git_status,   { desc = 'Git Status' } },
+          { '<Leader>gt', fzf.git_tags,     { desc = 'Git Tags' } },
         })
 
         vim.api.nvim_create_autocmd('FileType', {
@@ -1044,16 +1084,18 @@ function M.plugins()
             vim.bo[info.buf].buflisted = false
             local opts = { buffer = true }
 
+            vim.b.miniclue_disable = true
+
             M.keymaps({
               { 'q', vim.cmd.bd },
 
-              { '<space>p', git.push },
-              { '<space>f', git.pull },
-              { '<space>r', git.pull_rebase }, -- rebase always
+              { '<Leader>p', git.push, { desc = 'Git push' } },
+              { '<Leader>f', git.pull, { desc = 'Git pull' } },
+              { '<Leader>r', git.pull_rebase, { desc = 'Git rebase' } }, -- rebase always
 
               -- NOTE: It allows me to easily set the branch i am pushing and any tracking
               -- needed if i did not set the branch up correctly
-              { '<space>P', ':Git push -u origin ', { silent = false } },
+              { '<Leader>P', ':Git push -u origin ', { silent = false, desc = 'Git push -u origin' } },
             }, opts)
           end,
         })
@@ -1067,9 +1109,11 @@ function M.plugins()
       opts = {
         formatters_by_ft = {
           lua = { 'stylua' }, -- https://github.com/JohnnyMorganz/StyLua?tab=readme-ov-file#installation
+          ['_'] = { 'trim_whitespace', 'trim_newlines' },
         },
       },
       config = function()
+        vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
         local format_buf = function() require('conform').format({ async = true, lsp_format = 'fallback' }) end
         M.map('n', 'gq', format_buf, { desc = 'format with conform' })
       end,
@@ -1109,9 +1153,12 @@ function M.plugins()
         highlight_groups = {
           Cursor = { bg = 'text' },
           Normal = { bg = 'none' },
-          NormalNC = { bg = '#1b1b1b' },
+          NormalNC = { bg = 'none' },
           NormalFloat = { bg = 'none' },
+          FloatBorder = { bg = 'none' },
+          MiniClueTitle = { bg = 'none' },
           Pmenu = { bg = 'none' },
+          FzfLuaBorder = { bg = 'none' },
           BlinkCmpLabel = { fg = 'subtle' },
           -- StatusLine = { fg = "love", bg = "love", blend = 15 },
           -- VertSplit = { fg = "muted", bg = "muted" },
