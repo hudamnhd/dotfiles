@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]        = "FiraCode Nerd Font:style=Retina:pixelsize=15:antialias=true:autohint=true";
+static const char font[]        = "JetBrainsMono Nerd Font Mono:size=10:style=Medium";
 static const char* normbgcolor  = "#000000";
 static const char* normfgcolor  = "#908caa";
 static const char* selbgcolor   = "#000000";

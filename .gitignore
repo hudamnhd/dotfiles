@@ -1,3 +1,5 @@
+*.orig
+*.rej
 .config/st/config.h
 .config/st/st
 .config/st/st.o
@@ -7,3 +9,8 @@
 .config/tabbed/tabbed.o
 .config/tabbed/xembed
 .config/tabbed/xembed.o
+.config/dwm/config.h
+.config/dwm/drw.o
+.config/dwm/dwm
+.config/dwm/dwm.o
+.config/dwm/util.o
