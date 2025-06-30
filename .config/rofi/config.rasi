@@ -1,0 +1,113 @@
+configuration {
+    kb-row-up:                 "Control+k,Control+p,Up";
+    kb-row-down:               "Control+j,Control+n,Down";
+    kb-accept-entry:           "Control+m,Return";
+    kb-remove-to-eol:          "Control+Shift+e";
+    kb-remove-char-back:       "BackSpace";
+    lines:                     1;
+    font:                      "JetBrainsMono Nerd Font Mono 15";
+    show-icons:                false;
+    terminal:                  "st";
+    drun-display-format:       "{icon} {name}";
+    location:                  0;
+    disable-history:           false;
+    hide-scrollbar:            true;
+    sidebar-mode:              false;
+    modi:                      "run,drun,combi";
+    display-drun:              " Apps";
+    display-run:               " Run";
+    display-window:            " Window";
+    display-windowcd:          " Window+";
+    display-keys:              " Keys";
+    display-filebrowser:       " Browse";
+    display-combi:             " Binds";
+    icon-theme:                "Breeze";
+    application-fallback-icon: "application-x-addon";
+}
+
+@theme "dark"
+
+element-text, element-icon , mode-switcher {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+window {
+    border: 2px;
+    border-color: @border-col;
+    background-color: @bg-col;
+    width:45%;
+    border-radius: 5px;
+}
+
+mainbox {
+    background-color: @bg-col;
+}
+
+inputbar {
+    children: [prompt,entry];
+    background-color: @bg-col-light;
+    border: 0px 0px 2px 0px;
+    border-color: @border-col;
+}
+
+prompt {
+    background-color: @bg-col-light;
+    text-color: @fg-col;
+    enabled: false;
+    padding: 12 ;
+}
+
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+}
+
+entry {
+    padding: 12 ;
+    placeholder: "...";
+    text-color: @fg-col2;
+    placeholder-color: @fg-col;
+    background-color: @bg-col-light;
+}
+
+listview {
+    margin: 6px 0px 0px 0px ;
+    background-color: @bg-col;
+    columns: 2;
+    lines: 10;
+}
+
+element {
+  padding: 6 12 6 12;
+    background-color: @bg-col;
+    text-color: @fg-col  ;
+}
+
+element-icon {
+    size: 24px;
+}
+
+element selected {
+    background-color: @selected-col;
+    text-color: @fg-col2;
+}
+
+mode-switcher {
+    spacing: 0;
+  }
+
+button {
+    padding: 6;
+    background-color: @bg-col;
+    border: 3 0 0 0;
+    border-color: @border-col;
+    text-color: @fg-col;
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+}
+
+button selected {
+    background-color: @selected-col;
+    text-color: @fg-col2  ;
+}
