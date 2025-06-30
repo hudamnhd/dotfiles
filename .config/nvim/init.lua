@@ -84,7 +84,7 @@ vim.keymap.set('', ';', ':', { noremap = true })
 vim.keymap.set('', ':', ';', { noremap = true })
 
 local disabled_keys = { 's', 'q', 'X', '<C-z>', '<Space>' }
-local blackhole_keys = { 'c', 'd' }
+local blackhole_keys = { 'x', 'c', 'd' }
 local undo_break_chars = { ',', ';', '.' }
 local delimiter_chars = { ',', ';', '.' }
 
@@ -95,11 +95,13 @@ local define_keymaps = function(actions)
   end
   -- See :help quote_
   for _, char in ipairs(blackhole_keys) do
-    M.map('nv', char, '"_' .. char)
+    M.map('n', char, '"_' .. char)
   end
-  -- keep x in visual mode for cut
-  M.map('n', 'x', '"_x')
-
+  -- yank + action
+  for _, char in ipairs(blackhole_keys) do
+    M.map('n', 'y' .. char, char)
+  end
+  -- undo break chars
   for _, char in ipairs(undo_break_chars) do
     M.map('i', char, char .. '<C-g>u')
   end
@@ -118,7 +120,8 @@ local define_keymaps = function(actions)
     { 'n',      actions.search_next_normal, { expr = true } },
     { 'N',      actions.search_prev_normal, { expr = true } },
     { 'g<C-s>', actions.substitute_search,  { silent = false, desc = 'Substitute latest search' } },
-    { 'g<C-w>', actions.substitute_cword,   { silent = false, desc = 'Substitute cword' } },
+    { 'g<C-b>', actions.substitute_cword,   { silent = false, desc = 'Substitute cword' } },
+    { 'g<C-b>', actions.substitute_visual,  { silent = false, desc = 'Substitute visual', mode = 'x' } },
 
     -- Paste & Yank
     { 'p',      actions.paste_keep_register,  { mode = 'x',  expr = true } },
@@ -153,6 +156,8 @@ local define_keymaps = function(actions)
     { '<F2>',  actions.regex_fuzzy_match,        { mode = 'c', silent = false } },
     { '<C-v>', actions.paste_register_default,   { mode = 'c', silent = false } },
     { '<A-v>', actions.paste_register_clipboard, { mode = 'c', silent = false } },
+
+    { '<C-r><C-v>', actions.get_visual_selection, { mode = 'c', silent = false } },
 
     -- Leader
     { '<Leader>q',  actions.buffer_delete, { desc = 'Buffer delete' } },
@@ -233,11 +238,13 @@ local load_keymaps = function()
         paste_register_clipboard = '<C-r>+',
         regex_capture_all = [[\(.*\)]],
         regex_fuzzy_match = [[.\{-}]],
+        get_visual_selection = [[<c-r>=luaeval("get_visual_selection(false)")<cr>]],
 
         -- Yank Visual Select
         select_last_yank = '`[v`]',
         substitute_search = ':%s///gI<left><left><left>',
         substitute_cword = [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+        substitute_visual = [[:<C-u>%s/\V<C-r>=luaeval("get_visual_selection()")<cr>/<c-r>=luaeval("get_visual_selection()")<cr>/gI<Left><Left><Left>]],
 
         -- case
         to_lowercase = 'mzguiw`z',
@@ -836,7 +843,7 @@ function M.plugins()
             })
 
             -- Copy the current line and all diagnostics on that line to system clipboard
-            M.map('n', 'yd', function()
+            M.map('n', 'gyd', function()
               local pos = vim.api.nvim_win_get_cursor(0)
               local line_num = pos[1] - 1 -- 0-indexed
               local line_text = vim.api.nvim_buf_get_lines(0, line_num, line_num + 1, false)[1]
@@ -1239,6 +1246,26 @@ function M.keymaps(keymaps, global_opts)
     M.map(modes, lhs, rhs, opts)
   end
 end
+
+-- taken from: https://github.com/rebelot/dotfiles/blob/0b7e3b4f5063173f38d69a757ab03a8d9323af2e/nvim/lua/utilities.lua#L3
+function M.visual_selection_range()
+  local _, csrow, cscol, _ = unpack(vim.fn.getpos("'<"))
+  local _, cerow, cecol, _ = unpack(vim.fn.getpos("'>"))
+  if csrow < cerow or (csrow == cerow and cscol <= cecol) then
+    return csrow - 1, cscol - 1, cerow - 1, cecol
+  else
+    return cerow - 1, cecol - 1, csrow - 1, cscol
+  end
+end
+
+local escape_characters = '"\\/.*$^~[]'
+
+function _G.get_visual_selection(escape)
+  local sr, sc, er, ec = M.visual_selection_range()
+  local text = vim.api.nvim_buf_get_text(0, sr, sc, er, ec, {})
+  if #text == 1 then return escape ~= false and vim.fn.escape(text[1], escape_characters) or text[1] end
+end
+
 
 --- Register plugins or configs.
 --- @param plugins table[] List of plugin spec or config tables
