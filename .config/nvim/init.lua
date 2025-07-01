@@ -83,7 +83,7 @@ vim.g.maplocalleader = vim.keycode('<space>')
 vim.keymap.set('', ';', ':', { noremap = true })
 vim.keymap.set('', ':', ';', { noremap = true })
 
-local disabled_keys = { 's', 'q', 'X', '<C-z>', '<Space>' }
+local disabled_keys = { 's', 'q', '<C-z>', '<Space>' }
 local blackhole_keys = { 'x', 'c', 'd' }
 local undo_break_chars = { ',', ';', '.' }
 local delimiter_chars = { ',', ';', '.' }
@@ -95,11 +95,7 @@ local define_keymaps = function(actions)
   end
   -- See :help quote_
   for _, char in ipairs(blackhole_keys) do
-    M.map('n', char, '"_' .. char)
-  end
-  -- yank + action
-  for _, char in ipairs(blackhole_keys) do
-    M.map('n', 'y' .. char, char)
+    M.map(char ~= 'd' and 'nv' or 'n', char, '"_' .. char)
   end
   -- undo break chars
   for _, char in ipairs(undo_break_chars) do
@@ -166,19 +162,10 @@ local define_keymaps = function(actions)
     { '<Leader>K',  actions.keywordprg,    { desc = 'Keywordprg' } },
     { '<Leader>w',  actions.save_file,     { desc = 'Save File' } },
 
-    -- Help
-    { '<Leader>vh', actions.help_index, { desc = 'Vim help index' } },
-    { '<Leader>vw', actions.help_cWORD, { desc = 'Vim help cWORD' } },
-
-    -- Help
-    { '<Leader>vh', actions.help_index, { desc = 'Vim help index' } },
-    { '<Leader>vw', actions.help_cWORD, { desc = 'Vim help cWORD' } },
-
     -- Quickfix List/Location List
     { '<leader>xq', actions.toggle_quickfix, { desc = 'Quickfix List' } },
     { '<leader>xl', actions.toggle_loclist,  { desc = 'Location List'  } },
   })
-
 end
 
 -- Setup Keymaps on UIEnter Event
@@ -579,7 +566,8 @@ function M.plugins()
           {
             module = 'mini.bufremove',
             config = function()
-              M.map('n', '<Leader>bd', '<Cmd>lua MiniBufremove.delete()<CR>', { desc = 'Safe bdelete' })
+              M.map('n', '<Leader>bd', '<Cmd>lua MiniBufremove.delete()<CR>', { desc = 'Delete buffer' })
+              M.map('n', '<Leader>bw', '<Cmd>lua MiniBufremove.wipeout()<CR>', { desc = 'Wipeout buffer' })
             end,
           },
           {
@@ -729,7 +717,7 @@ function M.plugins()
                 },
 
                 window = {
-                  delay = 0,
+                  delay = vim.o.timeoutlen,
                   scroll_down = '<C-d>',
                   scroll_up = '<C-u>',
                   config = function(bufnr)
@@ -1095,6 +1083,19 @@ function M.plugins()
             ['ctrl-/'] = 'toggle-preview',
           },
         },
+        builtin = {
+          actions = {
+            ['ctrl-g'] = {
+              fn = function() vim.cmd('FzfLua builtin query=git_') end,
+            },
+            ['ctrl-l'] = {
+              fn = function() vim.cmd('FzfLua builtin query=lsp') end,
+            },
+            ['ctrl-s'] = {
+              fn = function() vim.cmd('FzfLua builtin query=grep_') end,
+            },
+          },
+        },
       },
       config = function()
         local fzf = require('fzf-lua')
@@ -1119,39 +1120,78 @@ function M.plugins()
           desc = 'Fzf find files.',
         })
 
-        local search = {
+        -- custom fzf
+        local custom = {
+          lsp = function() fzf.builtin({ query = 'lsp_' }) end,
+          git = function() fzf.builtin({ query = 'git_' }) end,
           config = function() fzf.files({ cwd = vim.fn.stdpath('config') }) end,
-          blines = function() fzf.blines({ start = 'cursor' }) end,
-          bcword = function() fzf.blines({ query = vim.fn.expand('<cword>') }) end,
+          bcword = function() fzf.lgrep_curbuf({ start = 'cursor', query = vim.fn.expand('<cword>') }) end,
+          diagnostics = function(opts)
+            return fzf.diagnostics_workspace(vim.tbl_extend('force', opts or {}, {
+              prompt = 'Workspace Diagnostics> ',
+            }))
+          end,
+          help = function()
+            local ok = pcall(vim.cmd.help, vim.fn.expand('<cWORD>'))
+            if not ok then fzf.help_tags({ query = vim.fn.expand('<cword>') }) end
+          end,
+          grep_buffer = function()
+            local query = vim.fn.expand('<cword>')
+            local path = vim.api.nvim_buf_get_name(0)
+            local relpath = vim.fn.fnamemodify(path, ':.')
+            local cmd = string.format(
+              [[rg --column --line-number --no-heading --color=always --word-regexp --with-filename %q %s]],
+              query,
+              relpath
+            )
+
+            require('fzf-lua').fzf_exec(cmd, {
+              prompt = 'Grep buffer> ',
+              query = query,
+              actions = {
+                ['default'] = function(selected, opts)
+                  if #selected == 0 then return end
+                  if #selected > 1 then
+                    fzf.actions.file_sel_to_qf(selected, opts)
+                  else
+                    local filename, line, col, text = selected[1]:match('([^:]+):(%d+):(%d+):?(.*)$')
+                    if tonumber(line) then
+                      vim.api.nvim_win_set_cursor(0, { tonumber(line), tonumber(col) - 1 or 0 })
+                    end
+                    vim.fn.setreg('/', query)
+                  end
+                end,
+              },
+              previewer = false,
+            })
+          end,
         }
+
+        local Fzf = vim.tbl_deep_extend('force', vim.deepcopy(require('fzf-lua')), custom)
 
         --stylua: ignore
         M.keymaps({
-
-          { '<c-x><c-f>', fzf.complete_path, { desc = "Search Complete Path", mode = 'i' } },
-          { '<c-x><c-l>', fzf.complete_line, { desc = "Search Complete Line", mode = 'i' } },
-
-          { '<Leader>sh', fzf.help_tags,     { desc = 'Search Help' } },
-          { '<Leader>sk', fzf.keymaps,       { desc = 'Search Keymaps' } },
-          { '<Leader>sc', fzf.git_commits,   { desc = 'Search Commits' } },
-          { '<Leader>sp', fzf.git_files,     { desc = 'Search Git Files' } },
-          { '<Leader>sn', search.config,     { desc = 'Search Neovim files' } },
-
-          { 'sd', fzf.diagnostics_workspace, { desc = 'Search Diagnostics workspace' } },
-
-          { 'ss', fzf.resume,        { desc = 'Search Resume' } },
-          { 'sp', fzf.files,         { desc = 'Search Project Files' } },
-          { 'sg', fzf.grep_visual,   { desc = 'Search by Grep Visual', mode = 'v' } },
-          { 'sg', fzf.grep_cword,    { desc = 'Search by Grep Cword' } },
-          { 'si', fzf.grep,          { desc = 'Search by Grep Input' } },
-          { 'sb', fzf.buffers,       { desc = 'Search Buffers' } },
-          { 'so', fzf.oldfiles,      { desc = 'Search Oldfiles' } },
-          { 'z=', fzf.spell_suggest, { desc = "Search Spell Suggest" } },
-
-          { 'sk', fzf.builtin,       { desc = 'Search Fzf Builtin' } },
-
-          { 's8', search.bcword,     { desc = 'Search Buffer cword' } },
-          { 'sl', search.blines,     { desc = 'Search Buffer lines' } },
+          { '*',           Fzf.grep_buffer,     { desc = 'Open buffer word picker' } },
+          { 'z=',          Fzf.spell_suggest,   { desc = 'Open spell suggest picker' } },
+          { '<F1>',        Fzf.help,            { desc = 'Open nvim help picker' } },
+          { '<C-f>',       Fzf.builtin,         { desc = 'Open builtin picker',       mode = 'nv' } },
+          { '<Leader>f',   Fzf.files,           { desc = 'Open file picker' } },
+          { '<Leader>ps',  Fzf.grep_visual,     { desc = 'Open search visual picker', mode = 'v' } },
+          { '<Leader>ps',  Fzf.grep_cword,      { desc = 'Open search word picker' } },
+          { '<Leader>pi',  Fzf.grep,            { desc = 'Open search input picker' } },
+          { '<Leader>pf',  Fzf.git_files,       { desc = 'Open gitfiles picker' } },
+          { '<Leader>po',  Fzf.oldfiles,        { desc = 'Open oldfiles picker' } },
+          { '<Leader>pb',  Fzf.buffers,         { desc = 'Open buffer picker' } },
+          { '<Leader>pd',  Fzf.diagnostics,     { desc = 'Open diagnostics picker' } },
+          { '<Leader>pr',  Fzf.resume,          { desc = 'Open last picker' } },
+          { '<Leader>phc', Fzf.command_history, { desc = 'Open command history picker' } },
+          { '<Leader>phs', Fzf.search_history,  { desc = 'Open search history picker' } },
+          { '<Leader>pnk', Fzf.keymaps,         { desc = 'Open nvim keymap picker' } },
+          { '<Leader>pnf', Fzf.filetypes,       { desc = 'Open nvim filetype picker' } },
+          { '<Leader>pnh', Fzf.highlights,      { desc = 'Open nvim highlights picker' } },
+          { '<Leader>pnc', Fzf.config,          { desc = 'Open nvim config picker' } },
+          { '<C-x><C-f>',  Fzf.complete_path,   { desc = 'Open complete path picker', mode = 'i' } },
+          { '<C-x><C-l>',  Fzf.complete_line,   { desc = 'Open complete line picker', mode = 'i' } },
         })
       end,
     },
@@ -1179,7 +1219,6 @@ function M.plugins()
           git[k] = '<cmd>' .. v .. '<cr>'
         end
 
-        local fzf = require('fzf-lua')
         --stylua: ignore
         M.keymaps({
           { '<Leader>gg', git.git,         { desc = 'Git' } },
@@ -1188,16 +1227,6 @@ function M.plugins()
           { '<Leader>gv', git.vdiff,       { desc = 'Git diff (buffer)' } },
           { '<Leader>gl', git.log_buffer,  { desc = 'Git log (buffer)' } },
           { '<Leader>gL', git.log_project, { desc = 'Git log (project)' } },
-        })
-
-        --stylua: ignore
-        M.keymaps({
-          { '<Leader>gb', fzf.git_blame,    { desc = 'Git Blame' } },
-          { '<Leader>gB', fzf.git_branches, { desc = 'Git Branches' } },
-          { '<Leader>gc', fzf.git_bcommits, { desc = 'Git Log' } },
-          { '<Leader>gC', fzf.git_commits,  { desc = 'Git Log' } },
-          { '<Leader>gs', fzf.git_status,   { desc = 'Git Status' } },
-          { '<Leader>gt', fzf.git_tags,     { desc = 'Git Tags' } },
         })
 
         vim.api.nvim_create_autocmd('FileType', {
