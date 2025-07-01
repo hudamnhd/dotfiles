@@ -62,10 +62,12 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
 static const char *pavucmd[]  = { "pavucontrol", NULL};
+static const char *roficmd[]  = { "/home/hudamnhd/.local/bin/rofi-custom", "menu", NULL };
 
 static const Key keys[] = {
 	/* modifier                           key              function        argument */
 	{ MODKEY,                             XK_p,            spawn,          {.v = dmenucmd } },
+	{ MODKEY,                             XK_s,            spawn,          {.v = roficmd } },
 	{ MODKEY,                             XK_x,            spawn,          {.v = termcmd } },
 	{ MODKEY,                             XK_b,            togglebar,      {0} },
 	{ MODKEY,                             XK_a,            focusstack,     {.i = +1 } },
@@ -109,8 +111,10 @@ static const Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        togglelayout,   {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[3]} },
+	{ ClkStatusText,        0,              Button1,        spawn,          {.v = roficmd } },
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkStatusText,        0,              Button3,        spawn,          {.v = pavucmd } },
+	{ ClkWinTitle,          0,              Button1,        spawn,          {.v = roficmd } },
 	{ ClkWinTitle,          0,              Button3,        zoom,           {0} },
 	{ ClkWinTitle,          0,              Button4,        focusstack,     {.i = +1 } },
 	{ ClkWinTitle,          0,              Button5,        focusstack,     {.i = -1 } },
