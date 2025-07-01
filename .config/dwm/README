@@ -11,6 +11,7 @@ Patches applied
 - `dwm-6.0-winview.diff`
 - `dwm-6.1-pertag_without_bar.diff`
 - `dwm-gridmode-5.8.2.diff`
+- `dwm-6.5-hide-restore-win.diff`
 
 
 Requirements
