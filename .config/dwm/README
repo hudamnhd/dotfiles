@@ -52,6 +52,22 @@ like this in your .xinitrc:
     exec dwm
 
 
+With Display Manager
+--------------------
+Create a desktop entry (make sure to change user with your user):
+
+```bash
+sudo touch /usr/share/xsessions/dwm.desktop
+```
+
+```
+[Desktop Entry]
+Name=dwm
+Comment=dwm
+Exec=/home/user/.config/dwm/run.sh
+Type=Application
+```
+
 Configuration
 -------------
 The configuration of dwm is done by creating a custom config.h
