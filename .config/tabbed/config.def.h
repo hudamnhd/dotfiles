@@ -64,5 +64,7 @@ static const Key keys[] = {
 */
 	{ MODKEY|ShiftMask,     XK_q,      killclient,  { 0 } },
 
+	{ MODKEY,               XK_F1,	   showbar,    { .i = 1 } },
+	{ ShiftMask,            XK_F1,	   showbar,    { .i = 0 } },
 	{ 0,                    XK_F11,    fullscreen,  { 0 } },
 };
