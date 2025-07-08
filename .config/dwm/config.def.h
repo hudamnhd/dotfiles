@@ -15,20 +15,28 @@ static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_gray4 },
+	[SchemeSel]  = { col_gray1, col_gray4,  col_gray4 },
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+// static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	/* class            instance    title       tags mask     isfloating   monitor */
+	{ "Zathura",        NULL,       NULL,       1 << 6,       0,           -1 },
+	{ "Mousepad",       NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "mpv",            NULL,       NULL,       1 << 5,       0,           -1 },
+	{ "Pavucontrol",    NULL,       NULL,       1 << 4,       1,           -1 },
+	{ "firefox",        NULL,       NULL,       1 << 1,       0,           -1 },
+	{ "Vivaldi-stable", NULL,       NULL,       1 << 2,       0,           -1 },
+	{ "Pcmanfm",        NULL,       NULL,       1 << 3,       0,           -1 },
+  { "tabbed",         NULL,       NULL,       1 << 9,       0,           -1 },
+
 };
 
 /* layout(s) */
@@ -66,8 +74,7 @@ static const char *roficmd[]  = { "/home/hudamnhd/.local/bin/rofi-custom", "menu
 
 static const Key keys[] = {
 	/* modifier                           key              function        argument */
-	{ MODKEY,                             XK_p,            spawn,          {.v = dmenucmd } },
-	{ MODKEY,                             XK_s,            spawn,          {.v = roficmd } },
+	{ MODKEY,                             XK_p,            spawn,          {.v = roficmd } },
 	{ MODKEY,                             XK_x,            spawn,          {.v = termcmd } },
 	{ MODKEY,                             XK_b,            togglebar,      {0} },
 	{ MODKEY,                             XK_a,            focusstack,     {.i = +1 } },
@@ -84,12 +91,12 @@ static const Key keys[] = {
 	{ MODKEY,                             XK_g,            setlayout,      {.v = &layouts[3]} },
 	{ MODKEY,                             XK_space,        setlayout,      {0} },
 	{ MODKEY|ShiftMask,                   XK_space,        togglefloating, {0} },
-	{ MODKEY,                             XK_0,            view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,                   XK_0,            tag,            {.ui = ~0 } },
-	{ MODKEY,                             XK_comma,        focusmon,       {.i = -1 } },
-	{ MODKEY,                             XK_period,       focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,                   XK_comma,        tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,                   XK_period,       tagmon,         {.i = +1 } },
+	{ MODKEY,                             XK_v,            view,           {.ui = ~0 } },
+	{ MODKEY|ShiftMask,                   XK_v,            tag,            {.ui = ~0 } },
+	// { MODKEY,                             XK_comma,        focusmon,       {.i = -1 } },
+	// { MODKEY,                             XK_period,       focusmon,       {.i = +1 } },
+	// { MODKEY|ShiftMask,                   XK_comma,        tagmon,         {.i = -1 } },
+	// { MODKEY|ShiftMask,                   XK_period,       tagmon,         {.i = +1 } },
 	TAGKEYS(                              XK_1,                             0)
 	TAGKEYS(                              XK_2,                             1)
 	TAGKEYS(                              XK_3,                             2)
@@ -99,6 +106,7 @@ static const Key keys[] = {
 	TAGKEYS(                              XK_7,                             6)
 	TAGKEYS(                              XK_8,                             7)
 	TAGKEYS(                              XK_9,                             8)
+	TAGKEYS(                              XK_0,                             9)
 	{ MODKEY|ShiftMask,                   XK_q,            quit,           {0} },
 	{ MODKEY,                             XK_o,            winview,        {0} },
   { MODKEY,                             XK_minus,        hidewin,        {0} },
