@@ -24,6 +24,19 @@ function Plugin.core()
   })
 end
 
+-- load all custom plugin from "lua/config/plugin/custom"
+local custom_path = 'config/plugin/custom'
+local custom_dir = vim.fs.normalize(vim.fn.stdpath('config') .. '/lua/' .. custom_path)
+
+function Plugin.custom()
+  for name, type in vim.fs.dir(custom_dir) do
+    if type == 'file' then
+      local mod_name = name:match('(.+)%.lua$')
+      if mod_name then require(custom_path:gsub('/', '.') .. '.' .. mod_name) end
+    end
+  end
+end
+
 function Plugin.bootstrap()
   local mini_path = vim.fn.stdpath('data') .. '/site/pack/deps/start/mini.nvim'
   if not vim.loop.fs_stat(mini_path) then
@@ -38,8 +51,6 @@ function Plugin.bootstrap()
     vim.cmd('packadd mini.nvim | helptags ALL')
     vim.cmd('echo "Installed `mini.nvim`" | redraw')
   end
-
-  Plugin.core()
 end
 
 --- setup plugins or configs.
@@ -89,10 +100,12 @@ function Plugin.setup(opts)
     local lazy = entry.lazy ~= false -- default true
     local runner = (mode == 'config')
         and function()
-          if type(entry.opts) == 'table' or (entry.config == true or type(entry.config) == 'boolean') then
-            setup_plugin(entry.module, entry.opts)
+          if entry.enable ~= false then
+            if type(entry.opts) == 'table' or (entry.config == true or type(entry.config) == 'boolean') then
+              setup_plugin(entry.module, entry.opts)
+            end
+            run_config(entry)
           end
-          run_config(entry)
         end
       or function()
         entry.module = entry.name or entry.source
@@ -121,5 +134,7 @@ end
 
 -- Run
 Plugin.bootstrap()
+Plugin.core()
+Plugin.custom()
 
 return Plugin

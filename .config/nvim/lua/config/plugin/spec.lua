@@ -14,26 +14,10 @@ return {
     config = function() require('config.plugin.blink') end,
   },
 
-  {
-    source = 'linrongbin16/fzfx.nvim',
-    checkout = 'v7.2.1',
-    config = function() require('fzfx').setup() end,
-  },
-
   -- Picker
   {
     source = 'ibhagwan/fzf-lua',
     config = function() require('config.plugin.fzf-lua') end,
-  },
-  {
-    source = 'michel-garcia/fzf-lua-file-browser.nvim',
-    config = function() require('fzf-lua-file-browser').setup() end,
-  },
-
-  -- Git wrapper
-  {
-    source = 'tpope/vim-fugitive',
-    config = function() require('config.plugin.vim-fugitive') end,
   },
 
   -- Formatter
@@ -48,6 +32,35 @@ return {
     name = 'rose-pine',
     lazy = false,
     config = function() require('config.plugin.rose-pine') end,
+  },
+  {
+    source = 'folke/tokyonight.nvim',
+    lazy = false,
+    enable = false,
+    config = function()
+      require('tokyonight').setup({
+        -- use the night style
+        style = 'night',
+        transparent = true,
+        -- disable italic for functions
+        styles = {
+          comments = { italic = false },
+          keywords = { italic = false },
+        },
+        on_highlights = function(highlights, c)
+          for _, defn in pairs(highlights) do
+            if defn.undercurl then
+              defn.undercurl = false
+              defn.underline = true
+            end
+          end
+          highlights.Comment = { fg = c.dark5 }
+          highlights.TabLine = { fg = c.dark5 }
+        end,
+      })
+
+      vim.cmd('colorscheme tokyonight')
+    end,
   },
 
   -- Tree-sitter (advanced syntax parsing, highlighting, textobjects)
@@ -71,24 +84,20 @@ return {
   },
 
   -- tools
-  {
-    source = 'thinca/vim-partedit',
-    config = function()
-      vim.keymap.set('v', '<CR>', ":Partedit -opener new -filetype vimpe -prefix '>'<CR>", {})
-    end,
-  },
   { source = 'kana/vim-grex' },
   { source = 'kana/vim-tabpagecd' },
-  { source = 'tyru/capture.vim' },
+  {
+    source = 'thinca/vim-partedit',
+    config = function() vim.keymap.set('v', '<CR>', ":Partedit -opener new -filetype vimpe -prefix '>'<CR>", {}) end,
+  },
   {
     source = 'thinca/vim-qfreplace',
     config = function()
       vim.api.nvim_create_autocmd('FileType', {
         pattern = 'qf',
         desc = 'Quicfix replacer',
-        callback = function() vim.keymap.set('n', 'r', '<Cmd>Qfreplace<CR>', { buffer = true }) end,
+        callback = function(ctx) vim.keymap.set('n', 'R', '<Cmd>Qfreplace<CR>', { buffer = ctx.buf }) end,
       })
     end,
   },
 }
-

@@ -24,26 +24,7 @@ require('blink.cmp').setup({
       buffer = {
         max_items = 4,
         min_keyword_length = 3,
-
         score_offset = -7,
-
-        opts = {
-          -- show completions from all buffers used within the last x minutes
-          get_bufnrs = function()
-            local mins = 15
-            local allOpenBuffers = vim.fn.getbufinfo({ buflisted = 1, bufloaded = 1 })
-            local recentBufs = vim
-              .iter(allOpenBuffers)
-              :filter(function(buf)
-                local recentlyUsed = os.time() - buf.lastused < (60 * mins)
-                local nonSpecial = vim.bo[buf.bufnr].buftype == ''
-                return recentlyUsed and nonSpecial
-              end)
-              :map(function(buf) return buf.bufnr end)
-              :totable()
-            return recentBufs
-          end,
-        },
       },
     },
   },

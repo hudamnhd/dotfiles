@@ -38,54 +38,17 @@ vim.api.nvim_create_user_command(
   }
 )
 
----remove all trailing whitespaces within the current buffer
----retain cursor position & last search content
-vim.api.nvim_create_user_command('Trailspace', function()
-  local pos = vim.api.nvim_win_get_cursor(0)
-  local last_search = vim.fn.getreg('/')
-  local hl_state = vim.v.hlsearch
-
-  vim.cmd(':%s/\\s\\+$//e')
-
-  vim.fn.setreg('/', last_search) -- restore last search
-  vim.api.nvim_win_set_cursor(0, pos) -- restore cursor position
-  if hl_state == 0 then
-    vim.cmd.nohlsearch() -- disable search highlighting again if it was disabled before
-  end
-end, {
-  desc = 'remove all trailing whitespaces within the current buffer',
-})
-
 -- diff toggle
 vim.api.nvim_create_user_command('Difftoggle', function()
   if vim.wo.diff then
     vim.cmd('windo diffoff')
+    vim.cmd('windo set nowrap')
   else
     vim.cmd('windo diffthis')
     vim.cmd('windo set wrap')
   end
 end, {
   desc = 'toggle diff',
-})
-
--- zoom toggle
-vim.api.nvim_create_user_command('Zoom', function()
-  vim.cmd('normal! ' .. '|')
-
-  if vim.fn.winnr('$') == 1 then return end
-
-  local restore_cmd = vim.fn.winrestcmd()
-  vim.cmd('wincmd |')
-  vim.cmd('wincmd _')
-
-  if vim.g.zoom_restore then
-    vim.cmd(vim.g.zoom_restore)
-    vim.g.zoom_restore = nil
-  elseif vim.fn.winrestcmd() ~= restore_cmd then
-    vim.g.zoom_restore = restore_cmd
-  end
-end, {
-  desc = 'toggle zoom split',
 })
 
 --------------------------------------------------------------------------------

@@ -50,13 +50,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     if not ok then return end
 
-    vim.keymap.set('n', '<Leader>la', fzf.lsp_code_actions, { desc = 'Code action' })
-    vim.keymap.set('n', '<Leader>lr', fzf.lsp_references, { desc = 'References' })
-    vim.keymap.set('n', '<Leader>ld', fzf.lsp_definitions, { desc = 'Definition' })
-    vim.keymap.set('n', '<Leader>lD', fzf.lsp_declarations, { desc = 'Declarations' })
-    vim.keymap.set('n', '<Leader>li', fzf.lsp_implementations, { desc = 'Implementation' })
-    vim.keymap.set('n', '<Leader>lf', vim.lsp.buf.format, { desc = 'Format' })
-    vim.keymap.set('n', '<Leader>lR', vim.lsp.buf.rename, { desc = 'Rename' })
+    vim.keymap.set('n', '<Leader>ca', fzf.lsp_code_actions, { desc = 'Lsp action' })
+    vim.keymap.set('n', '<Leader>cf', fzf.lsp_finder, { desc = 'Lsp Finder' })
+    vim.keymap.set('n', '<Leader>cr', vim.lsp.buf.rename, { desc = 'Lsp Rename' })
+    vim.keymap.set({ 'n', 'x' }, 'gQ', vim.lsp.buf.format, { desc = 'Lsp Format' })
 
     -- Copy the current line and all diagnostics on that line to system clipboard
     vim.keymap.set('n', 'gyd', function()

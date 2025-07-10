@@ -11,12 +11,13 @@ function keymap.custom()
   vim.keymap.set('', ':', ';', { noremap = true })
 
   -- Disable
-  vim.keymap.set('', 's', '<nop>')
-  vim.keymap.set('', '<space>', '<nop>')
+  for _, char in ipairs({ 's', 'q', '<S-u>', '<C-z>', '<Space>' }) do
+    vim.keymap.set('', char, '<nop>')
+  end
 
   -- Save / Quit
-  vim.keymap.set('n', '<leader>w', '<cmd>write<cr>', { desc = 'Save current buffer' })
-  vim.keymap.set('n', '<leader>q', '<cmd>bd<cr>', { desc = 'Delete current buffer' })
+  vim.keymap.set('n', '<Leader>w', '<cmd>write<cr>', { desc = 'Save file' })
+  vim.keymap.set('n', '<Leader>q', '<cmd>bd<cr>', { desc = 'Buf delete' })
 
   -- Navigate start/end of line
   vim.keymap.set({ 'n', 'v' }, '<C-h>', '^')
@@ -31,25 +32,12 @@ function keymap.custom()
   vim.keymap.set('t', '<A-p>', [[<C-\><C-n><C-w>p]])
   vim.keymap.set('t', [[<C-\>]], [[<C-\><C-n>]]) -- Exit terminal mode
 
-  -- Redo
-  vim.keymap.set('n', 'U', '<C-r>', { noremap = true })
-
   -- Jump to match bracket
   vim.keymap.set({ 'n', 'v' }, '<C-z>', '%')
-  vim.keymap.set('i', '<C-z>', '<C-o>%')
-
-  -- Toggle zoom
-  vim.keymap.set('n', '|', '<cmd>Zoom<cr>')
 
   -- Messages
-  vim.keymap.set('n', '<leader>m', '<cmd>messages<cr>', { desc = 'Show messages' })
-  vim.keymap.set('n', '<leader>M', '<cmd>messages clear<cr>', { desc = 'Clear messages' })
-
-  -- File Explorer
-  vim.keymap.set('n', '<leader>e', '<cmd>Ex<cr>', { desc = 'Open netrw' })
-
-  -- Search file (manual)
-  vim.keymap.set('n', '<leader>f', ':find ', { silent = false, desc = 'Search file' })
+  vim.keymap.set('n', '<Leader>m', '<cmd>messages<cr>', { desc = 'Show messages' })
+  vim.keymap.set('n', '<Leader>M', '<cmd>messages clear<cr>', { desc = 'Clear messages' })
 
   -- === TEXT MANIPULATION ===
 
@@ -58,8 +46,8 @@ function keymap.custom()
   vim.keymap.set('v', '>', '>gv', {})
 
   -- Move lines up/down
-  vim.keymap.set('x', '<A-k>', ":move '<-2<CR>gv=gv", {})
-  vim.keymap.set('x', '<A-j>', ":move '>+1<CR>gv=gv", {})
+  -- vim.keymap.set('x', '<A-k>', ":move '<-2<CR>gv=gv", {})
+  -- vim.keymap.set('x', '<A-j>', ":move '>+1<CR>gv=gv", {})
 
   -- Keep center on search
   vim.keymap.set('n', 'n', 'nzzzv', { desc = "Fwd search '/' or '?'" })
@@ -69,12 +57,13 @@ function keymap.custom()
   vim.keymap.set('n', 'J', [['mz' . v:count1 . 'J`z']], { expr = true, desc = 'Join lines keep cursor' })
 
   -- Undo breakpoints
-  vim.keymap.set('i', ',', ',<C-g>u')
-  vim.keymap.set('i', '.', '.<C-g>u')
-  vim.keymap.set('i', ';', ';<C-g>u')
+  for _, char in ipairs({ ',', ';', '.' }) do
+    vim.keymap.set('i', char, char .. '<C-g>u')
+  end
 
   -- Change word with search
   vim.keymap.set('n', '<Bs>', '*N"_cgn')
+  vim.keymap.set('x', '<Bs>', [[<esc>/\V<C-r>=luaeval("config.get_visual_selection()")<CR><CR>N"_cgn]])
 
   -- Select last pasted/yanked
   vim.keymap.set('n', 'g<C-v>', '`[v`]', { desc = 'Visual select last yank/paste' })
@@ -88,10 +77,9 @@ function keymap.custom()
   -- === CLIPBOARD / BLACKHOLE ===
 
   -- Cut to blackhole
-  vim.keymap.set({ 'n', 'x' }, 'D', '"_D')
-  vim.keymap.set({ 'n', 'x' }, 'c', '"_c')
-  vim.keymap.set({ 'n', 'x' }, 'x', '"_x')
-  vim.keymap.set('n', 'd', '"_d')
+  for _, char in ipairs({ 'x', 'c', 'd' }) do
+    vim.keymap.set(char ~= 'd' and { 'n', 'x' } or { 'n' }, char, '"_' .. char)
+  end
 
   -- Paste without overwrite
   vim.keymap.set('x', 'p', [['pgv"' . v:register . 'y']], { expr = true, noremap = true, desc = 'Paste keep reg' })
@@ -100,33 +88,35 @@ function keymap.custom()
   vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to clipboard' })
   vim.keymap.set({ 'n', 'x' }, 'gp', '"+p', { desc = 'Paste from clipboard' })
 
+  -- File Explorer
+  -- vim.keymap.set('n', '<Leader>e', '<cmd>Ex<cr>', { desc = 'Open netrw' })
+
+  -- Search file (manual)
+  -- vim.keymap.set('n', '<Leader>f', ':find ', { silent = false, desc = 'Search file' })
+
   -- === PICKER NAVIGATION ===
 
-  vim.keymap.set('n', '<leader>vb', ':ls<cr>:buffer ', { desc = 'Picker buffer' })
-  vim.keymap.set('n', '<leader>vu', ':undolist<cr>:undo ', { desc = 'Picker undolist' })
-  vim.keymap.set('n', '<leader>vw', ':g/<C-r><C-w>/#<cr>:', { desc = 'Picker g' })
-  vim.keymap.set('n', '<leader>vg', ':changes<cr>:normal! g;<S-Left>', { desc = 'Picker changes' })
-  vim.keymap.set('n', '<leader>vm', ':marks<cr>:normal! `', { desc = 'Picker mark' })
-  vim.keymap.set('n', '<leader>vo', ':oldfiles<cr>:edit #<', { desc = 'Picker oldfiles' })
-  vim.keymap.set('n', '<leader>vr', ':registers<cr>:normal! "p<left>', { desc = 'Picker register' })
-  vim.keymap.set('n', '<leader>vj', ':jumps<cr>:normal!<C-O><S-Left>', { desc = 'Picker jumps' })
-
-  -- Quickfix / Location list
-  vim.keymap.set('n', '<leader>xq', "<cmd>lua config.toggle_qf('q')<cr>", { desc = 'Quickfix List' })
-  vim.keymap.set('n', '<leader>xl', "<cmd>lua config.toggle_qf('l')<cr>", { desc = 'Location List' })
+  -- vim.keymap.set('n', '<Leader>vb', ':ls<cr>:buffer ', { desc = 'Picker buffer' })
+  -- vim.keymap.set('n', '<Leader>vu', ':undolist<cr>:undo ', { desc = 'Picker undolist' })
+  -- vim.keymap.set('n', '<Leader>vw', ':g/<C-r><C-w>/#<cr>:', { desc = 'Picker g' })
+  -- vim.keymap.set('n', '<Leader>vg', ':changes<cr>:normal! g;<S-Left>', { desc = 'Picker changes' })
+  -- vim.keymap.set('n', '<Leader>vm', ':marks<cr>:normal! `', { desc = 'Picker mark' })
+  -- vim.keymap.set('n', '<Leader>vo', ':oldfiles<cr>:edit #<', { desc = 'Picker oldfiles' })
+  -- vim.keymap.set('n', '<Leader>vr', ':registers<cr>:normal! "p<left>', { desc = 'Picker register' })
+  -- vim.keymap.set('n', '<Leader>vj', ':jumps<cr>:normal!<C-O><S-Left>', { desc = 'Picker jumps' })
 
   -- === SUBSTITUTE ===
 
-  vim.keymap.set('n', '<leader>sl', ':%s///gI<left><left><left>', { silent = false, desc = 'Sub last search' })
+  vim.keymap.set('n', '<Leader>r', ':%s///gI<left><left><left>', { silent = false, desc = 'Sub last search' })
   vim.keymap.set(
     'n',
-    '<leader>su',
+    '<Leader>s',
     [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
     { silent = false, desc = 'Sub word under cursor' }
   )
   vim.keymap.set(
     'x',
-    '<leader>su',
+    '<Leader>s',
     [[:<C-u>%s/\V<C-r>=luaeval("config.get_visual_selection()")<cr>/<C-r>=luaeval("config.get_visual_selection()")<cr>/gI<Left><Left><Left>]],
     { silent = false, desc = 'Sub visual selection' }
   )
@@ -135,9 +125,6 @@ function keymap.custom()
   vim.keymap.set('x', 'g/', '<esc>/\\%V', { silent = false, desc = 'Search inside visual' })
 
   -- === USEFUL ===
-
-  -- Floating terminal toggle
-  vim.keymap.set({ 'n', 't' }, '<C-t>', '<cmd>lua config.toggle_floating_term()<cr>')
 
   -- Insert register content in terminal
   vim.keymap.set(
@@ -160,6 +147,11 @@ function keymap.custom()
   -- Regex helper
   vim.keymap.set('c', '<F1>', [[\(.*\)]], { desc = 'Regex capture all' })
   vim.keymap.set('c', '<F2>', [[.\{-}]], { desc = 'Regex fuzzy match' })
+  vim.keymap.set('c', '<C-g><C-g>', [[s/\v'(.{-})'//g]], { desc = "Delete '...'(multiline)" })
+  vim.keymap.set('c', '<C-g><C-w>', [[s/\v(\w+)//g]], { desc = 'Delete word (\\w+)' })
+  vim.keymap.set('c', '<C-g><C-b>', [[s/\v\(([^()]+)\)//g]], { desc = 'Delete inside (...)' })
+  vim.keymap.set('c', '<C-g><C-d>', [[s/\v"([^"]+)"//g]], { desc = 'Delete inside "..."' })
+  vim.keymap.set('c', '<C-g><C-q>', [[s/\v'([^']+)'//g]], { desc = "Delete inside '...'" })
 
   -- Visual Mode Enhancements
   vim.keymap.set(
@@ -176,14 +168,35 @@ function keymap.custom()
   )
 
   -- Line movement with marker
-  for _, c in ipairs({ { 'k', 'Line up' }, { 'j', 'Line down' } }) do
-    vim.keymap.set(
-      'n',
-      c[1],
-      ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]),
-      { expr = true, silent = true, desc = c[2] }
-    )
+  -- for _, c in ipairs({ { 'k', 'Line up' }, { 'j', 'Line down' } }) do
+  --   vim.keymap.set(
+  --     'n',
+  --     c[1],
+  --     ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]),
+  --     { expr = true, silent = true, desc = c[2] }
+  --   )
+  -- end
+
+  vim.keymap.set('n', '<space>k', '<Cmd>lua config.run_shell()<CR>', { desc = 'Run shell command in vsplit' })
+  vim.keymap.set('n', '<space>K', '<Cmd>lua config.run_vim()<CR>', { desc = 'Run vim command in vsplit' })
+
+  local mc_select = [[<esc>/\V\C<C-r>=luaeval("config.get_visual_selection()")<CR><CR>]]
+  local mc_macro = function(selection)
+    selection = selection or ''
+
+    return function()
+      if vim.fn.reg_recording() == 'z' then return 'q' end
+
+      if vim.fn.getreg('z') ~= '' then return 'n@z' end
+
+      return selection .. '*Nqz'
+    end
   end
+
+  vim.keymap.set('n', '<F7>', '*Nqz', { desc = 'mc start macro' })
+  vim.keymap.set('n', '<F8>', mc_macro(), { desc = 'mc end or replay macro', expr = true })
+  vim.keymap.set('x', '<F7>', mc_select .. '``qz', { desc = 'mc start macro' })
+  vim.keymap.set('x', '<F8>', mc_macro(mc_select), { desc = 'mc end or replay macro', expr = true })
 
   local delimiter_chars = { ',', ';', '.' }
 
@@ -212,71 +225,6 @@ function keymap.custom()
 end
 
 --------------------------------------------------------------------------------
---- Readline
-function keymap.readline()
-  vim.keymap.set('i', '<C-a>', '<C-o>^', { desc = 'move to end of first non-whitespace character in line' })
-  vim.keymap.set('c', '<C-a>', '<Home>', { silent = false, desc = 'move cursor to start of command line' })
-  vim.keymap.set('i', '<C-b>', function()
-    local line = vim.fn.getline('.')
-    local col = vim.fn.col('.')
-    if line:match('^%s*$') and col > #line then
-      return '0<C-D><Esc>kJs'
-    else
-      return '<Left>'
-    end
-  end, { expr = true, desc = 'move cursor left or handle empty line' })
-  vim.keymap.set('c', '<C-b>', '<left>', { silent = false, desc = 'move cursor one position left in command line' })
-  vim.keymap.set('i', '<C-d>', function()
-    local col = vim.fn.col('.')
-    local len = #vim.fn.getline('.')
-    if col > len then
-      return '<C-d>'
-    else
-      return '<Del>'
-    end
-  end, { expr = true, desc = 'delete character or handle end of line in insert mode' })
-  vim.keymap.set('c', '<C-d>', function()
-    local pos = vim.fn.getcmdpos()
-    local len = #vim.fn.getcmdline()
-    if pos > len then
-      return '<C-d>'
-    else
-      return '<Del>'
-    end
-  end, { expr = true, silent = false, desc = 'delete in command line depending on cursor position' })
-  vim.keymap.set('i', '<C-e>', function()
-    local col = vim.fn.col('.')
-    local len = #vim.fn.getline('.')
-    if col > len or vim.fn.pumvisible() == 1 then
-      return '<C-e>'
-    else
-      return '<End>'
-    end
-  end, { expr = true, desc = 'move to end of line or show completion menu' })
-  vim.keymap.set('i', '<C-f>', function()
-    local col = vim.fn.col('.')
-    local len = #vim.fn.getline('.')
-    if col > len then
-      return '<C-f>'
-    else
-      return '<Right>'
-    end
-  end, { expr = true, desc = 'move cursor right or handle end of line' })
-  vim.keymap.set('c', '<C-f>', function()
-    local pos = vim.fn.getcmdpos()
-    local len = #vim.fn.getcmdline()
-    if pos > len then
-      return vim.o.cedit
-    else
-      return '<Right>'
-    end
-  end, {
-    expr = true,
-    silent = false,
-    desc = 'move cursor right in command line depending on position',
-  })
-end
-
 -- Custom
 vim.api.nvim_create_autocmd('UIEnter', {
   group = 'UserCmds',
@@ -285,11 +233,4 @@ vim.api.nvim_create_autocmd('UIEnter', {
   callback = vim.schedule_wrap(function() keymap.custom() end),
 })
 
--- Readline
-vim.api.nvim_create_autocmd({ 'CmdlineEnter', 'InsertEnter' }, {
-  group = 'UserCmds',
-  desc = 'Readline setup',
-  once = true,
-  callback = vim.schedule_wrap(function() keymap.readline() end),
-})
 --------------------------------------------------------------------------------

@@ -1,8 +1,0 @@
-require('config.util')
-require('config.option')
-require('config.autocmd')
-require('config.command')
-require('config.keymap')
-require('config.plugin')
-
-

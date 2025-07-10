@@ -1,0 +1,17 @@
+diff --git a/lua/fzf-lua/defaults.lua b/lua/fzf-lua/defaults.lua
+index a1f82fb..8c5238b 100644
+--- a/lua/fzf-lua/defaults.lua
++++ b/lua/fzf-lua/defaults.lua
+@@ -20,8 +20,10 @@ function M._default_previewer_fn()
+ end
+ 
+ function M._preview_pager_fn()
+-  return vim.fn.executable("delta") == 1 and ("delta --width=$COLUMNS --%s"):format(vim.o.bg) or
+-      nil
++  return
++    (vim.fn.executable("diff-so-fancy") == 1 and "diff-so-fancy")
++    or (vim.fn.executable("delta") == 1 and ("delta --width=$COLUMNS --%s"):format(vim.o.bg))
++    or nil
+ end
+ 
+ function M._man_cmd_fn(bat_pager)

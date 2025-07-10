@@ -3,28 +3,6 @@
 --------------------------------------------------------------------------------
 vim.api.nvim_create_augroup('UserCmds', { clear = true })
 
-vim.api.nvim_create_autocmd('FileType', {
-  group = 'UserCmds',
-  pattern = { 'qf', 'man', 'help', 'checkhealth', 'vimpe', 'qfreplace' },
-  desc = 'Close some filetypes with <q>',
-  callback = function(event)
-    local buftype = vim.bo.buftype
-
-    --vsplit help
-    if buftype == 'help' or buftype == 'nofile' then vim.cmd('wincmd L') end
-    vim.bo[event.buf].buflisted = false
-
-    --close q
-    vim.schedule(function()
-      vim.keymap.set('n', 'q', function() pcall(vim.api.nvim_buf_delete, event.buf, { force = true }) end, {
-        buffer = event.buf,
-        silent = true,
-        desc = 'Quit buffer',
-      })
-    end)
-  end,
-})
-
 vim.api.nvim_create_autocmd('TextYankPost', {
   group = 'UserCmds',
   desc = 'Highlighted yank',
@@ -39,17 +17,6 @@ vim.api.nvim_create_autocmd('FileType', {
     if vim.bo[ctx.buf].buftype ~= '' then return end
     vim.cmd([[silent! normal! g`"]])
   end,
-})
-
-vim.api.nvim_create_autocmd({ 'TermOpen' }, {
-  group = 'UserCmds',
-  pattern = 'term://*',
-  callback = vim.schedule_wrap(function(data)
-    -- Try to start terminal mode only if target terminal is current
-    if not (vim.api.nvim_get_current_buf() == data.buf and vim.bo.buftype == 'terminal') then return end
-    vim.cmd('startinsert')
-  end),
-  desc = 'Auto insert current terminal',
 })
 
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
@@ -89,4 +56,3 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = '*',
   command = [[%s/\s\+$//e]],
 })
-

@@ -14,6 +14,8 @@ vim.o.titlestring = 'nvim: %F' -- Set the title string to display filename
 vim.o.wrap = false -- Disable line wrapping
 vim.o.confirm = true -- Ask for confirmation before closing unsaved changes
 vim.o.splitkeep = 'screen' -- Keep the screen content when splitting
+vim.o.laststatus = 3 -- only show status last window
+vim.o.showmode = false -- disable because use custom statusline
 
 vim.o.mouse = 'a' -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.breakindent = true -- Enable break indent for wrapped lines
@@ -41,7 +43,7 @@ vim.o.undofile = true -- Enable persistent undo so history is saved
 vim.o.updatetime = 250 -- Set delay before triggering CursorHold event
 vim.o.timeoutlen = 600 -- Set timeout length for mapped sequences
 
-vim.o.shada = [[!,'25,<0,s40,h]] -- :help shada
+-- vim.o.shada = [[!,'25,<0,s40,h]] -- :help shada
 
 vim.cmd([[set path=.,,,$PWD/**]]) -- recursive :find in current dir
 
