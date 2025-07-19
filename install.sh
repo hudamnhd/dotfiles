@@ -2,56 +2,34 @@
 
 set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+dotfiles_dir="$(pwd)"
+dry_run=false
 
-log() {
-  echo "[DOTFILES] $*"
-}
+if [[ "${1-}" == "--dry-run" ]]; then
+    dry_run=true
+    echo "[Dry Run Mode] Will not make any real changes."
+fi
 
-# Create or replace symlink
-create_symlink() {
-  local target="$1"  # e.g. ~/.config/nvim
-  local source="$2"  # e.g. ~/dotfiles/.config/nvim
+function create_symlink() {
+    local link_name="$1"
+    local target="$2"
 
-  if [ -L "$target" ] || [ -e "$target" ]; then
-    rm -rf "$target"
-    log "Removed existing $target"
-  fi
-
-  ln -s "$source" "$target"
-  log "Linked $target → $source"
-}
-
-# Install .config items
-install_config_dir() {
-  for item in "$DOTFILES_DIR/.config"/*; do
-    [ -e "$item" ] || continue
-    local name
-    name=$(basename "$item")
-    create_symlink "$HOME/.config/$name" "$item"
-  done
-}
-
-# Files/dirs to exclude from root dotfiles installation
-EXCLUDES=(.git .config README.md install.sh)
-
-install_root_dir() {
-  for file in "$DOTFILES_DIR"/.*; do
-    local name
-    name=$(basename "$file")
-
-    # Skip common/explicitly excluded files
-    if [[ " ${EXCLUDES[*]} " == *" $name "* ]]; then
-      continue
+    if $dry_run; then
+        echo "[Dry Run] ln -sf $target $link_name"
+    else
+        echo "ln -sf $target $link_name"
+        ln -sf "$target" "$link_name"
     fi
-
-    create_symlink "$HOME/$name" "$file"
-  done
 }
 
-main() {
-  install_config_dir
-  install_root_dir
-}
+# .config
+for config_item in "$dotfiles_dir/.config/"*; do
+    link_path="$HOME/.config/$(basename "$config_item")"
+    create_symlink "$link_path" "$config_item"
+done
 
-main "$@"
+# .local/bin
+for bin_item in "$dotfiles_dir/.local/bin/"*; do
+    link_path="$HOME/.local/bin/$(basename "$bin_item" .sh)"
+    create_symlink "$link_path" "$bin_item"
+done

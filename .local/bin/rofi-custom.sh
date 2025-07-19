@@ -79,21 +79,17 @@ power_menu() {
     actions[Reboot]="systemctl reboot"
     actions[Shutdown]="systemctl poweroff"
 
-    # Prepare options for rofi
+    # Prepare options
     local options="Logout\nSuspend\nHibernate\nReboot\nShutdown"
 
     # Show menu
     local choice
     choice=$(echo -e "$options" | rofi -dmenu -p "Power Menu")
 
-    # Execute command if valid choice
-    if [[ -n "$choice" ]]; then
-        local cmd=${actions[$choice]}
-        if [[ -n "$cmd" ]]; then
-            eval "$cmd"
-        else
-            notify-send "Power Menu" "Invalid choice: $choice"
-        fi
+    if [[ -n "$choice" && -n "${actions[$choice]}" ]]; then
+        local confirm
+        confirm=$(echo -e "No\nYes" | rofi -dmenu -p "Execute $choice?")
+        [[ "$confirm" == "Yes" ]] && eval "${actions[$choice]}"
     fi
 }
 

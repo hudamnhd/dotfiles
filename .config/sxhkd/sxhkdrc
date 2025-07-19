@@ -1,0 +1,22 @@
+# desktop entry of dmenu
+# xev | grep -i keysym
+# get kysym with xev
+
+super + Escape
+	pkill -USR1 -x sxhkd;
+super + t
+	tabbed -r 2 st -w '' -e
+super + Print
+	rofi-custom screenshot
+super + Delete
+	rofi-custom power-menu
+super + F12
+	rofi-custom screenrecord
+super + c
+	clipmenu -i -fn FiraCode\ Nerd\ Font:style=Retine:pixelsize=17
+alt + x
+  exec warpd --hint
+alt + c
+  warpd --normal
+alt + g
+  warpd --grid
