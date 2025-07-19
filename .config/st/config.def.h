@@ -111,29 +111,29 @@ float alpha = 0.9;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-  "#393552",
-  "#eb6f92",
-  "#9ccfd8",
-  "#f6c177",
-  "#5db5da",
-  "#c4a7e7",
-  "#ea9a97",
-  "#e0def4",
+  "#1e2132",
+  "#e27878",
+  "#b4be82",
+  "#e2a478",
+  "#84a0c6",
+  "#a093c7",
+  "#89b8c2",
+  "#c6c8d1",
 
 	/* 8 bright colors */
-  "#6e6a86",
-  "#eb6f92",
-  "#9ccfd8",
-  "#f6c177",
-  "#5db5da",
-  "#c4a7e7",
-  "#ea9a97",
-  "#e0def4",
+  "#6b7089",
+  "#e98989",
+  "#c0ca8e",
+  "#e9b189",
+  "#91acd1",
+  "#ada0d3",
+  "#95c4ce",
+  "#d2d4de",
 
-	[255] = 0,
+	[255] = "#c6c8d1",
 
 	/* more colors can be added after 255 to use with DefaultXX */
-  [256] = "#000000",
+  [256] = "#161821",
 };
 
 /* https://github.com/catppuccin/catppuccin/blob/main/docs/style-guide.md */
@@ -143,9 +143,9 @@ static const char *colorname[] = {
  * background, foreground, cursor, reverse cursor
  */
 unsigned int defaultbg = 256;
-unsigned int defaultfg = 7;
-unsigned int defaultcs = 7;
-static unsigned int defaultrcs = 7;
+unsigned int defaultfg = 255;
+unsigned int defaultcs = 255;
+static unsigned int defaultrcs = 255;
 
 /*
  * Default style of cursor
