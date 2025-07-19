@@ -45,21 +45,11 @@ local function buff()
 
   local current_path = relpath(vim.api.nvim_buf_get_name(0))
   -- Buat floating buffer
-  local buf_id = vim.api.nvim_create_buf(false, true)
-  local columns, lines = vim.o.columns, vim.o.lines
-  local width, height = math.floor(columns * 0.9), math.floor(lines * 0.6)
-  local win_opts = {
-    relative = 'editor',
-    style = 'minimal',
-    row = math.floor((lines - height) * 0.5),
-    col = math.floor((columns - width) * 0.5),
-    width = width,
-    height = height,
-    border = 'single',
-    title = 'Buffer List',
-    title_pos = 'center',
-  }
-  local win_id = vim.api.nvim_open_win(buf_id, true, win_opts)
+  local win_id, buf_id, prev_win_id = config.win_open({
+    split = 'below',
+    height = 12,
+    win = -1,
+  })
 
   vim.wo[win_id].number = true
   vim.api.nvim_set_option_value('buftype', 'nofile', { buf = buf_id })
@@ -100,8 +90,14 @@ local function buff()
     })
   end
 
+  local function close_win()
+    if vim.api.nvim_win_is_valid(prev_win_id) then vim.api.nvim_set_current_win(prev_win_id) end
+    if vim.api.nvim_buf_is_valid(buf_id) then vim.api.nvim_buf_delete(buf_id, { force = true }) end
+  end
+
   -- Keymaps
-  vim.keymap.set('n', 'q', vim.cmd.bw, { buffer = buf_id, nowait = true })
+  vim.keymap.set('n', 'q', close_win, { buffer = buf_id, nowait = true })
+
   local function buf_enter()
     local cursor = vim.api.nvim_win_get_cursor(0)
     local line = vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
@@ -121,7 +117,7 @@ local function buff()
       return
     end
 
-    vim.cmd.bw() -- tutup floating menu
+    close_win() -- tutup floating menu
     vim.schedule(function() vim.api.nvim_set_current_buf(target.idbuf) end)
   end
   vim.keymap.set('n', '<CR>', buf_enter, { buffer = buf_id, desc = 'Switch to buffer under cursor' })
@@ -163,7 +159,7 @@ local function buff()
   end, { buffer = buf_id })
 end
 
-vim.keymap.set('n', '<Leader>j', buff, { desc = 'Show buffer' })
+vim.keymap.set('n', '<Leader>u', buff, { desc = 'Show buffer' })
 
 -- show bufferline via tabline
 vim.o.showtabline = 2
@@ -217,32 +213,15 @@ end
 -- click tabline
 function _G.minimal_switch_buffer(bufnr) vim.api.nvim_set_current_buf(bufnr) end
 
--- use i for navigate bufferline (ex 2i)
--- vim.keymap.set('n', 'i', function()
---   local count = vim.v.count
---   if count == 0 then
---     config.feedkeys('i')
---     return
---   end
---   if count > 10 then return end
---
---   local target = blines[count]
---   if target then
---     vim.api.nvim_set_current_buf(target.idbuf)
---   else
---     vim.notify('Buffer #' .. count .. ' not found', vim.log.levels.WARN)
---   end
--- end, { desc = 'Jump to buffer by count (e.g. 2i)' })
-
 -- -- use space + number(1-9) for navigate bufferline
-local keys = '12345'
+local keys = '123456789'
 for i = 1, #keys do
   local key = keys:sub(i, i)
   local key_combination = string.format('<space>%s', key)
   vim.keymap.set('n', key_combination, function()
     local target = blines[i]
     if target then
-    vim.api.nvim_set_current_buf(target.idbuf)
+      vim.api.nvim_set_current_buf(target.idbuf)
     else
       vim.notify('Buffer #' .. i .. ' not found', vim.log.levels.WARN)
     end

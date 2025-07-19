@@ -3,7 +3,7 @@ local T = {}
 
 function H.set(enter)
   vim.o.cmdheight = enter and 0 or 1
-  -- vim.o.laststatus = enter and 0 or 3
+  vim.o.laststatus = enter and 0 or 3
 end
 
 --- Helper: safely delete buffer

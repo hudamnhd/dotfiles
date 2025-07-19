@@ -200,11 +200,10 @@ function M.delete_under_cursor()
   M.show_in_split()
 end
 
-vim.keymap.set('n', '<Leader>yh', function() M.show_in_split() end, { desc = 'Show yank history' })
-
 -- use fzflua with preview
 function M.show_fzf_yank()
-  local fzf = require('fzf-lua')
+  local ok, fzf = pcall(require, 'fzf-lua')
+  if not ok then return end
   local raw_items = M.load()
 
   local display_items = {}
@@ -252,12 +251,7 @@ function M.show_fzf_yank()
   })
 end
 
--- Command to show yank history, default popup with fzf lua
-vim.api.nvim_create_user_command('FzfYank', function()
-  local ok, fzf = pcall(require, 'fzf-lua')
-  if ok then M.show_fzf_yank() end
-end, {
-  desc = 'Show yank history',
-})
+vim.keymap.set('n', '<Leader>yh', function() M.show_in_split() end, { desc = 'Show yank history' })
+vim.keymap.set('n', '<Leader>py', function() M.show_fzf_yank() end, { desc = 'Show yank history' })
 
 return M

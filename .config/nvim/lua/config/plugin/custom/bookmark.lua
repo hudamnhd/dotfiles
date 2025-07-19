@@ -123,7 +123,6 @@ function mark.open(index)
   vim.cmd('e +' .. line .. ' ' .. vim.fn.fnameescape(path))
 end
 
-local buf_id = nil
 local real = nil
 
 local ns = vim.api.nvim_create_namespace('highlight_filename')
@@ -136,7 +135,11 @@ function mark.edit()
   if #marks == 0 then vim.notify('mark is empty.', vim.log.levels.WARN) end
 
   -- Buat buffer baru
-  local win_id, buf_id = require('config.util').win_open({ title = 'bookmarks' })
+  local win_id, buf_id, prev_win_id = config.win_open({
+    split = 'below',
+    height = 12,
+    win = -1,
+  })
 
   vim.wo[win_id].number = true
 
@@ -186,8 +189,12 @@ function mark.edit()
     end
   end
 
+  local function close_win()
+    if vim.api.nvim_win_is_valid(prev_win_id) then vim.api.nvim_set_current_win(prev_win_id) end
+    if vim.api.nvim_buf_is_valid(buf_id) then vim.api.nvim_buf_delete(buf_id, { force = true }) end
+  end
   -- Keymap untuk menyimpan mark hasil edit
-  vim.keymap.set('n', 'q', vim.cmd.bw, { buffer = true, nowait = true })
+  vim.keymap.set('n', 'q', close_win, { buffer = buf_id, nowait = true })
 
   local function open_file()
     local cursor = vim.api.nvim_win_get_cursor(0)
@@ -201,7 +208,7 @@ function mark.edit()
       return
     end
 
-    vim.cmd.bw()
+    close_win()
     vim.schedule(function() vim.cmd('e +' .. line .. ' ' .. vim.fn.fnameescape(real)) end)
   end
 
@@ -234,10 +241,10 @@ end
 vim.keymap.set('n', '<Leader>ba', function() mark.add() end, { desc = 'add bookmark' })
 vim.keymap.set('n', '<Leader>be', function() mark.edit() end, { desc = 'edit bookmark' })
 vim.keymap.set('n', '<Leader>bd', function() mark.del() end, { desc = 'del bookmark' })
-vim.keymap.set('n', '<A-1>', function() mark.open(1) end, { desc = 'open bookmark 1' })
-vim.keymap.set('n', '<A-2>', function() mark.open(2) end, { desc = 'open bookmark 2' })
-vim.keymap.set('n', '<A-3>', function() mark.open(3) end, { desc = 'open bookmark 3' })
-vim.keymap.set('n', '<A-4>', function() mark.open(4) end, { desc = 'open bookmark 4' })
+vim.keymap.set('n', '<Leader>b1', function() mark.open(1) end, { desc = 'open bookmark 1' })
+vim.keymap.set('n', '<Leader>b2', function() mark.open(2) end, { desc = 'open bookmark 2' })
+vim.keymap.set('n', '<Leader>b3', function() mark.open(3) end, { desc = 'open bookmark 3' })
+vim.keymap.set('n', '<Leader>b4', function() mark.open(4) end, { desc = 'open bookmark 4' })
 
 vim.api.nvim_create_user_command('M', mark.edit, { desc = 'bmark List' })
 vim.api.nvim_create_autocmd({ 'BufWritePost' }, {

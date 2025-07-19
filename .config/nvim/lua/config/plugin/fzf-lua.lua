@@ -4,13 +4,21 @@ local fzf = require('fzf-lua')
 fzf.setup({
   'max-perf',
   winopts = {
-    height = 0.59,
-    width = 0.90,
-    row = 0.48,
-    col = 0.45,
+    -- fullscreen = true, -- start fullscreen?
+    -- split = string.format('botright %dnew | setlocal bt=nofile bh=wipe nobl noswf wfh', vim.o.lines),
+    split = string.format('botright %dnew | setlocal bt=nofile bh=wipe nobl noswf wfh', vim.o.lines / 3.5),
+    -- split = string.format('tabnew | setlocal bt=nofile bh=wipe nobl noswf wfh', vim.o.lines),
+    on_create = function()
+      vim.o.cmdheight = 0
+      vim.o.laststatus = 0
+    end,
+    on_close = function()
+      vim.o.cmdheight = 1
+      vim.o.laststatus = 3
+    end,
     preview = {
+      default = 'bat',
       hidden = true,
-      vertical = 'up:45%',
     },
   },
   keymap = {
@@ -89,6 +97,45 @@ function fzf.hl_word()
       end,
     },
   })
+end
+
+function fzf.buf()
+  local query = vim.fn.expand('<cword>')
+  local current_file = vim.fn.expand('%:~:.')
+  local cmd = string.format(
+    [[rg --color=never --column --line-number --no-heading --smart-case --max-columns=4096 --with-filename --word-regexp %q %s]],
+    query,
+    current_file
+  )
+
+  require('fzf-lua').fzf_exec(cmd, {
+    prompt = 'Buffer❯ ',
+    actions = fzf.defaults.files._actions,
+    previewer = false,
+    preview = {
+      type = 'cmd',
+      fn = function(items)
+        local file, line_num, col, msg = items[1]:match('^(.-):(%d+):(%d+):(.*)$')
+
+        line_num = tonumber(line_num)
+        col = tonumber(col)
+
+        local range = math.floor(vim.api.nvim_win_get_height(0) / 2.5)
+        local start_line = math.max(1, line_num - range)
+        local end_line = line_num + range + 1
+
+        return string.format(
+          'bat --style=numbers --color=always -r %d:%d -H %d %s',
+          start_line,
+          end_line,
+          line_num,
+          file
+        )
+      end,
+    },
+  })
+
+  vim.schedule(function() vim.fn.matchadd('CurSearch', query) end)
 end
 
 -- FzfLua Bookmark -----------------------------------------------------------
@@ -234,25 +281,35 @@ local custom = {
 
 local Fzf = vim.tbl_deep_extend('force', vim.deepcopy(require('fzf-lua')), custom)
 
+local function get_visual_selection()
+  config.feedkeys('<Esc>', 'x')
+  return config.get_visual_selection(false)
+end
+
+function Fzf.grep_hl(path)
+  return function()
+    local query = vim.fn.mode() == 'v' and get_visual_selection() or vim.fn.expand('<cword>')
+    local cwd = path == 'parent' and vim.fn.expand('%:h') or vim.loop.cwd()
+    fzf.grep({ search = query, cwd = cwd })
+    vim.schedule(function() vim.fn.matchadd('CurSearch', query) end)
+  end
+end
+
+
 -- <Leader>p for picker
 -- stylua: ignore start
-vim.keymap.set('n', 'z=',         Fzf.spell_suggest,   { desc = 'Spell suggest' })
-vim.keymap.set('n', '<Leader>?',  Fzf.help,            { desc = 'Nvim help' })
-vim.keymap.set('n', '<Leader>8',  Fzf.bcword,          { desc = 'Buffer word' })
-vim.keymap.set('n', '<Leader>f',  Fzf.files,           { desc = 'Files' })
-vim.keymap.set('n', '<Leader>h',  Fzf.mru,             { desc = 'Mru' })
-vim.keymap.set('n', '<Leader>F',  Fzf.git_files,       { desc = 'Gitfiles' })
-vim.keymap.set('v', '<Leader>ps', Fzf.grep_visual,     { desc = 'Search visual' })
-vim.keymap.set('n', '<Leader>ps', Fzf.grep_cword,      { desc = 'Search word' })
-vim.keymap.set('n', '<Leader>pi', Fzf.grep,            { desc = 'Search input' })
-vim.keymap.set('n', '<Leader>ph', Fzf.oldfiles,        { desc = 'Oldfiles' })
-vim.keymap.set('n', '<Leader>pb', Fzf.buffers,         { desc = 'Buffer' })
-vim.keymap.set('n', '<Leader>pd', Fzf.diagnostics,     { desc = 'Diagnostics' })
-vim.keymap.set('n', '<Leader>pr', Fzf.resume,          { desc = 'Resume' })
-vim.keymap.set('n', '<Leader>p;', Fzf.command_history, { desc = 'Command history' })
-vim.keymap.set('n', '<Leader>p/', Fzf.search_history,  { desc = 'Search history' })
-vim.keymap.set('n', '<Leader>pn', Fzf.hl_word,         { desc = 'Hl word' })
-vim.keymap.set('n', '<Leader>pc', Fzf.config,          { desc = 'Nvim config' })
-vim.keymap.set('i', '<C-x><C-f>', Fzf.complete_path,   { desc = 'Complete path' })
-vim.keymap.set('i', '<C-x><C-l>', Fzf.complete_line,   { desc = 'Complete line' })
+vim.keymap.set('n', 'z=',         Fzf.spell_suggest,     { desc = 'Spell suggest' })
+vim.keymap.set('n', '<Leader>f',  Fzf.files,             { desc = 'Files' })
+vim.keymap.set('',  '<Leader>ps', Fzf.grep_hl(),         { desc = 'Search rg cwd' })
+vim.keymap.set('',  '<Leader>pp', Fzf.grep_hl('parent'), { desc = 'Search rg parent file' })
+vim.keymap.set('n', '<Leader>pi', Fzf.grep,              { desc = 'Search input' })
+vim.keymap.set('n', '<Leader>po', Fzf.mru,               { desc = 'Oldfiles' })
+vim.keymap.set('n', '<Leader>pf', Fzf.git_files,         { desc = 'Gitfiles' })
+vim.keymap.set('n', '<Leader>p?', Fzf.help,              { desc = 'Nvim help' })
+vim.keymap.set('n', '<Leader>pd', Fzf.diagnostics,       { desc = 'Diagnostics' })
+vim.keymap.set('n', '<Leader>pr', Fzf.resume,            { desc = 'Resume' })
+vim.keymap.set('n', '<Leader>pn', Fzf.hl_word,           { desc = 'Hl word' })
+vim.keymap.set('n', '<Leader>pc', Fzf.config,            { desc = 'Nvim config' })
+vim.keymap.set('i', '<C-x><C-f>', Fzf.complete_path,     { desc = 'Complete path' })
+vim.keymap.set('i', '<C-x><C-l>', Fzf.complete_line,     { desc = 'Complete line' })
 -- stylua: ignore end

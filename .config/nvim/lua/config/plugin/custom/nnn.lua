@@ -47,9 +47,9 @@ local function win_spec(spec)
     }
   else
     return {
-      split = 'left',
+      split = 'below',
       width = 35,
-      win = 0,
+      win = -1,
     }
   end
 end
@@ -62,7 +62,7 @@ local function nnn(path)
   vim.bo[buf].bufhidden = 'wipe'
   vim.bo[buf].filetype = 'nnn'
 
-  vim.api.nvim_open_win(buf, true, win_spec('float'))
+  vim.api.nvim_open_win(buf, true, win_spec())
 
   vim.fn.jobstart(cmd, {
     term = true,
@@ -97,7 +97,7 @@ local function setup()
     vim.g['loaded_' .. plugin] = 1
   end
 
-  vim.keymap.set('n', '<space>e', nnn, { desc = 'NNN File Manager' })
+  vim.keymap.set('n', '<space>e', nnn, { desc = 'File Manager' })
 
   -- auto insert mode
   vim.api.nvim_create_autocmd('WinEnter', {
@@ -120,7 +120,8 @@ local function setup()
 
       if cmdtype == ':' and previous_cmd == 'edit' then
         local cwd = vim.loop.cwd()
-        local path = previous[2] or cwd
+        local p = previous[2] or cwd
+        local path = vim.fn.expand(p)
 
         local stat = vim.loop.fs_stat(path)
 

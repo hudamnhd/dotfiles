@@ -2,9 +2,9 @@ return {
   -- Text editing
   { module = 'mini.align', config = true }, -- See :help MiniAlign-examples
   { module = 'mini.comment', config = true },
-  { module = 'mini.operators', opts = { sort = { prefix = 'gz' } } },
-  { module = 'mini.move', opts = { options = { reindent_linewise = false } } },
+  { module = 'mini.operators', config = true },
   { module = 'mini.splitjoin', config = true },
+  { module = 'mini.move', opts = { options = { reindent_linewise = false } } },
   {
     module = 'mini.surround',
     --See :help MiniSurround-vim-surround-config
@@ -20,15 +20,11 @@ return {
       },
     },
     config = function()
-      -- unmap config generated `ys` mapping, prevents visual mode yank delay
-      if vim.keymap then
-        vim.keymap.del('x', 'ys')
-      else
-        vim.cmd('xunmap ys')
-      end
-
       -- Remap adding surrounding to Visual mode selection
-      vim.keymap.set('x', 's', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { desc = 'Surround add visual' })
+      vim.keymap.del('x', 'ys')
+      vim.keymap.set('x', 's', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+
+      -- Make special mapping for "add surrounding for line"
       vim.keymap.set('n', 'yss', 'ys_', { remap = true })
     end,
   },
@@ -82,7 +78,8 @@ return {
         clues = {
           -- Leader/movement groups.
           { mode = 'n', keys = '<Leader>z', desc = '+Session' },
-          { mode = 'n', keys = '<Leader>b', desc = '+Buffers' },
+          { mode = 'n', keys = '<Leader>x', desc = '+Xtra' },
+          { mode = 'n', keys = '<Leader>b', desc = '+Bookmark' },
           { mode = 'n', keys = '<Leader>l', desc = '+Lsp' },
           { mode = 'n', keys = '<Leader>c', desc = '+Code' },
           { mode = 'n', keys = '<Leader>p', desc = '+Picker' },
@@ -136,7 +133,7 @@ return {
     module = 'mini.bufremove',
     opts = {},
     config = function()
-      vim.keymap.set('n', '<Leader>Q', '<Cmd>lua MiniBufremove.delete()<CR>', { desc = 'Buf delete keep layout' })
+      vim.keymap.set('n', '<C-q>', '<Cmd>lua MiniBufremove.delete()<CR>', { desc = 'Buf delete keep layout' })
     end,
   },
   {
@@ -264,14 +261,15 @@ return {
   },
 
   -- Appearance
-  { module = 'mini.indentscope', config = true },
-  { module = 'mini.cursorword', config = true },
-  { module = 'mini.icons', config = true },
-  { module = 'mini.statusline', lazy = false, enable = false },
-  { module = 'mini.tabline', lazy = false, enable = false },
-  { module = 'mini.colors', lazy = false, enable = false },
+  -- { module = 'mini.indentscope', config = true },
+  -- { module = 'mini.cursorword', config = true },
+  -- { module = 'mini.statusline', lazy = false, enable = false },
+  -- { module = 'mini.tabline', lazy = false, enable = false },
+  -- { module = 'mini.colors', lazy = false, enable = false },
+  -- { module = 'mini.icons', config = true },
   {
     module = 'mini.starter',
+    enable = config.plugin.picker,
     lazy = false,
     config = function()
       local starter = require('mini.starter')
@@ -329,14 +327,6 @@ return {
       })
 
       vim.keymap.set('n', '<Leader>cc', '<Cmd>lua MiniHipatterns.toggle()<CR>', { desc = 'Colorizer' })
-    end,
-  },
-
-  {
-    module = 'mini.trailspace',
-    opts = {},
-    config = function()
-      vim.keymap.set('n', '<Leader>ct', '<Cmd>lua MiniTrailspace.trim()<CR>', { desc = 'Trim Trailspace' })
     end,
   },
 }

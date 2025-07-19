@@ -1,14 +1,13 @@
--------------------------------------------------------------------------------
 -- GITUI: Blazing 💥 fast terminal-ui for git written in rust 🦀
-
 -- https://github.com/gitui-org/gitui/releases/download/v0.27.0/gitui-linux-x86_64.tar.gz
+-------------------------------------------------------------------------------
 if vim.fn.executable('gitui') == 1 then
   local editor_script = os.getenv('HOME') .. '/.local/bin/nvim-server.sh'
 
   if vim.fn.filereadable(editor_script) == 0 then
     local f = io.open(editor_script, 'w')
     f:write('#!/bin/bash\n')
-    f:write('nvim --server "$NVIM" --remote "$1"\n')
+    f:write('nvim --server "$Nvim" --remote "$1"\n')
     f:close()
     vim.fn.system({ 'chmod', '+x', editor_script })
   end

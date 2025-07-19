@@ -4,8 +4,7 @@
 local keymap = {}
 
 function keymap.custom()
-  -- === BASIC MAPPINGS ===
-
+  -- BASIC MAPPINGS
   -- Swap ; :
   vim.keymap.set('', ';', ':', { noremap = true })
   vim.keymap.set('', ':', ';', { noremap = true })
@@ -35,19 +34,11 @@ function keymap.custom()
   -- Jump to match bracket
   vim.keymap.set({ 'n', 'v' }, '<C-z>', '%')
 
-  -- Messages
-  vim.keymap.set('n', '<Leader>m', '<cmd>messages<cr>', { desc = 'Show messages' })
-  vim.keymap.set('n', '<Leader>M', '<cmd>messages clear<cr>', { desc = 'Clear messages' })
-
-  -- === TEXT MANIPULATION ===
+  -- TEXT MANIPULATION
 
   -- Indent keep selection
   vim.keymap.set('v', '<', '<gv', {})
   vim.keymap.set('v', '>', '>gv', {})
-
-  -- Move lines up/down
-  -- vim.keymap.set('x', '<A-k>', ":move '<-2<CR>gv=gv", {})
-  -- vim.keymap.set('x', '<A-j>', ":move '>+1<CR>gv=gv", {})
 
   -- Keep center on search
   vim.keymap.set('n', 'n', 'nzzzv', { desc = "Fwd search '/' or '?'" })
@@ -68,13 +59,13 @@ function keymap.custom()
   -- Select last pasted/yanked
   vim.keymap.set('n', 'g<C-v>', '`[v`]', { desc = 'Visual select last yank/paste' })
 
-  -- === CASE CONVERSION ===
+  -- CASE CONVERSION
 
   vim.keymap.set('n', 'cl', 'mzguiw`z', { desc = 'To lowercase' })
   vim.keymap.set('n', 'ct', 'mzguiwgUl`z', { desc = 'To titlecase' })
   vim.keymap.set('n', 'cu', 'mzgUiw`z', { desc = 'To uppercase' })
 
-  -- === CLIPBOARD / BLACKHOLE ===
+  -- CLIPBOARD / BLACKHOLE
 
   -- Cut to blackhole
   for _, char in ipairs({ 'x', 'c', 'd' }) do
@@ -88,25 +79,9 @@ function keymap.custom()
   vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to clipboard' })
   vim.keymap.set({ 'n', 'x' }, 'gp', '"+p', { desc = 'Paste from clipboard' })
 
-  -- File Explorer
-  -- vim.keymap.set('n', '<Leader>e', '<cmd>Ex<cr>', { desc = 'Open netrw' })
+  -- SUBSTITUTE
 
-  -- Search file (manual)
-  -- vim.keymap.set('n', '<Leader>f', ':find ', { silent = false, desc = 'Search file' })
-
-  -- === PICKER NAVIGATION ===
-
-  -- vim.keymap.set('n', '<Leader>vb', ':ls<cr>:buffer ', { desc = 'Picker buffer' })
-  -- vim.keymap.set('n', '<Leader>vu', ':undolist<cr>:undo ', { desc = 'Picker undolist' })
-  -- vim.keymap.set('n', '<Leader>vw', ':g/<C-r><C-w>/#<cr>:', { desc = 'Picker g' })
-  -- vim.keymap.set('n', '<Leader>vg', ':changes<cr>:normal! g;<S-Left>', { desc = 'Picker changes' })
-  -- vim.keymap.set('n', '<Leader>vm', ':marks<cr>:normal! `', { desc = 'Picker mark' })
-  -- vim.keymap.set('n', '<Leader>vo', ':oldfiles<cr>:edit #<', { desc = 'Picker oldfiles' })
-  -- vim.keymap.set('n', '<Leader>vr', ':registers<cr>:normal! "p<left>', { desc = 'Picker register' })
-  -- vim.keymap.set('n', '<Leader>vj', ':jumps<cr>:normal!<C-O><S-Left>', { desc = 'Picker jumps' })
-
-  -- === SUBSTITUTE ===
-
+  vim.keymap.set('x', '<Leader>r', ':s///gI<left><left><left><left>', { silent = false, desc = 'Sub visual' })
   vim.keymap.set('n', '<Leader>r', ':%s///gI<left><left><left>', { silent = false, desc = 'Sub last search' })
   vim.keymap.set(
     'n',
@@ -123,8 +98,6 @@ function keymap.custom()
 
   -- Search in visual selection
   vim.keymap.set('x', 'g/', '<esc>/\\%V', { silent = false, desc = 'Search inside visual' })
-
-  -- === USEFUL ===
 
   -- Insert register content in terminal
   vim.keymap.set(
@@ -147,11 +120,11 @@ function keymap.custom()
   -- Regex helper
   vim.keymap.set('c', '<F1>', [[\(.*\)]], { desc = 'Regex capture all' })
   vim.keymap.set('c', '<F2>', [[.\{-}]], { desc = 'Regex fuzzy match' })
-  vim.keymap.set('c', '<C-g><C-g>', [[s/\v'(.{-})'//g]], { desc = "Delete '...'(multiline)" })
-  vim.keymap.set('c', '<C-g><C-w>', [[s/\v(\w+)//g]], { desc = 'Delete word (\\w+)' })
-  vim.keymap.set('c', '<C-g><C-b>', [[s/\v\(([^()]+)\)//g]], { desc = 'Delete inside (...)' })
-  vim.keymap.set('c', '<C-g><C-d>', [[s/\v"([^"]+)"//g]], { desc = 'Delete inside "..."' })
-  vim.keymap.set('c', '<C-g><C-q>', [[s/\v'([^']+)'//g]], { desc = "Delete inside '...'" })
+  vim.keymap.set('c', '<C-g><C-g>', [[s/\v'(.{-})'//g]], { desc = 'Capture inside (...)' })
+  vim.keymap.set('c', '<C-g><C-w>', [[s/\v(\w+)//g]], { desc = 'Capture word (\\w+)' })
+  vim.keymap.set('c', '<C-g><C-b>', [[s/\v\(([^()]+)\)//g]], { desc = 'Capture inside (...)' })
+  vim.keymap.set('c', '<C-g><C-d>', [[s/\v"([^"]+)"//g]], { desc = 'Capture inside "..."' })
+  vim.keymap.set('c', '<C-g><C-q>', [[s/\v'([^']+)'//g]], { desc = "Capture inside '...'" })
 
   -- Visual Mode Enhancements
   vim.keymap.set(
@@ -167,19 +140,8 @@ function keymap.custom()
     { expr = true, desc = 'Nice block A' }
   )
 
-  -- Line movement with marker
-  -- for _, c in ipairs({ { 'k', 'Line up' }, { 'j', 'Line down' } }) do
-  --   vim.keymap.set(
-  --     'n',
-  --     c[1],
-  --     ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]),
-  --     { expr = true, silent = true, desc = c[2] }
-  --   )
-  -- end
-
-  vim.keymap.set('n', '<space>k', '<Cmd>lua config.run_shell()<CR>', { desc = 'Run shell command in vsplit' })
-  vim.keymap.set('n', '<space>K', '<Cmd>lua config.run_vim()<CR>', { desc = 'Run vim command in vsplit' })
-
+  -- Multiple Cursors
+  -- See: http://www.kevinli.co/p<space>pnosts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript
   local mc_select = [[<esc>/\V\C<C-r>=luaeval("config.get_visual_selection()")<CR><CR>]]
   local mc_macro = function(selection)
     selection = selection or ''
@@ -221,6 +183,42 @@ function keymap.custom()
 
       vim.api.nvim_set_current_line(new)
     end, {})
+  end
+end
+
+function keymap.builtin()
+  -- Move lines up/down
+  vim.keymap.set('n', '<A-j>', "<cmd>execute 'move .+' . v:count1<cr>==", { desc = 'Move Down' })
+  vim.keymap.set('n', '<A-k>', "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==", { desc = 'Move Up' })
+  vim.keymap.set('i', '<A-j>', '<esc><cmd>m .+1<cr>==gi', { desc = 'Move Down' })
+  vim.keymap.set('i', '<A-k>', '<esc><cmd>m .-2<cr>==gi', { desc = 'Move Up' })
+  vim.keymap.set('v', '<A-j>', ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc = 'Move Down' })
+  vim.keymap.set('v', '<A-k>', ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = 'Move Up' })
+
+  -- File Explorer
+  vim.keymap.set('n', '<Leader>e', '<cmd>Ex<cr>', { desc = 'Open netrw' })
+
+  -- Search file (manual)
+  vim.keymap.set('n', '<Leader>f', ':find ', { silent = false, desc = 'Search file' })
+
+  -- Picker Navigation
+  vim.keymap.set('n', '<Leader>vb', ':ls<cr>:buffer ', { desc = 'Picker buffer' })
+  vim.keymap.set('n', '<Leader>vu', ':undolist<cr>:undo ', { desc = 'Picker undolist' })
+  vim.keymap.set('n', '<Leader>vw', ':g/<C-r><C-w>/#<cr>:', { desc = 'Picker g' })
+  vim.keymap.set('n', '<Leader>vg', ':changes<cr>:normal! g;<S-Left>', { desc = 'Picker changes' })
+  vim.keymap.set('n', '<Leader>vm', ':marks<cr>:normal! `', { desc = 'Picker mark' })
+  vim.keymap.set('n', '<Leader>vo', ':oldfiles<cr>:edit #<', { desc = 'Picker oldfiles' })
+  vim.keymap.set('n', '<Leader>vr', ':registers<cr>:normal! "p<left>', { desc = 'Picker register' })
+  vim.keymap.set('n', '<Leader>vj', ':jumps<cr>:normal!<C-O><S-Left>', { desc = 'Picker jumps' })
+
+  -- Line movement with marker
+  for _, c in ipairs({ { 'k', 'Line up' }, { 'j', 'Line down' } }) do
+    vim.keymap.set(
+      'n',
+      c[1],
+      ([[(v:count > 5 ? "m'" . v:count : "") . '%s']]):format(c[1]),
+      { expr = true, silent = true, desc = c[2] }
+    )
   end
 end
 

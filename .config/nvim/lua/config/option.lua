@@ -42,6 +42,9 @@ vim.o.undofile = true -- Enable persistent undo so history is saved
 
 vim.o.updatetime = 250 -- Set delay before triggering CursorHold event
 vim.o.timeoutlen = 600 -- Set timeout length for mapped sequences
+vim.o.termguicolors = true
+
+vim.o.synmaxcol = 1500
 
 -- vim.o.shada = [[!,'25,<0,s40,h]] -- :help shada
 

@@ -1,12 +1,7 @@
 _G.config = {}
 
 config.plugin = {
-  lsp = true,
-  treesitter = true,
-  completion = true,
-  formatter = true,
   picker = true,
-  colorscheme = true,
   custom = true,
 }
 

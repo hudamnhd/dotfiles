@@ -54,5 +54,27 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   group = 'UserCmds',
   desc = 'Delete trailing whitespace',
   pattern = '*',
-  command = [[%s/\s\+$//e]],
+  callback = function()
+    local pos = vim.api.nvim_win_get_cursor(0)
+    local last_search = vim.fn.getreg('/')
+    local hl_state = vim.v.hlsearch
+
+    vim.cmd(':%s/\\s\\+$//e')
+
+    vim.fn.setreg('/', last_search) -- restore last search
+    vim.api.nvim_win_set_cursor(0, pos) -- restore cursor position
+    if hl_state == 0 then
+      vim.cmd.nohlsearch() -- disable search highlighting again if it was disabled before
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd({ 'TermOpen' }, {
+  pattern = 'term://*',
+  callback = vim.schedule_wrap(function(data)
+    -- Try to start terminal mode only if target terminal is current
+    if not (vim.api.nvim_get_current_buf() == data.buf and vim.bo.buftype == 'terminal') then return end
+    vim.cmd('startinsert')
+  end),
+  desc = 'auto insert current terminal',
 })

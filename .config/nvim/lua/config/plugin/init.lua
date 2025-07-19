@@ -29,6 +29,7 @@ local custom_path = 'config/plugin/custom'
 local custom_dir = vim.fs.normalize(vim.fn.stdpath('config') .. '/lua/' .. custom_path)
 
 function Plugin.custom()
+  if not config.plugin.custom then return end
   for name, type in vim.fs.dir(custom_dir) do
     if type == 'file' then
       local mod_name = name:match('(.+)%.lua$')

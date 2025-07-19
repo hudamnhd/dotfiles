@@ -52,4 +52,4 @@ require('rose-pine').setup({
     -- Visual = { fg = "base", bg = "text", inherit = false },
   },
 })
-vim.cmd('colo rose-pine-moon')
+-- vim.cmd('colo rose-pine-moon')

@@ -252,7 +252,7 @@ function M.setup()
 
       if enabled then M.refresh() end
     end
-  end, { desc = 'Set mark and highlight' })
+  end, { desc = 'Toggle mark' })
 
   vim.api.nvim_create_autocmd('CmdlineLeave', {
     group = vim.api.nvim_create_augroup('NvimMarksDelmarks', { clear = true }),
@@ -295,7 +295,7 @@ function M.setup()
       table.insert(display_marks, { mode = 'n', key = key, label = path .. ':' .. line .. ':' .. col, cmd = cmd })
     end
 
-    require('config.util').echo_picker({ title = 'Marks', items = display_marks })
+    require('config.plugin.custom.menu').echo_picker({ title = 'Marks', items = display_marks })
 
   end
 

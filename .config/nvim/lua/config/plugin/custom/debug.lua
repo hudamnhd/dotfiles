@@ -65,8 +65,8 @@ end
 
 function M.setup()
   vim.keymap.set(
-    'n',
-    '<C-g>w',
+    '',
+    '<space>dw',
     function() M.insert_debugprint(vim.fn.expand('<cword>')) end,
     { desc = 'insert debug' }
   )
