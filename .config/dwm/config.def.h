@@ -7,14 +7,14 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "JetBrainsMono Nerd Font Mono:size=10:style=Medium" };
 static const char dmenufont[]       = "JetBrainsMono Nerd Font Mono:size=10:style=Medium";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
+static const char col_gray1[]       = "#17171b";
+static const char col_gray2[]       = "#6b7089";
+static const char col_gray3[]       = "#c6c8d1";
+static const char col_gray4[]       = "#818596";
+static const char col_cyan[]        = "#444b71";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+	[SchemeNorm] = { col_gray3, col_gray1, col_gray1 },
 	[SchemeSel]  = { col_gray1, col_gray4,  col_gray4 },
 };
 
@@ -28,14 +28,13 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class            instance    title       tags mask     isfloating   monitor */
-	{ "Zathura",        NULL,       NULL,       1 << 6,       0,           -1 },
+	{ "firefox",        NULL,       NULL,       1 << 0,       0,           -1 },
+	{ "Vivaldi-stable", NULL,       NULL,       1 << 1,       0,           -1 },
+	{ "Pcmanfm",        NULL,       NULL,       1 << 2,       0,           -1 },
+	{ "Pavucontrol",    NULL,       NULL,       1 << 3,       1,           -1 },
+	{ "mpv",            NULL,       NULL,       1 << 4,       0,           -1 },
+	{ "Zathura",        NULL,       NULL,       1 << 5,       0,           -1 },
 	{ "Mousepad",       NULL,       NULL,       1 << 8,       0,           -1 },
-	{ "mpv",            NULL,       NULL,       1 << 5,       0,           -1 },
-	{ "Pavucontrol",    NULL,       NULL,       1 << 4,       1,           -1 },
-	{ "firefox",        NULL,       NULL,       1 << 1,       0,           -1 },
-	{ "Vivaldi-stable", NULL,       NULL,       1 << 2,       0,           -1 },
-	{ "Pcmanfm",        NULL,       NULL,       1 << 3,       0,           -1 },
-  { "tabbed",         NULL,       NULL,       1 << 9,       0,           -1 },
 
 };
 
@@ -77,6 +76,8 @@ static const Key keys[] = {
 	{ MODKEY,                             XK_p,            spawn,          {.v = roficmd } },
 	{ MODKEY,                             XK_x,            spawn,          {.v = termcmd } },
 	{ MODKEY,                             XK_b,            togglebar,      {0} },
+	{ MODKEY,                             XK_j,            focusstack,     {.i = +1 } },
+	{ MODKEY,                             XK_k,            focusstack,     {.i = -1 } },
 	{ MODKEY,                             XK_a,            focusstack,     {.i = +1 } },
 	{ MODKEY,                             XK_i,            focusstack,     {.i = -1 } },
 	{ MODKEY,                             XK_bracketleft,  incnmaster,     {.i = +1 } },
@@ -108,7 +109,6 @@ static const Key keys[] = {
 	TAGKEYS(                              XK_9,                             8)
 	TAGKEYS(                              XK_0,                             9)
 	{ MODKEY|ShiftMask,                   XK_q,            quit,           {0} },
-	{ MODKEY,                             XK_o,            winview,        {0} },
   { MODKEY,                             XK_minus,        hidewin,        {0} },
   { MODKEY,                             XK_equal,        restorewin,     {0} },
 };
@@ -124,11 +124,11 @@ static const Button buttons[] = {
 	{ ClkStatusText,        0,              Button3,        spawn,          {.v = pavucmd } },
 	{ ClkWinTitle,          0,              Button1,        spawn,          {.v = roficmd } },
 	{ ClkWinTitle,          0,              Button3,        zoom,           {0} },
-	{ ClkWinTitle,          0,              Button4,        focusstack,     {.i = +1 } },
-	{ ClkWinTitle,          0,              Button5,        focusstack,     {.i = -1 } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+	{ ClkClientWin,         MODKEY,         Button4,        focusstack,     {.i = +1 } },
+	{ ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = -1 } },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
