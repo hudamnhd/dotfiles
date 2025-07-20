@@ -12,21 +12,10 @@ vim.cmd('command! -nargs=+ -complete=file LGrep noautocmd lgrep! <args> | redraw
 --------------------------------------------------------------------------------
 function M.open_win(type)
   local wininfo = vim.fn.getwininfo()
-  local w = { qf = {}, ll = {} }
   for _, win in ipairs(wininfo) do
-    if win.loclist == 1 then
-      table.insert(w.ll, win.winid)
-    elseif win.quickfix == 1 and win.loclist == 0 then
-      table.insert(w.qf, win.winid)
-    end
-  end
-  local function close(wins)
-    for _, id in ipairs(wins) do
-      vim.api.nvim_win_hide(id)
-    end
+    if win.variables.drawer ~= nil then vim.api.nvim_win_hide(win.winid) end
   end
   if type == 'l' then
-    if #w.qf > 0 then close(w.qf) end
     -- open all non-empty loclists
     for _, win in ipairs(wininfo) do
       if win.quickfix == 0 then
@@ -40,7 +29,6 @@ function M.open_win(type)
       end
     end
   else
-    if #w.ll > 0 then close(w.ll) end
     -- open quickfix if not empty
     if not vim.tbl_isempty(vim.fn.getqflist()) then
       vim.cmd('copen')
@@ -262,6 +250,7 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'qf',
   desc = 'Quicfix replacer',
   callback = function(ctx)
+    vim.api.nvim_win_set_var(vim.api.nvim_get_current_win(), 'drawer', true)
     vim.keymap.set('n', 'r', '<Cmd>Qfreplace<CR>', { buffer = ctx.buf })
     vim.keymap.set('n', '<Leader>r', '<Cmd>QfReplacePattern<CR>', { buffer = ctx.buf })
   end,

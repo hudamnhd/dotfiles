@@ -1,8 +1,6 @@
 --------------------------------------------------------------------------------
 -- lua/plugins/custom/nnn.lua
 --------------------------------------------------------------------------------
-local M = {}
-
 -- NNN: terminal file manager
 -- this minimal wrapper use nnn with neovim terminal
 -- https://github.com/jarun/nnn/wiki/Usage#from-source
@@ -30,45 +28,18 @@ local function build_nnn_cmd(opener)
   return string.format('bash -c \'nnn -G -c %s -p "%s" "%s"\'', current_file, tmpfile, current_dir)
 end
 
-local function win_spec(spec)
-  if spec == 'float' then
-    local columns = vim.o.columns
-    local lines = vim.o.lines
-    local width = math.floor(columns * 0.9)
-    local height = math.floor(lines * 0.59)
-    return {
-      relative = 'editor',
-      style = 'minimal',
-      row = math.floor((lines - height) * 0.5),
-      col = math.floor((columns - width) * 0.5),
-      width = width,
-      height = height,
-      border = 'single',
-    }
-  else
-    return {
-      split = 'below',
-      width = 35,
-      win = -1,
-    }
-  end
-end
-
 local function nnn(path)
   local cmd = build_nnn_cmd(path)
-  local previous_win = vim.api.nvim_get_current_win()
-  local buf = vim.api.nvim_create_buf(false, true)
+  local win = config.win_open({ title = 'File Explorer' })
 
-  vim.bo[buf].bufhidden = 'wipe'
-  vim.bo[buf].filetype = 'nnn'
-
-  vim.api.nvim_open_win(buf, true, win_spec())
+  vim.bo[win.buf_id].filetype = 'nnn'
 
   vim.fn.jobstart(cmd, {
     term = true,
     on_exit = function(_, status)
-      if vim.api.nvim_win_is_valid(previous_win) then vim.api.nvim_set_current_win(previous_win) end
-      if vim.api.nvim_buf_is_valid(buf) then vim.api.nvim_buf_delete(buf, { force = true }) end
+      win.close_win()
+      -- if vim.api.nvim_win_is_valid(prev_win_id) then vim.api.nvim_set_current_win(prev_win_id) end
+      -- if vim.api.nvim_buf_is_valid(buf_id) then vim.api.nvim_buf_delete(buf_id, { force = true }) end
       if status == 0 then
         if vim.fn.filereadable(tmpfile) == 1 then
           local lines = vim.fn.readfile(tmpfile)
@@ -83,7 +54,7 @@ local function nnn(path)
   vim.cmd.startinsert()
 end
 
-local function setup()
+if is_nnn_available() then
   vim.cmd('silent! autocmd! FileExplorer *')
   vim.cmd('autocmd VimEnter * ++once silent! autocmd! FileExplorer *')
   -- Disable netrw
@@ -139,14 +110,5 @@ local function setup()
     desc = 'open nnn with e path dir',
   })
 end
-
-if is_nnn_available() then
-  setup()
-else
-  -- Ex
-  vim.keymap.set('n', '<space>e', vim.cmd.Ex, { desc = 'Open netrw' })
-end
-
-return M
 
 --------------------------------------------------------------------------------

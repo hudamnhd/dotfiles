@@ -24,6 +24,7 @@ local function split_filename_line(input)
     return input, 1
   end
 end
+
 local function load_json()
   local f = io.open(json_path, 'r')
   if not f then return {} end
@@ -135,16 +136,12 @@ function mark.edit()
   if #marks == 0 then vim.notify('mark is empty.', vim.log.levels.WARN) end
 
   -- Buat buffer baru
-  local win_id, buf_id, prev_win_id = config.win_open({
-    split = 'below',
-    height = 12,
-    win = -1,
-  })
+  local win = config.win_open({ title = 'Bookmark' })
 
-  vim.wo[win_id].number = true
+  vim.wo[win.win_id].number = true
 
-  vim.api.nvim_buf_set_name(buf_id, map_id)
-  vim.api.nvim_set_current_buf(buf_id)
+  vim.api.nvim_buf_set_name(win.buf_id, map_id)
+  vim.api.nvim_set_current_buf(win.buf_id)
   -- vim.api.nvim_buf_set_lines(buf_id, 0, -1, false, marks)
   local cwd = vim.loop.cwd()
   local function relpath(path)
@@ -158,7 +155,7 @@ function mark.edit()
   for _, path in ipairs(marks) do
     table.insert(lines, relpath(path))
   end
-  vim.api.nvim_buf_set_lines(buf_id, 0, -1, false, lines)
+  vim.api.nvim_buf_set_lines(win.buf_id, 0, -1, false, lines)
 
   for i, line in ipairs(lines) do
     local fname_start = line:find('[^/]+$')
@@ -166,13 +163,13 @@ function mark.edit()
 
     if fname_start then
       if fname_start > 1 then
-        vim.api.nvim_buf_set_extmark(buf_id, ns, i - 1, 0, {
+        vim.api.nvim_buf_set_extmark(win.buf_id, ns, i - 1, 0, {
           end_col = fname_start - 1,
           hl_group = 'Comment',
         })
       end
       -- highlight filename
-      vim.api.nvim_buf_set_extmark(buf_id, ns, i - 1, fname_start - 1, {
+      vim.api.nvim_buf_set_extmark(win.buf_id, ns, i - 1, fname_start - 1, {
         end_col = fname_end,
         hl_group = 'Title',
       })
@@ -182,19 +179,15 @@ function mark.edit()
     local linenr_start = line:find(':(%d+)')
     if linenr_start then
       local linenr_end = #line
-      vim.api.nvim_buf_set_extmark(buf_id, ns, i - 1, linenr_start, {
+      vim.api.nvim_buf_set_extmark(win.buf_id, ns, i - 1, linenr_start, {
         end_col = linenr_end,
         hl_group = 'DiagnosticWarn',
       })
     end
   end
 
-  local function close_win()
-    if vim.api.nvim_win_is_valid(prev_win_id) then vim.api.nvim_set_current_win(prev_win_id) end
-    if vim.api.nvim_buf_is_valid(buf_id) then vim.api.nvim_buf_delete(buf_id, { force = true }) end
-  end
   -- Keymap untuk menyimpan mark hasil edit
-  vim.keymap.set('n', 'q', close_win, { buffer = buf_id, nowait = true })
+  vim.keymap.set('n', 'q', win.close_win, { buffer = win.buf_id, nowait = true })
 
   local function open_file()
     local cursor = vim.api.nvim_win_get_cursor(0)
@@ -208,7 +201,7 @@ function mark.edit()
       return
     end
 
-    close_win()
+    win.close_win()
     vim.schedule(function() vim.cmd('e +' .. line .. ' ' .. vim.fn.fnameescape(real)) end)
   end
 
@@ -237,16 +230,17 @@ function mark.edit()
 end
 
 --------------------------------------------------------------------------------
--- Keybind bookmark
-vim.keymap.set('n', '<Leader>ba', function() mark.add() end, { desc = 'add bookmark' })
-vim.keymap.set('n', '<Leader>be', function() mark.edit() end, { desc = 'edit bookmark' })
-vim.keymap.set('n', '<Leader>bd', function() mark.del() end, { desc = 'del bookmark' })
-vim.keymap.set('n', '<Leader>b1', function() mark.open(1) end, { desc = 'open bookmark 1' })
-vim.keymap.set('n', '<Leader>b2', function() mark.open(2) end, { desc = 'open bookmark 2' })
-vim.keymap.set('n', '<Leader>b3', function() mark.open(3) end, { desc = 'open bookmark 3' })
-vim.keymap.set('n', '<Leader>b4', function() mark.open(4) end, { desc = 'open bookmark 4' })
 
-vim.api.nvim_create_user_command('M', mark.edit, { desc = 'bmark List' })
+-- Keymap
+vim.keymap.set('n', '<Leader>ba', function() mark.add() end, { desc = 'Add bookmark' })
+vim.keymap.set('n', '<Leader>be', function() mark.edit() end, { desc = 'Edit bookmark' })
+vim.keymap.set('n', '<Leader>bd', function() mark.del() end, { desc = 'Del bookmark' })
+vim.keymap.set('n', '<Leader>b1', function() mark.open(1) end, { desc = 'Go bookmark 1' })
+vim.keymap.set('n', '<Leader>b2', function() mark.open(2) end, { desc = 'Go bookmark 2' })
+vim.keymap.set('n', '<Leader>b3', function() mark.open(3) end, { desc = 'Go bookmark 3' })
+vim.keymap.set('n', '<Leader>b4', function() mark.open(4) end, { desc = 'Go bookmark 4' })
+
+-- Autocmd update cursor location when save
 vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
   pattern = '*',
   callback = function(ctx)

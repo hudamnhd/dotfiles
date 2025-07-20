@@ -1,36 +1,19 @@
 return {
   -- Text editing
-  { module = 'mini.align', config = true }, -- See :help MiniAlign-examples
+  { module = 'mini.align', config = true },
   { module = 'mini.comment', config = true },
   { module = 'mini.operators', config = true },
   { module = 'mini.splitjoin', config = true },
-  { module = 'mini.move', opts = { options = { reindent_linewise = false } } },
-  {
-    module = 'mini.surround',
-    --See :help MiniSurround-vim-surround-config
-    opts = {
-      mappings = {
-        add = 'ys',
-        delete = 'ds',
-        find = '',
-        find_left = '',
-        highlight = '',
-        replace = 'cs',
-        update_n_lines = '',
-      },
-    },
-    config = function()
-      -- Remap adding surrounding to Visual mode selection
-      vim.keymap.del('x', 'ys')
-      vim.keymap.set('x', 's', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
-
-      -- Make special mapping for "add surrounding for line"
-      vim.keymap.set('n', 'yss', 'ys_', { remap = true })
-    end,
-  },
+  { module = 'mini.move', config = true },
+  { module = 'mini.surround', config = true },
   {
     module = 'mini.ai',
-    opts = {},
+    opts = {
+      custom_textobjects = {
+        B = require('mini.extra').gen_ai_spec.buffer(),
+        F = require('mini.ai').gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }),
+      },
+    },
     config = function()
       vim.keymap.set({ 'x', 'o' }, 'q', 'iq', { remap = true })
       vim.keymap.set({ 'x', 'o' }, 'Q', 'aq', { remap = true })
@@ -145,6 +128,9 @@ return {
         signs = { add = '+', change = '~', delete = '-' },
       },
     },
+    config = function()
+      vim.keymap.set('n', '<Leader>co', require('mini.diff').toggle_overlay, { desc = 'Code overlay (diff)' })
+    end,
   },
   {
     module = 'mini.jump',
@@ -171,7 +157,7 @@ return {
         local lines_below = last_line - cur_line
 
         local chars = {}
-        for c in ('123456789abcdefghijklmnopqrstuvwxyz'):gmatch('.') do
+        for c in ('123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJ'):gmatch('.') do
           table.insert(chars, c)
         end
 
@@ -251,8 +237,8 @@ return {
         return function() jump2d.start(opts) end
       end
 
-      vim.keymap.set('', 'H', jump_line('up'))
-      vim.keymap.set('', 'L', jump_line('down'))
+      vim.keymap.set('', '<Leader>k', jump_line('up'), { desc = 'Jump line up' })
+      vim.keymap.set('', '<Leader>j', jump_line('down'), { desc = 'Jump line down' })
       vim.keymap.set('', 't', jump_word())
 
       vim.o.nu = false
@@ -261,12 +247,6 @@ return {
   },
 
   -- Appearance
-  -- { module = 'mini.indentscope', config = true },
-  -- { module = 'mini.cursorword', config = true },
-  -- { module = 'mini.statusline', lazy = false, enable = false },
-  -- { module = 'mini.tabline', lazy = false, enable = false },
-  -- { module = 'mini.colors', lazy = false, enable = false },
-  -- { module = 'mini.icons', config = true },
   {
     module = 'mini.starter',
     enable = config.plugin.picker,
@@ -326,7 +306,7 @@ return {
         },
       })
 
-      vim.keymap.set('n', '<Leader>cc', '<Cmd>lua MiniHipatterns.toggle()<CR>', { desc = 'Colorizer' })
+      vim.keymap.set('n', '<Leader>ch', '<Cmd>lua MiniHipatterns.toggle()<CR>', { desc = 'Code Highlight patterns' })
     end,
   },
 }

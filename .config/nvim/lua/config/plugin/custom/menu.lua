@@ -25,9 +25,8 @@ local h_key = {
 }
 
 local v_key = {
+  { key = 's', label = 'Insert comment section', cmd = 'lua config.insert_section()' },
   { key = '%', label = 'Set cwd', cmd = 'lua config.set_cwd()' },
-  { key = 'm', cmd = 'messages' },
-  { key = 'M', cmd = 'messages clear' },
 }
 
 local q_menus = {

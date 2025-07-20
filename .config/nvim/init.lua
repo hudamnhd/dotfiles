@@ -6,7 +6,7 @@ config.plugin = {
   completion = true,
   formatter = true,
   picker = true,
-  colorscheme = true,
+  colorscheme = false,
   custom = true,
 }
 

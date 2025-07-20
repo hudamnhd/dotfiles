@@ -74,7 +74,7 @@ function config.feedkeys(key, mode) vim.api.nvim_feedkeys(config.T(key), mode or
 
 ---@param opts vim.api.keyset.win_config
 ---@param buf_id? integer
----@return integer win_id, integer prev_win_id, integer buf_id
+---@return { win_id: integer, buf_id: integer, prev_win_id: integer, close_win: fun() }
 function config.win_open(opts, buf_id)
   local prev_win_id = vim.api.nvim_get_current_win()
   if not (buf_id and vim.api.nvim_buf_is_valid(buf_id)) then buf_id = vim.api.nvim_create_buf(false, true) end
@@ -82,8 +82,35 @@ function config.win_open(opts, buf_id)
   vim.bo[buf_id].bufhidden = 'wipe'
   vim.bo[buf_id].buftype = 'nofile'
 
-  local win_id = vim.api.nvim_open_win(buf_id, true, opts)
-  return win_id, buf_id, prev_win_id
+  local columns = vim.o.columns
+  local lines = vim.o.lines
+  local width = math.floor(columns * 0.9)
+  local height = math.floor(lines * 0.59)
+  local default_opts = {
+    relative = 'editor',
+    style = 'minimal',
+    row = math.floor((lines - height) * 0.5),
+    col = math.floor((columns - width) * 0.5),
+    width = width,
+    height = height,
+    border = 'single',
+    title = '',
+    title_pos = 'center',
+  }
+
+  local win_opts = vim.tbl_deep_extend('force', default_opts, opts or {})
+  local win_id = vim.api.nvim_open_win(buf_id, true, win_opts)
+  local close_win = function()
+    if vim.api.nvim_win_is_valid(prev_win_id) then vim.api.nvim_set_current_win(prev_win_id) end
+    if vim.api.nvim_buf_is_valid(buf_id) then vim.api.nvim_buf_delete(buf_id, { force = true }) end
+  end
+
+  return {
+    win_id = win_id,
+    buf_id = buf_id,
+    prev_win_id = prev_win_id,
+    close_win = close_win,
+  }
 end
 
 local function run_and_open(cmd, fn)
@@ -137,6 +164,21 @@ function config.toggle_diff()
     vim.cmd('windo diffthis')
     vim.cmd('windo set wrap')
   end
+end
+
+-- Insert section
+function config.insert_section(symbol, text_width)
+  symbol = symbol or '-'
+  text_width = vim.o.textwidth > 0 and vim.o.textwidth or 80
+
+  local comment_string = vim.bo.commentstring
+  local content = string.rep(symbol, text_width - (comment_string:len() - 2))
+  local section_template = comment_string:format(content)
+  vim.fn.append(vim.fn.line('.'), section_template)
+
+  local inner_start = comment_string:find('%%s')
+  vim.fn.cursor(vim.fn.line('.') + 1, inner_start)
+  vim.cmd([[startreplace]])
 end
 
 return config

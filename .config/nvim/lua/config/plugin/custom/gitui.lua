@@ -6,6 +6,7 @@ if vim.fn.executable('gitui') == 1 then
 
   if vim.fn.filereadable(editor_script) == 0 then
     local f = io.open(editor_script, 'w')
+    if not f then return end
     f:write('#!/bin/bash\n')
     f:write('nvim --server "$Nvim" --remote "$1"\n')
     f:close()

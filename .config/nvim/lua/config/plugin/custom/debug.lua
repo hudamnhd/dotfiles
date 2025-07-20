@@ -66,9 +66,9 @@ end
 function M.setup()
   vim.keymap.set(
     '',
-    '<space>dw',
+    '<space>cw',
     function() M.insert_debugprint(vim.fn.expand('<cword>')) end,
-    { desc = 'insert debug' }
+    { desc = 'Code word debug print' }
   )
 end
 

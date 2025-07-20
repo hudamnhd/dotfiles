@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
--- lua/config.plugin.custom.statusline.lua
--- Custom statusline using only builtin APIs and git shell calls
+-- lua/config/plugin/custom/statusline.lua
+-- Custom statusline using only builtin APIs and git shell
 -- No dependencies required
 --------------------------------------------------------------------------------
 local api, uv, M = vim.api, vim.uv, {}
@@ -141,9 +141,9 @@ function M.lsp_status()
 end
 
 local components = {
-  [[ %{v:lua.require'config.plugin.custom.statusline'.mode()}%*]],
-  [[:%{(&modified&&&readonly?'%*':(&modified?'**':(&readonly?'%%':'--')))}]],
-  ' %P (%#htmlBold#%l%*,%02c) ',
+  " %{v:lua.require'config.plugin.custom.statusline'.mode()}%*",
+  ":%{(&modified&&&readonly?'%*':(&modified?'**':(&readonly?'%%':'--')))}",
+  ' %P (%#StatusLineNr#%l%*,%02c) ',
   "%{v:lua.require'config.plugin.custom.statusline'.diagnostic()}",
   "%{v:lua.require'config.plugin.custom.statusline'.git_diff()}",
   "%{v:lua.require'config.plugin.custom.statusline'.fileinfo()}",
@@ -159,6 +159,15 @@ local components = {
 function _G._statusline() return table.concat(components) end
 
 vim.opt.statusline = '%{%v:lua._G._statusline()%}'
+
+vim.api.nvim_create_autocmd('UIEnter', {
+  desc = 'Setup hl on UIEnter Event ',
+  once = true,
+  callback = vim.schedule_wrap(
+    function() vim.api.nvim_set_hl(0, 'StatusLineNr', { fg = nil, bg = nil, bold = true }) end
+  ),
+})
+
 
 return M
 

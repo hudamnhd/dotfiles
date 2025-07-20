@@ -1,71 +1,39 @@
-local blines = {} -- local state buffers
-local ns = vim.api.nvim_create_namespace('mark-buff')
+local H = {}
 
-local function relpath(path)
+H.buffer_state = {}
+H.namespace = vim.api.nvim_create_namespace('bufferline-namespace')
+
+function H.relpath(path)
   local cwd = vim.loop.cwd()
   ---@diagnostic disable-next-line: need-check-nil
   local safe_cwd = cwd:gsub('([%(%)%.%%%+%-%*%?%[%]%^%$])', '%%%1')
   return (path:gsub('^' .. safe_cwd .. '/', ''))
 end
 
--- sinkron blines
-vim.api.nvim_create_autocmd({ 'BufDelete', 'BufWipeout' }, {
-  callback = function(args)
-    local bufnr = args.buf
-    -- filter blines, hapus jika idbuf sudah tidak valid
-    local new_blines = {}
-    for _, entry in ipairs(blines) do
-      if entry.idbuf ~= bufnr then table.insert(new_blines, entry) end
-    end
-    blines = new_blines
-  end,
-})
-vim.api.nvim_create_autocmd({ 'BufEnter' }, {
-  callback = function()
-    local known = {}
-    for _, entry in ipairs(blines) do
-      known[entry.path] = true
-    end
-
-    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-      if vim.bo[bufnr].buflisted then
-        local name = vim.api.nvim_buf_get_name(bufnr)
-        local path = relpath(name)
-        if path ~= '' and not known[path] then table.insert(blines, { idbuf = bufnr, path = path }) end
-      end
-    end
-  end,
-})
-
-local function buff()
-  if #blines == 0 then
+function H.open_buffer_list()
+  if #H.buffer_state == 0 then
     vim.notify('mark is empty.', vim.log.levels.WARN)
     return
   end
 
-  local current_path = relpath(vim.api.nvim_buf_get_name(0))
-  -- Buat floating buffer
-  local win_id, buf_id, prev_win_id = config.win_open({
-    split = 'below',
-    height = 12,
-    win = -1,
-  })
+  local current_path = H.relpath(vim.api.nvim_buf_get_name(0))
+  local win = config.win_open({ title = 'Buffer' })
 
-  vim.wo[win_id].number = true
-  vim.api.nvim_set_option_value('buftype', 'nofile', { buf = buf_id })
-  vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = buf_id })
-  vim.api.nvim_set_option_value('swapfile', false, { buf = buf_id })
-  vim.api.nvim_buf_set_name(buf_id, 'buffer')
-  vim.api.nvim_set_current_buf(buf_id)
+  vim.wo[win.win_id].number = true
+  vim.api.nvim_set_option_value('buftype', 'nofile', { buf = win.buf_id })
+  vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = win.buf_id })
+  vim.api.nvim_set_option_value('swapfile', false, { buf = win.buf_id })
+  vim.api.nvim_buf_set_name(win.buf_id, 'buffer')
+  vim.api.nvim_set_current_buf(win.buf_id)
 
   local lines = {}
-  for _, entry in ipairs(blines) do
+  for _, entry in ipairs(H.buffer_state) do
     table.insert(lines, entry.path)
   end
-  vim.api.nvim_buf_set_lines(buf_id, 0, -1, false, lines)
+  vim.api.nvim_buf_set_lines(win.buf_id, 0, -1, false, lines)
 
   local target_line = 1
-  for idx, entry in ipairs(blines) do
+  for idx, entry in ipairs(H.buffer_state) do
     if entry.path == current_path then
       target_line = idx
       break
@@ -73,39 +41,35 @@ local function buff()
   end
 
   -- Set cursor ke line tersebut
-  vim.api.nvim_win_set_cursor(win_id, { target_line, 0 })
+  vim.api.nvim_win_set_cursor(win.win_id, { target_line, 0 })
+
   -- Set lines dan highlight
   for i, line in ipairs(lines) do
     local fname_start = line:find('[^/]+$') or 1
     local fname_end = #line
     if fname_start > 1 then
-      vim.api.nvim_buf_set_extmark(buf_id, ns, i - 1, 0, {
+      vim.api.nvim_buf_set_extmark(win.buf_id, H.namespace, i - 1, 0, {
         end_col = fname_start - 1,
         hl_group = 'Comment',
       })
     end
-    vim.api.nvim_buf_set_extmark(buf_id, ns, i - 1, fname_start - 1, {
+    vim.api.nvim_buf_set_extmark(win.buf_id, H.namespace, i - 1, fname_start - 1, {
       end_col = fname_end,
       hl_group = 'Title',
     })
   end
 
-  local function close_win()
-    if vim.api.nvim_win_is_valid(prev_win_id) then vim.api.nvim_set_current_win(prev_win_id) end
-    if vim.api.nvim_buf_is_valid(buf_id) then vim.api.nvim_buf_delete(buf_id, { force = true }) end
-  end
-
   -- Keymaps
-  vim.keymap.set('n', 'q', close_win, { buffer = buf_id, nowait = true })
+  vim.keymap.set('n', 'q', win.close_win, { buffer = win.buf_id, nowait = true })
 
   local function buf_enter()
     local cursor = vim.api.nvim_win_get_cursor(0)
     local line = vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
     if not line or line == '' then return end
 
-    -- Cari path di blines
+    -- Cari path di H.buffer_state
     local target = nil
-    for _, entry in ipairs(blines) do
+    for _, entry in ipairs(H.buffer_state) do
       if entry.path == line then
         target = entry
         break
@@ -117,17 +81,18 @@ local function buff()
       return
     end
 
-    close_win() -- tutup floating menu
+    win.close_win()
     vim.schedule(function() vim.api.nvim_set_current_buf(target.idbuf) end)
   end
-  vim.keymap.set('n', '<CR>', buf_enter, { buffer = buf_id, desc = 'Switch to buffer under cursor' })
-  vim.keymap.set('n', 'l', buf_enter, { buffer = buf_id, desc = 'Switch to buffer under cursor' })
+
+  vim.keymap.set('n', '<CR>', buf_enter, { buffer = win.buf_id, desc = 'Open buffer under cursor' })
+  vim.keymap.set('n', 'l', buf_enter, { buffer = win.buf_id, desc = 'Open buffer under cursor' })
 
   vim.keymap.set('n', '<Leader>w', function()
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
     local old_paths = {}
-    for _, entry in ipairs(blines) do
+    for _, entry in ipairs(H.buffer_state) do
       old_paths[entry.path] = entry.idbuf
     end
 
@@ -154,20 +119,16 @@ local function buff()
       end
     end
 
-    blines = filtered
+    H.buffer_state = filtered
     vim.notify('Updated buffer list.')
-  end, { buffer = buf_id })
+  end, { buffer = win.buf_id })
 end
 
-vim.keymap.set('n', '<Leader>u', buff, { desc = 'Show buffer' })
+H.buffer_seen = {}
 
--- show bufferline via tabline
-vim.o.showtabline = 2
-vim.o.tabline = '%!v:lua.render_tabline()'
+function H.open_buf_with_click(bufnr) vim.api.nvim_set_current_buf(bufnr) end
 
-local seen = {}
-
-function _G.render_tabline()
+function H.render_tabline()
   local current = vim.fn.bufnr()
   local alternate = vim.fn.bufnr('#')
   local tab_count = vim.fn.tabpagenr('$')
@@ -176,8 +137,8 @@ function _G.render_tabline()
   local line = ''
   if tab_count > 1 then line = line .. '%#TabLineCount#' .. string.format('[Tab %d/%d] ', tab_index, tab_count) end
 
-  -- pakai blines sebagai sumber urutan
-  for i, buf in ipairs(blines) do
+  -- pakai H.buffer_state sebagai sumber urutan
+  for i, buf in ipairs(H.buffer_state) do
     local path = buf.path
     local bufnr = buf.idbuf
     if bufnr ~= -1 then
@@ -192,16 +153,16 @@ function _G.render_tabline()
       local hl = is_current and '%#TabLineSel#' or '%#TabLine#'
       local name = vim.fn.fnamemodify(path, ':t') or '[No Name]'
       local short_name = name
-      seen[name] = (seen[name] or 0) + 1
+      H.buffer_seen[name] = (H.buffer_seen[name] or 0) + 1
 
-      if seen[name] > 1 then
+      if H.buffer_seen[name] > 1 then
         local parent = vim.fn.fnamemodify(path, ':h:t')
         if parent == '' then parent = '...' end
         short_name = string.format('%s/%s', parent, name)
       end
 
       local label = string.format('%d %s%s', i, short_name, suffix)
-      local click = string.format('%%%d@v:lua.minimal_switch_buffer@ ', bufnr)
+      local click = string.format('%%%d@v:lua.open_buf_with_click@ ', bufnr)
 
       line = line .. hl .. click .. label .. ' ' .. '%X'
     end
@@ -210,20 +171,60 @@ function _G.render_tabline()
   return line .. '%#TabLineFill#'
 end
 
--- click tabline
-function _G.minimal_switch_buffer(bufnr) vim.api.nvim_set_current_buf(bufnr) end
+H.setup = function()
+  _G.open_buf_with_click = H.open_buf_with_click
+  _G.render_tabline = H.render_tabline
 
--- -- use space + number(1-9) for navigate bufferline
-local keys = '123456789'
-for i = 1, #keys do
-  local key = keys:sub(i, i)
-  local key_combination = string.format('<space>%s', key)
-  vim.keymap.set('n', key_combination, function()
-    local target = blines[i]
-    if target then
-      vim.api.nvim_set_current_buf(target.idbuf)
-    else
-      vim.notify('Buffer #' .. i .. ' not found', vim.log.levels.WARN)
-    end
-  end, { desc = 'Goto buffer ' .. i })
+  -- show bufferline via tabline
+  vim.o.showtabline = 2
+  vim.o.tabline = '%!v:lua.render_tabline()'
+
+  vim.keymap.set('n', '<Leader>u', H.open_buffer_list, { desc = 'Buffer list' })
+
+  -- Leader + number(1-9) for navigate bufferline
+  local keys = '123456789'
+  for i = 1, #keys do
+    local key = keys:sub(i, i)
+    local key_combination = string.format('<space>%s', key)
+    vim.keymap.set('n', key_combination, function()
+      local target = H.buffer_state[i]
+      if target then
+        vim.api.nvim_set_current_buf(target.idbuf)
+      else
+        vim.notify('Buffer #' .. i .. ' not found', vim.log.levels.WARN)
+      end
+    end, { desc = 'Goto buffer ' .. i })
+  end
+
+  -- sinkron H.buffer_state
+  vim.api.nvim_create_autocmd({ 'BufDelete', 'BufWipeout' }, {
+    callback = function(args)
+      local bufnr = args.buf
+      -- filter H.buffer_state, hapus jika idbuf sudah tidak valid
+      local new_blines = {}
+      for _, entry in ipairs(H.buffer_state) do
+        if entry.idbuf ~= bufnr then table.insert(new_blines, entry) end
+      end
+      H.buffer_state = new_blines
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ 'BufEnter' }, {
+    callback = function()
+      local known = {}
+      for _, entry in ipairs(H.buffer_state) do
+        known[entry.path] = true
+      end
+
+      for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.bo[bufnr].buflisted then
+          local name = vim.api.nvim_buf_get_name(bufnr)
+          local path = H.relpath(name)
+          if path ~= '' and not known[path] then table.insert(H.buffer_state, { idbuf = bufnr, path = path }) end
+        end
+      end
+    end,
+  })
 end
+
+H.setup()

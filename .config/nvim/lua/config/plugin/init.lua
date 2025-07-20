@@ -60,11 +60,6 @@ function Plugin.setup(opts)
   opts = opts or {}
   local plugins = opts.plugins or {}
   local mode = opts.mode or 'plugin'
-  local dryrun = opts.dryrun or false
-  local verbose = opts.verbose or false
-
-  local ok, Deps = pcall(require, 'mini.deps')
-  if not ok then return end
 
   local now_setups, later_setups = {}, {}
 
@@ -72,11 +67,6 @@ function Plugin.setup(opts)
   --- @param module string
   --- @param opts? table
   local function setup_plugin(module, opts)
-    if dryrun then
-      print('[DRYRUN] Simulating setup for module: ' .. module)
-      return
-    end
-    if verbose then print('[VERBOSE] Setup module: ' .. module) end
     local ok, plugin = pcall(require, module)
     if ok and plugin and type(plugin.setup) == 'function' then
       plugin.setup(opts or {})
@@ -87,14 +77,7 @@ function Plugin.setup(opts)
 
   --- @param entry table
   local function run_config(entry)
-    if type(entry.config) == 'function' then
-      if dryrun then
-        print('[DRYRUN] Simulating run custom config function for: ' .. (entry.module or 'unknown'))
-      else
-        if verbose then print('[VERBOSE] Running custom config function for: ' .. (entry.module or 'unknown')) end
-        entry.config()
-      end
-    end
+    if type(entry.config) == 'function' then entry.config() end
   end
 
   for _, entry in ipairs(plugins) do
@@ -115,7 +98,7 @@ function Plugin.setup(opts)
 
         -- See :help Deps.add()
         if entry.enable ~= false then
-          Deps.add(spec)
+          MiniDeps.add(spec)
           run_config(entry)
         end
       end
@@ -124,12 +107,12 @@ function Plugin.setup(opts)
   end
 
   for _, fn in ipairs(now_setups) do
-    -- See :help Deps.now()
-    Deps.now(fn)
+    -- See :help MiniDeps.now()
+    MiniDeps.now(fn)
   end
   for _, fn in ipairs(later_setups) do
-    -- See :help Deps.later()
-    Deps.later(fn)
+    -- See :help MiniDeps.later()
+    MiniDeps.later(fn)
   end
 end
 

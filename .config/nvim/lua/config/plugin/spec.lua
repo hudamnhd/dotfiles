@@ -40,35 +40,6 @@ return {
     lazy = false,
     config = function() require('config.plugin.rose-pine') end,
   },
-  {
-    source = 'folke/tokyonight.nvim',
-    lazy = false,
-    enable = is_enable('colorscheme'),
-    config = function()
-      require('tokyonight').setup({
-        -- use the night style
-        style = 'night',
-        transparent = true,
-        -- disable italic for functions
-        styles = {
-          comments = { italic = false },
-          keywords = { italic = false },
-        },
-        on_highlights = function(highlights, c)
-          for _, defn in pairs(highlights) do
-            if defn.undercurl then
-              defn.undercurl = false
-              defn.underline = true
-            end
-          end
-          highlights.Comment = { fg = c.dark5 }
-          highlights.TabLine = { fg = c.dark5 }
-        end,
-      })
-
-      vim.cmd('colorscheme tokyonight')
-    end,
-  },
 
   -- Tree-sitter (advanced syntax parsing, highlighting, textobjects)
   {
@@ -88,7 +59,7 @@ return {
     checkout = 'main',
   },
 
-  -- movement
+  -- Motion
   {
     source = 'haya14busa/vim-edgemotion',
     config = function()
@@ -97,19 +68,8 @@ return {
     end,
   },
 
-  -- tools
   {
     source = 'thinca/vim-partedit',
-    config = function() vim.keymap.set('v', '<CR>', ":Partedit -opener new -filetype vimpe -prefix '>'<CR>", {}) end,
-  },
-  {
-    source = 'thinca/vim-qfreplace',
-    config = function()
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = 'qf',
-        desc = 'Quicfix replacer',
-        callback = function(ctx) vim.keymap.set('n', 'R', '<Cmd>Qfreplace<CR>', { buffer = ctx.buf }) end,
-      })
-    end,
+    config = function() vim.keymap.set('v', '<CR>', ":Partedit -opener new  -prefix '>'<CR>", {}) end,
   },
 }

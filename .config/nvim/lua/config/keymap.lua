@@ -4,7 +4,6 @@
 local keymap = {}
 
 function keymap.custom()
-  -- BASIC MAPPINGS
   -- Swap ; :
   vim.keymap.set('', ';', ':', { noremap = true })
   vim.keymap.set('', ':', ';', { noremap = true })
@@ -18,6 +17,10 @@ function keymap.custom()
   vim.keymap.set('n', '<Leader>w', '<cmd>write<cr>', { desc = 'Save file' })
   vim.keymap.set('n', '<Leader>q', '<cmd>bd<cr>', { desc = 'Buf delete' })
 
+  -- Messages
+  vim.keymap.set('n', '<Leader>m', '<cmd>messages<cr>', { desc = 'Show messages' })
+  vim.keymap.set('n', '<Leader>M', '<cmd>messages clear<cr>', { desc = 'Clear messages' })
+
   -- Navigate start/end of line
   vim.keymap.set({ 'n', 'v' }, '<C-h>', '^')
   vim.keymap.set({ 'n', 'v' }, '<C-l>', 'g_')
@@ -29,16 +32,16 @@ function keymap.custom()
   -- Terminal window switch
   vim.keymap.set('t', '<A-w>', [[<C-\><C-n><C-w>w]])
   vim.keymap.set('t', '<A-p>', [[<C-\><C-n><C-w>p]])
-  vim.keymap.set('t', [[<C-\>]], [[<C-\><C-n>]]) -- Exit terminal mode
+
+  -- Exit terminal mode
+  vim.keymap.set('t', [[<C-\>]], [[<C-\><C-n>]])
 
   -- Jump to match bracket
   vim.keymap.set({ 'n', 'v' }, '<C-z>', '%')
 
-  -- TEXT MANIPULATION
-
   -- Indent keep selection
-  vim.keymap.set('v', '<', '<gv', {})
   vim.keymap.set('v', '>', '>gv', {})
+  vim.keymap.set('v', '<', '<gv', {})
 
   -- Keep center on search
   vim.keymap.set('n', 'n', 'nzzzv', { desc = "Fwd search '/' or '?'" })
@@ -59,13 +62,11 @@ function keymap.custom()
   -- Select last pasted/yanked
   vim.keymap.set('n', 'g<C-v>', '`[v`]', { desc = 'Visual select last yank/paste' })
 
-  -- CASE CONVERSION
 
+  -- Case conversion
   vim.keymap.set('n', 'cl', 'mzguiw`z', { desc = 'To lowercase' })
   vim.keymap.set('n', 'ct', 'mzguiwgUl`z', { desc = 'To titlecase' })
   vim.keymap.set('n', 'cu', 'mzgUiw`z', { desc = 'To uppercase' })
-
-  -- CLIPBOARD / BLACKHOLE
 
   -- Cut to blackhole
   for _, char in ipairs({ 'x', 'c', 'd' }) do
@@ -79,9 +80,7 @@ function keymap.custom()
   vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to clipboard' })
   vim.keymap.set({ 'n', 'x' }, 'gp', '"+p', { desc = 'Paste from clipboard' })
 
-  -- SUBSTITUTE
-
-  vim.keymap.set('x', '<Leader>r', ':s///gI<left><left><left><left>', { silent = false, desc = 'Sub visual' })
+  -- Substitute
   vim.keymap.set('n', '<Leader>r', ':%s///gI<left><left><left>', { silent = false, desc = 'Sub last search' })
   vim.keymap.set(
     'n',
@@ -92,8 +91,11 @@ function keymap.custom()
   vim.keymap.set(
     'x',
     '<Leader>s',
-    [[:<C-u>%s/\V<C-r>=luaeval("config.get_visual_selection()")<cr>/<C-r>=luaeval("config.get_visual_selection()")<cr>/gI<Left><Left><Left>]],
-    { silent = false, desc = 'Sub visual selection' }
+    function()
+      return vim.fn.mode():match('[V]') and ':s/\\V//gI<left><left><left><left>'
+        or [[:<C-u>%s/\V<C-r>=luaeval("config.get_visual_selection()")<cr>/<C-r>=luaeval("config.get_visual_selection()")<cr>/gI<Left><Left><Left>]]
+    end,
+    { expr = true, silent = false, desc = 'Sub visual selection' }
   )
 
   -- Search in visual selection
